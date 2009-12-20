@@ -66,4 +66,44 @@ public class Str {
 
 		return joinB( joinWith, separator, map ).toString();
 	}
+
+	public static <T> StringBuilder joinB( Joiner<T> joiner, Iterable<T> list ){
+
+		StringBuilder result = new StringBuilder();
+
+		int index=0;
+		for( T object : list ){
+
+			if( index > 0 ) result.append( joiner.getSeparator() );
+
+			result.append( joiner.toString( object, index ) );
+
+			index++;
+		}
+		return result;
+	}
+
+	public static <T> String join( Joiner<T> joiner, Iterable<T> list ){
+
+		return joinB( joiner, list ).toString();
+	}
+
+	public interface Joiner<T> {
+
+		public String getSeparator();
+		public String toString( T object, int index );
+	}
+	public static class SimpleJoiner<T> implements Joiner<T> {
+
+		private String separator;
+		public SimpleJoiner( String separator ){
+			this.separator = separator;
+		}
+		public String getSeparator(){
+			return separator;
+		}
+		public String toString( T object, int index ){
+			return index + ": " + object.toString();
+		}
+	}
 }
