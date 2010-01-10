@@ -1,6 +1,7 @@
 package de.axone.tools;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,7 +35,7 @@ public class SuperProperties {
 		this( new Properties() );
 	}
 
-	public SuperProperties(Properties backend) {
+	private SuperProperties(Properties backend) {
 		this( null, backend, null );
 	}
 
@@ -48,8 +49,11 @@ public class SuperProperties {
 	public void setRootDir( File rootDir ){
 		this.rootDir = rootDir;
 	}
-	public void setRootDir( String rootDirKey ){
+	public void addRootDir( String rootDirKey ){
 		this.rootDir = getFile( rootDirKey );
+	}
+	public void addRootDir( File addDir ){
+		this.rootDir = new File( this.rootDir, addDir.getPath() );
 	}
 
 	// From Properties
@@ -65,10 +69,20 @@ public class SuperProperties {
 	public void store( Writer writer ) throws IOException {
 		backend.store( writer, null );
 	}
+	public void load( File file ) throws IOException {
+		FileReader in = new FileReader( file );
+		try {
+			load( in );
+		} finally {
+			in.close();
+		}
+	}
 
 	public String getProperty( String key ) {
-
 		return backend.getProperty( realKey( key ) );
+	}
+	public void setProperty( String key, String value ) {
+		backend.setProperty( realKey( key ), value );
 	}
 
 	public String getProperty( String key, String defaultValue ) {
@@ -112,14 +126,16 @@ public class SuperProperties {
 
 	public File getFile( String key ) {
 
-		String fileName = getProperty( realKey( key ));
+		String filename = getProperty( key );
 
-		return prependBaseDir( rootDir, new File( fileName ) );
+		if( filename == null ) return null;
+
+		return prependBaseDir( rootDir, new File( filename ) );
 	}
 
 	public File getFile( File basedir, String key ) {
 
-		String filename = getProperty( realKey( key ));
+		String filename = getProperty( key );
 
 		if( filename == null ) return null;
 
@@ -130,7 +146,7 @@ public class SuperProperties {
 
 	public File getFile( String basedirKey, String key ) {
 
-		String basedirFilename = getProperty( realKey( basedirKey ) );
+		String basedirFilename = getProperty( basedirKey );
 
 		if( basedirFilename == null ){
 			return getFile( key );
@@ -153,23 +169,20 @@ public class SuperProperties {
 
 		File result = getFile( key );
 		if( result == null ) throw new PropertyNotFoundException( key );
-		if( ! result.isFile() ) throw new PropertyFileNotFoundException( key, result );
 		return result;
 	}
 
 	public File getFileRequired( File basedir, String key ) throws PropertiesException {
 
-		File result = getFile( key );
+		File result = getFile( basedir, key );
 		if( result == null ) throw new PropertyNotFoundException( key );
-		if( ! result.isFile() ) throw new PropertyFileNotFoundException( key, result );
 		return result;
 	}
 
 	public File getFileRequired( String basedirKey, String key ) throws PropertiesException {
 
-		File result = getFile( key );
+		File result = getFile( basedirKey, key );
 		if( result == null ) throw new PropertyNotFoundException( key );
-		if( ! result.isFile() ) throw new PropertyFileNotFoundException( key, result );
 		return result;
 	}
 
@@ -296,9 +309,11 @@ public class SuperProperties {
 		}
 	}
 
+	/*
 	private static class PropertyFileNotFoundException extends PropertiesException {
 		private PropertyFileNotFoundException( String propertyName, File file ){
 			super( "File not found for " + propertyName + ": " + file.getAbsolutePath() );
 		}
 	}
+	*/
 }

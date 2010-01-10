@@ -4,35 +4,34 @@ import static org.testng.Assert.*;
 
 import java.io.File;
 import java.util.List;
-import java.util.Properties;
 
 import org.testng.annotations.Test;
 
 @Test( groups="tools.superproperties" )
 public class SuperPropertiesTest {
 
-	public static void main( String [] args ){
+	@Test( enabled=false )
+	public static void main( String [] args ) throws Exception {
 		new SuperPropertiesTest().testAccess();
 		new SuperPropertiesTest().testTypes();
 		new SuperPropertiesTest().testFiles();
+		new SuperPropertiesTest().testFilesRequired();
 	}
 
 	public void testAccess(){
 
-		Properties backend = new Properties();
+		SuperProperties p = new SuperProperties();
 
-		backend.put( "A", "a--" );
-		backend.put( "B.1", "b--1" );
-		backend.put( "B.2", "b--2" );
-		backend.put( "B.3", "b--3" );
-		backend.put( "C.D", "cd-" );
-		backend.put( "C.E.1", "ce-1" );
-		backend.put( "C.E.2", "ce-2" );
-		backend.put( "C.E.3", "ce-3" );
-		backend.put( "C.F.G", "cfg" );
-		backend.put( "C.F.H", "cfh" );
-
-		SuperProperties p = new SuperProperties( backend );
+		p.setProperty( "A", "a--" );
+		p.setProperty( "B.1", "b--1" );
+		p.setProperty( "B.2", "b--2" );
+		p.setProperty( "B.3", "b--3" );
+		p.setProperty( "C.D", "cd-" );
+		p.setProperty( "C.E.1", "ce-1" );
+		p.setProperty( "C.E.2", "ce-2" );
+		p.setProperty( "C.E.3", "ce-3" );
+		p.setProperty( "C.F.G", "cfg" );
+		p.setProperty( "C.F.H", "cfh" );
 
 		// Property access
 		assertEquals( p.getProperty( "A" ), "a--" );
@@ -60,13 +59,10 @@ public class SuperPropertiesTest {
 
 	public void testTypes(){
 
-		Properties backend = new Properties();
-
-		backend.put( "string", "string" );
-		backend.put( "int", "123" );
-		backend.put( "bool", "true" );
-
-		SuperProperties p = new SuperProperties( backend );
+		SuperProperties p = new SuperProperties();
+		p.setProperty( "string", "string" );
+		p.setProperty( "int", "123" );
+		p.setProperty( "bool", "true" );
 
 		assertEquals( p.getProperty( "string" ), "string" );
 		assertEquals( (int)p.getInt( "int" ), 123 );
@@ -77,17 +73,14 @@ public class SuperPropertiesTest {
 
 	}
 
-	public void testFiles(){
-
-		Properties backend = new Properties();
+	public void testFiles() throws Exception {
 
 		File abs = new File( "abs.txt" ).getAbsoluteFile();
 
-		backend.put( "base", "base" );
-		backend.put( "rel", "rel.ext" );
-		backend.put( "abs", abs.getPath() ); //<- allways the abs. path
-
-		SuperProperties p = new SuperProperties( backend );
+		SuperProperties p = new SuperProperties();
+		p.setProperty( "base", "base" );
+		p.setProperty( "rel", "rel.ext" );
+		p.setProperty( "abs", abs.getPath() ); //<- allways the abs. path
 
 		assertEquals( p.getFile( "rel" ), new File( "rel.ext" ) );
 		assertEquals( p.getFile( "abs" ), abs );
@@ -100,6 +93,9 @@ public class SuperPropertiesTest {
 		assertEquals( p.getFile( "base", "rel" ), new File( "base/rel.ext" ) );
 		assertEquals( p.getFile( "base", "abs" ), abs );
 
+		assertEquals( p.getFile( "no", "rel" ), new File( "rel.ext" ) );
+		assertEquals( p.getFile( "no", "abs" ), abs );
+
 		p.setRootDir( new File( "root" ) );
 
 		assertEquals( p.getFile( "rel" ), new File( "root/rel.ext" ) );
@@ -110,6 +106,42 @@ public class SuperPropertiesTest {
 
 		assertEquals( p.getFile( "base", "rel" ), new File( "root/base/rel.ext" ) );
 		assertEquals( p.getFile( "base", "abs" ), abs );
+
+		assertEquals( p.getFile( "no", "rel" ), new File( "root/rel.ext" ) );
+		assertEquals( p.getFile( "no", "abs" ), abs );
+
+	}
+
+	public void testFilesRequired() throws Exception {
+
+		File abs = new File( "abs.txt" ).getAbsoluteFile();
+
+		SuperProperties p = new SuperProperties();
+		p.setProperty( "base", "base" );
+		p.setProperty( "rel", "rel.ext" );
+		p.setProperty( "abs", abs.getPath() ); //<- allways the abs. path
+
+		assertEquals( p.getFileRequired( "rel" ), new File( "rel.ext" ) );
+		assertEquals( p.getFileRequired( "abs" ), abs );
+		assertFalse( p.getFileRequired( "rel" ).isAbsolute() );
+		assertTrue( p.getFileRequired( "abs" ).isAbsolute() );
+
+		assertEquals( p.getFileRequired( new File( "bd" ), "rel" ), new File( "bd/rel.ext" ) );
+		assertEquals( p.getFileRequired( new File( "bd" ), "abs" ), abs );
+
+		assertEquals( p.getFileRequired( "base", "rel" ), new File( "base/rel.ext" ) );
+		assertEquals( p.getFileRequired( "base", "abs" ), abs );
+
+		p.setRootDir( new File( "root" ) );
+
+		assertEquals( p.getFileRequired( "rel" ), new File( "root/rel.ext" ) );
+		assertEquals( p.getFileRequired( "abs" ), abs );
+
+		assertEquals( p.getFileRequired( new File( "bd" ), "rel" ), new File( "root/bd/rel.ext" ) );
+		assertEquals( p.getFileRequired( new File( "bd" ), "abs" ), abs );
+
+		assertEquals( p.getFileRequired( "base", "rel" ), new File( "root/base/rel.ext" ) );
+		assertEquals( p.getFileRequired( "base", "abs" ), abs );
 
 	}
 

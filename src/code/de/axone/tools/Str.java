@@ -72,7 +72,7 @@ public class Str {
 		StringBuilder result = new StringBuilder();
 
 		int index=0;
-		for( T object : list ){
+		if( list != null ) for( T object : list ){
 
 			if( index > 0 ) result.append( joiner.getSeparator() );
 
