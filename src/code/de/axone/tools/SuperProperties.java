@@ -15,34 +15,95 @@ import java.util.Properties;
 /**
  * A replacement and facade for <tt>Properties</tt>
  *
- * Supports not any method of properties but although additional
+ * <p>Supports not any method of properties but although additional
  * stuff like direcly getting a <tt>File</tt> or building subsets.
  *
- * This class is intentionally not subclassed from Properties
+ * <p>This class is intentionally not subclassed from Properties
  * but a drop in replacement for most of the methods.
+ * 
+ * <p>The purpose of this class is to make life more easy.
+ * 
+ * <p>SuperProperties are backed by a normal <tt>Properties</tt> class
+ * and encasulates access to its methods.
+ * 
+ * Main features are: <ul>
+ * <li>Usage of a prefix
+ * <li>Subsets
+ * <li>Multiple accessor methods
+ * <li>Exceptions if needed
+ * <li>File creation
+ * <li>Class creation
+ * <li>Lists
+ * </ul>
+ * 
+ * <h5>Prefixes</h5>
+ * <p>Prefixes are prepended to the properties key and are set at class
+ * creation time. Subsets prepend additional prefixes.
+ * E.g. <tt>new SuperProperties().supset( "one" ).subset( "two" )</tt>
+ * will prefix all keys in the new class with <tt>"one.two."</tt>.
+ * In following if key is used it will be allways prefixed.
+ * 
+ * <h5>Accessors</h5>
+ * <p> Accessors are in multiple versions:<ul>
+ * <li><tt>getXyz( key : String )</tt> returns <tt>null</tt> if missing.
+ * <li><tt>getXyz( key : String, default : String )</tt> returns <em>default</em> if missing.
+ * <li><tt>getXyzRequired( key : String )</tt> throws <em>Exception</em> if missing.
+ * </ul>
+ * 
+ * <h5>Class creation</h5>
+ * <p>Classes can be directly created and eventually configured if they confirm
+ * to the class syntax used by <tt>ClassConfigurator</tt><ul>
+ * <li>Have empty contructor
+ * <li>have setters (String) for configurable parameters
+ * </ul>
  *
  * TODO: Check EMogul for Method usage because there is much duplicate stuff.
  *
  * @author flo
  */
 public class SuperProperties {
-
-	private Properties backend;
-	private String prefix;
+	
+	private final Properties backend;
+	private final String prefix;
 	private File rootDir;
 
+	/**
+	 * Create Super Properties with empty Properties
+	 */
 	public SuperProperties() {
 		this( new Properties() );
 	}
 
+	/**
+	 * Create Super Properties using backend as properties
+	 * 
+	 * @param backend
+	 */
 	private SuperProperties(Properties backend) {
 		this( null, backend, null );
 	}
 
+	/**
+	 * Create Super properties using backend, prefix and root-dir
+	 * 
+	 * @param prefix
+	 * @param backend
+	 * @param rootDir
+	 */
 	private SuperProperties(String prefix, Properties backend, File rootDir ) {
 		this.backend = backend;
 		this.prefix = prefix;
 		this.rootDir = rootDir;
+	}
+	
+	public String getPrefix(){
+		return prefix;
+	}
+	public File getRootDir(){
+		return rootDir;
+	}
+	public Properties getBackend(){
+		return backend;
 	}
 
 	// BaseDir
@@ -84,12 +145,9 @@ public class SuperProperties {
 	public void setProperty( String key, String value ) {
 		backend.setProperty( realKey( key ), value );
 	}
-
 	public String getProperty( String key, String defaultValue ) {
-
 		return backend.getProperty( realKey( key ), defaultValue );
 	}
-
 	public String getPropertyRequired( String key ) throws PropertiesException {
 		String result = getProperty( key );
 		if( result == null ) throw new PropertyNotFoundException( key );
@@ -102,11 +160,22 @@ public class SuperProperties {
 			InstantiationException, IllegalAccessException,
 			NoSuchMethodException, InvocationTargetException {
 
-		String className = getProperty( realKey( key ) );
-		if( className == null )
-			return null;
+		String className = getProperty( key );
+		if( className == null ) return null;
 		ClassConfigurator confi = new ClassConfigurator();
 		return confi.create( className );
+	}
+	
+	public Object instantiateRequired( String key ) throws SecurityException,
+			IllegalArgumentException, ClassNotFoundException,
+			InstantiationException, IllegalAccessException,
+			NoSuchMethodException, InvocationTargetException,
+			PropertyInstantiationException {
+		
+		Object result = instantiate( key );
+		if( result == null )
+			throw new PropertyInstantiationException( key, getProperty( key ) );
+		return result;
 	}
 
 	public List<String> getList( String key ) {
@@ -306,6 +375,12 @@ public class SuperProperties {
 		private enum Format {BOOL,INT,FLOAT,DOUBLE};
 		private PropertyConversationException( String propertyName, String value, Format format ){
 			super( "Cannot convert value of " + propertyName + " (" + value + ") to " + format );
+		}
+	}
+
+	private static class PropertyInstantiationException extends PropertiesException {
+		private PropertyInstantiationException( String propertyName, String value ){
+			super( "Cannot instantiate " + propertyName + ": '" + value + "'" );
 		}
 	}
 

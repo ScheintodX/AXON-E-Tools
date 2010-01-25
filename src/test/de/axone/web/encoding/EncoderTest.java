@@ -1,16 +1,13 @@
 package de.axone.web.encoding;
 
-import org.testng.annotations.Test;
-
-import de.axone.web.encoding.AmpEncoder;
-import de.axone.web.encoding.AttributeEncoder;
-import de.axone.web.encoding.HtmlEncoder;
-
 import static org.testng.Assert.*;
+
+import org.testng.annotations.Test;
 
 @Test( groups="web.encoder" )
 public class EncoderTest {
 	
+	@Test( enabled = false )
 	public static void main( String [] args ){
 		
 		new EncoderTest().testAmpEncoder();

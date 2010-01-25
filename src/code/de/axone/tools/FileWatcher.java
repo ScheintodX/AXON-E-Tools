@@ -54,10 +54,12 @@ public class FileWatcher {
 		boolean result = false;
 
 		double time = System.currentTimeMillis();
-
+		
+		double div = time - lastCheckTime;
+		
 		// See if timeout has passed to do a recheck
-		if( (time - lastCheckTime) > timeout ){
-
+		if( div >= timeout ){
+			
 			lastCheckTime = time;
 
 			if( ! file.exists() ){
@@ -67,9 +69,9 @@ public class FileWatcher {
 			}
 
     		double modifiedTime = file.lastModified();
-
+    		
     		if( lastModifiedTime < modifiedTime ){
-
+    			
     			log.info( String.format( "File %s has changed (%d<%d)", file.getAbsolutePath(), (int)(lastModifiedTime/1000), (int)(modifiedTime/1000) ) );
 
     			result = true;

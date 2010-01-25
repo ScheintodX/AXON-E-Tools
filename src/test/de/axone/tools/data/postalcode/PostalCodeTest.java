@@ -1,10 +1,6 @@
 package de.axone.tools.data.postalcode;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 import java.util.Locale;
 
@@ -15,20 +11,28 @@ import de.axone.data.postalcode.PostalCode_Numeric;
 
 @Test( groups="tools.postalcode" )
 public class PostalCodeTest {
+	
+	@Test( enabled=false )
+	public static void main( String [] args ){
+		
+		new PostalCodeTest().testPostalCodesDe();
+	}
 
-	public static void testPostalCodesDe(){
+	public void testPostalCodesDe(){
 
-		PostalCode code = PostalCode.instance( Locale.GERMANY );
+		PostalCode codeGeneric = PostalCode.instance( Locale.GERMANY );
 
-		assertTrue( code instanceof PostalCode_Numeric );
-		assertEquals( ((PostalCode_Numeric)code).getLength(), 5 );
+		assertTrue( codeGeneric instanceof PostalCode_Numeric );
+		assertEquals( ((PostalCode_Numeric)codeGeneric).getLength(), 5 );
+		
+		PostalCode_Numeric code = (PostalCode_Numeric)codeGeneric;
 
-		assertNull( code.isValid( "12345" ) );
-		assertNull( code.isValid( "D-12345" ) );
-		assertNotNull( code.isValid( "1234" ) );
-		assertNotNull( code.isValid( "123456" ) );
-		assertNotNull( code.isValid( "1234A" ) );
-
+		assertTrue( code.isValid( "12345" ) );
+		assertTrue( code.isValid( "D-12345" ) );
+		assertFalse( code.isValid( "1234" ) );
+		assertFalse( code.isValid( "123456" ) );
+		assertFalse( code.isValid( "1234A" ) );
+		
 		code.parse( "D-12345" );
 		assertEquals( code.getCode(), "12345" );
 

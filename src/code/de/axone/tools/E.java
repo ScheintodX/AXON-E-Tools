@@ -1,6 +1,7 @@
 package de.axone.tools;
 
 import java.io.PrintStream;
+import java.util.Map;
 
 public abstract class E {
 	
@@ -42,11 +43,23 @@ public abstract class E {
 		}
 	}
 	
+	private static void echo( PrintStream out, Map<?,?> map ){
+		MapPair [] pairs = new MapPair[ map.size() ];
+		int i = 0;
+		for( Object key : map.keySet() ){
+			pairs[ i++ ] = new MapPair( key, map.get( key ) );
+		}
+		echo( out, 3, true, (Object[])pairs );
+	}
+	
 	public static void rr( Object ... os ){
 		
 		echo( System.err, true, os );
 	}
-	
+	public static void rr( Map<?,?> map ){
+		
+		echo( System.err, map );
+	}
 	public static void rr_( Object ... os ){
 		
 		echo( System.err, false, os );
@@ -56,7 +69,10 @@ public abstract class E {
 		
 		echo( System.out, true, os );
 	}
-	
+	public static void cho( Map<?,?> map ){
+		
+		echo( System.out, map );
+	}
 	public static void cho_( Object ... os ){
 		
 		echo( System.out, false, os );
@@ -96,5 +112,17 @@ public abstract class E {
 	
 	public static void xit( Throwable t ){
 		xit( t.getMessage() );
+	}
+	
+	private static class MapPair{
+		private Object key, value;
+		MapPair( Object key, Object value ){
+			this.key = key;
+			this.value = value;
+		}
+		@Override
+		public String toString(){
+			return( "'" + key + "' => '" + value + "'" );
+		}
 	}
 }

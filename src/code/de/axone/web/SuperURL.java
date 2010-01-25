@@ -136,13 +136,9 @@ public class SuperURL {
 		
 		if( uri.getPath() != null )
     		path = new Path( uri.getPath() );
-		else
-			path = new Path( "" );
 		
 		if( uri.getQuery() != null )
     		query = new Query( uri.getQuery() );
-		else
-			query = new Query( "" );
 	}
 	
 	/* --- Direct Access --- */
@@ -236,7 +232,7 @@ public class SuperURL {
 			path.toStringBB( result, encode );
 		}
 		
-		if( query != null ){
+		if( query != null && query.size() > 0 ){
 			result.append( '?' );
 			query.toStringBB( result, encode );
 		}
@@ -249,7 +245,6 @@ public class SuperURL {
 			
 			result.append( '#' ).append( fragmentStr );
 		}
-		
 		return result;
 	}
 	public StringBuilder toStringB( boolean encode ){
@@ -281,9 +276,7 @@ public class SuperURL {
     			else result.append( '.' );
     			
     			result.append( part );
-    			
     		}
-    		
     		return result;
     	}
     	
@@ -508,7 +501,6 @@ public class SuperURL {
 			}
 		}
 		
-		//TODO: hier muss irgendwie rein wenn das erste ist dann kein & davor
 		public void addValue( String key, String value ){
 			
 			if( ! forName.containsKey( key ) ){
@@ -677,7 +669,6 @@ public class SuperURL {
 			if( passStr != null ){
 				result.append( ':' ).append( passStr );
 			}
-			
 			return result;
 		}
 		public StringBuilder toStringB( boolean encode ){

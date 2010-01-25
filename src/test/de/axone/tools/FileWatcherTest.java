@@ -1,7 +1,6 @@
 package de.axone.tools;
 
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,36 +18,41 @@ public class FileWatcherTest {
 
 		assertTrue( watcher.hasChanged() );
 		assertFalse( watcher.hasChanged() );
-
+		
 		synchronized( this ){
-    		this.wait( 50 );
+			Thread.sleep( 1100 ); //Note: Unix ctime min unit is 1s
 		}
 
 		assertFalse( watcher.hasChanged() );
-
+		
 		// Touch
 		FileOutputStream out = new FileOutputStream( tmp );
 		out.write( 'x' );
 		out.close();
-
+		
 		assertFalse( watcher.hasChanged() );
 
 		synchronized( this ){
-    		this.wait( 60 );
+			Thread.sleep( 110 );
 		}
 
 		assertTrue( watcher.hasChanged() );
+
+		synchronized( this ){
+			Thread.sleep( 1100 );
+		}
+
 		assertFalse( watcher.hasChanged() );
 
 		tmp.delete();
-
 		assertFalse( watcher.hasChanged() );
-
+		
 		synchronized( this ){
-    		this.wait( 110 );
+			Thread.sleep( 110 );
 		}
 
 		assertTrue( watcher.hasChanged() );
 		assertFalse( watcher.hasChanged() );
+
 	}
 }
