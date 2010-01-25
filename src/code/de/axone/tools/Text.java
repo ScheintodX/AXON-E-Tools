@@ -1,7 +1,5 @@
 package de.axone.tools;
 
-import static org.testng.Assert.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -10,6 +8,7 @@ import java.util.Map;
 
 public abstract class Text {
 
+	/*
 	public static void main( String [] args ){
 
 		String line = Text.line( 'L', 5 );
@@ -46,6 +45,7 @@ public abstract class Text {
 
 		E.rr( Text.window( 20, 10, "This\nis\na\nSmall Window" ));
 	}
+	*/
 
 	/**
 	 * Makes a one line Banner

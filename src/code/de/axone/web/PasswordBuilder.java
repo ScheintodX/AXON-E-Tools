@@ -3,8 +3,6 @@ package de.axone.web;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 
-import de.axone.tools.E;
-
 public class PasswordBuilder {
 
 	private static final char [] allowedChars = {
@@ -52,11 +50,4 @@ public class PasswordBuilder {
 		return result.toString();
 	}
 	
-	public static void main( String []args ){
-		
-		for( int i = 0;i < 50; i++ ){
-			
-			E.cho( makePasswd( 8 ) );
-		}
-	}
 }

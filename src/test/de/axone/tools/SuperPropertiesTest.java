@@ -10,14 +10,6 @@ import org.testng.annotations.Test;
 @Test( groups="tools.superproperties" )
 public class SuperPropertiesTest {
 
-	@Test( enabled=false )
-	public static void main( String [] args ) throws Exception {
-		new SuperPropertiesTest().testAccess();
-		new SuperPropertiesTest().testTypes();
-		new SuperPropertiesTest().testFiles();
-		new SuperPropertiesTest().testFilesRequired();
-	}
-
 	public void testAccess(){
 
 		SuperProperties p = new SuperProperties();

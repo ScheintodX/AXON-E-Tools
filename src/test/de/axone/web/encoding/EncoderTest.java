@@ -7,14 +7,6 @@ import org.testng.annotations.Test;
 @Test( groups="web.encoder" )
 public class EncoderTest {
 	
-	@Test( enabled = false )
-	public static void main( String [] args ){
-		
-		new EncoderTest().testAmpEncoder();
-		new EncoderTest().testHtmlEncoder();
-		new EncoderTest().testAttributeEncoder();
-	}
-
 	public void testAmpEncoder(){
 		
 		String plain = "&lt;blah &  blub  & blob&gt;";

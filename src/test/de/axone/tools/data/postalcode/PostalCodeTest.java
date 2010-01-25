@@ -12,12 +12,6 @@ import de.axone.data.postalcode.PostalCode_Numeric;
 @Test( groups="tools.postalcode" )
 public class PostalCodeTest {
 	
-	@Test( enabled=false )
-	public static void main( String [] args ){
-		
-		new PostalCodeTest().testPostalCodesDe();
-	}
-
 	public void testPostalCodesDe(){
 
 		PostalCode codeGeneric = PostalCode.instance( Locale.GERMANY );

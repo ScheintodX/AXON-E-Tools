@@ -4,15 +4,9 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
+@Test( groups="tools.regexer" )
 public class RegexerTest {
 	
-	public static void main( String [] args ) throws Exception {
-
-		new RegexerTest().testRegexes();
-		new RegexerTest().testExceptions();
-	}
-
-	@Test( groups="tools.regexer" )
 	public void testRegexes() throws Exception {
 		
 		Regexer regexer = new Regexer( "/foo/bar/" );
@@ -32,7 +26,6 @@ public class RegexerTest {
 		assertEquals( regexer.transform( "deleteme" ), "me" );
 	}
 	
-	@Test( groups="tools.regexer" )
 	public void testExceptions() throws Exception {
 	
 		try{
