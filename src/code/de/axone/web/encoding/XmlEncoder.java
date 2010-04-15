@@ -12,6 +12,12 @@ public class XmlEncoder implements Encoder {
 	
 	private static final Pattern pattern = Pattern.compile( "[<>&]" );
 	
+	protected XmlEncoder(){}
+	private static final XmlEncoder instance = new XmlEncoder();
+	public static XmlEncoder instance(){
+		return instance;
+	}
+	
 	public static String ENCODE( String value ){
 		
 		if( value == null ) return null;

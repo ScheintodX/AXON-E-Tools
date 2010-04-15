@@ -6,4 +6,13 @@ package de.axone.web.encoding;
  * 
  * @author flo
  */
-public class HtmlEncoder extends XmlEncoder {}
+public class HtmlEncoder extends XmlEncoder {
+	
+	private HtmlEncoder(){
+		super();
+	}
+	private static final HtmlEncoder instance = new HtmlEncoder();
+	public static HtmlEncoder instance(){
+		return instance;
+	}
+}

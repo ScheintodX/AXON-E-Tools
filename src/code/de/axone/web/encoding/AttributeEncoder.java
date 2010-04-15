@@ -6,6 +6,12 @@ import java.util.regex.Pattern;
 public class AttributeEncoder implements Encoder{
 	
 	private static final Pattern pattern = Pattern.compile( "[&<>\"']" );
+	
+	protected AttributeEncoder(){}
+	private static final AttributeEncoder instance = new AttributeEncoder();
+	public static AttributeEncoder instance(){
+		return instance;
+	}
 
 	public static String ENCODE( String value ) {
 		

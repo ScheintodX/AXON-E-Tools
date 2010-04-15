@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
  */
 public class Regexer {
 	
-	private String regex;
 	private Pattern pattern;
 	String patternStr;
 	String replacementStr;
@@ -33,8 +32,6 @@ public class Regexer {
 	 * @param regexStr
 	 */
 	public Regexer( String regex ){
-		
-		this.regex = regex;
 		
 		if( regex == null || regex.length() < 3 )
 			throw new RegexArgumentException( regex, "Wrong length or null" );

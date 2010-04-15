@@ -11,7 +11,7 @@ public abstract class LogHelper {
 		
 		int lastPos=0, pos=-1;
 		
-		String message = (String) arguments[ 0 ];
+		String message = arguments[ 0 ].toString();
 		
 		while( ( pos = message.indexOf( '#', lastPos ) ) > 0 ){
 			

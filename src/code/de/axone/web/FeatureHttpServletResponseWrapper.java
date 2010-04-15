@@ -31,12 +31,12 @@ public class FeatureHttpServletResponseWrapper implements HttpServletResponse {
 			setHeader( "Content-Encoding", "gzip" );
 		}
 	}
-	public FeatureHttpServletResponseWrapper( HttpServletResponse resp ) throws IOException{
+	public FeatureHttpServletResponseWrapper( 
+			HttpServletResponse resp ) throws IOException{
 		
 		this( resp, false );
 	}
 	public void finish() throws IOException{
-		
 		if( gOut != null ) gOut.finish();
 	}
 	

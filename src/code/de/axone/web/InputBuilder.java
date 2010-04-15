@@ -4,6 +4,7 @@ import java.util.Map;
 
 import de.axone.tools.Mapper;
 import de.axone.web.encoding.AttributeEncoder;
+import de.axone.web.encoding.XmlEncoder;
 
 public abstract class InputBuilder {
 
@@ -37,5 +38,48 @@ public abstract class InputBuilder {
 		;
 		return result;
 	}
+	
+	public static StringBuilder option( String key, String value, boolean selected ){
+		
+		StringBuilder result = new StringBuilder();
+		
+		result
+			.append( "<option value=\"" )
+			.append( AttributeEncoder.ENCODE( key ) )
+			.append( '"' )
+		;
+		if( selected ){
+			result.append( " selected=\"selected\"" );
+		}
+		result
+			.append( "\">" )
+			.append( XmlEncoder.ENCODE( value ) )
+			.append( "</option>" )
+		;
+		
+		return result;
+	}
 
+	public static StringBuilder radio( String name, String key, String value, boolean selected ){
+		
+		StringBuilder result = new StringBuilder();
+		
+		result
+			.append( "<input type=\"radio\" name=\"" )
+			.append( AttributeEncoder.ENCODE( name ) )
+			.append( "\" value=\"" )
+			.append( AttributeEncoder.ENCODE( key ) )
+			.append( '"' )
+		;
+		if( selected ){
+			result.append( " checked=\"checked\"" );
+		}
+		result
+			.append( '>' )
+			.append( XmlEncoder.ENCODE( value ) )
+			.append( "</input>" )
+		;
+		
+		return result;
+	}
 }

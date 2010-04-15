@@ -15,6 +15,12 @@ public class AmpEncoder implements Encoder {
 	// isnt't included in match
 	private static final Pattern pattern = Pattern.compile( "&(?=\\s+)" );
 	
+	private AmpEncoder(){}
+	private static AmpEncoder instance = new AmpEncoder();
+	public static AmpEncoder instance(){
+		return instance;
+	}
+	
 	public static String ENCODE( String value ) {
 		
 		if( value == null ) return null;

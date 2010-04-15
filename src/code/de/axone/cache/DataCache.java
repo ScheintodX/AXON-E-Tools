@@ -156,15 +156,19 @@ public class DataCache<K,V>{
 		return stats;
 	}
 
-   	public class Stats {
+	public class Stats {
+   		
 		private int accesses, hits;
+		
 		void hit(){
 			accesses++;
 			hits++;
 		}
+		
 		void miss(){
 			accesses++;
 		}
+		
 		@Override
 		public String toString(){
 			StringBuilder result = new StringBuilder();
