@@ -1,6 +1,7 @@
 package de.axone.tools;
 
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Map;
 
 public abstract class E {
@@ -21,6 +22,60 @@ public abstract class E {
     	}
 	}
 	
+	private static String f( String s ){
+		return s;
+	}
+	private static String f( Object o ){
+		if( o instanceof String ) return f( (String)o );
+		else if( o instanceof Collection<?> ) return f( (Collection<?>)o );
+		else if( o instanceof Map<?,?> ) return f( (Map<?,?>) o );
+		else if( o.getClass().isArray() ) return f( (Object[]) o );
+		else return o.toString();
+	}
+	private static String f( Collection<?> l ){
+		StringBuilder r = new StringBuilder();
+		r.append( "(" );
+		boolean first = true;
+		for( Object o : l ){
+			if( first ) first = false;
+			else r.append( ", " );
+			r.append( "'" );
+			r.append( f( o ) );
+			r.append( "'" );
+		}
+		r.append( ")" );
+		return r.toString();
+	}
+	private static String f( Map<?,?> m ){
+		StringBuilder r = new StringBuilder();
+		r.append( "{" );
+		boolean first = true;
+		for( Object key : m.keySet() ){
+			if( first ) first = false;
+			else r.append( ", " );
+			r.append( f( key ) );
+			r.append( "=>" );
+			r.append( f( m.get( key ) ) );
+		}
+		r.append( "}" );
+		return r.toString();
+	}
+	private static String f( Object [] a ){
+		
+		StringBuilder r = new StringBuilder();
+		r.append( "[" );
+		boolean first = true;
+		for( Object o : a ){
+			if( first ) first = false;
+			else r.append( ", " );
+			r.append( "'" );
+			r.append( f( o ) );
+			r.append( "'" );
+		}
+		r.append( "]" );
+		return r.toString();
+	}
+	
 	private static void echo( PrintStream out, boolean nl, Object ... os ){
 		echo( out, 3, nl, os );
 	}
@@ -31,13 +86,20 @@ public abstract class E {
 		StackTraceElement[] elm = e.getStackTrace();
 		
 		if( os.length > 0 ){
+				
+		String clazz = simplifyClassName( elm[depth].getClassName() );
+			int line = elm[depth].getLineNumber();
+    		out.print( ">>> " + clazz + "(" + line + "): " );
+    		if( os.length > 1 ) out.println();
+        		
     		for( Object o : os ){
-    			String clazz = simplifyClassName( elm[depth].getClassName() );
-    			int line = elm[depth].getLineNumber();
-        		out.print( ">>> " + clazz + "(" + line + "): " + o );
-        		if( nl ) out.println();
-        		out.flush();
+    			
+    			if( os.length > 1 ) out.print( '\t' );
+    			out.print( o );
+    			if( os.length > 1 ) out.println();
     		}
+    		if( nl ) out.println();
+    		out.flush();
 		} else {
 			out.println();
 		}
@@ -120,9 +182,17 @@ public abstract class E {
 			this.key = key;
 			this.value = value;
 		}
+		private String key(){
+			if( key == null ) return "NULL";
+			return "'" + key.toString() + "'";
+		}
+		private String value(){
+			if( value == null ) return "NULL";
+			return "\"" + f( value ) + "\"";
+		}
 		@Override
 		public String toString(){
-			return( "'" + key + "' => '" + value + "'" );
+			return( key() + " => " + value() );
 		}
 	}
 }
