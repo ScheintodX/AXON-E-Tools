@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.14.jar"/>
 	<classpathentry kind="lib" path="lib/testng.jar" sourcepath="/home/flo/java/testng-5.11"/>
 	<classpathentry kind="lib" path="lib/servlet-api.jar" sourcepath="C:/Java/apache-tomcat-6.0.18-src/java/javax/servlet/http"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

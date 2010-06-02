@@ -6,52 +6,29 @@ import org.apache.log4j.LogManager;
 
 public abstract class Logging {
 	
-	private static enum LogSystem { LOG4J, CONSOLE; }
-	private static LogSystem current = LogSystem.LOG4J;
+	private static LoggingFactory factory = new Log_Log4J.Factory();
+	
+	public static void setFactory( LoggingFactory factory ){
+		
+		Logging.factory = factory;
+	}
 	
 	public static Log getLog( String name ){
 		
-		Log log;
-		switch( current ){
-		case LOG4J:
-			log = new Log_Log4J( name );
-			break;
-		case CONSOLE:
-    		log = new Log_Stdout( name );
-    		log.setLevel( LogLevel.TRACE );
-			break;
-		default:
-			log = null;
-		}
-		
-		return log;
+		return factory.makeLog( name );
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static Log getLog( Class clazz ){
+	public static Log getLog( Class<?> clazz ){
 		
-		Log log;
-		switch( current ){
-		case LOG4J:
-			log = new Log_Log4J( clazz );
-			break;
-		case CONSOLE:
-    		log = new Log_Stdout( clazz );
-    		log.setLevel( LogLevel.TRACE );
-			break;
-		default:
-			log = null;
-		}
-		
-		return log;
+		return factory.makeLog( clazz );
 	}
 	
 	public static String info(){
 		
 		StringBuilder result = new StringBuilder();
 		
-		switch( current ){
-		case LOG4J:
+		
+		if( factory instanceof Log_Log4J.Factory ){
 			
     		Enumeration<?> cur = LogManager.getCurrentLoggers();
     		while( cur.hasMoreElements() ){
@@ -65,9 +42,11 @@ public abstract class Logging {
     			;
     		}
     		
-			break;
-		case CONSOLE:
-			break;
+		} else {
+			result
+				.append( "Factory: " )
+				.append( factory.getClass() )
+			;
 		}
 		
 		return result.toString();

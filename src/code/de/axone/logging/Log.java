@@ -14,6 +14,7 @@ public interface Log {
 	
 	public LogLevel getLevel();
 	public void setLevel( LogLevel level );
+	public boolean isLevel( LogLevel level );
 	
 	public boolean isTrace();
 	public boolean isDebug();

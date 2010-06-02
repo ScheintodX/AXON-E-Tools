@@ -35,7 +35,7 @@ public class Str {
 
 			builder.append( o.toString() );
 		} else {
-			builder.append( "- null -" );
+			builder.append( STR._NULL_ );
 		}
 
 		return builder;
