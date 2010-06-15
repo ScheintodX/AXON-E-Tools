@@ -2,6 +2,7 @@ package de.axone.tools;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -130,6 +131,11 @@ public class SuperProperties {
 	public void store( Writer writer ) throws IOException {
 		backend.store( writer, null );
 	}
+	public void store( File file ) throws IOException {
+		FileWriter out = new FileWriter( file );
+		backend.store( out, null );
+		out.close();
+	}
 	public void load( File file ) throws IOException {
 		FileReader in = new FileReader( file );
 		try {
@@ -144,6 +150,9 @@ public class SuperProperties {
 	}
 	public void setProperty( String key, String value ) {
 		backend.setProperty( realKey( key ), value );
+	}
+	public void setProperty( String key, int value ) {
+		backend.setProperty( realKey( key ), ""+value );
 	}
 	public String getProperty( String key, String defaultValue ) {
 		return backend.getProperty( realKey( key ), defaultValue );
@@ -285,6 +294,36 @@ public class SuperProperties {
 		return result;
 	}
 
+	public Long getLong( String key ){
+
+		String value = getProperty( key );
+		if( value == null ) return null;
+
+		return Long.valueOf( value );
+	}
+
+	public long getLong( String key, int defaultValue ){
+
+		Long value = getLong( key );
+
+		if( value == null ) return defaultValue;
+
+		return value;
+	}
+
+	public long getLongRequired( String key ) throws PropertiesException {
+
+		String value = getPropertyRequired( key );
+		long result;
+		try {
+			result = Long.parseLong( value );
+		} catch( NumberFormatException e ){
+			throw new PropertyConversationException( key, value, PropertyConversationException.Format.INT );
+		}
+
+		return result;
+	}
+
 	public Boolean getBoolean( String key ){
 
 		String value = getProperty( key );
@@ -359,26 +398,26 @@ public class SuperProperties {
 		private PropertiesException( String cause ){ super( cause ); }
 	}
 
-	private static class PropertyNotFoundException extends PropertiesException {
+	public static class PropertyNotFoundException extends PropertiesException {
 		private PropertyNotFoundException( String propertyName ){
 			super( "Property not found: " + propertyName );
 		}
 	}
 
-	private static class PropertyEmptyException extends PropertiesException {
+	public static class PropertyEmptyException extends PropertiesException {
 		private PropertyEmptyException( String propertyName ){
 			super( "Property is empty: " + propertyName );
 		}
 	}
 
-	private static class PropertyConversationException extends PropertiesException {
+	public static class PropertyConversationException extends PropertiesException {
 		private enum Format {BOOL,INT,FLOAT,DOUBLE};
 		private PropertyConversationException( String propertyName, String value, Format format ){
 			super( "Cannot convert value of " + propertyName + " (" + value + ") to " + format );
 		}
 	}
 
-	private static class PropertyInstantiationException extends PropertiesException {
+	public static class PropertyInstantiationException extends PropertiesException {
 		private PropertyInstantiationException( String propertyName, String value ){
 			super( "Cannot instantiate " + propertyName + ": '" + value + "'" );
 		}
