@@ -85,11 +85,12 @@ public abstract class E {
 		Exception e = new Exception();
 		StackTraceElement[] elm = e.getStackTrace();
 		
-		if( os.length > 0 ){
-				
 		String clazz = simplifyClassName( elm[depth].getClassName() );
-			int line = elm[depth].getLineNumber();
-    		out.print( ">>> " + clazz + "(" + line + "): " );
+		int line = elm[depth].getLineNumber();
+		out.print( ">>> " + clazz + "(" + line + "): " );
+		
+		if( os != null && os.length > 0 ){
+				
     		if( os.length > 1 ) out.println();
         		
     		for( Object o : os ){
@@ -101,7 +102,7 @@ public abstract class E {
     		if( nl ) out.println();
     		out.flush();
 		} else {
-			out.println();
+			out.println( STR._NULL_ );
 		}
 	}
 	

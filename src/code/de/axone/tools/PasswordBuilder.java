@@ -78,13 +78,43 @@ public class PasswordBuilder {
 		return result.toArray( resultArray );
 	}
 	
+	/**
+	 * Make a password.
+	 * 
+	 * humanized, including upper and lower case, numbers and special chars
+	 * 
+	 * @param length
+	 * @return
+	 */
 	public static String makePasswd( int length ){
 		return makePasswd( length, true, true, true, true, true );
 	}
+	
+	/**
+	 * 
+	 * Make a password.
+	 * 
+	 * including upper and lower case, numbers and special chars
+	 * 
+	 * @param length
+	 * @param humanize use only unproblematic characters
+	 * @return
+	 */
 	public static String makePasswd( int length, boolean humanize ){
 		return makePasswd( length, humanize, true, true, true, true );
 	}
 	
+	/**
+	 * Make a password.
+	 * 
+	 * @param length length in chars
+	 * @param humanize use only characters which are unproblematic for humans
+	 * @param includeUpperCase include upper case letters
+	 * @param includeLowerCase include lower case letters
+	 * @param includeNumbers include numbers
+	 * @param includeSpecial include special chars
+	 * @return the generated password
+	 */
 	public static String makePasswd( int length, boolean humanize, boolean includeUpperCase, boolean includeLowerCase, boolean includeNumbers, boolean includeSpecial ){
 		
 		SecureRandom r=null;
