@@ -323,6 +323,36 @@ public class SuperProperties {
 
 		return result;
 	}
+	
+	public Double getDouble( String key ){
+
+		String value = getProperty( key );
+		if( value == null ) return null;
+
+		return Double.valueOf( value );
+	}
+
+	public double getDouble( String key, double defaultValue ){
+
+		Double value = getDouble( key );
+
+		if( value == null ) return defaultValue;
+
+		return value;
+	}
+
+	public double getDoubleRequired( String key ) throws PropertiesException {
+
+		String value = getPropertyRequired( key );
+		double result;
+		try {
+			result = Double.parseDouble( value );
+		} catch( NumberFormatException e ){
+			throw new PropertyConversationException( key, value, PropertyConversationException.Format.DOUBLE );
+		}
+
+		return result;
+	}
 
 	public Boolean getBoolean( String key ){
 
