@@ -1,6 +1,6 @@
 package de.axone.tools;
 
-public interface STR {
+public interface S {
 
 	public static final String _NULL_ = "(-null-)";
 	public static final String NULL = "NULL";

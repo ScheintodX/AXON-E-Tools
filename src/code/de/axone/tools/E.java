@@ -102,7 +102,7 @@ public abstract class E {
     		if( nl ) out.println();
     		out.flush();
 		} else {
-			out.println( STR._NULL_ );
+			out.println( S._NULL_ );
 		}
 	}
 	
