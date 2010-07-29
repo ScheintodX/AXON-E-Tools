@@ -7,4 +7,5 @@ public interface S {
 	public static final String EMPTY = "";
 	public static final String NL = "\n";
 	public static final char nl = '\n';
+	public static final String BR = "<br/>\n";
 }

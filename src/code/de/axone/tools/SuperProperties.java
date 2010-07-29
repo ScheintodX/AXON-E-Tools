@@ -21,12 +21,12 @@ import java.util.Properties;
  *
  * <p>This class is intentionally not subclassed from Properties
  * but a drop in replacement for most of the methods.
- * 
+ *
  * <p>The purpose of this class is to make life more easy.
- * 
+ *
  * <p>SuperProperties are backed by a normal <tt>Properties</tt> class
  * and encasulates access to its methods.
- * 
+ *
  * Main features are: <ul>
  * <li>Usage of a prefix
  * <li>Subsets
@@ -36,21 +36,21 @@ import java.util.Properties;
  * <li>Class creation
  * <li>Lists
  * </ul>
- * 
+ *
  * <h5>Prefixes</h5>
  * <p>Prefixes are prepended to the properties key and are set at class
  * creation time. Subsets prepend additional prefixes.
  * E.g. <tt>new SuperProperties().supset( "one" ).subset( "two" )</tt>
  * will prefix all keys in the new class with <tt>"one.two."</tt>.
  * In following if key is used it will be allways prefixed.
- * 
+ *
  * <h5>Accessors</h5>
  * <p> Accessors are in multiple versions:<ul>
  * <li><tt>getXyz( key : String )</tt> returns <tt>null</tt> if missing.
  * <li><tt>getXyz( key : String, default : String )</tt> returns <em>default</em> if missing.
  * <li><tt>getXyzRequired( key : String )</tt> throws <em>Exception</em> if missing.
  * </ul>
- * 
+ *
  * <h5>Class creation</h5>
  * <p>Classes can be directly created and eventually configured if they confirm
  * to the class syntax used by <tt>ClassConfigurator</tt><ul>
@@ -63,7 +63,7 @@ import java.util.Properties;
  * @author flo
  */
 public class SuperProperties {
-	
+
 	private final Properties backend;
 	private final String prefix;
 	private File rootDir;
@@ -77,7 +77,7 @@ public class SuperProperties {
 
 	/**
 	 * Create Super Properties using backend as properties
-	 * 
+	 *
 	 * @param backend
 	 */
 	private SuperProperties(Properties backend) {
@@ -86,7 +86,7 @@ public class SuperProperties {
 
 	/**
 	 * Create Super properties using backend, prefix and root-dir
-	 * 
+	 *
 	 * @param prefix
 	 * @param backend
 	 * @param rootDir
@@ -96,7 +96,7 @@ public class SuperProperties {
 		this.prefix = prefix;
 		this.rootDir = rootDir;
 	}
-	
+
 	public String getPrefix(){
 		return prefix;
 	}
@@ -174,13 +174,13 @@ public class SuperProperties {
 		ClassConfigurator confi = new ClassConfigurator();
 		return confi.create( className );
 	}
-	
+
 	public Object instantiateRequired( String key ) throws SecurityException,
 			IllegalArgumentException, ClassNotFoundException,
 			InstantiationException, IllegalAccessException,
 			NoSuchMethodException, InvocationTargetException,
 			PropertyInstantiationException {
-		
+
 		Object result = instantiate( key );
 		if( result == null )
 			throw new PropertyInstantiationException( key, getProperty( key ) );
@@ -323,7 +323,7 @@ public class SuperProperties {
 
 		return result;
 	}
-	
+
 	public Double getDouble( String key ){
 
 		String value = getProperty( key );

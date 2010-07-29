@@ -267,6 +267,9 @@ public abstract class Text {
 	public static String line( char c, int width ){
 		return lineB( c, width).toString();
 	}
+	public static String line( int width ){
+		return lineB( '-', width).toString();
+	}
 
 	/**
 	 * Returns the text surrounded by the given char.
