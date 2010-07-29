@@ -5,7 +5,7 @@ import org.apache.log4j.Level;
 public class Log_Log4J extends AbstractLog {
 
 	private org.apache.log4j.Logger log;
-	private static final String FQCN = Log_Log4J.class.getName();
+	private static final String FQCN = AbstractLog.class.getName();
 
 	@SuppressWarnings( "unchecked" )
 	Log_Log4J( Class clazz ) {
@@ -17,7 +17,7 @@ public class Log_Log4J extends AbstractLog {
 	}
 
 	private void log( Level level, Object ... arguments ) {
-
+		
 		Throwable t = null;
 		for( Object o : arguments ) {
 			if( o instanceof Throwable ) {
@@ -25,12 +25,14 @@ public class Log_Log4J extends AbstractLog {
 				break;
 			}
 		}
-
+		
 		log.log(FQCN, level, LogHelper.parse(arguments), t);
 	}
 
 	@Override
 	public void log( LogLevel level, Object ... o ) {
+
+		if( Logging.isSuspended() ) return;
 
 		switch( level ) {
 		case DEBUG:
@@ -98,6 +100,31 @@ public class Log_Log4J extends AbstractLog {
 			log.setLevel(Level.WARN);
 			break;
 		}
+	}
+
+	@Override
+	public boolean isLevel( LogLevel level ) {
+		
+		// Suspension will cause this method to return false
+		// in all cases so no expensive calculation is done
+		// while it isn't logged at all.
+		if( Logging.isSuspended() ) return false;
+		
+		switch( level ) {
+		case DEBUG:
+			return log.isDebugEnabled();
+		case ERROR:
+			return true;
+		case FATAL:
+			return true;
+		case INFO:
+			return log.isInfoEnabled();
+		case TRACE:
+			return log.isTraceEnabled();
+		case WARN:
+			return true;
+		}
+		return true; // Fuer alle Faelle
 	}
 
 	@Override

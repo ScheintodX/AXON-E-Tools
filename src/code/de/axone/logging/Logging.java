@@ -6,7 +6,10 @@ import org.apache.log4j.LogManager;
 
 public abstract class Logging {
 	
+	private static boolean suspended=false;
+	
 	private static LoggingFactory factory = new Log_Log4J.Factory();
+	//private static LoggingFactory factory = new Log_Stdout.Factory();
 	
 	public static void setFactory( LoggingFactory factory ){
 		
@@ -26,7 +29,6 @@ public abstract class Logging {
 	public static String info(){
 		
 		StringBuilder result = new StringBuilder();
-		
 		
 		if( factory instanceof Log_Log4J.Factory ){
 			
@@ -52,4 +54,13 @@ public abstract class Logging {
 		return result.toString();
 	}
 	
+	public static void shutup(){
+		suspended=true;
+	}
+	public static void resume(){
+		suspended=false;
+	}
+	public static boolean isSuspended(){
+		return suspended;
+	}
 }

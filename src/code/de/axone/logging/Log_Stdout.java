@@ -4,6 +4,23 @@ public class Log_Stdout extends AbstractLog {
 
 	private static final LogLevel DEFAULT_LOG_LEVEL = LogLevel.INFO;
 
+	private LogLevel level = LogLevel.INFO;
+
+	@Override
+	public LogLevel getLevel() {
+		return level;
+	}
+	
+	@Override
+	public void setLevel( LogLevel level ) {
+		this.level = level;
+		
+	}
+	@Override
+	public boolean isLevel( LogLevel level ){
+		return getLevel().ordinal() >= level.ordinal();
+	}
+
 	private String fqcn;
 
 	@SuppressWarnings( "unchecked" )
@@ -17,6 +34,8 @@ public class Log_Stdout extends AbstractLog {
 	}
 
 	public void log( LogLevel level, Object ... arguments ) {
+		
+		if( Logging.isSuspended() ) return;
 
 		System.err.print(level + " " + signature() + ": ");
 
