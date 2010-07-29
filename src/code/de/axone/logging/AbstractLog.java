@@ -2,22 +2,6 @@ package de.axone.logging;
 
 public abstract class AbstractLog implements Log {
 	
-	private LogLevel level = LogLevel.INFO;
-
-	@Override
-	public LogLevel getLevel() {
-		return level;
-	}
-	@Override
-	public void setLevel( LogLevel level ) {
-		this.level = level;
-		
-	}
-	@Override
-	public boolean isLevel( LogLevel level ){
-		return getLevel().ordinal() >= level.ordinal();
-	}
-
 	@Override
 	public void trace( Object ... o ) {
 		log( LogLevel.TRACE, o );
@@ -44,8 +28,20 @@ public abstract class AbstractLog implements Log {
 	}
 	
 	@Override
+	public boolean isTrace() {
+		return isLevel( LogLevel.TRACE );
+	}
+	@Override
 	public boolean isDebug() {
 		return isLevel( LogLevel.DEBUG );
+	}
+	@Override
+	public boolean isInfo() {
+		return isLevel( LogLevel.INFO );
+	}
+	@Override
+	public boolean isWarn() {
+		return isLevel( LogLevel.WARN );
 	}
 	@Override
 	public boolean isError() {
@@ -54,18 +50,6 @@ public abstract class AbstractLog implements Log {
 	@Override
 	public boolean isFatal() {
 		return isLevel( LogLevel.FATAL );
-	}
-	@Override
-	public boolean isInfo() {
-		return isLevel( LogLevel.INFO );
-	}
-	@Override
-	public boolean isTrace() {
-		return isLevel( LogLevel.TRACE );
-	}
-	@Override
-	public boolean isWarn() {
-		return isLevel( LogLevel.WARN );
 	}
 
 }

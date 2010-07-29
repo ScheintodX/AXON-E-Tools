@@ -335,6 +335,8 @@ public class SuperURL {
 			
 			if( parseMe.startsWith( "/" ) ) parseMe = parseMe.substring( 1 );
 			
+			if( parseMe.length() == 0 ) return; // empty path. only domain
+			
 			String[] parts = parseMe.split( "/" );
 			
 			path.addAll( Arrays.asList( parts ) );
