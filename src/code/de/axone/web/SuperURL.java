@@ -35,7 +35,7 @@ import de.axone.tools.Str;
  * 
  * More for URLs: RFC 2396
  * 
- * @see RFC 2396
+ * see <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>
  * @author flo
  */
 public class SuperURL {

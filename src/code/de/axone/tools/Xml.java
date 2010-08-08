@@ -6,7 +6,7 @@ public abstract class Xml {
 	 * Encode string using xml entities
 	 *
 	 * @param xml
-	 * @return
+	 * @return the encoded text
 	 * @deprecated Use HtmlEncoder
 	 */
 	@Deprecated
@@ -24,7 +24,7 @@ public abstract class Xml {
 	 * Encode string using xml entities
 	 *
 	 * @param xml
-	 * @return
+	 * @return the encoded text
 	 * @deprecated Use HtmlEncoder
 	 */
 	@Deprecated

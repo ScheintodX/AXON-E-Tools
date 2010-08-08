@@ -31,7 +31,7 @@ public class FileWatcher {
 	 * timeout.
 	 *
 	 * @param file to watch
-	 * @param which has to pass until a new check is done
+	 * @param timeout which has to pass until a new check is done
 	 */
 	public FileWatcher( File file, double timeout ){
 

@@ -15,9 +15,9 @@ public class RequestUtil {
 	 * Example: Request parameter is <tt>item-123=test</tt>.
 	 * <tt>getNameParameter( request, "item" )</tt> will return <tt>123</tt>
 	 *
-	 * @param request
-	 * @param key.
-	 * @return
+	 * @param request The Request we're looking at
+	 * @param key to look for
+	 * @return the parameter's value
 	 */
 	public static String getNameParameter( HttpServletRequest request, String key ){
 

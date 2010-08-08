@@ -30,7 +30,7 @@ public class Encodings {
 	 * it to an usable String.
 	 * 
 	 * @param string
-	 * @return
+	 * @return the converted string
 	 * @throws IOException 
 	 */
 	public static String convertToUsableString( String string ) throws IOException{

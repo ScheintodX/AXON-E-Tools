@@ -51,7 +51,6 @@ public class ClassConfigurator {
 	 * initialized by these parameters
 	 * 
 	 * @param description
-	 * @return
 	 * @throws ClassNotFoundException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
@@ -59,6 +58,7 @@ public class ClassConfigurator {
 	 * @throws SecurityException
 	 * @throws InvocationTargetException
 	 * @throws IllegalArgumentException
+	 * @return the created object
 	 */
 	@SuppressWarnings("unchecked")
 	public Object create(String description) throws ClassNotFoundException,

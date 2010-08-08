@@ -29,7 +29,7 @@ public class Regexer {
 	 * expressions themselves. So for a valid expression it must
 	 * occure exactly 3 times.
 	 * 
-	 * @param regexStr
+	 * @param regex to initialize the Regexer with
 	 */
 	public Regexer( String regex ){
 		
@@ -57,7 +57,7 @@ public class Regexer {
 	 * Transform the original String using the reges
 	 * 
 	 * @param original
-	 * @return
+	 * @return the transformed string
 	 */
 	public String transform( String original ){
 		

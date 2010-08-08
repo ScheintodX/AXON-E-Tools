@@ -7,6 +7,8 @@ import java.util.LinkedList;
 
 public class UrlParser {
 
+	private boolean startsWithSlash;
+	private boolean endsWithSlash;
 	private ArrayList<String> path;
 	
 	public UrlParser( File file, int trim ){
@@ -21,23 +23,38 @@ public class UrlParser {
 	
 	private void init( String path, int trim ){
 		
+		path = path.trim();
+		int len = path.length();
+		
+		if( len > 0 && path.charAt( 0 ) == '/' ){
+			startsWithSlash = true;
+		}
+		if( len > 0 && path.charAt( len-1 ) == '/' ){
+			endsWithSlash = true;
+		}
+		
+		if( startsWithSlash ){
+			path = path.substring( 1 );
+			len--;
+		}
+		if( endsWithSlash && len > 0 ){
+			path = path.substring( 0, path.length()-1 );
+			//len--;
+		}
+		
 		String[] parts = path.split( "/" );
 
 		LinkedList<String> myPath = new LinkedList<String>();
-
-		int i = -1;
+		
 		for( String part : parts ) {
 
-			i++;
-
 			part = part.trim();
-
-			if( ( i == 0 || i == parts.length - 1 ) && part.length() == 0 )
-				continue;
-
 			myPath.addLast( part );
-			
-			i++;
+		}
+		
+		if( myPath.size() == 1 ){
+			String part = myPath.get( 0 );
+			if( part.length() == 0 ) myPath.remove( 0 );
 		}
 		
 		if( trim > 0 ){
@@ -188,5 +205,11 @@ public class UrlParser {
 		return null;
 	}
 
+	public boolean startsWithSlash(){
+		return startsWithSlash;
+	}
+	public boolean endsWithSlash(){
+		return endsWithSlash;
+	}
 	
 }

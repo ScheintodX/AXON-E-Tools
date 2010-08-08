@@ -84,7 +84,7 @@ public class PasswordBuilder {
 	 * humanized, including upper and lower case, numbers and special chars
 	 * 
 	 * @param length
-	 * @return
+	 * @return the generated password
 	 */
 	public static String makePasswd( int length ){
 		return makePasswd( length, true, true, true, true, true );
@@ -98,7 +98,7 @@ public class PasswordBuilder {
 	 * 
 	 * @param length
 	 * @param humanize use only unproblematic characters
-	 * @return
+	 * @return the generated password
 	 */
 	public static String makePasswd( int length, boolean humanize ){
 		return makePasswd( length, humanize, true, true, true, true );
