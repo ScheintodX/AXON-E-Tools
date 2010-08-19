@@ -59,7 +59,7 @@ public class HttpWatcher {
 	 * Create a HttpWatcher for one url with the given
 	 * timeout.
 	 *
-	 * @param file to watch
+	 * @param url to watch
 	 * @param minTimeout which has to pass until a new check is done
 	 */
 	public HttpWatcher( URL url, long minTimeout ){
@@ -71,7 +71,7 @@ public class HttpWatcher {
 	/**
 	 * Create a HttpWatcher with a default timeout of 2s
 	 *
-	 * @param file
+	 * @param url to watch
 	 */
 	public HttpWatcher( URL url ){
 
@@ -84,10 +84,11 @@ public class HttpWatcher {
 		
 		long div = time - lastCheckTime;
 		
-		E.rr( div );
 		
 		HttpUtilResponse result = null;
 			
+		E.rr( div + " >=" + timeout );
+		
 		// See if timeout has passed to do a recheck
 		if( div >= timeout || timeout < 0 ){
 			
