@@ -6,7 +6,10 @@ import de.axone.web.encoding.XmlEncoder;
 
 public abstract class Tag {
 
-	public static StringBuilder simpleBB( StringBuilder builder, String name, String content, String ...args ){
+	public static StringBuilder simpleBB( StringBuilder builder, String name, String content, String ...args){
+		return simpleBB( builder, name, content, true, args );
+	}
+	public static StringBuilder simpleBB( StringBuilder builder, String name, String content, boolean encodeContent , String ...args){
 
 		if( args.length % 2 != 0 )
 			throw new IndexOutOfBoundsException( "Wrong argument count. format is: NAME AT1 VAL1 ... CONTENT" );
@@ -33,7 +36,7 @@ public abstract class Tag {
 		} else {
 			builder
 				.append( ">" )
-    			.append( XmlEncoder.ENCODE( content ) )
+    			.append( encodeContent ? XmlEncoder.ENCODE( content ) : content )
     			.append( "</" )
     			.append( name )
     			.append( ">" )
@@ -44,9 +47,12 @@ public abstract class Tag {
 	}
 
 	public static String simple( String name, String content, String ... args ){
-
 		return simpleBB( new StringBuilder(), name, content, args ).toString();
 	}
+	public static String simple( String name, String content, boolean encodeContenet, String ... args ){
+		return simpleBB( new StringBuilder(), name, content, encodeContenet, args ).toString();
+	}
+	
 	public static String hiddenInput( String name, String value ){
 
 		String [] parameters = new String[]{ "type", "hidden", "name", name, "value", value };

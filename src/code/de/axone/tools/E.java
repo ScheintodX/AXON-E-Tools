@@ -153,10 +153,10 @@ public abstract class E {
 		
 		if( code == 0 ){
 			text.append( "OK" );
-    		echo( System.out, 4, true, text.toString() );
+    		echo( System.out, 3, true, text.toString() );
 		} else {
 			text.append( code );
-    		echo( System.err, 4, true, text.toString() );
+    		echo( System.err, 3, true, text.toString() );
 		}
 		System.exit( code );
 	}
