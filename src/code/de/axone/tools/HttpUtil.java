@@ -43,6 +43,25 @@ public class HttpUtil {
 			;
 		}
 	}
+	
+	private static String printHttpInfo( HttpGet httpget, HttpResponse response ){
+		
+		StringBuilder result = new StringBuilder();
+		
+		result.append( "HTTP-INFO\n\n" );
+		result.append( "Request: " );
+		result.append( httpget.getURI().toString() + "\n" );
+		for( Header header: httpget.getAllHeaders() ){
+			result.append( "  " + header.getName() + ": " + header.getValue() + "\n" );
+		}
+		result.append( "Response: " );
+		result.append( response.getStatusLine() + "\n" );
+		for( Header header: response.getAllHeaders() ){
+			result.append( "  " + header.getName() + ": " + header.getValue() + "\n" );
+		}
+		
+		return result.toString();
+	}
 
 	public static HttpUtilResponse request( URL url, String eTag, String lastModified ) throws URISyntaxException, ClientProtocolException, IOException{
 		
@@ -55,12 +74,9 @@ public class HttpUtil {
 		if( lastModified != null ){
 			httpget.setHeader( "If-Modified-Since", lastModified );
 		}
-		E.rr( (Object[])httpget.getAllHeaders() );
 		
 		HttpResponse response = client.execute( httpget );
-		
-		E.rr( response.getStatusLine() );
-		E.rr( (Object[]) response.getAllHeaders() );
+		E.poster( printHttpInfo( httpget, response ) );
 		
 		HttpUtilResponse uResponse = new HttpUtilResponse();
 		uResponse.code = response.getStatusLine().getStatusCode();
@@ -79,14 +95,10 @@ public class HttpUtil {
 				uResponse.lastModified = lastModifieds[ lastModifieds.length-1 ].getValue();
 			}
 			
-			Header [] cacheControls = response.getHeaders( "Cache-Control" );
-			String cacheControl = null;
-			if( cacheControls != null && cacheControls.length > 0 ){
-				cacheControl = cacheControls[ cacheControls.length - 1 ].getValue();
-			}
+			Header cacheControl = response.getLastHeader( "Cache-Control" );
 			if( cacheControl != null ){
 				Pattern pattern = Pattern.compile( "max-age=([0-9]+)" );
-				Matcher matcher = pattern.matcher( cacheControl );
+				Matcher matcher = pattern.matcher( cacheControl.getValue() );
 				if( matcher.find() ){
 					String maxAgeGroup = matcher.group();
 					String maxAgeString = maxAgeGroup.substring( maxAgeGroup.indexOf( '=' )+1 );
@@ -94,13 +106,19 @@ public class HttpUtil {
 				}
 			}
 			
+			Header contentType = response.getLastHeader( "Content-Type" );
+			if( contentType != null ){
+				
+				Pattern pattern = Pattern.compile( ".*; charset=(.+)" );
+				Matcher matcher = pattern.matcher( contentType.getValue() );
+				if( matcher.find() ){
+					String found = matcher.group();
+					// TODO: Regexe studieren. Das geht auch über die Klammern.
+					uResponse.encoding = found.substring( found.indexOf( "=" )+1 );
+				}
+			}
 			
 			HttpEntity entity = response.getEntity();
-			
-			Header encodingHeader = entity.getContentEncoding();
-			if( encodingHeader != null ){
-				uResponse.encoding = encodingHeader.getValue();
-			}
 			
 			InputStream in = entity.getContent();
 			byte [] content = Slurper.slurp( in );

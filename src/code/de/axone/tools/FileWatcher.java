@@ -72,7 +72,12 @@ public class FileWatcher {
     		
     		if( lastModifiedTime < modifiedTime ){
     			
-    			log.info( String.format( "File %s has changed (%d<%d)", file.getAbsolutePath(), (int)(lastModifiedTime/1000), (int)(modifiedTime/1000) ) );
+    			if( log.isDebug() ) log.debug(
+    					String.format( "File %s has changed (%d<%d)",
+    							file.getAbsolutePath(),
+    							(int)(lastModifiedTime/1000),
+    							(int)(modifiedTime/1000) )
+    			);
 
     			result = true;
 

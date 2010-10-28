@@ -42,19 +42,6 @@ public class HttpWatcher {
 
 	private long timeout = -1;
 	
-	public static void main( String [] args ) throws Exception {
-		
-		HttpWatcher w = new HttpWatcher( new URL( "http://img0.gmodules.com/ig/images/igoogle_logo_sm.gif" ), 0 );
-		
-		for( int i = 0; i < 200; i++ ){
-			E.rr( w.hasChanged() != null );
-			try {
-				Thread.sleep( 100 );
-			} catch( InterruptedException e ){}
-		}
-	}
-	
-
 	/**
 	 * Create a HttpWatcher for one url with the given
 	 * timeout.
@@ -84,10 +71,7 @@ public class HttpWatcher {
 		
 		long div = time - lastCheckTime;
 		
-		
 		HttpUtilResponse result = null;
-			
-		E.rr( div + " >=" + timeout );
 		
 		// See if timeout has passed to do a recheck
 		if( div >= timeout || timeout < 0 ){
@@ -96,22 +80,22 @@ public class HttpWatcher {
 			
 			try {
 				
-				log.trace( "Check for: " + url + "(" + eTag + ")" );
+				if( log.isTrace() ) log.trace( "Check for: " + url + "(" + eTag + ")" );
 				
 				HttpUtilResponse response = HttpUtil.request( url, eTag, lastModified );
+				
+				log.trace( response );
 		
-				E.rr( "a" );
-			
 				if( response.code == 200 ){
 					eTag = response.eTag;
 					lastModified = response.lastModified;
-					E.rr( eTag );
+					
 					long maxAgeMs = response.maxAge * 1000;
 					maxAgeMs = ( maxAgeMs > minTimeout ? maxAgeMs : minTimeout );
 					maxAgeMs = ( maxAgeMs < MAX_TIMEOUT ? maxAgeMs : MAX_TIMEOUT );
-					E.rr( maxAgeMs/1000 + "s" );
+					
 					timeout = maxAgeMs;
-					E.rr( timeout/1000 );
+					
 					result = response;
 				}
 			} catch( Exception e ){

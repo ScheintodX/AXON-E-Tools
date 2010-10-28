@@ -115,6 +115,14 @@ public abstract class E {
 		echo( out, 3, true, (Object[])pairs );
 	}
 	
+	public static void banner( String text ){
+		echo( System.out, 4, true, Text.banner( text.charAt( 0 ), text ) );
+	}
+	
+	public static void poster( String text ){
+		echo( System.out, 4, true, Text.poster( text.charAt( 0 ), text ) );
+	}
+	
 	public static void rr( Object ... os ){
 		
 		echo( System.err, true, os );

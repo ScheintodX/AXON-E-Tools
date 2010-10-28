@@ -14,9 +14,11 @@ public class HttpLinkBuilder {
 		return makeLink( request, null );
 	}
 	
-	public static String makeLink( HttpServletRequest request, boolean noHost, Map<String,String> replaceParameter ) {
+	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath, Map<String,String> replaceParameter ) {
 		
 		SuperURL url = new SuperURL( request, noHost );
+		
+		if( noPath ) url.setPath( null );
 		
 		if( replaceParameter != null ) for( String key : replaceParameter.keySet() ){
 			

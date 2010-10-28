@@ -26,7 +26,7 @@ public class Encodings {
 	}
 	
 	/**
-	 * Take one string wich my be wrongly encoded and convert
+	 * Take one string which my be wrongly encoded and convert
 	 * it to an usable String.
 	 * 
 	 * @param string
@@ -34,7 +34,6 @@ public class Encodings {
 	 * @throws IOException 
 	 */
 	public static String convertToUsableString( String string ) throws IOException{
-		
 		
 		if( isWrongEncodedUtf8( string ) ){
 			

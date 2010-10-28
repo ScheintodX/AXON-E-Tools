@@ -10,11 +10,11 @@ public class PathParser {
 		
 		SuperURL.Path path = url.getPath();
 		
-		for( int i = 0; i < args.length && i < path.getLength(); i++ ){
+		for( int i = 0; i < args.length && i < path.length(); i++ ){
 			
 			values.put(
 				args[ i ],
-    			path.getPart( i )
+    			path.get( i )
 			);
 		}
 		

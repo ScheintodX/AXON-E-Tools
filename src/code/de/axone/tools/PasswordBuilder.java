@@ -94,14 +94,14 @@ public class PasswordBuilder {
 	 * 
 	 * Make a password.
 	 * 
-	 * including upper and lower case, numbers and special chars
+	 * including upper and lower case, numbers and no special chars
 	 * 
 	 * @param length
 	 * @param humanize use only unproblematic characters
 	 * @return the generated password
 	 */
 	public static String makePasswd( int length, boolean humanize ){
-		return makePasswd( length, humanize, true, true, true, true );
+		return makePasswd( length, humanize, true, true, true, false );
 	}
 	
 	/**

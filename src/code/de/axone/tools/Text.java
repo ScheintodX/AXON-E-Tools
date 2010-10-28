@@ -8,45 +8,6 @@ import java.util.Map;
 
 public abstract class Text {
 
-	/*
-	public static void main( String [] args ){
-
-		String line = Text.line( 'L', 5 );
-		E.rr( line );
-		assertEquals( line, "LLLLL" );
-
-		String fixed = Text.fixedWidthLine( 6, "FIX", true );
-		E.rr( fixed );
-		assertEquals( fixed, "FIX   " );
-		fixed = Text.fixedWidthLine( 6, "FIX ME FAST", false );
-		E.rr( fixed );
-		assertEquals( fixed, "FIX ME FAST" );
-		fixed = Text.fixedWidthLine( 6, "FIX ME FAST", true );
-		E.rr( fixed );
-		assertEquals( fixed, "FIX ME" );
-
-		String limited = Text.limitedText( 'Z', "LIMIT" );
-		E.rr( limited );
-		assertEquals( limited, "Z LIMIT Z" );
-
-		String fili = Text.limitedFixedLine( 'Y', 7, "F", true );
-		E.rr( fili );
-		assertEquals( fili, "Y F   Y" );
-		fili = Text.limitedFixedLine( 'Y', 7, "FIX ME", false );
-		E.rr( fili );
-		assertEquals( fili, "Y FIX ME Y" );
-		fili = Text.limitedFixedLine( 'Y', 7, "FIX ME", true );
-		E.rr( fili );
-		assertEquals( fili, "Y FIX Y" );
-
-		E.rr( Text.banner( 'B', 50, "Ich bin ein Banner 50" ) );
-		E.rr( Text.label( 'L', "Ich bin ein Label" ) );
-		E.rr( Text.poster( 'O', "Ich bin ein\nvielzeiliges\nPoster\n" ) );
-
-		E.rr( Text.window( 20, 10, "This\nis\na\nSmall Window" ));
-	}
-	*/
-
 	/**
 	 * Makes a one line Banner
 	 *
@@ -399,16 +360,24 @@ public abstract class Text {
 	 * @return the indended line with the passed thru string builder
 	 */
 	public static StringBuilder indentBB( StringBuilder builder, int indent ){
-
-		for( int i = 0; i < indent; i++ ) builder.append( ' ' );
+		return indentBB( builder, indent, ' ' );
+	}
+	public static StringBuilder indentBB( StringBuilder builder, int indent, char c ){
+		for( int i = 0; i < indent; i++ ) builder.append( c );
 		return builder;
 	}
 	public static StringBuilder indentB( int indent ){
+		return indentB( indent, ' ' );
+	}
+	public static StringBuilder indentB( int indent, char c ){
 		StringBuilder result = new StringBuilder( indent );
-		return indentBB( result, indent );
+		return indentBB( result, indent, c );
 	}
 	public static String indent( int indent ){
-		return indentB( indent ).toString();
+		return indent( indent, ' ' );
+	}
+	public static String indent( int indent, char c ){
+		return indentB( indent, c ).toString();
 	}
 
 	public static String arrayHex( byte[] data ){

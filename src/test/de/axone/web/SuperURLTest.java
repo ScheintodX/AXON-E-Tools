@@ -1,10 +1,6 @@
 package de.axone.web;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
@@ -51,14 +47,14 @@ public class SuperURLTest {
 		pathStr = "/dir1/dir2/file.ext";
 		path = new SuperURL.Path( pathStr );
 		
-		assertEquals( path.getLength(), 3 );
+		assertEquals( path.length(), 3 );
 		assertEquals( path.getFirst(), "dir1" );
 		assertEquals( path.getLast(), "file.ext" );
 		assertEquals( path.getExtension(), "ext" );
 		assertEquals( path.getLastWithoutExtension(), "file" );
-		assertEquals( path.getPart( 0 ), "dir1" );
-		assertEquals( path.getPart( 1 ), "dir2" );
-		assertEquals( path.getPart( 2 ), "file.ext" );
+		assertEquals( path.get( 0 ), "dir1" );
+		assertEquals( path.get( 1 ), "dir2" );
+		assertEquals( path.get( 2 ), "file.ext" );
 		assertFalse( path.isEndsWithSlash() );
 		assertEquals( path.toString(), pathStr );
 		
@@ -76,6 +72,26 @@ public class SuperURLTest {
 		path.removeLast();
 		assertEquals( path.toString(), "/dir2" );
 		
+	}
+	
+	// Tests only important types
+	public void testMimeTypes() throws Exception {
+		
+		assertEquals( new SuperURL.Path( "index.Xhtml" ).getMimeType(), "text/html" );
+		assertEquals( new SuperURL.Path( "index.hTml" ).getMimeType(), "text/html" );
+		assertEquals( new SuperURL.Path( "img.jpg" ).getMimeType(), "image/jpeg" );
+		assertEquals( new SuperURL.Path( "img.jpEg" ).getMimeType(), "image/jpeg" );
+		assertEquals( new SuperURL.Path( "img.giF" ).getMimeType(), "image/gif" );
+		assertEquals( new SuperURL.Path( "file.CSS" ).getMimeType(), "text/css" );
+	}
+	
+	// Compare results to those of the URLParser in order to
+	// be able to interchange them seamlessly
+	public void testCompareToURLParser() throws Exception {
+	}
+	
+	// Test slicing
+	public void testSlice() throws Exception {
 	}
 	
 	public void testQuery() throws Exception {

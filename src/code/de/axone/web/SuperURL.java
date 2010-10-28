@@ -1,17 +1,23 @@
 package de.axone.web;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import de.axone.logging.Log;
+import de.axone.logging.Logging;
 import de.axone.tools.Str;
 
 
@@ -38,7 +44,9 @@ import de.axone.tools.Str;
  * see <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>
  * @author flo
  */
-public class SuperURL {
+public final class SuperURL {
+	
+	private static final Log log = Logging.getLog( SuperURL.class );
 	
 	private String scheme;
 	private UserInfo userInfo;
@@ -98,12 +106,16 @@ public class SuperURL {
 				}
 				
 				String name = (String)names.nextElement();
-				String[] values = request.getParameterValues( name );
+				String[] values = request.getParameterValues( name ); // Buggy
+				String value = request.getParameter( name );
 				
-				for( String value : values ){
-					
-					query.addValue( name, value );
+				// Warn because of bug
+				if( values.length > 1 ){
+					log.warn( "More than one parameter for: " + name + " But only one used:" + value );
 				}
+				
+				// Default behaviour: bug-free
+				query.addValue( name, value );
 				
 			}
 			
@@ -324,16 +336,25 @@ public class SuperURL {
     	}
 	}
 	
-	public static class Path {
+	public static class Path implements Iterable<String> {
 		
 		private LinkedList<String> path = new LinkedList<String>();
 		private boolean endsWithSlash;
+		private boolean startsWithSlash;
+		
+		public Path( LinkedList<String> path, boolean endsWithSlash ){
+			this.path = path;
+			this.endsWithSlash = endsWithSlash;
+		}
 		
 		public Path( String parseMe ){
 			
 			if( parseMe.endsWith( "/" ) ) endsWithSlash = true;
 			
-			if( parseMe.startsWith( "/" ) ) parseMe = parseMe.substring( 1 );
+			if( parseMe.startsWith( "/" ) ){
+				startsWithSlash = true;
+				parseMe = parseMe.substring( 1 );
+			}
 			
 			if( parseMe.length() == 0 ) return; // empty path. only domain
 			
@@ -342,11 +363,11 @@ public class SuperURL {
 			path.addAll( Arrays.asList( parts ) );
 		}
 		
-		public int getLength(){
+		public int length(){
 			return path.size();
 		}
 		
-		public String getPart( int index ){
+		public String get( int index ){
 			return path.get( index );
 		}
 		
@@ -355,6 +376,13 @@ public class SuperURL {
 		}
 		public void setEndsWithSlash( boolean isDir ){
 			endsWithSlash = isDir;
+		}
+		
+		public boolean isStartsWithSlash(){
+			return startsWithSlash;
+		}
+		public void setStartsWithSlash( boolean isDir ){
+			startsWithSlash = isDir;
 		}
 		
 		public String getLast(){
@@ -386,6 +414,12 @@ public class SuperURL {
 		public void removeFirst(){
 			if( path != null && path.size() > 0 ) path.removeFirst();
 		}
+		public void append( Path path ){
+			for( String part : path.path ){
+				addLast( part );
+			}
+			endsWithSlash = path.isEndsWithSlash();
+		}
 		
 		public String getExtension(){
 			String lastPart = getLast();
@@ -397,6 +431,7 @@ public class SuperURL {
 			}
 			return null;
 		}
+		
 		public String getLastWithoutExtension(){
 			
 			String lastPart = getLast();
@@ -409,6 +444,68 @@ public class SuperURL {
 			return null;
 		}
 		
+		public String getMimeType(){
+			
+			if( endsWithSlash ){
+				return "text/directory";
+			}
+			
+			String extension = getExtension();
+			if( extension != null ) {
+				/* Images */
+				if( extension.equalsIgnoreCase( "jpg" )
+						|| extension.equalsIgnoreCase( "jpeg" ) ) {
+	
+					return "image/jpeg";
+				} else if( extension.equalsIgnoreCase( "png" ) ) {
+					return "image/png";
+				} else if( extension.equalsIgnoreCase( "gif" ) ) {
+					return "image/gif";
+					/* css/js */
+				} else if( extension.equalsIgnoreCase( "css" ) ) {
+					return "text/css";
+				} else if( extension.equalsIgnoreCase( "js" ) ) {
+					return "text/javascript";
+					/* html */
+				} else if( extension.equalsIgnoreCase( "htm" )
+						|| extension.equalsIgnoreCase( "html" )
+						|| extension.equalsIgnoreCase( "xhtml" ) ) {
+					return "text/html";
+				} else if( extension.equalsIgnoreCase( "txt" ) ) {
+					return "text/plain";
+				} else {
+					
+					// Use Java. (Doesn't know xhtml for example)
+					String last = getLast();
+					return URLConnection.getFileNameMap().getContentTypeFor( last );
+				}
+			}
+			
+			return null;
+		}
+		
+		/**
+		 * Get slice of path as new Path
+		 * 
+		 * @param index to start the slice from. 0 means complete copy. positive integer remove
+		 *        from the left. negative from the right;
+		 * @return
+		 */
+		public Path slice( int index ){
+			
+			LinkedList<String> newPath = new LinkedList<String>( path );
+			
+			while( index > 0 && newPath.size() > 0 ){
+				newPath.removeFirst();
+				index--;
+			}
+			while( index < 0 && newPath.size() > 0 ){
+				newPath.removeLast();
+				index--;
+			}
+			
+			return new Path( newPath, endsWithSlash );
+		}
 		public StringBuilder toStringBB( StringBuilder result, boolean encode ){
 			
 			for( String part : path ){
@@ -427,9 +524,15 @@ public class SuperURL {
 		public String toString( boolean encode ){
 			return toStringB( encode ).toString();
 		}
+		
 		@Override
 		public String toString(){
 			return toString( false );
+		}
+
+		@Override
+		public Iterator<String> iterator() {
+			return path.iterator();
 		}
 		
 	}
@@ -692,6 +795,10 @@ public class SuperURL {
 		} catch( UnsupportedEncodingException e ) {
 			throw new RuntimeException( "Cannot urlify " + text );
 		}
+	}
+	
+	public URL toURL() throws MalformedURLException{
+		return new URL( toString( false ) );
 	}
 
 }
