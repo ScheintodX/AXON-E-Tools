@@ -8,9 +8,9 @@ import java.util.TreeSet;
 public abstract class EasyParser {
 
 	private static final String [] YESSES 
-			= new String[]{ "y", "j", "yes", "ja", "true", "x", "1" };
+			= new String[]{ "true", "on", "y", "j", "yes", "ja", "x", "1" };
 	private static final String [] NOS 
-			= new String[]{ "n", "no", "nein", "false", "-", "", "0" };
+			= new String[]{ "false", "off", "n", "no", "nein", "-", "", "0" };
 	private static final Collection<String> YESSET 
 			= new TreeSet<String>( Arrays.asList( YESSES ) );
 	private static final Collection<String> NOSET 
@@ -18,12 +18,12 @@ public abstract class EasyParser {
 	
 	public static boolean isYes( String yesOrNo ) {
 		
-		return contains( yesOrNo, YESSET );
+		return contains( YESSET, yesOrNo );
 	}
 
 	public static boolean isNo( String yesOrNo ) {
 
-		return contains( yesOrNo, NOSET );
+		return contains( NOSET, yesOrNo );
 	}
 
 	public static Boolean yesOrNoOrNull( String yesOrNo ){
@@ -38,7 +38,7 @@ public abstract class EasyParser {
 		return defaultValue;
 	}
 
-	private static boolean contains( String yesOrNo, Collection<String> options ) {
+	private static boolean contains( Collection<String> options, String yesOrNo ) {
 		
 		if( yesOrNo == null ) return false;
 		
