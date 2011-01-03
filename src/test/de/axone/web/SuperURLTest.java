@@ -223,4 +223,65 @@ public class SuperURLTest {
     	assertEquals( complete.toString( true ), uriString );
     }
 	
+    @Test( dependsOnMethods = "testSuperURL" )
+    public void testPathOperations() throws Exception {
+    	
+    	String urlS = "http://www.axon-e.de";
+    	String urlSlashS = "http://www.axon-e.de/";
+    	String path = "test/test.txt";
+    	
+    	String refUrl = "http://www.axon-e.de/test/test.txt";
+    	
+    	SuperURL url = new SuperURL( urlS );
+    	SuperURL urlSlash = new SuperURL( urlSlashS );
+    	
+    	assertTrue( url.hasHost() );
+    	assertFalse( url.hasPath() );
+    	assertFalse( url.getPath().isEndsWithSlash() );
+    	
+    	assertTrue( urlSlash.hasHost() );
+    	assertTrue( urlSlash.hasPath() );
+    	assertTrue( urlSlash.getPath().isEndsWithSlash() );
+    	assertTrue( urlSlash.getPath().isStartsWithSlash() );
+    	
+    	assertTrue( urlSlash.getPath().isEndsWithSlash() );
+    	
+    	SuperURL pathUrl = new SuperURL( path );
+    	assertFalse( pathUrl.hasHost() );
+    	
+    	url.appendPath( path );
+    	urlSlash.appendPath( path );
+    	
+    	assertEquals( url.toString(), refUrl );
+    	assertEquals( urlSlash.toString(), refUrl );
+    }
+    
+    @Test( dependsOnMethods = "testPathOperations" )
+    public void testMorePathOperations() throws Exception {
+    
+    	String urlS = "http://www.axon-e.de";
+    	String urlSlashS = "http://www.axon-e.de/";
+    	String path = "test";
+    	
+    	String refUrl = "http://www.axon-e.de/test";
+    
+    	SuperURL url = new SuperURL( urlS );
+    	SuperURL urlSlash = new SuperURL( urlSlashS );
+    	
+    	url.appendPath( path );
+    	urlSlash.appendPath( path );
+    	
+    	assertEquals( url.toString(), refUrl );
+    	assertEquals( urlSlash.toString(), refUrl );
+    	
+    	url = new SuperURL( urlS );
+    	urlSlash = new SuperURL( urlSlashS );
+    	
+    	url.appendPath( path + "/" );
+    	urlSlash.appendPath( path + "/" );
+    	
+    	assertEquals( url.toString(), refUrl + "/" );
+    	assertEquals( urlSlash.toString(), refUrl + "/" );
+    }
+    
 }

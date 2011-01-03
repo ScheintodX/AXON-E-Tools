@@ -219,6 +219,22 @@ public final class SuperURL {
 		return getQuery().getValue( key );
 	}
 	
+	public boolean hasHost(){
+		return getHost() != null;
+	}
+	public boolean hasPath(){
+		return getPath() != null
+			&& getPath().toString().length() > 0;
+	}
+	
+	public void appendPath( String path ){
+		
+		Path newPath = new SuperURL.Path( path );
+		getPath().append( newPath );
+		getPath().endsWithSlash = newPath.endsWithSlash;
+		
+	}
+	
 	/* --- ToString --- */
 	
 	public StringBuilder toStringBB( StringBuilder result, boolean encode ){
@@ -383,6 +399,13 @@ public final class SuperURL {
 		}
 		public void setStartsWithSlash( boolean isDir ){
 			startsWithSlash = isDir;
+		}
+		
+		public boolean isAbsolute(){
+			return isStartsWithSlash();
+		}
+		public boolean isRelative(){
+			return !isAbsolute();
 		}
 		
 		public String getLast(){

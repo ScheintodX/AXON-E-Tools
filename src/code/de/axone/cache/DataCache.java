@@ -8,11 +8,14 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
-import de.axone.data.LRUCache;
-
 
 /**
- * Automatic Cache using DataProviders etc.
+ * Automatic Cache using DataProviders.
+ * 
+ * This cache uses an LRU cache as backend if a capacity is specified.
+ * 
+ * If the cache doesn't contain the requested data is uses the DataAccessor
+ * in order to obtain it.
  *
  * @author flo
  *
@@ -21,10 +24,10 @@ import de.axone.data.LRUCache;
  */
 public class DataCache<K,V>{
 
-	private int capacity;
-
-	private HashMap<K,Object> cache;
-	private static final Object NULL = new Object();
+	private BackendCache<K,V> cache;
+	
+	@SuppressWarnings( "unchecked" )
+	private final V NULL = (V)new Object();
 
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private WriteLock writeLock = lock.writeLock();
@@ -32,19 +35,17 @@ public class DataCache<K,V>{
 
 	private Stats stats = new Stats();
 
-	public DataCache( int capacity ){
-
-		this.capacity = capacity;
-
-		if( capacity > 0 ){
-			cache = new LRUCache<K,Object>( capacity );
-		} else {
-			cache = new HashMap<K,Object>();
-		}
+	public DataCache( BackendCache<K,V> backend ){
+		
+		assert backend != null;
+		
+		cache = backend;
 	}
-
+	
 	@SuppressWarnings( "unchecked")
 	public Map<K,V> get( Iterable<K> keys, DataAccessor<K,V> accessor ){
+		
+		assert keys != null && accessor != null;
 
 		HashMap<K,V> result = new HashMap<K,V>();
 		Set<K> missed = null;
@@ -101,10 +102,12 @@ public class DataCache<K,V>{
 
 	public V get( K key, DataAccessor<K,V> accessor ) {
 
+		assert key != null && accessor != null;
+
 		if( key == null ) return null;
 
 		readLock.lock();
-		Object result = null;
+		V result = null;
 		try{
 			result = cache.get( key );
 		} finally { readLock.unlock(); }
@@ -136,11 +139,25 @@ public class DataCache<K,V>{
 			result = null;
 		}
 
-    	@SuppressWarnings( "unchecked")
-		V v = (V)result;
-    	return v;
+    	return result;
 	}
-
+	
+	public int size(){
+		return cache.size();
+	}
+	
+	public void put( K key, V value ){
+		
+		assert key != null && value != null;
+		
+		writeLock.lock();
+		try {
+			cache.put( key, value );
+		} finally {
+			writeLock.unlock();
+		}
+	}
+	
 	public void flush() {
 
 		// Clear cache
@@ -174,7 +191,7 @@ public class DataCache<K,V>{
 			StringBuilder result = new StringBuilder();
 			result
 				.append( "Ratio: " + hits + "/" + accesses + " hits =" + (int)((double)hits/accesses*100) + "%\n" )
-			    .append( " Full: " + cache.size() + " of " + capacity + " entries = " + (int)((double)cache.size()/capacity*100) + "%" )
+			    .append( " Full: " + cache.size() + " entries" )
 			;
 			return result.toString();
 		}

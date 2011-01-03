@@ -13,6 +13,8 @@ public abstract class AsynchronousQueue<T> extends Thread {
 	
 	protected LinkedList<T> queue = new LinkedList<T>();
 	
+	private int inProcess = 0;
+	
 	public AsynchronousQueue( String threadName ){
 		super( threadName );
 		log = Logging.getLog( this.getClass() );
@@ -34,6 +36,7 @@ public abstract class AsynchronousQueue<T> extends Thread {
 
 			if( queue.size() > 0 ) {
 				data = queue.removeFirst();
+				inProcess = 1;
 			}
 		}
 		return data;
@@ -67,6 +70,7 @@ public abstract class AsynchronousQueue<T> extends Thread {
 				if( log.isTrace() ) log.trace( "Processing: " + info( data ) );
 				try {
 					process( data );
+					synchronized( queue ){ inProcess=0; }
 					if( log.isTrace() ) log.trace( "done: " + info( data ) );
 				} catch( Exception e ){
 					log.error( "Error processing: " + info( data ), e );
@@ -90,7 +94,7 @@ public abstract class AsynchronousQueue<T> extends Thread {
 	
 	public int size(){
 		synchronized( queue ){
-			return queue.size();
+			return queue.size() + inProcess;
 		}
 	}
 	
