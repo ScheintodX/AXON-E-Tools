@@ -59,6 +59,15 @@ public interface BackendCache<K,V> {
 	public int size();
 	
 	/**
+	 * Get some meaningful information. 
+	 * 
+	 * (At least the size should be returned)
+	 * 
+	 * @return
+	 */
+	public String info();
+	
+	/**
 	 * Implements more of Map interface for direct access
 	 * 
 	 * @author flo
@@ -66,7 +75,7 @@ public interface BackendCache<K,V> {
 	 * @param <K>
 	 * @param <V>
 	 */
-	public interface Direct<K,V> extends BackendCache<K,V> {
+	public static interface Direct<K,V> extends BackendCache<K,V> {
 		
 		/**
 		 * @see java.util.Map#keySet()
