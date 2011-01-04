@@ -14,7 +14,7 @@ import java.util.Set;
  * @param <K>
  * @param <V>
  */
-public class BackendCacheNoCache<K,V> implements BackendCache.Direct<K,V> {
+public class CacheNoCache<K,V> implements Cache.Direct<K,V> {
 
 	@Override
 	public Set<K> keySet() {

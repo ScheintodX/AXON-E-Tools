@@ -9,7 +9,7 @@ import java.util.HashMap;
  * @param <K>
  * @param <V>
  */
-public class BackendCacheHashMap<K,V> extends HashMap<K,V> implements BackendCache.Direct<K,V> {
+public class CacheHashMap<K,V> extends HashMap<K,V> implements Cache.Direct<K,V> {
 
 	@Override
 	public String info() {

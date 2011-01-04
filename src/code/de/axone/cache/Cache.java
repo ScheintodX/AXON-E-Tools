@@ -11,7 +11,7 @@ import java.util.Set;
  * @param <K>
  * @param <V>
  */
-public interface BackendCache<K,V> {
+public interface Cache<K,V> {
 	
 	/**
 	 * Put something in the cache
@@ -75,7 +75,7 @@ public interface BackendCache<K,V> {
 	 * @param <K>
 	 * @param <V>
 	 */
-	public static interface Direct<K,V> extends BackendCache<K,V> {
+	public static interface Direct<K,V> extends Cache<K,V> {
 		
 		/**
 		 * @see java.util.Map#keySet()

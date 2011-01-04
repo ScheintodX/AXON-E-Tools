@@ -9,12 +9,12 @@ import de.axone.data.LRUCache;
  * @param <K>
  * @param <V>
  */
-public class BackendCacheLRUMap<K,V> extends LRUCache<K,V> implements BackendCache.Direct<K,V> {
+public class CacheLRUMap<K,V> extends LRUCache<K,V> implements Cache.Direct<K,V> {
 	
 	private long hits;
 	private long misses;
 
-	public BackendCacheLRUMap( int maxCapacity ) {
+	public CacheLRUMap( int maxCapacity ) {
 		super(maxCapacity);
 	}
 

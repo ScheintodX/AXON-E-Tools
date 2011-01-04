@@ -12,19 +12,26 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 /**
  * Automatic Cache using DataProviders.
  * 
- * This cache uses an LRU cache as backend if a capacity is specified.
+ * This is a frontend to for another cache which adds automatic fetching
+ * capabilities and multiple value access.
  * 
- * If the cache doesn't contain the requested data is uses the DataAccessor
+ * If a MultiValueDataAccessor is used fetching of more than one item can
+ * be done with just one query which should speed up things significantly.
+ * 
+ * If the cache doesn't contain the requested data it uses the DataAccessor
  * in order to obtain it.
+ * 
+ * Normally you would want to use this cache in connections with an CacheLRUMap
+ * so it has a limited size but fills automatically.
  *
  * @author flo
  *
  * @param <K> key
  * @param <V> value
  */
-public class DataCache<K,V>{
+public class AutomaticCache<K,V>{
 
-	private BackendCache<K,V> cache;
+	private Cache<K,V> cache;
 	
 	@SuppressWarnings( "unchecked" )
 	private final V NULL = (V)new Object();
@@ -35,7 +42,7 @@ public class DataCache<K,V>{
 
 	private Stats stats = new Stats();
 
-	public DataCache( BackendCache<K,V> backend ){
+	public AutomaticCache( Cache<K,V> backend ){
 		
 		assert backend != null;
 		
