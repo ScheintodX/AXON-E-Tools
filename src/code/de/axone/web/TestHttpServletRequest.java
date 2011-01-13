@@ -21,6 +21,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import de.axone.web.TestHttpSession;
+
 
 public class TestHttpServletRequest implements HttpServletRequest {
 
@@ -67,6 +69,10 @@ public class TestHttpServletRequest implements HttpServletRequest {
 	private Map<String,String> headers = new HashMap<String,String>();
 	public void setHeaders( Map<String, String> headers ){
 		this.headers = headers;
+	}
+	
+	public void setHeader( String name, String value ){
+		headers.put( name, value );
 	}
 
 	@Override

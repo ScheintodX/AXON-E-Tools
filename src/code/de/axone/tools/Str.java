@@ -106,4 +106,29 @@ public class Str {
 			return index + ": " + object.toString();
 		}
 	}
+	
+	public static String trimAtWordBoundary( String text, int len ){
+		return trimAtWordBoundary( text, len, null );
+	}
+	public static String trimAtWordBoundary( String text, int len, String appendix ){
+		
+		assert text != null;
+		assert len > 0;
+		
+		text = text.trim(); // Do some pretrimming
+		
+		if( len > text.length() ) return text;
+		
+		int i;
+		for( i=len; i>0; i-- ){
+			
+			if( Character.isWhitespace( text.charAt( i ) ) ) break;
+		}
+		
+		if( i > 0 ){
+			return appendix != null ? text.substring( 0, i ) + appendix : text.substring( 0, i );
+		} else {
+			return appendix != null ? text.substring( 0, len ) + appendix : text.substring( 0, len );
+		}
+	}
 }
