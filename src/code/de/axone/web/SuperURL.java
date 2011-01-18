@@ -16,8 +16,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import de.axone.logging.Log;
-import de.axone.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.axone.tools.Str;
 
 
@@ -46,7 +47,8 @@ import de.axone.tools.Str;
  */
 public final class SuperURL {
 	
-	private static final Log log = Logging.getLog( SuperURL.class );
+	public static final Logger log =
+			LoggerFactory.getLogger( SuperURL.class );
 	
 	private String scheme;
 	private UserInfo userInfo;

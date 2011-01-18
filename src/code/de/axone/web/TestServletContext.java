@@ -18,12 +18,13 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import de.axone.logging.Log;
-import de.axone.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TestServletContext implements ServletContext {
 	
-	private static Log log = Logging.getLog( TestServletContext.class );
+	public static final Logger log =
+			LoggerFactory.getLogger( TestServletContext.class );
 
 	/* --- Attributes --- */
 	
@@ -167,11 +168,11 @@ public class TestServletContext implements ServletContext {
 	}
 	@Override
 	public void log( Exception exception, String msg ) {
-		log.info( exception, msg );
+		log.info( msg, exception );
 	}
 	@Override
 	public void log( String message, Throwable throwable ) {
-		log.info( throwable, message );
+		log.info( message, throwable );
 	}
 
 	/* --- Stuff --- */

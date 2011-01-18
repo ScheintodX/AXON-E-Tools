@@ -2,12 +2,12 @@ package de.axone.async;
 
 import java.util.LinkedList;
 
-import de.axone.logging.Log;
-import de.axone.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AsynchronousQueue<T> extends Thread {
 	
-	protected final Log log;
+	protected final Logger log;
 	
 	private volatile boolean pleaseStop = false;
 	
@@ -17,7 +17,7 @@ public abstract class AsynchronousQueue<T> extends Thread {
 	
 	public AsynchronousQueue( String threadName ){
 		super( threadName );
-		log = Logging.getLog( this.getClass() );
+		log = LoggerFactory.getLogger( this.getClass() );
 	}
 	
 	public void push( T data ){
@@ -67,11 +67,11 @@ public abstract class AsynchronousQueue<T> extends Thread {
 
 			if( data != null ) {
 				
-				if( log.isTrace() ) log.trace( "Processing: " + info( data ) );
+				if( log.isTraceEnabled() ) log.trace( "Processing: " + info( data ) );
 				try {
 					process( data );
 					synchronized( queue ){ inProcess=0; }
-					if( log.isTrace() ) log.trace( "done: " + info( data ) );
+					if( log.isTraceEnabled() ) log.trace( "done: " + info( data ) );
 				} catch( Exception e ){
 					log.error( "Error processing: " + info( data ), e );
 				}

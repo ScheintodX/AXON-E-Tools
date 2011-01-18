@@ -12,5 +12,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.0.1.jar" sourcepath="/home/flo/java/httpcomponents-client-4.0.1"/>
 	<classpathentry kind="lib" path="lib/httpmime-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

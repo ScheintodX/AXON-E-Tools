@@ -3,8 +3,9 @@ package de.axone.tools;
 import java.net.URL;
 import java.util.HashMap;
 
-import de.axone.logging.Log;
-import de.axone.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.axone.tools.HttpUtil.HttpUtilResponse;
 
 /**
@@ -24,7 +25,8 @@ import de.axone.tools.HttpUtil.HttpUtilResponse;
  */
 public class HttpWatcher {
 
-	private static Log log = Logging.getLog( HttpWatcher.class );
+	public static final Logger log =
+			LoggerFactory.getLogger( HttpWatcher.class );
 
 	private static final long SECONDS = 1000;
 	private static final long DAYS = SECONDS * 60 * 60 * 24;
@@ -80,11 +82,11 @@ public class HttpWatcher {
 			
 			try {
 				
-				if( log.isTrace() ) log.trace( "Check for: " + url + "(" + eTag + ")" );
+				if( log.isTraceEnabled() ) log.trace( "Check for: " + url + "(" + eTag + ")" );
 				
 				HttpUtilResponse response = HttpUtil.request( url, eTag, lastModified );
 				
-				log.trace( response );
+				log.trace( response.toString() );
 		
 				if( response.code == 200 ){
 					eTag = response.eTag;

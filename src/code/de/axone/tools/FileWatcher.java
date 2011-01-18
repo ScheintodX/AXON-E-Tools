@@ -3,8 +3,8 @@ package de.axone.tools;
 import java.io.File;
 import java.util.HashMap;
 
-import de.axone.logging.Log;
-import de.axone.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Watches one file and can report if it has changed.
@@ -15,7 +15,8 @@ import de.axone.logging.Logging;
  */
 public class FileWatcher {
 
-	private static Log log = Logging.getLog( FileWatcher.class );
+	public static final Logger log =
+			LoggerFactory.getLogger( FileWatcher.class );
 
 	private static final double TIMEOUT = 2000; //3 s
 
@@ -72,7 +73,7 @@ public class FileWatcher {
     		
     		if( lastModifiedTime < modifiedTime ){
     			
-    			if( log.isDebug() ) log.debug(
+    			if( log.isDebugEnabled() ) log.debug(
     					String.format( "File %s has changed (%d<%d)",
     							file.getAbsolutePath(),
     							(int)(lastModifiedTime/1000),
