@@ -6,7 +6,7 @@ import java.util.Map;
 
 public abstract class E {
 	
-	private static String simplifyClassName( String className ){
+	static String simplifyClassName( String className ){
 		
 		int oldIndex = className.indexOf( '.' );
 		int index=oldIndex;
@@ -22,17 +22,17 @@ public abstract class E {
     	}
 	}
 	
-	private static String f( String s ){
+	static String f( String s ){
 		return s;
 	}
-	private static String f( Object o ){
+	static String f( Object o ){
 		if( o instanceof String ) return f( (String)o );
 		else if( o instanceof Collection<?> ) return f( (Collection<?>)o );
 		else if( o instanceof Map<?,?> ) return f( (Map<?,?>) o );
 		else if( o.getClass().isArray() ) return f( (Object[]) o );
 		else return o.toString();
 	}
-	private static String f( Collection<?> l ){
+	static String f( Collection<?> l ){
 		StringBuilder r = new StringBuilder();
 		r.append( "(" );
 		boolean first = true;
@@ -46,7 +46,7 @@ public abstract class E {
 		r.append( ")" );
 		return r.toString();
 	}
-	private static String f( Map<?,?> m ){
+	static String f( Map<?,?> m ){
 		StringBuilder r = new StringBuilder();
 		r.append( "{" );
 		boolean first = true;
@@ -60,7 +60,7 @@ public abstract class E {
 		r.append( "}" );
 		return r.toString();
 	}
-	private static String f( Object [] a ){
+	static String f( Object [] a ){
 		
 		StringBuilder r = new StringBuilder();
 		r.append( "[" );
@@ -76,11 +76,11 @@ public abstract class E {
 		return r.toString();
 	}
 	
-	private static void echo( PrintStream out, boolean nl, Object ... os ){
+	static void echo( PrintStream out, boolean nl, Object ... os ){
 		echo( out, 3, nl, os );
 	}
 	
-	private static void echo( PrintStream out, int depth, boolean nl, Object ... os ){
+	static void echo( PrintStream out, int depth, boolean nl, Object ... os ){
 		
 		Exception e = new Exception();
 		StackTraceElement[] elm = e.getStackTrace();
@@ -106,7 +106,7 @@ public abstract class E {
 		}
 	}
 	
-	private static void echo( PrintStream out, Map<?,?> map ){
+	static void echo( PrintStream out, Map<?,?> map ){
 		MapPair [] pairs = new MapPair[ map.size() ];
 		int i = 0;
 		for( Object key : map.keySet() ){
@@ -185,7 +185,7 @@ public abstract class E {
 		xit( t.getMessage() );
 	}
 	
-	private static class MapPair{
+	static class MapPair{
 		private Object key, value;
 		MapPair( Object key, Object value ){
 			this.key = key;

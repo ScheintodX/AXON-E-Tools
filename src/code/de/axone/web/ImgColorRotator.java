@@ -1,0 +1,151 @@
+package de.axone.web;
+
+import java.awt.Color;
+import java.awt.Transparency;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.IndexColorModel;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
+
+
+public class ImgColorRotator {
+	
+	private final double hueDelta;
+	private final double saturationGamma;
+	private final double brightnessGamma;
+		
+	/**
+	 * Rotate all colors in the csv for some degrees and change it's
+	 * brightness and saturation.
+	 * 
+	 * Convinience method with user-friendly input
+	 * 
+	 * @see #rotate( String, double, double, double )
+	 * 
+	 * @param hueDelta  0° .. 360°
+	 * @param saturationGamma  0 .. oo in 1/1000th
+	 * @param brightnessGamma  0 .. oo in 1/1000th
+	 */
+	public ImgColorRotator( int hueDelta, int saturationGamma, int brightnessGamma ){
+		
+		this( hueDelta/360.0, saturationGamma/1000.0, brightnessGamma/1000.0 );
+	}
+	
+	/**
+	 * Rotate all colors in the csv for some degrees and change it's
+	 * brightness and saturation.
+	 * 
+	 * Colors are found by patterns matching #abc and #abcdef.
+	 * 
+	 * <tt>degree</tt> is in the range from 0 to 1.0 which corresponds to 0° to 360°
+	 * <tt>saturationGamma</tt> and <tt>brightnessGamma</tt> are in the range from
+	 * 0 to endless.
+	 * 
+	 * hue is calculated by adding the value and doing a %1 operation.
+	 * saturation and brightness are calculated by setting the original value to the pow of the
+	 * given gamma value;
+	 * 
+	 * @param hueDelta  0 .. 1 => 0° .. 360°
+	 * @param saturationGamma  0 .. oo
+	 * @param brightnessGamma  0 .. oo
+	 */
+	public ImgColorRotator( double hueDelta, double saturationGamma, double brightnessGamma ){
+		
+		this.hueDelta = hueDelta;
+		this.saturationGamma = saturationGamma;
+		this.brightnessGamma = brightnessGamma;
+	}
+	
+
+	/**
+	 * Rotate all colors in the csv for some degrees and change it's
+	 * brightness and saturation.
+	 * 
+	 * Colors are found by patterns matching #abc and #abcdef.
+	 * 
+	 * <tt>degree</tt> is in the range from 0 to 1.0 which corresponds to 0° to 360°
+	 * <tt>saturationGamma</tt> and <tt>brightnessGamma</tt> are in the range from
+	 * 0 to endless.
+	 * 
+	 * hue is calculated by adding the value and doing a %1 operation.
+	 * saturation and brightness are calculated by setting the original value to the pow of the
+	 * given gamma value;
+	 * 
+	 * @param imageData
+	 * @throws IOException 
+	 */
+	public byte[] rotate( byte [] imageData, String imageType ) throws IOException{
+		
+		assert imageData != null;
+		
+		// Skip rendering if nothing to do
+		if( hueDelta %1 == 0 && saturationGamma == 1 && brightnessGamma == 1 )
+			return imageData;
+		
+		ByteInputStream bIn = new ByteInputStream( imageData, imageData.length );
+		
+		BufferedImage image = ImageIO.read( bIn );
+		
+		ColorModel cm = image.getColorModel();
+		
+		// Change gifs color table
+		if( cm instanceof IndexColorModel ){
+			
+			IndexColorModel indexCM = (IndexColorModel) image.getColorModel();
+			int [] cMap = new int[ indexCM.getMapSize() ];
+			indexCM.getRGBs( cMap );
+			
+			for( int i=0; i<cMap.length; i++ ){
+				
+				cMap[i] = rotate( cMap[i] );
+			}
+			
+			IndexColorModel newCm = new IndexColorModel( 
+					8, cMap.length, cMap, 
+					0, indexCM.getTransparency() != Transparency.OPAQUE,
+					indexCM.getTransparentPixel(), DataBuffer.TYPE_BYTE );
+			
+			image = new BufferedImage( newCm, image.getRaster(), false, null );
+			
+		// Change every single pixel
+		} else {
+			int w = image.getWidth();
+			int h = image.getHeight();
+			
+			//long start = System.currentTimeMillis();
+			int [] imgRGB = image.getRGB( 0, 0, w, h, null, 0, w );
+			
+			for( int i=0; i<imgRGB.length; i++ ){
+				
+				imgRGB[ i ] = rotate( imgRGB[ i ] );
+			}
+			
+			image.setRGB( 0, 0, w, h, imgRGB, 0, w );
+			//E.rr( "Duration: " + (System.currentTimeMillis() - start) );
+		}
+		
+		ByteOutputStream bOut = new ByteOutputStream();
+		ImageIO.write( image, imageType, bOut );
+		
+		return bOut.getBytes();
+	}
+	
+	public int rotate( int color ){
+		
+		float [] hsb = Color.RGBtoHSB( (color>>16)&0xff, (color>>8)&0xff, color&0xff, null );
+		
+		float h = (float)((hsb[0]+hueDelta)%1);
+		float s = (float)Math.pow( hsb[1], saturationGamma );
+		float b = (float)Math.pow( hsb[2], brightnessGamma );
+		
+		int rgb = Color.HSBtoRGB( h, s, b );
+		
+		return (color & 0xff000000) | (rgb & 0xffffff);
+	}
+}

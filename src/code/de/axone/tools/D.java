@@ -16,6 +16,6 @@ public class D {
 	}
 
 	public static void bug( Object ...objects ){
-		E.rr( objects );
+		E.echo( System.err, 2, true, objects );
 	}
 }
