@@ -6,12 +6,11 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 
 public class ImgColorRotator {
@@ -88,7 +87,7 @@ public class ImgColorRotator {
 		if( hueDelta %1 == 0 && saturationGamma == 1 && brightnessGamma == 1 )
 			return imageData;
 		
-		ByteInputStream bIn = new ByteInputStream( imageData, imageData.length );
+		ByteArrayInputStream bIn = new ByteArrayInputStream( imageData );
 		
 		BufferedImage image = ImageIO.read( bIn );
 		
@@ -130,10 +129,10 @@ public class ImgColorRotator {
 			//E.rr( "Duration: " + (System.currentTimeMillis() - start) );
 		}
 		
-		ByteOutputStream bOut = new ByteOutputStream();
+		ByteArrayOutputStream bOut = new ByteArrayOutputStream();
 		ImageIO.write( image, imageType, bOut );
 		
-		return bOut.getBytes();
+		return bOut.toByteArray();
 	}
 	
 	public int rotate( int color ){
