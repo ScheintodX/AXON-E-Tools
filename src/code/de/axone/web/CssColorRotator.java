@@ -16,6 +16,7 @@ public class CssColorRotator {
 	private final double hueDelta;
 	private final double saturationGamma;
 	private final double brightnessGamma;
+	private final boolean inverse;
 		
 	/**
 	 * Rotate all colors in the csv for some degrees and change it's
@@ -29,9 +30,9 @@ public class CssColorRotator {
 	 * @param saturationGamma  0 .. oo in 1/1000th
 	 * @param brightnessGamma  0 .. oo in 1/1000th
 	 */
-	public CssColorRotator( int hueDelta, int saturationGamma, int brightnessGamma ){
+	public CssColorRotator( int hueDelta, int saturationGamma, int brightnessGamma, boolean inverse ){
 		
-		this( hueDelta/360.0, saturationGamma/1000.0, brightnessGamma/1000.0 );
+		this( hueDelta/360.0, saturationGamma/1000.0, brightnessGamma/1000.0, inverse );
 	}
 	
 	/**
@@ -52,18 +53,18 @@ public class CssColorRotator {
 	 * @param saturationGamma  0 .. oo
 	 * @param brightnessGamma  0 .. oo
 	 */
-	public CssColorRotator( double hueDelta, double saturationGamma, double brightnessGamma ){
+	public CssColorRotator( double hueDelta, double saturationGamma, double brightnessGamma, boolean inverse ){
 		
-		assert hueDelta >= 0;
-		assert saturationGamma >= 0;
-		assert brightnessGamma >= 0;
+		if( hueDelta < 0 ) throw new IllegalArgumentException( "hueDelta < 0" );
+		if( saturationGamma <= 0 ) throw new IllegalArgumentException( "saturationGamma <= 0" );
+		if( brightnessGamma <= 0 ) throw new IllegalArgumentException( "brightnessGamma <= 0" );
 		
 		this.hueDelta = hueDelta;
-		this.saturationGamma = saturationGamma;
-		this.brightnessGamma = brightnessGamma;
+		this.saturationGamma = 1/saturationGamma;
+		this.brightnessGamma = 1/brightnessGamma;
+		this.inverse = inverse;
 	}
 	
-
 	/**
 	 * Rotate all colors in the csv for some degrees and change it's
 	 * brightness and saturation.
@@ -82,7 +83,11 @@ public class CssColorRotator {
 	 */
 	public String rotate( String css ){
 		
-		assert css != null;
+		if( css == null ) throw new IllegalArgumentException( "css is null" );
+		
+		// Skip rendering if nothing to do
+		if( hueDelta %1 == 0 && saturationGamma == 1 && brightnessGamma == 1 && inverse == false )
+			return css;
 		
 		Matcher matcher = COLOR.matcher( css );
 		
@@ -154,6 +159,8 @@ public class CssColorRotator {
 		float h = (float)((hsb[0]+hueDelta)%1);
 		float s = (float)Math.pow( hsb[1], saturationGamma );
 		float b = (float)Math.pow( hsb[2], brightnessGamma );
+		
+		if( inverse ){ b = 1-b; }
 		
 		return Color.getHSBColor( h, s, b );
 	}

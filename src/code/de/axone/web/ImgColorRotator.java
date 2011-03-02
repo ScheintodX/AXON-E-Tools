@@ -18,6 +18,7 @@ public class ImgColorRotator {
 	private final double hueDelta;
 	private final double saturationGamma;
 	private final double brightnessGamma;
+	private final boolean inverse;
 		
 	/**
 	 * Rotate all colors in the csv for some degrees and change it's
@@ -31,9 +32,9 @@ public class ImgColorRotator {
 	 * @param saturationGamma  0 .. oo in 1/1000th
 	 * @param brightnessGamma  0 .. oo in 1/1000th
 	 */
-	public ImgColorRotator( int hueDelta, int saturationGamma, int brightnessGamma ){
+	public ImgColorRotator( int hueDelta, int saturationGamma, int brightnessGamma, boolean inverse ){
 		
-		this( hueDelta/360.0, saturationGamma/1000.0, brightnessGamma/1000.0 );
+		this( hueDelta/360.0, saturationGamma/1000.0, brightnessGamma/1000.0, inverse );
 	}
 	
 	/**
@@ -54,11 +55,16 @@ public class ImgColorRotator {
 	 * @param saturationGamma  0 .. oo
 	 * @param brightnessGamma  0 .. oo
 	 */
-	public ImgColorRotator( double hueDelta, double saturationGamma, double brightnessGamma ){
+	public ImgColorRotator( double hueDelta, double saturationGamma, double brightnessGamma, boolean inverse ){
+		
+		if( hueDelta < 0 ) throw new IllegalArgumentException( "hueDelta < 0" );
+		if( saturationGamma <= 0 ) throw new IllegalArgumentException( "saturationGamma <= 0" );
+		if( brightnessGamma <= 0 ) throw new IllegalArgumentException( "brightnessGamma <= 0" );
 		
 		this.hueDelta = hueDelta;
-		this.saturationGamma = saturationGamma;
-		this.brightnessGamma = brightnessGamma;
+		this.saturationGamma = 1/saturationGamma;
+		this.brightnessGamma = 1/brightnessGamma;
+		this.inverse = inverse;
 	}
 	
 
@@ -84,7 +90,7 @@ public class ImgColorRotator {
 		assert imageData != null;
 		
 		// Skip rendering if nothing to do
-		if( hueDelta %1 == 0 && saturationGamma == 1 && brightnessGamma == 1 )
+		if( hueDelta %1 == 0 && saturationGamma == 1 && brightnessGamma == 1 && inverse == false )
 			return imageData;
 		
 		ByteArrayInputStream bIn = new ByteArrayInputStream( imageData );
@@ -142,6 +148,8 @@ public class ImgColorRotator {
 		float h = (float)((hsb[0]+hueDelta)%1);
 		float s = (float)Math.pow( hsb[1], saturationGamma );
 		float b = (float)Math.pow( hsb[2], brightnessGamma );
+		
+		if( inverse ){ b = 1-b; }
 		
 		int rgb = Color.HSBtoRGB( h, s, b );
 		

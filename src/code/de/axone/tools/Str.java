@@ -131,4 +131,17 @@ public class Str {
 			return appendix != null ? text.substring( 0, len ) + appendix : text.substring( 0, len );
 		}
 	}
+	
+	public static String splitAt( int position, String text ){
+		
+		StringBuilder result = new StringBuilder( text.length() + text.length()/position +1 );
+		
+		for( int i=0; i < text.length(); i++ ){
+			
+			result.append( text.charAt( i ) );
+			if( i%position ==0 && i < text.length()-1 ) result.append( '\n' );
+		}
+		
+		return result.toString();
+	}
 }
