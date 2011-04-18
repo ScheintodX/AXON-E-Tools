@@ -42,7 +42,6 @@ public class BeanConfigurator {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void doSet( String name, String value )
 	throws Exception {
 		
@@ -66,9 +65,9 @@ public class BeanConfigurator {
 		if( method == null )
 			throw new IllegalArgumentException( "Setter doesn't exist for " + bean.getClass().getCanonicalName() + ": " + name );
 			
-		Class[] parameters = method.getParameterTypes();
+		Class<?>[] parameters = method.getParameterTypes();
 		
-		Class parameter = parameters[ 0 ]; // It's always just one according to definition of searchMethod
+		Class<?> parameter = parameters[ 0 ]; // It's always just one according to definition of searchMethod
 		
 		//E.rr( "Class: " + bean.getClass() + " Method: " + method.getName() + " Parameter: " + parameter );
 		
@@ -103,7 +102,7 @@ public class BeanConfigurator {
 		} else {
 			
 			// Try as class
-			Class c = Class.forName( value );
+			Class<?> c = Class.forName( value );
 			
 			if( c == parameter ){
 			
@@ -148,7 +147,6 @@ public class BeanConfigurator {
 	/*
 	 * Look for a method with one parameter
 	 */
-	@SuppressWarnings("unchecked")
 	private Method searchMethod( String name ){
 		
 		Method[] methods = bean.getClass().getMethods();
@@ -157,7 +155,7 @@ public class BeanConfigurator {
 			
 			if( ! method.getName().equals( name ) ) continue;
 			
-			Class[] parameters = method.getParameterTypes();
+			Class<?>[] parameters = method.getParameterTypes();
 			
 			if( parameters.length == 1 )
 				return method;

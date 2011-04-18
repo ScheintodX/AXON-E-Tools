@@ -13,19 +13,15 @@ public class ClassConfiguratorTest {
 	
 	public void testSimpleCreation() throws Exception {
 		
-		ClassConfigurator confi = new ClassConfigurator();
-		
-		Object instance = confi.create( TESTCLASS );
+		Object instance = ClassConfigurator.create( TESTCLASS );
 		assertIsInstance( instance, ClassConfiguratorTest_TestClass.class );
 	}
 	
 	public void testParameter() throws Exception {
 		
-		ClassConfigurator confi = new ClassConfigurator();
-		
 		String clazz = TESTCLASS + "	( x =	'5', yyy= '6'	, z12345EneMene='Muh' ) ";
 		
-		Object instance = confi.create( clazz );
+		Object instance = ClassConfigurator.create( clazz );
 		assertIsInstance( instance, ClassConfiguratorTest_TestClass.class );
 		
 		ClassConfiguratorTest_TestClass t = (ClassConfiguratorTest_TestClass)instance;
@@ -37,11 +33,9 @@ public class ClassConfiguratorTest {
 	
 	public void testEmptyParameters() throws Exception {
 		
-		ClassConfigurator confi = new ClassConfigurator();
-		
 		String clazz = TESTCLASS + "( yyy='', z12345EneMene='' )";
 		
-		Object instance = confi.create( clazz );
+		Object instance = ClassConfigurator.create( clazz );
 		assertIsInstance( instance, ClassConfiguratorTest_TestClass.class );
 		
 		ClassConfiguratorTest_TestClass t = (ClassConfiguratorTest_TestClass)instance;

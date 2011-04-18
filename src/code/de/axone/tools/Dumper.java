@@ -13,7 +13,6 @@ public class Dumper {
 		return dump( o, true );
 	}
 	
-	@SuppressWarnings("unchecked")
 	public String dump( Object o, boolean recurse ){
 		
 		StringBuilder result = new StringBuilder();
@@ -22,7 +21,7 @@ public class Dumper {
 			
 			return "NULL";
 			
-		} else  if( o instanceof Class ){
+		} else  if( o instanceof Class<?> ){
 			
 			return "";
 			
@@ -34,9 +33,9 @@ public class Dumper {
 			
 			return o.toString();
 		
-		} else if( o instanceof Enumeration ){
+		} else if( o instanceof Enumeration<?> ){
 			
-			Enumeration enu = (Enumeration) o;
+			Enumeration<?> enu = (Enumeration<?>) o;
 			
 			result.append( '[' );
 			
@@ -58,7 +57,7 @@ public class Dumper {
 			result.append( o.getClass().getName() );
 			result.append( "\n-----------------------\n" );
 		
-			Class c = o.getClass();
+			Class<?> c = o.getClass();
 			
 			result.append( "Methods\n" );
 			
@@ -66,7 +65,7 @@ public class Dumper {
 				
 				result.append( formatter.format( m ) );
 				
-				Class[] p = m.getParameterTypes();
+				Class<?>[] p = m.getParameterTypes();
 				
 				if( p.length == 0 && m.getName().matches( "^get.*" ) ){
 					

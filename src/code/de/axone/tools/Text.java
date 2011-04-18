@@ -3,6 +3,7 @@ package de.axone.tools;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.ByteBuffer;
 import java.util.Formatter;
 import java.util.Map;
 
@@ -426,4 +427,39 @@ public abstract class Text {
 
 		return builder;
 	}
+	
+	
+	public static String arrayHex( ByteBuffer data, int widht ){
+		return arrayHex( data, widht, 0 );
+	}
+	public static String arrayHex( ByteBuffer data, int widht, int indent ){
+		return arrayHexB( data, widht, indent ).toString();
+	}
+	public static StringBuilder arrayHexB( ByteBuffer data, int widht, int indent ){
+		return arrayHexBB( new StringBuilder(), data, widht, indent );
+	}
+	public static StringBuilder arrayHexBB( StringBuilder builder, ByteBuffer data, int width, int indent ){
+
+		Formatter f = new Formatter( builder );
+
+		if( indent > 0 ) indentBB( builder, indent );
+
+		for( int i=data.position(); i<data.limit(); i++ ){
+
+			f.format( "%02x", data.get(i) );
+
+			if( i < data.limit()-1 ){
+    			if( i%width == width-1 ){
+    				builder.append( '\n' );
+    				if( indent > 0 ) indentBB( builder, indent );
+    			} else {
+    				builder.append( ' ' );
+    			}
+			}
+		}
+
+		return builder;
+	}
+	
+	// Various toString methods for conversion of 'any object' to string
 }

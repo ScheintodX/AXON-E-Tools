@@ -19,8 +19,7 @@ public class TestServletConfig implements ServletConfig {
 		this.initParameters = initParameters;
 	}
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getInitParameterNames() {
+	public Enumeration<?> getInitParameterNames() {
 		return Collections.enumeration( initParameters.keySet() );
 	}
 

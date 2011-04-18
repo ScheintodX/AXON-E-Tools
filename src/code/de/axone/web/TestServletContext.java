@@ -45,8 +45,7 @@ public class TestServletContext implements ServletContext {
 		attributes.put( name, object );
 	}
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getAttributeNames() {
+	public Enumeration<?> getAttributeNames() {
 		return Collections.enumeration( attributes.keySet() );
 	}
 
@@ -79,8 +78,7 @@ public class TestServletContext implements ServletContext {
 		this.initParameters = initParameters;
 	}
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getInitParameterNames() {
+	public Enumeration<?> getInitParameterNames() {
 		return Collections.enumeration( initParameters.keySet() );
 	}
 
@@ -122,8 +120,7 @@ public class TestServletContext implements ServletContext {
 		return null;
 	}
 	@Override
-	@SuppressWarnings("unchecked")
-	public Set getResourcePaths( String path ) {
+	public Set<?> getResourcePaths( String path ) {
 		
 		File dir = new File( path );
 		
@@ -151,13 +148,11 @@ public class TestServletContext implements ServletContext {
 		this.servlets = servlets;
 	}
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getServletNames() {
+	public Enumeration<?> getServletNames() {
 		return Collections.enumeration( servlets.keySet() );
 	}
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getServlets() {
+	public Enumeration<?> getServlets() {
 		return Collections.enumeration( servlets.values() );
 	}
 

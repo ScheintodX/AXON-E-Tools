@@ -171,8 +171,7 @@ public class SuperProperties {
 
 		String className = getProperty( key );
 		if( className == null ) return null;
-		ClassConfigurator confi = new ClassConfigurator();
-		return confi.create( className );
+		return ClassConfigurator.create( className );
 	}
 
 	public Object instantiateRequired( String key ) throws SecurityException,

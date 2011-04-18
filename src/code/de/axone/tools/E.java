@@ -107,12 +107,16 @@ public abstract class E {
 	}
 	
 	static void echo( PrintStream out, Map<?,?> map ){
-		MapPair [] pairs = new MapPair[ map.size() ];
-		int i = 0;
-		for( Object key : map.keySet() ){
-			pairs[ i++ ] = new MapPair( key, map.get( key ) );
+		if( map != null ){
+			MapPair [] pairs = new MapPair[ map.size() ];
+			int i = 0;
+			for( Object key : map.keySet() ){
+				pairs[ i++ ] = new MapPair( key, map.get( key ) );
+			}
+			echo( out, 3, true, (Object[])pairs );
+		} else {
+			echo( out, 3, true, S._NULL_ );
 		}
-		echo( out, 3, true, (Object[])pairs );
 	}
 	
 	public static void banner( String text ){

@@ -41,18 +41,18 @@ public class Str {
 		return builder;
 	}
 
-	public static StringBuilder joinB( String joinWith, String separator, Map<?,?> map ){
+	public static StringBuilder joinB( String rs, String fs, Map<?,?> map ){
 
 		StringBuilder builder = new StringBuilder();
 
 		boolean first = true;
 		if( map != null ) for( Object o : map.keySet() ){
 
-			if( first ) first = false; else builder.append( joinWith );
+			if( first ) first = false; else builder.append( rs );
 
 			builder
 				.append( o.toString() )
-				.append( separator )
+				.append( fs )
 				.append( map.get( o ).toString() )
 			;
 		} else {
@@ -62,9 +62,9 @@ public class Str {
 		return builder;
 	}
 
-	public static String join( String joinWith, String separator, Map<?,?> map ){
+	public static String join( String rs, String fs, Map<?,?> map ){
 
-		return joinB( joinWith, separator, map ).toString();
+		return joinB( rs, fs, map ).toString();
 	}
 
 	public static <T> StringBuilder joinB( Joiner<T> joiner, Iterable<T> list ){
@@ -117,10 +117,10 @@ public class Str {
 		
 		text = text.trim(); // Do some pretrimming
 		
-		if( len > text.length() ) return text;
+		if( len >= text.length() ) return text;
 		
 		int i;
-		for( i=len; i>0; i-- ){
+		for( i=len-1; i>0; i-- ){
 			
 			if( Character.isWhitespace( text.charAt( i ) ) ) break;
 		}

@@ -4,8 +4,21 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class RequestUtil {
+import de.axone.tools.AbstractStringAccessor;
 
+public class RequestUtil extends AbstractStringAccessor {
+	
+	private HttpServletRequest request;
+	
+	public RequestUtil( HttpServletRequest request ){
+		this.request = request;
+	}
+	
+	@Override
+	public String doGet( String value ) {
+		return request.getParameter( value );
+	}
+		
 	/**
 	 * Extract Parameter which is only identified by name
 	 * in format <tt>name-value<tt>. This is useful for transmitting parameters
@@ -21,12 +34,11 @@ public class RequestUtil {
 	 */
 	public static String getNameParameter( HttpServletRequest request, String key ){
 
-		@SuppressWarnings("unchecked")
-		Enumeration<String> names = request.getParameterNames();
+		Enumeration<?> names = request.getParameterNames();
 
 		while( names.hasMoreElements() ){
 
-			String name = names.nextElement();
+			String name = (String)names.nextElement();
 			String value = extract( name, key );
 
 			if( value != null ) return value;

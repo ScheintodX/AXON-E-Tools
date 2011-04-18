@@ -1,17 +1,26 @@
 package de.axone.web;
 
+import java.util.LinkedList;
+
+import de.axone.exception.Assert;
 import de.axone.web.encoding.AttributeEncoder;
 import de.axone.web.encoding.XmlEncoder;
 
 
 public abstract class Tag {
 
-	public static StringBuilder simpleBB( StringBuilder builder, String name, String content, String ...args){
+	public static StringBuilder simpleBB( StringBuilder builder,
+			String name, String content, String ...args){
 		return simpleBB( builder, name, content, true, args );
 	}
-	public static StringBuilder simpleBB( StringBuilder builder, String name, String content, boolean encodeContent , String ...args){
+	public static StringBuilder simpleBB( StringBuilder builder,
+			String name, String content, boolean encodeContent , String ...args){
+		
+		Assert.notNull( builder, "builder" );
+		Assert.notNull( name, "name" );
+		// Null allowed: Content, args
 
-		if( args.length % 2 != 0 )
+		if( args != null && args.length % 2 != 0 )
 			throw new IndexOutOfBoundsException( "Wrong argument count. format is: NAME AT1 VAL1 ... CONTENT" );
 
 		builder
@@ -19,7 +28,7 @@ public abstract class Tag {
 			.append( name )
 		;
 
-		for( int i=0; i<args.length; i+=2 ){
+		if( args != null ) for( int i=0; i<args.length; i+=2 ){
 
 			builder
 				.append( " " )
@@ -58,5 +67,44 @@ public abstract class Tag {
 		String [] parameters = new String[]{ "type", "hidden", "name", name, "value", value };
 
 		return simpleBB( new StringBuilder(), "input", null, parameters ).toString();
+	}
+	
+	public static String link( String target, String text, String clazz, String ... args ){
+		return linkBB( new StringBuilder(), target, text, clazz, args ).toString();
+	}
+	public static StringBuilder linkBB( StringBuilder result, String target, String text, String clazz, String ... args ){
+		
+		if( args != null && args.length % 2 != 0 )
+			throw new IllegalArgumentException( "Arg count must be a multiple of 2" );
+		Assert.notNull( result, "result" );
+		Assert.notNull( target, "target" );
+		
+		StringBuilder href = new StringBuilder();
+		
+		href.append( target );
+		
+		if( args != null && args.length > 0 ){
+			
+			href.append( "?" );
+			
+			for( int i=0; i<args.length; i+=2 ){
+				
+				if( i > 0 ) href.append( "&" );
+				
+				href
+					.append( args[i] )
+					.append( "=" )
+					.append( AttributeEncoder.ENCODE( args[i+1] ) )
+				;
+			}
+		}
+		
+		LinkedList<String> tagArgs = new LinkedList<String>();
+		tagArgs.add( "href" ); tagArgs.add( href.toString() );
+		if( clazz != null ){
+			tagArgs.add( "class" ); tagArgs.add( clazz );
+		}
+		
+		return simpleBB( result, "a", text, false, tagArgs.toArray( new String[ tagArgs.size() ] ) );
 	}
 }

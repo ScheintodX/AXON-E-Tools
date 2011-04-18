@@ -21,8 +21,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import de.axone.web.TestHttpSession;
-
 
 public class TestHttpServletRequest implements HttpServletRequest {
 
@@ -76,14 +74,12 @@ public class TestHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getHeaderNames() {
+	public Enumeration<?> getHeaderNames() {
 		return Collections.enumeration( headers.keySet() );
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getHeaders( String key ) {
+	public Enumeration<?> getHeaders( String key ) {
 		return Collections.enumeration( headers.entrySet() );
 	}
 
@@ -249,8 +245,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 	private Map<String, Object> attributes = new HashMap<String, Object>();
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getAttributeNames() {
+	public Enumeration<?> getAttributeNames() {
 		return Collections.enumeration( attributes.keySet() );
 	}
 
@@ -344,8 +339,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getLocales() {
+	public Enumeration<?> getLocales() {
 		return Collections.enumeration( locales );
 	}
 	private List<Locale> locales = new LinkedList<Locale>();
@@ -366,14 +360,12 @@ public class TestHttpServletRequest implements HttpServletRequest {
     }
 	
 	@Override
-	@SuppressWarnings("unchecked")
-	public Map getParameterMap() {
+	public Map<?,?> getParameterMap() {
 		return parameters;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getParameterNames() {
+	public Enumeration<?> getParameterNames() {
 		return Collections.enumeration( parameters.keySet() );
 	}
 

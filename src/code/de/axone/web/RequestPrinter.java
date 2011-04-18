@@ -10,12 +10,11 @@ public class RequestPrinter {
 		
 		StringBuilder result = new StringBuilder();
 		
-    	@SuppressWarnings("unchecked")
-		Enumeration<String> names = request.getParameterNames();
+		Enumeration<?> names = request.getParameterNames();
 		
 		while( names.hasMoreElements() ){
 			
-			String name = names.nextElement();
+			String name = (String)names.nextElement();
 			
 			result
 				.append( name )

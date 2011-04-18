@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  * @author flo
  * 
  */
-public class ClassConfigurator {
+public abstract class ClassConfigurator {
 
 	private static final String WS = "\\s*";
 	private static final String STRING = "[\\w\\.]+"; // word or dot
@@ -60,8 +60,7 @@ public class ClassConfigurator {
 	 * @throws IllegalArgumentException
 	 * @return the created object
 	 */
-	@SuppressWarnings("unchecked")
-	public Object create(String description) throws ClassNotFoundException,
+	public static Object create(String description) throws ClassNotFoundException,
 			InstantiationException, IllegalAccessException, SecurityException,
 			NoSuchMethodException, IllegalArgumentException,
 			InvocationTargetException {
@@ -89,26 +88,32 @@ public class ClassConfigurator {
 			throw new IllegalArgumentException("Definition doesn't comply");
 		}
 
-		Class clazz = Class.forName(className);
+		Class<?> clazz = Class.forName(className);
 
 		Object instance = clazz.newInstance();
-
+		
+		configure( instance, parameters );
+		
+		return instance;
+	}
+	
+	public static void configure( Object object, Map<String,String> parameters )
+	throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException{
+		
 		for (String parameter : parameters.keySet()) {
 
 			String methodName = methodize(parameter);
 
-			Method method = clazz.getMethod(methodName, String.class);
+			Method method = object.getClass().getMethod( methodName, String.class );
 
-			method.invoke(instance, parameters.get(parameter));
+			method.invoke( object, parameters.get( parameter ) );
 		}
-
-		return instance;
 	}
 
 	/*
 	 * Make setXxx out of xxx
 	 */
-	private String methodize(String name) {
+	private static String methodize(String name) {
 
 		if (name.length() == 1) {
 			return "set" + name.toUpperCase();

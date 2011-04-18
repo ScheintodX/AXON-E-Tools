@@ -60,14 +60,12 @@ public class NoHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getHeaderNames() {
+	public Enumeration<?> getHeaderNames() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getHeaders( String arg0 ) {
+	public Enumeration<?> getHeaders( String arg0 ) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -167,8 +165,7 @@ public class NoHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getAttributeNames() {
+	public Enumeration<?> getAttributeNames() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -213,8 +210,7 @@ public class NoHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getLocales() {
+	public Enumeration<?> getLocales() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -224,14 +220,12 @@ public class NoHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Map getParameterMap() {
+	public Map<?,?> getParameterMap() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Enumeration getParameterNames() {
+	public Enumeration<?> getParameterNames() {
 		throw new UnsupportedOperationException();
 	}
 
