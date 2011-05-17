@@ -8,7 +8,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
-@SuppressWarnings({ "unchecked", "deprecation" })
+@SuppressWarnings({ "rawtypes", "unchecked", "deprecation" })
 public class TestHttpSession implements HttpSession {
 
 	@Override

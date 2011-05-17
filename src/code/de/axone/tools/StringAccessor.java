@@ -1,5 +1,7 @@
 package de.axone.tools;
 
+import java.math.BigDecimal;
+
 
 public class StringAccessor {
 	
@@ -39,6 +41,47 @@ public class StringAccessor {
 	}
 	public long getLongRequired( String name, Long defaultValue ){
 		return SA.getLongRequired( a.doGet( name ), name, defaultValue );
+	}
+		// == Double =====
+	public  Double getDouble( String name ){
+		return SA.getDouble( a.doGet( name ), name );
+	}
+	public  double getDouble( String name, double defaultValue ){
+		return SA.getDouble( a.doGet( name ), name, defaultValue );
+	}
+	public  double getDoubleRequired( String name ){
+		return SA.getDoubleRequired( a.doGet( name ), name );
+	}
+	public  double getDoubleRequired( String name, Double defaultValue ){
+		return SA.getDoubleRequired( a.doGet( name ), name, defaultValue );
+	}
+	
+	// == Boolean =====
+	public  Boolean getBoolean( String name ){
+		return SA.getBoolean( a.doGet( name ), name );
+	}
+	public  boolean getBoolean( String name, boolean defaultValue ){
+		return SA.getBoolean( a.doGet( name ), name, defaultValue );
+	}
+	public  boolean getBooleanRequired( String name ){
+		return SA.getBooleanRequired( a.doGet( name ), name );
+	}
+	public  boolean getBooleanRequired( String name, boolean defaultValue ){
+		return SA.getBooleanRequired( a.doGet( name ), name, defaultValue );
+	}
+	
+	// == BigDecimal =====
+	public  BigDecimal getBigDecimal( String name ){
+		return SA.getBigDecimal( a.doGet( name ), name );
+	}
+	public  BigDecimal getBigDecimal( String name, BigDecimal defaultValue ){
+		return SA.getBigDecimal( a.doGet( name ), name, defaultValue );
+	}
+	public  BigDecimal getBigDecimalRequired( String name ){
+		return SA.getBigDecimalRequired( a.doGet( name ), name );
+	}
+	public  BigDecimal getBigDecimalRequired( String name, BigDecimal defaultValue ){
+		return SA.getBigDecimalRequired( a.doGet( name ), name, defaultValue );
 	}
 	
 	// == Enumeration =====

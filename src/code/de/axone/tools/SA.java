@@ -112,7 +112,6 @@ public abstract class SA {
 	public static boolean getBooleanRequired( String value, String name, boolean defaultValue ){
 		Boolean v = getBoolean( value, name );
 		if( v == null ) v = defaultValue;
-		if( v == null ) throw new NoSuchElementException( name );
 		return v;
 	}
 	

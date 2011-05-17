@@ -5,74 +5,58 @@ import java.util.Map;
 
 public class Str {
 
-	public static String join( String joinWith, String ... strings ){
-
-		return joinB( joinWith, (Object[]) strings).toString();
+	// --- J o i n ------------------------------------------------------
+	public static String join( String joinWith, boolean [] ints ){
+		return join( joinWith, A.toObjects( ints ) ).toString();
+	}
+	public static String join( String joinWith, char [] ints ){
+		return join( joinWith, A.toObjects( ints ) ).toString();
+	}
+	public static String join( String joinWith, short [] ints ){
+		return join( joinWith, A.toObjects( ints ) ).toString();
+	}
+	public static String join( String joinWith, int [] ints ){
+		return join( joinWith, A.toObjects( ints ) ).toString();
+	}
+	public static String join( String joinWith, long [] ints ){
+		return join( joinWith, A.toObjects( ints ) ).toString();
+	}
+	public static String join( String joinWith, float [] ints ){
+		return join( joinWith, A.toObjects( ints ) ).toString();
+	}
+	public static String join( String joinWith, double [] ints ){
+		return join( joinWith, A.toObjects( ints ) ).toString();
 	}
 
-	public static String join( String joinWith, Object ... objects ){
+	public static <T> String join( String joinWith, T ... objects ){
+		return joinB( joinWith, Arrays.asList( objects ) ).toString();
+	}
+	public static <T> String join( String joinWith, Iterable<T> objects ){
 		return joinB( joinWith, objects ).toString();
 	}
-
-	public static String join( String joinWith, Iterable<?> strings ){
-
-		return joinB( joinWith, strings ).toString();
+	public static <T> String join( Joiner<T> joiner, T ... objects ){
+		return joinB( joiner, Arrays.asList( objects ) ).toString();
 	}
-
-	public static StringBuilder joinB( String joinWith, Object ... objects ){
-
-		return joinB( joinWith, Arrays.asList( objects ) );
+	public static <T> String join( Joiner<T> joiner, Iterable<T> objects ){
+		return joinB( joiner, objects ).toString();
 	}
-
-	public static StringBuilder joinB( String joinWith, Iterable<?> strings ){
-
-		StringBuilder builder = new StringBuilder();
-
-		boolean first = true;
-		if( strings != null ) for( Object o : strings ){
-
-			if( first ) first = false; else builder.append( joinWith );
-
-			builder.append( o.toString() );
-		} else {
-			builder.append( S._NULL_ );
-		}
-
-		return builder;
+	
+	// joinB 
+	public static <T> StringBuilder joinB( String joinWith, Iterable<T> objects ){
+		return joinBB( new StringBuilder(), joinWith, objects );
 	}
-
-	public static StringBuilder joinB( String rs, String fs, Map<?,?> map ){
-
-		StringBuilder builder = new StringBuilder();
-
-		boolean first = true;
-		if( map != null ) for( Object o : map.keySet() ){
-
-			if( first ) first = false; else builder.append( rs );
-
-			builder
-				.append( o.toString() )
-				.append( fs )
-				.append( map.get( o ).toString() )
-			;
-		} else {
-			builder.append( "- null -" );
-		}
-
-		return builder;
+	public static <T> StringBuilder joinB( Joiner<T> joiner, Iterable<T> objects ){
+		return joinBB( new StringBuilder(), joiner, objects );
 	}
-
-	public static String join( String rs, String fs, Map<?,?> map ){
-
-		return joinB( rs, fs, map ).toString();
+	
+	// joinBB
+	public static <T> StringBuilder joinBB( StringBuilder result, String joinWith, Iterable<T> objects ){
+		return joinBB( result, new SimpleJoiner<T>( joinWith ), objects );
 	}
-
-	public static <T> StringBuilder joinB( Joiner<T> joiner, Iterable<T> list ){
-
-		StringBuilder result = new StringBuilder();
+	public static <T> StringBuilder joinBB( StringBuilder result, Joiner<T> joiner, Iterable<T> objects ){
 
 		int index=0;
-		if( list != null ) for( T object : list ){
+		if( objects != null ) for( T object : objects ){
 
 			if( index > 0 ) result.append( joiner.getSeparator() );
 
@@ -83,11 +67,33 @@ public class Str {
 		return result;
 	}
 
-	public static <T> String join( Joiner<T> joiner, Iterable<T> list ){
-
-		return joinB( joiner, list ).toString();
+	// Map
+	public static <K,V> String join( String rs, String fs, Map<K,V> map ){
+		return joinB( rs, fs, map ).toString();
 	}
+	public static <K,V> StringBuilder joinB( String rs, String fs, Map<K,V> map ){
+		return joinBB( new StringBuilder(), rs, fs, map );
+	}
+	public static <K,V> StringBuilder joinBB( StringBuilder result, String rs, String fs, Map<K,V> map ){
 
+		boolean first = true;
+		if( map != null ) for( K o : map.keySet() ){
+
+			if( first ) first = false; else result.append( rs );
+
+			result
+				.append( o.toString() )
+				.append( fs )
+				.append( map.get( o ).toString() )
+			;
+		} else {
+			result.append( "- null -" );
+		}
+
+		return result;
+	}
+	
+	// --- J o i n e r --------------------------------------------------
 	public interface Joiner<T> {
 
 		public String getSeparator();
@@ -103,10 +109,11 @@ public class Str {
 			return separator;
 		}
 		public String toString( T object, int index ){
-			return index + ": " + object.toString();
+			return object.toString();
 		}
 	}
 	
+	// --- T r i m ------------------------------------------------------
 	public static String trimAtWordBoundary( String text, int len ){
 		return trimAtWordBoundary( text, len, null );
 	}
@@ -132,6 +139,7 @@ public class Str {
 		}
 	}
 	
+	// --- S p l i t ----------------------------------------------------
 	public static String splitAt( int position, String text ){
 		
 		StringBuilder result = new StringBuilder( text.length() + text.length()/position +1 );
@@ -144,4 +152,5 @@ public class Str {
 		
 		return result.toString();
 	}
+	
 }

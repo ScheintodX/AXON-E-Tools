@@ -8,12 +8,12 @@ public class Dumper {
 	
 	private DumpFormatter formatter = new DumpFormatter();
 	
-	public String dump( Object o ){
+	public <T> String dump( T o ){
 		
 		return dump( o, true );
 	}
 	
-	public String dump( Object o, boolean recurse ){
+	public <T> String dump( T o, boolean recurse ){
 		
 		StringBuilder result = new StringBuilder();
 		

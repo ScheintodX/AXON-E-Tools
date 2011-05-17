@@ -26,7 +26,8 @@ public abstract class E {
 		return s;
 	}
 	static String f( Object o ){
-		if( o instanceof String ) return f( (String)o );
+		if( o == null ) return S._NULL_;
+		else if( o instanceof String ) return f( (String)o );
 		else if( o instanceof Collection<?> ) return f( (Collection<?>)o );
 		else if( o instanceof Map<?,?> ) return f( (Map<?,?>) o );
 		else if( o.getClass().isArray() ) return f( (Object[]) o );
@@ -96,7 +97,7 @@ public abstract class E {
     		for( Object o : os ){
     			
     			if( os.length > 1 ) out.print( '\t' );
-    			out.print( o );
+    			out.print( f(o) );
     			if( os.length > 1 ) out.println();
     		}
     		if( nl ) out.println();

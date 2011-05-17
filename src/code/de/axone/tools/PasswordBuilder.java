@@ -81,13 +81,13 @@ public class PasswordBuilder {
 	/**
 	 * Make a password.
 	 * 
-	 * humanized, including upper and lower case, numbers and special chars
+	 * humanized, including upper and lower case, numbers but no special chars
 	 * 
 	 * @param length
 	 * @return the generated password
 	 */
 	public static String makePasswd( int length ){
-		return makePasswd( length, true, true, true, true, true );
+		return makePasswd( length, true, true, true, true, false );
 	}
 	
 	/**

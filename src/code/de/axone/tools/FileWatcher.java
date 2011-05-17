@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author flo
  */
-public class FileWatcher {
+public class FileWatcher implements Watcher {
 
 	public static final Logger log =
 			LoggerFactory.getLogger( FileWatcher.class );
@@ -50,6 +50,7 @@ public class FileWatcher {
 		this( file, TIMEOUT );
 	}
 
+	@Override
 	public boolean hasChanged(){
 
 		boolean result = false;
