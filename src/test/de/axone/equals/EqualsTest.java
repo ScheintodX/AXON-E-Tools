@@ -7,27 +7,29 @@ import org.testng.annotations.Test;
 import de.axone.equals.EqualsClass.Select;
 import de.axone.equals.EqualsClass.WorkOn;
 
-@Test
+@Test( groups="tools.equals" )
 public class EqualsTest {
 	
-	O o1 = new O( 1, "s1", new X( "x1" ), true );
-	O o11 = new O( 1, "s1", new X( "x1" ), true );
+	private O o1 = new O( 1, "s1", new X( "x1" ), true );
+	private O o11 = new O( 1, "s1", new X( "x1" ), true );
 	
-	O o2 = new O( 2, "s1", new X( "x1" ), true );
-	O o3 = new O( 1, "s2", new X( "x1" ), true );
-	O o4 = new O( 1, "s2", new X( "x2" ), true );
-	O o5 = new O( 1, "s2", new X( "x2" ), false );
+	private O o2 = new O( 2, "s1", new X( "x1" ), true );
+	private O o3 = new O( 1, "s2", new X( "x1" ), true );
+	private O o4 = new O( 1, "s2", new X( "x2" ), true );
+	private O o5 = new O( 1, "s2", new X( "x2" ), false );
 	
-	O o20 = new O( 0, "s2", new X( "x2" ), true );
-	O o30 = new O( 1, null, new X( "x1" ), true );
-	O o40 = new O( 1, "s2", null, true );
+	private O o20 = new O( 0, "s2", new X( "x2" ), true );
+	private O o30 = new O( 1, null, new X( "x1" ), true );
+	private O o40 = new O( 1, "s2", null, true );
 		
+	/*
 	public static void main( String [] args ) throws Exception {
 		
 		new EqualsTest().testAnnotations();
 		new EqualsTest().testBuilder();
 		new EqualsTest().testHashcode();
 	}
+	*/
 	
 	public void testAnnotations(){
 		

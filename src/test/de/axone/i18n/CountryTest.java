@@ -4,17 +4,8 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
-@Test
+@Test( groups="tools.country" )
 public class CountryTest {
-
-	@Test( enabled=false )
-	public static void main( String [] args ) throws Exception {
-		
-		new CountryTest().testDe();
-		new CountryTest().testUs();
-		new CountryTest().testUk();
-		new CountryTest().testCa();
-	}
 	
 	public void testDe() throws Exception {
 		
@@ -37,7 +28,7 @@ public class CountryTest {
 	public void testUk() throws Exception {
 		
 		Country c = Country.GB;
-		assertEquals( c.commonName(), "Great Britain" );
+		assertEquals( c.commonName(), "United Kingdom" );
 		assertNotNull( c.locales() );
 		assertEquals( c.locales().length, 1 );
 		//assertTrue( c.locales().contains( Locale.UK ) );

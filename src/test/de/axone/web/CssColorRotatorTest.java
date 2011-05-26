@@ -103,17 +103,17 @@ public class CssColorRotatorTest {
 		// Darken: Gamma 2.0
 		rot = new CssColorRotator( 0, 1, 2.0, false );
 		assertEquals( rot.rotate( c3( "000" ) ), c3( "000" ) );
-		assertEquals( rot.rotate( c3( "400" ) ), new Color( 18, 0, 0 ) );
-		assertEquals( rot.rotate( c3( "800" ) ), new Color( 73, 0, 0 ) );
-		assertEquals( rot.rotate( c3( "c00" ) ), new Color( 163, 0, 0 ) );
+		assertEquals( rot.rotate( c3( "400" ) ), new Color( 132, 0, 0 ) );
+		assertEquals( rot.rotate( c3( "800" ) ), new Color( 186, 0, 0 ) );
+		assertEquals( rot.rotate( c3( "c00" ) ), new Color( 228, 0, 0 ) );
 		assertEquals( rot.rotate( c3( "f00" ) ), c3( "f00" ) );
 		
 		// Lighten: Gamma 0.5
 		rot = new CssColorRotator( 0, 1, 0.5, false );
 		assertEquals( rot.rotate( c3( "000" ) ), c3( "000" ) );
-		assertEquals( rot.rotate( c3( "400" ) ), new Color( 132, 0, 0 ) );
-		assertEquals( rot.rotate( c3( "800" ) ), new Color( 186, 0, 0 ) );
-		assertEquals( rot.rotate( c3( "c00" ) ), new Color( 228, 0, 0 ) );
+		assertEquals( rot.rotate( c3( "400" ) ), new Color( 18, 0, 0 ) );
+		assertEquals( rot.rotate( c3( "800" ) ), new Color( 73, 0, 0 ) );
+		assertEquals( rot.rotate( c3( "c00" ) ), new Color( 163, 0, 0 ) );
 		assertEquals( rot.rotate( c3( "f00" ) ), c3( "f00" ) );
 		
 	}
