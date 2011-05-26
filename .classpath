@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="lib/httpmime-4.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/testng-6.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar" sourcepath="/home/flo/java/commons/commons-lang-2.6/commons-lang-2.6-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

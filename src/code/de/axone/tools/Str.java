@@ -48,6 +48,9 @@ public class Str {
 	public static <T> StringBuilder joinB( Joiner<T> joiner, Iterable<T> objects ){
 		return joinBB( new StringBuilder(), joiner, objects );
 	}
+	public static <M,F> StringBuilder joinB( MapJoiner<M,F> joiner, Map<M,F> objects ){
+		return joinBB( new StringBuilder(), joiner, objects );
+	}
 	
 	// joinBB
 	public static <T> StringBuilder joinBB( StringBuilder result, String joinWith, Iterable<T> objects ){
@@ -68,6 +71,9 @@ public class Str {
 	}
 
 	// Map
+	public static <M,F> String join( MapJoiner<M,F> joiner, Map<M,F> objects ){
+		return joinB( joiner, objects ).toString();
+	}
 	public static <K,V> String join( String rs, String fs, Map<K,V> map ){
 		return joinB( rs, fs, map ).toString();
 	}
@@ -75,17 +81,23 @@ public class Str {
 		return joinBB( new StringBuilder(), rs, fs, map );
 	}
 	public static <K,V> StringBuilder joinBB( StringBuilder result, String rs, String fs, Map<K,V> map ){
-
-		boolean first = true;
+		return joinBB( result, new SimpleMapJoiner<K,V>( rs, fs ), map );
+	}
+	public static <K,V> StringBuilder joinBB( StringBuilder result, MapJoiner<K,V> joiner, Map<K,V> map ){
+		
+		int index = 0;
 		if( map != null ) for( K o : map.keySet() ){
 
-			if( first ) first = false; else result.append( rs );
+			if( index > 0 ) result.append( joiner.getRecordSeparator() );
 
 			result
-				.append( o.toString() )
-				.append( fs )
-				.append( map.get( o ).toString() )
+				.append( joiner.keyToString( o, index ) )
+				.append( joiner.getFieldSeparator() )
+				.append( joiner.valueToString( map.get( o ), index ) )
 			;
+			
+			index++;
+			
 		} else {
 			result.append( "- null -" );
 		}
@@ -111,6 +123,44 @@ public class Str {
 		public String toString( T object, int index ){
 			return object.toString();
 		}
+	}
+	
+	public interface MapJoiner<K,V> {
+		public String getRecordSeparator();
+		public String getFieldSeparator();
+		public String keyToString( K nameField, int index );
+		public String valueToString( V valueField, int index );
+	}
+	public static class SimpleMapJoiner<M,F> implements MapJoiner<M,F> {
+		
+		private String recordSeparator;
+		private String fieldSeparator;
+		
+		SimpleMapJoiner( String recordSeparator, String fieldSeparator ){
+			this.recordSeparator = recordSeparator;
+			this.fieldSeparator = fieldSeparator;
+		}
+
+		@Override
+		public String getRecordSeparator() {
+			return recordSeparator;
+		}
+
+		@Override
+		public String getFieldSeparator() {
+			return fieldSeparator;
+		}
+
+		@Override
+		public String keyToString( M nameField, int index ) {
+			return nameField.toString();
+		}
+
+		@Override
+		public String valueToString( F valueField, int index ) {
+			return valueField.toString();
+		}
+		
 	}
 	
 	// --- T r i m ------------------------------------------------------
