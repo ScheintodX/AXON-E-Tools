@@ -7,11 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.TYPE )
-public @interface EqualsClass {
-	public enum WorkOn { FIELDS, METHODS; }
-	public enum Select { ALL, DECLARED; }
-	public WorkOn workOn();
-	public Select select() default Select.ALL;
-	public boolean includePrivate() default false;
-	
+public @interface EqualsOption {
+	public enum Option { EMPTY_IS_NULL; }
+	public Option[] options();
 }

@@ -2,22 +2,25 @@ package de.axone.tools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.axone.exception.Assert;
+
 public abstract class Mapper {
 
-	public static <T> HashMap<T,T> hashMap( T ... params ){
+	public static <T> HashMap<T,T> hashMap( T ... values ){
 
-		if( (params.length % 2) != 0 )
+		if( (values.length % 2) != 0 )
 			throw new IllegalArgumentException( "Only even argument count allowed" );
 
 		HashMap<T,T> result = new HashMap<T,T>();
-		for( int i = 0; i < params.length; i+= 2 ){
-			result.put( params[ i ], params[ i+1 ] );
+		for( int i = 0; i < values.length; i+= 2 ){
+			result.put( values[ i ], values[ i+1 ] );
 		}
 		return result;
 	}
@@ -34,22 +37,58 @@ public abstract class Mapper {
 		return result;
 	}
 
-	public static <T> HashSet<T> hashSet( T ... params ){
+	public static <T> HashSet<T> hashSet( T ... values ){
 
-		HashSet<T> result = new HashSet<T>( Arrays.asList( params ));
+		HashSet<T> result = new HashSet<T>( Arrays.asList( values ));
 		return result;
 	}
 
-	public static <T> LinkedList<T> linkedList( T ... params ){
-
-		LinkedList<T> result = new LinkedList<T>( Arrays.asList( params ) );
+	public static <T,X> HashSet<T> hashSet( Converter<T,X> converter, X ... values ){
+		
+		Assert.notNull( converter, "converter" );
+		if( values == null ) return new HashSet<T>();
+		
+		HashSet<T> result = new HashSet<T>( values.length );
+		
+		for( X value : values ){
+			result.add( converter.convert( value ) );
+		}
 		return result;
 	}
 
-	public static <T> ArrayList<T> arrayList( T ... params ){
+	public static <T> LinkedList<T> linkedList( T ... values ){
 
-		ArrayList<T> result = new ArrayList<T>( Arrays.asList( params ) );
+		LinkedList<T> result = new LinkedList<T>( Arrays.asList( values ) );
 		return result;
+	}
+	
+	public static <T,X> LinkedList<T> linkedList( Converter<T,X> converter, X ... values ){
+		
+		LinkedList<T> result = new LinkedList<T>();
+		fill( result, converter, values );
+		return result;
+	}
+	
+	public static <T> ArrayList<T> arrayList( T ... values ){
+
+		ArrayList<T> result = new ArrayList<T>( Arrays.asList( values ) );
+		return result;
+	}
+	
+	public static <T,X> ArrayList<T> arrayList( Converter<T,X> converter, X ... values ){
+		
+		ArrayList<T> result = new ArrayList<T>( values.length );
+		fill( result, converter, values );
+		return result;
+	}
+	
+	private static <T,X> void fill( Collection<T> result, Converter<T,X> converter, X ... values ){
+		
+		Assert.notNull(  converter, "converter" );
+		
+		for( X value : values ){
+			result.add( converter.convert( value ) );
+		}
 	}
 
 	public static <T,U> List<String> mapToList( String joinWith, Map<T,U> map ){
@@ -62,5 +101,17 @@ public abstract class Mapper {
 			result.add( key.toString() + joinWith + value.toString() );
 		}
 		return result;
+	}
+	
+	/*
+	private static final class NoConverter<T> implements Converter<T,T>{
+
+		@Override
+		public T convert( T value ) { return value; }
+	}
+	*/
+	
+	public interface Converter<T,X> {
+		public T convert( X value );
 	}
 }
