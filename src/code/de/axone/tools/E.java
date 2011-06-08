@@ -128,6 +128,38 @@ public abstract class E {
 		echo( System.out, 2, true, Text.poster( text.charAt( 0 ), text ) );
 	}
 	
+	public static void rr( boolean [] a ){
+		echo( System.err, true, (Object[])A.toObjects( a ) );
+	}
+	
+	public static void rr( byte [] a ){
+		echo( System.err, true, (Object[])A.toObjects( a ) );
+	}
+	
+	public static void rr( char [] a ){
+		echo( System.err, true, (Object[])A.toObjects( a ) );
+	}
+	
+	public static void rr( short [] a ){
+		echo( System.err, true, (Object[])A.toObjects( a ) );
+	}
+	
+	public static void rr( int [] a ){
+		echo( System.err, true, (Object[])A.toObjects( a ) );
+	}
+	
+	public static void rr( long [] a ){
+		echo( System.err, true, (Object[])A.toObjects( a ) );
+	}
+	
+	public static void rr( float [] a ){
+		echo( System.err, true, (Object[])A.toObjects( a ) );
+	}
+	
+	public static void rr( double [] a ){
+		echo( System.err, true, (Object[])A.toObjects( a ) );
+	}
+	
 	public static void rr( Object ... os ){
 		
 		echo( System.err, true, os );

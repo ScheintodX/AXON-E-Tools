@@ -364,7 +364,7 @@ public abstract class Text {
 		return indentBB( builder, indent, ' ' );
 	}
 	public static StringBuilder indentBB( StringBuilder builder, int indent, char c ){
-		for( int i = 0; i < indent; i++ ) builder.append( c );
+		lineBB( builder, c, indent );
 		return builder;
 	}
 	public static StringBuilder indentB( int indent ){
@@ -428,7 +428,6 @@ public abstract class Text {
 		return builder;
 	}
 	
-	
 	public static String arrayHex( ByteBuffer data, int widht ){
 		return arrayHex( data, widht, 0 );
 	}
@@ -459,6 +458,49 @@ public abstract class Text {
 		}
 
 		return builder;
+	}
+	
+	public enum Align { LEFT, RIGHT; }
+	
+	public static String left( String text, int width ){
+		if( text != null && text.length() > 0 ) text = text + " ";
+		return align( Align.LEFT, text, width, '.' );
+	}
+	
+	public static String right( String text, int width ){
+		if( text != null && text.length() > 0 ) text = " " + text;
+		return align( Align.RIGHT, text, width, '.' );
+	}
+	
+	public static String align( Align align, String text, int width, char fillChar ){
+		return alignB( align, text, width, fillChar ).toString();
+	}
+	
+	public static StringBuilder alignB( Align align, String text, int width, char fillChar ){
+		return alignBB( new StringBuilder(), align, text, width, fillChar );
+	}
+	
+	public static StringBuilder alignBB( StringBuilder builder, Align align, String text, int width, char fillChar ){
+		
+		if( text == null ) text = "";
+		if( text.length() >= width ) return builder.append( text );
+		
+		if( align == Align.LEFT ){
+			
+			builder.append( text );
+			lineBB( builder, fillChar, width-text.length() );
+			return builder;
+			
+		} else if( align == Align.RIGHT ){
+			
+			lineBB( builder, fillChar, width-text.length() );
+			builder.append( text );
+			return builder;
+			
+		} else {
+			throw new IllegalArgumentException( "Not supported Alignment: " + align );
+		}
+		
 	}
 	
 	// Various toString methods for conversion of 'any object' to string

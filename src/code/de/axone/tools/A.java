@@ -15,6 +15,16 @@ public class A {
 		return Arrays.asList( toObjects( values ) );
 	}
 	
+	// Byte
+	public static Byte[] toObjects( byte ... values ){
+		Byte [] result = new Byte[ values.length ];
+		for( int i=0; i<values.length; i++ ) result[ i ] = values[ i ];
+		return result;
+	}
+	public static List<Byte> toList( byte ... values ){
+		return Arrays.asList( toObjects( values ) );
+	}
+	
 	// Character
 	public static Character[] toObjects( char ... values ){
 		Character [] result = new Character[ values.length ];

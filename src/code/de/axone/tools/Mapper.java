@@ -5,44 +5,72 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import de.axone.exception.Assert;
 
 public abstract class Mapper {
 
+	// Maps for Lists
 	public static <T> HashMap<T,T> hashMap( T ... values ){
+		return map( new HashMap<T,T>(), values );
+	}
+		
+	public static <T> TreeMap<T,T> treeMap( T ... values ){
+		return map( new TreeMap<T,T>(), values );
+	}
+		
+	public static <T> LinkedHashMap<T,T> linkedhashMap( T ... values ){
+		return map( new LinkedHashMap<T,T>(), values );
+	}
+		
+	public static <T,M extends Map<T,T>> M map( M result, T ... values ){
 
 		if( (values.length % 2) != 0 )
 			throw new IllegalArgumentException( "Only even argument count allowed" );
 
-		HashMap<T,T> result = new HashMap<T,T>();
 		for( int i = 0; i < values.length; i+= 2 ){
 			result.put( values[ i ], values[ i+1 ] );
 		}
 		return result;
 	}
 
+	// Maps for two Arrays
 	public static <K,V> HashMap<K,V> hashMap( K[] k, V[] v ){
+		return map( new HashMap<K,V>(), k, v );
+	}
+	
+	public static <K,V> TreeMap<K,V> treeMap( K[] k, V[] v ){
+		return map( new TreeMap<K,V>(), k, v );
+	}
+	
+	public static <K,V> LinkedHashMap<K,V> linkedHashMap( K[] k, V[] v ){
+		return map( new LinkedHashMap<K,V>(), k, v );
+	}
+	
+	public static <K,V,M extends Map<K,V>> M map( M result, K[] k, V[] v ){
 
 		if( k.length != v.length )
 			throw new IllegalArgumentException( "Argument count missmatch: " + k.length + "/" + v.length );
 
-		HashMap<K,V> result = new HashMap<K,V>();
 		for( int i = 0; i < k.length; i++ ){
 			result.put( k[ i ], v[ i ] );
 		}
 		return result;
 	}
 
+	// Set
 	public static <T> HashSet<T> hashSet( T ... values ){
 
 		HashSet<T> result = new HashSet<T>( Arrays.asList( values ));
 		return result;
 	}
 
+	// Converted Set
 	public static <T,X> HashSet<T> hashSet( Converter<T,X> converter, X ... values ){
 		
 		Assert.notNull( converter, "converter" );
@@ -58,29 +86,30 @@ public abstract class Mapper {
 
 	public static <T> LinkedList<T> linkedList( T ... values ){
 
-		LinkedList<T> result = new LinkedList<T>( Arrays.asList( values ) );
-		return result;
-	}
-	
-	public static <T,X> LinkedList<T> linkedList( Converter<T,X> converter, X ... values ){
-		
-		LinkedList<T> result = new LinkedList<T>();
-		fill( result, converter, values );
-		return result;
+		return new LinkedList<T>( Arrays.asList( values ) );
 	}
 	
 	public static <T> ArrayList<T> arrayList( T ... values ){
 
-		ArrayList<T> result = new ArrayList<T>( Arrays.asList( values ) );
-		return result;
+		return new ArrayList<T>( Arrays.asList( values ) );
+	}
+	
+	public static <T,X> LinkedList<T> linkedList( Converter<T,X> converter, X ... values ){
+		
+		return collection( new LinkedList<T>(), converter, values );
 	}
 	
 	public static <T,X> ArrayList<T> arrayList( Converter<T,X> converter, X ... values ){
 		
-		ArrayList<T> result = new ArrayList<T>( values.length );
+		return collection( new ArrayList<T>( values.length ), converter, values );
+	}
+	
+	public static <T,X,C extends Collection<T>> C collection( C result, Converter<T,X> converter, X ... values ){
+		
 		fill( result, converter, values );
 		return result;
 	}
+		
 	
 	private static <T,X> void fill( Collection<T> result, Converter<T,X> converter, X ... values ){
 		

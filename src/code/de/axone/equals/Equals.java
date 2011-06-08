@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -22,6 +26,30 @@ import de.axone.equals.EqualsClass.Select;
 import de.axone.exception.Assert;
 
 /**
+ * This a Helper class for implementing the equals and the hashcode
+ * method. Additionally it provides a synchronize method to 'clone'
+ * one instance into another.
+ * 
+ * The realtion of these three methods is:
+ * <pre>
+ * Object o1 = makeObject( "some initializer" );
+ * Object o2 = makeObject( "another initializer" );
+ * 
+ * synchronize( o1, o2 );
+ * assert o1.equals( o2 );
+ * assert o1.hashcode() == o2.hashcode()
+ * </pre> 
+ * 
+ * For control of coping and comparing two annotations are provided:
+ * <tt>@@EqualsClass</tt> and <tt>@@EqualsField</tt>
+ * 
+ * Additionally JPA annotations are supported:
+ * 
+ * <tt>@@Transient</tt> and <tt>@@Id</tt> implies <tt>@@EqualsField( include=false )</tt>
+ * 
+ * These default behaviour can be overwritten by specifying
+ * <tt>@@EqualsField( include=true )</tt>
+ * 
  * @author flo
  *
  */
@@ -54,6 +82,26 @@ public class Equals {
 		return builder.isEquals();
 	}
 	
+	public static <T> String strongHashString( T object ){
+		return Base64.encodeBase64String( strongHash( object ) ).trim();
+		//return String.format( "%08x", strongHash( object ) );
+	}
+	public static <T> byte[] strongHash( T object ){
+		
+		Assert.notNull( object, "object" );
+		
+		StrongHashCodeBuilder<byte[]> builder = new Sha1HashCodeBuilder();
+		StrongHashWrapper<byte[],T> wrapper = new StrongHashWrapper<byte[],T>( builder, object );
+		/*
+		StrongHashCodeBuilder<Integer> builder = new Jenkins96HashCodeBuilder();
+		StrongHashWrapper<Integer,T> wrapper = new StrongHashWrapper<Integer,T>( builder, object );
+		*/
+		
+		process( wrapper, object );
+		
+		return builder.toHashCode();
+	}
+	
 	/**
 	 * Synchronize 'target' so that ist will equals source.
 	 * 
@@ -68,7 +116,7 @@ public class Equals {
 	 * @param source
 	 * @return target (not a copy)
 	 */
-	public static <T extends Synchronizable> T synchronize( T target, T source ) {
+	public static <T extends Synchronizable> T synchronize( T target, T source, SynchroProvider synchro ) {
 		
 		Assert.notNull( target, "target" );
 		Assert.notNull( source, "source" );
@@ -76,7 +124,7 @@ public class Equals {
 		// No synchronisation for equal objects
 		if( target == source || target.equals( source ) ) return target;
 		
-		SyncroWrapper<T> wrapper = new SyncroWrapper<T>( target, source );
+		SyncroWrapper<T> wrapper = new SyncroWrapper<T>( target, source, synchro );
 		
 		process( wrapper, target, source );
 		
@@ -116,6 +164,17 @@ public class Equals {
 						localOptions.addAll( Arrays.asList( eo.options() ) );
 					}
 					
+					boolean isInclude;
+					if( ef != null ){
+						isInclude = ef.include();
+					} else {
+						isInclude = ec.select() == Select.ALL;
+						Transient tAn = m.getAnnotation( Transient.class );
+						Id idAn = m.getAnnotation( Id.class );
+						if( tAn != null ) isInclude = false;
+						if( idAn != null ) isInclude = false;
+					}
+					
 					String name = m.getName();
 					if( 
 							( 
@@ -127,10 +186,7 @@ public class Equals {
 							&& m.getReturnType() != Void.class
 							&& m.getGenericParameterTypes().length == 0
 							&& ( ec.includePrivate() || !isPrivate )
-							&& ( 
-								( ef != null && ef.include() )
-								|| ( ef == null && ec.select() == Select.ALL )
-							)
+							&& isInclude
 					){
 						try {
 							wrapper.invoke( m, localOptions );
@@ -178,6 +234,17 @@ public class Equals {
 						localOptions.addAll( Arrays.asList( eo.options() ) );
 					}
 					
+					boolean isInclude;
+					if( ef != null ){
+						isInclude = ef.include();
+					} else {
+						isInclude = ec.select() == Select.ALL;
+						Transient tAn = getter.getAnnotation( Transient.class );
+						Id idAn = getter.getAnnotation( Id.class );
+						if( tAn != null ) isInclude = false;
+						if( idAn != null ) isInclude = false;
+					}
+					
 					String name = getter.getName();
 					if( 
 							( 
@@ -189,10 +256,7 @@ public class Equals {
 							&& getter.getReturnType() != Void.class
 							&& getter.getGenericParameterTypes().length == 0
 							&& ( ec.includePrivate() || !isPrivate )
-							&& ( 
-								( ef != null && ef.include() )
-								|| ( ef == null && ec.select() == Select.ALL )
-							)
+							&& isInclude
 					){
 						
 						String setterName = "set"+m2n( name );
@@ -253,6 +317,12 @@ public class Equals {
 			v1 = applyOptions( v1, options );
 			v2 = applyOptions( v2, options );
 			
+			/*
+			if( (v1 == null && v2 != null) || (v1 != null && !v1.equals( v2 ) ) ){
+				E.rr( "### " + m.getName() + " doesn't match: " + v1 + " != " + v2 + " ###" );
+			}
+			*/
+			
 			builder.append( v1, v2 );
 		}
 	}
@@ -279,14 +349,40 @@ public class Equals {
 		}
 	}
 	
+	private static final class StrongHashWrapper<H,T> implements Wrapper<T> {
+	
+		final StrongHashCodeBuilder<H> builder;
+		final T o;
+		
+		StrongHashWrapper( StrongHashCodeBuilder<H> builder, T o ){
+			this.builder = builder;
+			this.o = o;
+		}
+		
+		@Override
+		public void invoke( Method m, EnumSet<EqualsOption.Option> options )
+				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+			
+			Object value = m.invoke( o );
+			
+			value = applyOptions( value, options );
+			
+			//E.rr( m.getName() + " := " + value );
+			
+			builder.append( m.invoke( o ) );
+		}
+	}
+	
 	private static final class SyncroWrapper<T> implements CopyWrapper<T> {
 		
 		final T target;
 		final T source;
+		final SynchroProvider synchro;
 		
-		SyncroWrapper( T target, T source ){
+		SyncroWrapper( T target, T source, SynchroProvider synchro ){
 			this.target = target;
 			this.source = source;
+			this.synchro = synchro;
 		}
 
 		@Override
@@ -307,7 +403,7 @@ public class Equals {
 			
 			if( newVal != null && oldVal != null && newVal instanceof Synchronizable ){
 				
-				Equals.synchronize( (Synchronizable)oldVal, (Synchronizable)newVal );
+				Equals.synchronize( (Synchronizable)oldVal, (Synchronizable)newVal, synchro );
 			} else {
 				
 				if( newVal != null && oldVal != null ){
@@ -324,7 +420,7 @@ public class Equals {
 						// Keep the old ones and add only the new ones.
 						for( Object o : newSet ){
 							if( ! oldSet.contains( o ) ){
-								oldSet.add( o );
+								oldSet.add( synchro.copyOf( o ) );
 							}
 						}
 						return;
@@ -344,7 +440,7 @@ public class Equals {
 						}
 						for( Object o : newList ){
 							if( ! oldList.contains( o ) ){
-								oldList.add( o );
+								oldList.add( synchro.copyOf( o ) );
 							}
 						}
 						Collections.sort( oldList, new List2ListSorter( newList ) );
@@ -373,18 +469,18 @@ public class Equals {
 								Object value = newMap.get( key );
 								if( ! oldMap.get( key ).equals( value ) ){
 									// No deep copy here!
-									oldMap.put( key, value );
+									oldMap.put( key, synchro.copyOf( value ) );
 								}
 							} else {
-								oldMap.put( key, newMap.get( key ) );
+								oldMap.put( key, newMap.get( synchro.copyOf( key ) ) );
 							}
 						}
-						
 					}
 					
 				}
 				setter.invoke( target, newVal );
 			}
+			
 		}
 		
 	}
@@ -397,6 +493,8 @@ public class Equals {
 					if( ((Collection<?>)o).size() == 0 ) return null;
 				} else if( o instanceof Map ){
 					if( ((Map<?,?>)o).size() == 0 ) return null;
+				} else if( o instanceof String ){
+					if( ((String)o).length() == 0 ) return null;
 				}
 			}
 		}
@@ -420,6 +518,5 @@ public class Equals {
 					.compareTo( new Integer( list.indexOf( o2 ) ) );
 			
 		}
-		
 	}
 }

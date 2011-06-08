@@ -11,12 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.testng.annotations.Test;
 
 import de.axone.equals.Equals.Synchronizable;
 import de.axone.equals.EqualsClass.Select;
 import de.axone.equals.EqualsClass.WorkOn;
+import de.axone.tools.E;
 
 @Test( groups="tools.equals" )
 public class EqualsTest {
@@ -126,29 +130,55 @@ public class EqualsTest {
 		assertFalse( o1.hashCode() == o50.hashCode() );
 	}
 	
+	public void testStrongHashCode(){
+		
+		E.rr( "o1:" + o1.strongHashCode() );
+		E.rr( "o11:" + o11.strongHashCode() );
+		E.rr( "o2:" + o2.strongHashCode() );
+		E.rr( "o3:" + o3.strongHashCode() );
+		E.rr( "o4:" + o4.strongHashCode() );
+		E.rr( "o5:" + o5.strongHashCode() );
+		
+		assertTrue( o1.strongHashCode().equals( o1.strongHashCode() ) );
+		assertTrue( o11.strongHashCode().equals( o11.strongHashCode() ) );
+		assertTrue( o1.strongHashCode().equals( o11.strongHashCode() ) );
+		assertTrue( o11.strongHashCode().equals( o1.strongHashCode() ) );
+		
+		assertFalse( o1.strongHashCode().equals( o2.strongHashCode() ) );
+		assertFalse( o1.strongHashCode().equals( o3.strongHashCode() ) );
+		assertFalse( o1.strongHashCode().equals( o4.strongHashCode() ) );
+		assertFalse( o1.strongHashCode().equals( o5.strongHashCode() ) );
+		assertFalse( o1.strongHashCode().equals( o6.strongHashCode() ) ); // BigDecimals scale affect strongHashCode
+		
+		assertFalse( o1.strongHashCode().equals( o20.strongHashCode() ) );
+		assertFalse( o1.strongHashCode().equals( o30.strongHashCode() ) );
+		assertFalse( o1.strongHashCode().equals( o40.strongHashCode() ) );
+		assertFalse( o1.strongHashCode().equals( o50.strongHashCode() ) );
+	}
+	
 	public void testSynchronize(){
 		
 		O o = new O( 0, null, null, false, null );
 		
-		assertEquals( Equals.synchronize( o, o1 ), o1 );
-		assertEquals( Equals.synchronize( o, o11 ), o11 );
+		assertEquals( Equals.synchronize( o, o1, null ), o1 );
+		assertEquals( Equals.synchronize( o, o11, null ), o11 );
 		
-		assertEquals( Equals.synchronize( o, o2 ), o2 );
-		assertEquals( Equals.synchronize( o, o3 ), o3 );
-		assertEquals( Equals.synchronize( o, o4 ), o4 );
-		assertEquals( Equals.synchronize( o, o5 ), o5 );
-		assertEquals( Equals.synchronize( o, o6 ), o6 );
+		assertEquals( Equals.synchronize( o, o2, null ), o2 );
+		assertEquals( Equals.synchronize( o, o3, null ), o3 );
+		assertEquals( Equals.synchronize( o, o4, null ), o4 );
+		assertEquals( Equals.synchronize( o, o5, null ), o5 );
+		assertEquals( Equals.synchronize( o, o6, null ), o6 );
 		
-		assertEquals( Equals.synchronize( o, o20 ), o20 );
-		assertEquals( Equals.synchronize( o, o30 ), o30 );
-		assertEquals( Equals.synchronize( o, o40 ), o40 );
-		assertEquals( Equals.synchronize( o, o50 ), o50 );
+		assertEquals( Equals.synchronize( o, o20, null ), o20 );
+		assertEquals( Equals.synchronize( o, o30, null ), o30 );
+		assertEquals( Equals.synchronize( o, o40, null ), o40 );
+		assertEquals( Equals.synchronize( o, o50, null ), o50 );
 		
 	}
 	
 	@SuppressWarnings( "unused" )
 	@EqualsClass( workOn = WorkOn.METHODS )
-	private static class O implements Synchronizable {
+	private static class O implements Synchronizable, StrongHash {
 		
 		private int i;
 		private String s;
@@ -212,6 +242,11 @@ public class EqualsTest {
 		public double getignore2(){ return ignore; };
 		public double getIgnore3( int x ){ return ignore; }
 		
+		@Id
+		public double getIgnore4(){ return ignore; };
+		@Transient
+		public double getIgnore5(){ return ignore; };
+		
 		@Override
 		public boolean equals( Object other ){
 			return Equals.equals( this, other );
@@ -220,11 +255,15 @@ public class EqualsTest {
 		public int hashCode(){
 			return Equals.hash( this );
 		}
+		@Override
+		public String strongHashCode(){
+			return Equals.strongHashString( this );
+		}
 	}
 	
 	@SuppressWarnings( "unused" )
 	@EqualsClass( select = Select.DECLARED, workOn = WorkOn.METHODS )
-	private static class X {
+	private static class X implements StrongHash {
 		
 		private String x;
 		private double ignore = Math.random();
@@ -243,6 +282,10 @@ public class EqualsTest {
 		@Override
 		public int hashCode(){
 			return Equals.hash( this );
+		}
+		@Override
+		public String strongHashCode(){
+			return Equals.strongHashString( this );
 		}
 	}
 }
