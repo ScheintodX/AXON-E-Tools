@@ -1,7 +1,6 @@
 package de.axone.equals;
 
 import java.util.Collection;
-import java.util.Currency;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -150,12 +149,19 @@ public abstract class AbstractStrongHashCodeBuilder<T> implements StrongHashCode
 		// Special treatment for currency which has no hashcode method
 		// This leads to a somewhat changed behaviour since this is stable
 		// over program runs and calling hashcode isn't.
+		/* Moved to equals because is althoug needed in normal hashcode
 		else if( o instanceof Currency ){
 			//E.rr(  ((Currency)o).getCurrencyCode()  );
 			append( ((Currency)o).getCurrencyCode() );
 		}
+		*/
 		else{
-			//E.rr( o + ": " + o.hashCode() );
+			/*
+			if( o instanceof Currency ){
+				(new Throwable()).printStackTrace();
+			}
+			E.rr( o + ": (" + o.getClass().getSimpleName() + ")" + o.hashCode() );
+			*/
 			append( o.hashCode() ); // Fallback to normal hashcode if we can't do better
 		}
 		

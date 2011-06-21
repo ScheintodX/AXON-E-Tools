@@ -7,6 +7,7 @@ public class ArgumentParserTag implements ArgumentParser {
 
 	private static final String ARG_PREFIX = "--";
 
+	@Override
 	public ArgumentVector parseArgs( 
 			ArgumentDescription<?> [] descriptions, 
 			String [] args
@@ -86,6 +87,8 @@ public class ArgumentParserTag implements ArgumentParser {
 	
 	private static final char split[] = { ' ', '\t' };
 	
+	@SuppressWarnings( "null" )
+	@Override
 	public String [] parseLine( String userInput ){
 		
 		LinkedList<String> result = new LinkedList<String>();

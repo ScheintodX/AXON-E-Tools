@@ -34,6 +34,7 @@ public class HttpUtil {
 		public byte[] content;
 		public String encoding;
 		
+		@Override
 		public String toString(){
 			return 
 				"code: " + code + "\n" +

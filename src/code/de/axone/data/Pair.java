@@ -38,7 +38,8 @@ public class Pair<L, R> {
         return o1.equals(o2);
     }
  
-    public int hashCode() {
+    @Override
+	public int hashCode() {
         int hLeft = (getLeft() == null) ? 0 : getLeft().hashCode();
         int hRight = (getRight() == null) ? 0 : getRight().hashCode();
  

@@ -503,5 +503,82 @@ public abstract class Text {
 		
 	}
 	
+	public static String diff( String s1, String s2 ){
+		return diff( s1, s2, -1 );
+	}
+	public static String diff( String s1, String s2, int truncate ){
+		
+		if( s1 == s2 ) return "[SAME]";
+		if( s1 == null ) return "[s1 IS NULL]";
+		if( s2 == null ) return "[s2 IS NULL]";
+		if( s1.equals( s2 ) ) return "[EQUAL]";
+		
+		String min;
+		if( s1.length() < s2.length() ){
+			min = s1; //max = s2;
+		} else {
+			min = s2; //max = s1;
+		}
+		
+		String left="";
+		int i;
+		for( i=0; i<min.length(); i++ ){
+			
+			char c1 = s1.charAt( i );
+			char c2 = s2.charAt( i );
+			
+			if( c1!=c2 ){
+				left += "--->[:";
+				break;
+			}
+			left += c1;
+		}
+		
+		String right="";
+		int j;
+		for( j=0; j<min.length(); j++ ){
+			
+			char c1 = s1.charAt( s1.length()-1 -j );
+			char c2 = s2.charAt( s2.length()-1 -j );
+			
+			if( c1!=c2 ){
+				right = ":]<---" + right;
+				break;
+			}
+			right = c1+right;
+		}
+		
+		StringBuilder result = new StringBuilder();
+		
+		if( truncate >= 0 ){
+			
+			truncate += 5; // --->[ / ]<---
+			
+			if( left.length() > truncate ){
+				left = left.substring( left.length() - truncate );
+			}
+			if( right.length() > truncate ){
+				right = right.substring( 0, truncate );
+			}
+		}
+		
+		result.append( left );
+		result.append( s1.subSequence( i, s1.length() -j ) );
+		result.append( ":|:" );
+		result.append( s2.subSequence( i, s2.length() -j ) );
+		result.append( right );
+		
+		return result.toString();
+	}
+	
+	public static StringBuilder reverseB( CharSequence s ){
+		
+		StringBuilder result = new StringBuilder();
+		for( int i=0; i<s.length(); i++ ){
+			result.append( s.charAt( s.length()-1-i ) );
+		}
+		return result;
+	}
+	
 	// Various toString methods for conversion of 'any object' to string
 }

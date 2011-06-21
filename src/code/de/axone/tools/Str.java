@@ -117,9 +117,11 @@ public class Str {
 		public SimpleJoiner( String separator ){
 			this.separator = separator;
 		}
+		@Override
 		public String getSeparator(){
 			return separator;
 		}
+		@Override
 		public String toString( T object, int index ){
 			return object.toString();
 		}

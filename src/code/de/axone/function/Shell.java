@@ -94,7 +94,7 @@ public class Shell {
 		return commands.get( name );
 	}
 	
-	public Result interactive( InputStream ins ) throws ShellException, IOException {
+	public Result interactive( InputStream ins ) throws IOException {
 		
 		BufferedReader in = new BufferedReader( new InputStreamReader( ins ) );
 		Result result = null;

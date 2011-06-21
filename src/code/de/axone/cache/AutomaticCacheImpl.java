@@ -59,8 +59,6 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 		HashMap<K,V> result = new HashMap<K,V>();
 		Set<K> missed = null;
 
-		if( keys == null ) return null;
-
 		readLock.lock();
 		try{
     		for( K key : keys ){
@@ -113,8 +111,6 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 	public V get( K key, DataAccessor<K,V> accessor ) {
 
 		assert key != null && accessor != null;
-
-		if( key == null ) return null;
 
 		readLock.lock();
 		V result = null;

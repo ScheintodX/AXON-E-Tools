@@ -5,9 +5,9 @@ import java.security.NoSuchAlgorithmException;
 
 import de.axone.exception.Assert;
 
-public class Sha1HashCodeBuilder extends AbstractStrongHashCodeBuilder<byte[]> {
+public class CryptoHashCodeBuilder extends AbstractStrongHashCodeBuilder<byte[]> {
 	
-	private static final String SHA1 = "SHA-1";
+	private static final String ALGO = "SHA1";
 	
 	private static final byte NULL_VALUE = 0;
 	private static final int EMPTY_VALUE = Integer.MAX_VALUE-1; // "Some" rare(?) value
@@ -15,7 +15,7 @@ public class Sha1HashCodeBuilder extends AbstractStrongHashCodeBuilder<byte[]> {
 	public static final byte[] EMPTY_HASH;
 	static{
 		try {
-			EMPTY_HASH = MessageDigest.getInstance( SHA1 ).digest();
+			EMPTY_HASH = MessageDigest.getInstance( ALGO ).digest();
 		} catch( NoSuchAlgorithmException e ) {
 			throw new Error( e ); // <- this can happen
 		}
@@ -25,13 +25,13 @@ public class Sha1HashCodeBuilder extends AbstractStrongHashCodeBuilder<byte[]> {
 	
 	private final boolean treatEmptyAsNull;
 	
-	public Sha1HashCodeBuilder(){
+	public CryptoHashCodeBuilder(){
 		this( true );
 	}
-	public Sha1HashCodeBuilder( boolean treatEmptyAsNull ){
+	public CryptoHashCodeBuilder( boolean treatEmptyAsNull ){
 		this.treatEmptyAsNull = treatEmptyAsNull;
 		try {
-			this.digest = MessageDigest.getInstance( SHA1 );
+			this.digest = MessageDigest.getInstance( ALGO );
 		} catch( NoSuchAlgorithmException e ) {
 			throw new Error( e ); // <-- Can happen
 		}
@@ -80,7 +80,7 @@ public class Sha1HashCodeBuilder extends AbstractStrongHashCodeBuilder<byte[]> {
 
 	@Override
 	StrongHashCodeBuilder<byte[]> builder() {
-		return new Sha1HashCodeBuilder( treatEmptyAsNull );
+		return new CryptoHashCodeBuilder( treatEmptyAsNull );
 	}
 	@Override
 	public StrongHashCodeBuilder<byte[]> appendParent( byte[] hash ) {

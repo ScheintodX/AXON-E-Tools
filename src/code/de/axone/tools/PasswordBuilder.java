@@ -1,11 +1,23 @@
 package de.axone.tools;
 
 import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.util.Set;
 import java.util.TreeSet;
 
+import de.axone.exception.Assert;
+
 public class PasswordBuilder {
+	
+	public static final int DEFAULT_LENGTH = 12;
+	public static final int DEFAULT_ROUNDS_EXP = 10; // <1024 rounds
+	public static final String DEFAULT_ALGO = "SHA-256";
+	public static final String DEFAULT_PROVIDER = "SUN";
+	
+	public static final String HASH_SPLIT = "\\$";
 
 	private static final char [] allowedCharsLowerCase = {
 		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -17,17 +29,8 @@ public class PasswordBuilder {
 		'2', '3','4', '5', '6', '7', '8', '9',
 	};
 	private static final char [] allowedCharsSpecial = {
-		'!', '$', '*', '#', '+', '-', '='
+		'!', '$', '*', '#', '+', '-', '=', '%', '(', ')', '?', '/', '&', '@'
 	};
-	
-	public static void main( String [] args ){
-		Character [] ch = makeValues( true, false, true, true, false );
-		char[] c = new char[ ch.length ];
-		for( int i = 0; i < ch.length; i++ ) c[i] = ch[i];
-		E.rr( new String(  c  ) );
-		
-		E.rr( makePasswd( 8, true ) );
-	}
 	
 	private static void addAll( Set<Character> set, char[] toAdd ){
 		
@@ -77,6 +80,17 @@ public class PasswordBuilder {
 		
 		return result.toArray( resultArray );
 	}
+	
+	/**
+	 * Make a password with usefull settings
+	 * 
+	 * uses DEFAULT_LENGTH as length. Currently 12 chars.
+	 * humanized, including upper and lower case, numbers but no special chars
+	 */
+	public static String makePasswd(){
+		return makePasswd( DEFAULT_LENGTH );
+	}
+	
 	
 	/**
 	 * Make a password.
@@ -155,4 +169,76 @@ public class PasswordBuilder {
 		return result.toString();
 	}
 	
+	private static String makeSalt( int chars ){
+		
+		return makePasswd( chars, false, true, true, true, false );
+		
+	}
+	
+	public static boolean checkPassword( String plain, String hashed ) {
+		
+		Assert.notNull( hashed, "hashed" );
+		
+		String parts[] = hashed.split( HASH_SPLIT );
+		
+		if( parts.length == 1 ){
+			
+			return hashed.equals( plain );
+			
+		} else {
+			
+			Assert.inRange( parts.length, "parts", 4, 4 );
+		
+			String algo = parts[0];
+			int rounds = Integer.parseInt( parts[1] );
+			String salt = parts[2];
+		
+			try {
+				String ref = hashPassword( plain, algo, salt, rounds );
+				
+				return hashed.equals( ref );
+				
+			} catch( NoSuchAlgorithmException e ) {
+				throw new IllegalArgumentException( "Algo: '" + algo + "' is unknown for hashing" );
+			}
+		}
+	}
+	
+	public static String hashPassword( String plain, String algo, String salt, int roundsExp )
+	throws NoSuchAlgorithmException {
+		
+		try {
+			MessageDigest digest = MessageDigest.getInstance( algo, DEFAULT_PROVIDER );
+			digest.update( salt.getBytes() );
+			digest.update( plain.getBytes() );
+			byte [] hashed = digest.digest();
+			
+			int rounds = 1<<roundsExp;
+			for( int i=0; i < rounds; i++ ){
+				hashed = digest.digest( hashed );
+			}
+			
+			String readable = (new BASE64Encoder()).encode( hashed );
+			
+			return algo + "$" + roundsExp + "$" + salt + "$" + readable.trim();
+		} catch( NoSuchProviderException e ) {
+			throw new Error( "Unknown Provider: " + DEFAULT_PROVIDER );
+		}
+		
+		
+	}
+	
+	public static String hashPassword( String plain, String algo )
+	throws NoSuchAlgorithmException {
+		return hashPassword( plain, algo, makeSalt( 24 ), DEFAULT_ROUNDS_EXP );
+	}
+	public static String hashPassword( String plain ){
+		
+		String algo = DEFAULT_ALGO;
+		try {
+			return hashPassword( plain, algo );
+		} catch( NoSuchAlgorithmException e ) {
+			throw new Error( "Error in installation: " + algo + " is missing" );
+		}
+	}
 }

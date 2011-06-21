@@ -22,7 +22,7 @@ public class FileSetWatcherTest {
 	
 	private static int count=0;
 	
-	private void touch( File file ) throws IOException, InterruptedException{
+	private void touch( File file ) throws IOException {
 		PrintWriter out = new PrintWriter( new FileWriter( file ) );
 		out.print( count++ );
 		out.flush();

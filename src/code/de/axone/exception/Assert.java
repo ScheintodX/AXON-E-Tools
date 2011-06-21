@@ -63,4 +63,14 @@ public abstract class Assert {
 		if( o1 == null ) return;
 		if( o1 != o2 ) throw Ex.up( new ArgumentRangeException( name, "== " + o2, o1 ) );
 	}
+	// instance --------------------
+	public static void isInstance( Object o, String name, Class<?> clz ){
+		if( o == null ) return;
+		if( ! o.getClass().isInstance( clz ) ) throw Ex.up( new ArgumentInstanceException( name, clz ) );
+	}
+	// class --------------------
+	public static void isClass( Object o, String name, Class<?> clz ){
+		if( o == null ) return;
+		if( ! o.getClass().isInstance( clz ) ) throw Ex.up( new ArgumentClassException( name, clz ) );
+	}
 }

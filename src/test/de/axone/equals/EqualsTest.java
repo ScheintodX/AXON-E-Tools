@@ -20,7 +20,6 @@ import org.testng.annotations.Test;
 import de.axone.equals.Equals.Synchronizable;
 import de.axone.equals.EqualsClass.Select;
 import de.axone.equals.EqualsClass.WorkOn;
-import de.axone.tools.E;
 
 @Test( groups="tools.equals" )
 public class EqualsTest {
@@ -42,6 +41,7 @@ public class EqualsTest {
 	// This method tests, that EqualsBuilder from Commons uses equals on
 	// BigDecimal to compare to BigDecimals. Note that this was changed
 	// in the past and could change again.
+	//@Test( enabled=false )
 	public void testCommonsForBigDecimalHandling(){
 		
 		BigDecimal a = new BigDecimal( "2.0" );
@@ -84,6 +84,7 @@ public class EqualsTest {
 		assertFalse( eb.isEquals() );
 	}
 	
+	//@Test( enabled=false )
 	public void testAnnotations(){
 		
 		EqualsClass ec = O.class.getAnnotation( EqualsClass.class );
@@ -92,6 +93,7 @@ public class EqualsTest {
 		assertEquals( ec.workOn(), WorkOn.METHODS );
 	}
 
+	//@Test( enabled=false )
 	public void testBuilder(){
 		
 		assertTrue( o1.equals( o1 ) );
@@ -111,6 +113,7 @@ public class EqualsTest {
 		assertFalse( o1.equals( o50 ) );
 	}
 	
+	//@Test( enabled=false )
 	public void testHashcode(){
 		
 		assertTrue( o1.hashCode() == o1.hashCode() );
@@ -130,14 +133,8 @@ public class EqualsTest {
 		assertFalse( o1.hashCode() == o50.hashCode() );
 	}
 	
+	//@Test( enabled=false )
 	public void testStrongHashCode(){
-		
-		E.rr( "o1:" + o1.strongHashCode() );
-		E.rr( "o11:" + o11.strongHashCode() );
-		E.rr( "o2:" + o2.strongHashCode() );
-		E.rr( "o3:" + o3.strongHashCode() );
-		E.rr( "o4:" + o4.strongHashCode() );
-		E.rr( "o5:" + o5.strongHashCode() );
 		
 		assertTrue( o1.strongHashCode().equals( o1.strongHashCode() ) );
 		assertTrue( o11.strongHashCode().equals( o11.strongHashCode() ) );
@@ -156,11 +153,15 @@ public class EqualsTest {
 		assertFalse( o1.strongHashCode().equals( o50.strongHashCode() ) );
 	}
 	
+	//@Test( enabled=false )
 	public void testSynchronize(){
 		
 		O o = new O( 0, null, null, false, null );
 		
 		assertEquals( Equals.synchronize( o, o1, null ), o1 );
+		assertFalse( o.getList() == o1.getList() );
+		assertFalse( o.getSet() == o1.getSet() );
+		assertFalse( o.getMap() == o1.getMap() );
 		assertEquals( Equals.synchronize( o, o11, null ), o11 );
 		
 		assertEquals( Equals.synchronize( o, o2, null ), o2 );
@@ -176,9 +177,85 @@ public class EqualsTest {
 		
 	}
 	
+	// Remember to re-enable tests above
+	public void testSynchronizeMapper(){
+		
+		O o = new O( 0, null, null, false, null );
+		
+		Equals.synchronize( o, o1, new TestSynchroMapper() );
+		
+		assertFalse( o.equals( o1 ) );
+		assertFalse( o.getSet() == o1.getSet() );
+		assertFalse( o.getList() == o1.getList() );
+		assertFalse( o.getMap() == o1.getMap() );
+		
+		assertNotNull( o.getSet() );
+		assertNotNull( o.getList() );
+		assertNotNull( o.getMap() );
+		
+		assertEquals( o.getString(), "s1X" );
+		
+		assertFalse( o.getSet().equals( o1.getSet() ) );
+		assertTrue( o.getSet().contains( "s1X" ) );
+		assertFalse( o.getSet().contains( "s1" ) );
+		
+		assertFalse( o.getList().equals( o1.getList() ) );
+		assertTrue( o.getList().contains( "s1X" ) );
+		assertFalse( o.getList().contains( "s1" ) );
+		
+		assertFalse( o.getMap().equals( o1.getMap() ) );
+		assertEquals( o.getMap().get( "s" ), "s1X" );
+		
+		O o_ = new O();
+		
+		Equals.synchronize( o_, o1, new TestSynchroMapper() );
+		
+		assertFalse( o_.equals( o1 ) );
+		assertFalse( o_.getSet() == o1.getSet() );
+		assertFalse( o_.getList() == o1.getList() );
+		assertFalse( o_.getMap() == o1.getMap() );
+		
+		assertNotNull( o_.getSet() );
+		assertNotNull( o_.getList() );
+		assertNotNull( o_.getMap() );
+		
+		assertEquals( o_.getString(), "s1X" );
+		
+		assertFalse( o_.getSet().equals( o1.getSet() ) );
+		assertTrue( o_.getSet().contains( "s1X" ) );
+		assertFalse( o_.getSet().contains( "s1" ) );
+		
+		assertFalse( o_.getList().equals( o1.getList() ) );
+		assertTrue( o_.getList().contains( "s1X" ) );
+		assertFalse( o_.getList().contains( "s1" ) );
+		
+		assertFalse( o_.getMap().equals( o1.getMap() ) );
+		assertEquals( o_.getMap().get( "s" ), "s1X" );
+		
+	}
+	
+	class TestSynchroMapper implements SynchroMapper {
+
+		@Override
+		public Object copyOf( Object object ) {
+			if( object instanceof String ){
+				return ((String)object) + "X";
+			}
+			return object;
+		}
+
+		@Override
+		public Object emptyInstanceOf( Object object )
+				throws InstantiationException, IllegalAccessException {
+			
+			return object.getClass().newInstance();
+		}
+		
+	}
+	
 	@SuppressWarnings( "unused" )
 	@EqualsClass( workOn = WorkOn.METHODS )
-	private static class O implements Synchronizable, StrongHash {
+	private static class O implements Synchronizable<O>, StrongHash {
 		
 		private int i;
 		private String s;
@@ -190,6 +267,8 @@ public class EqualsTest {
 		private Map<Object,Object> map;
 		
 		private double ignore = Math.random();
+		
+		O(){}
 		
 		O( int i, String s, X x, boolean b, String bd ){
 			
@@ -227,6 +306,7 @@ public class EqualsTest {
 		public boolean isB(){ return b; }
 		public Set<Object> getSet(){ return set; }
 		public List<Object> getList(){ return list; }
+		public Map<Object,Object> getMap(){ return map; }
 		public BigDecimal getBd(){ return bd; }
 		
 		public void setInt( int i ){ this.i=i; }
@@ -235,6 +315,7 @@ public class EqualsTest {
 		public void setB( boolean b ){ this.b=b; }
 		public void setSet( Set<Object> set ){ this.set=set; }
 		public void setList( List<Object> list ){ this.list=list; }
+		public void setMap( Map<Object,Object> map ){ this.map=map; }
 		public void setBd( BigDecimal bd ){ this.bd=bd; }
 		
 		@EqualsField( include=false )
@@ -259,9 +340,26 @@ public class EqualsTest {
 		public String strongHashCode(){
 			return Equals.strongHashString( this );
 		}
+
+		@Override
+		public void synchronizeFrom( O other ) {
+			Equals.synchronize( this, other, null );
+		}
+		
+		@Override
+		public String toString() {
+			return "O [i=" + i + ", s=" + s + ", x=" + x + ", b=" + b + ", bd="
+					+ bd + ", set=" + set + ", list=" + list + ", map=" + map
+					+ ", ignore=" + ignore + "]";
+		}
+
+		@Override
+		public O emptyInstance() {
+			return new O();
+		}
+
 	}
 	
-	@SuppressWarnings( "unused" )
 	@EqualsClass( select = Select.DECLARED, workOn = WorkOn.METHODS )
 	private static class X implements StrongHash {
 		
@@ -286,6 +384,11 @@ public class EqualsTest {
 		@Override
 		public String strongHashCode(){
 			return Equals.strongHashString( this );
+		}
+
+		@Override
+		public String toString() {
+			return "X [x=" + getX() + ", ignore=" + getIgnore() + "]";
 		}
 	}
 }

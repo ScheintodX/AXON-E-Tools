@@ -26,6 +26,7 @@ public class RegexerTest {
 		assertEquals( regexer.transform( "deleteme" ), "me" );
 	}
 	
+	@SuppressWarnings( "unused" )
 	public void testExceptions() throws Exception {
 	
 		try{

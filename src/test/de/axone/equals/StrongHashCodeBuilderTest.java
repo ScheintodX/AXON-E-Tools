@@ -26,10 +26,10 @@ public class StrongHashCodeBuilderTest {
 	}
 
 	public static void testStringHashesSha1() throws Exception {
-		testStringHashes( new Sha1HashCodeBuilder() );
+		testStringHashes( new CryptoHashCodeBuilder() );
 	}
 	public static void testCollectionHashesSha1() throws Exception {
-		testCollectionHashes( new Sha1HashCodeBuilder() );
+		testCollectionHashes( new CryptoHashCodeBuilder() );
 	}
 
 	private static <T> void testStringHashes( AbstractStrongHashCodeBuilder<T> builder ) throws Exception {

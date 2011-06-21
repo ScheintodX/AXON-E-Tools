@@ -95,6 +95,7 @@ public class Jenkins96Backend {
 	 * a previous run.  0 if none.
 	 * @return Hash value for the buffer.
 	 */
+	@SuppressWarnings( "fallthrough" )
 	public long hash(Byte[] buffer, long initialValue) {
 		int len, pos;
 		
