@@ -175,7 +175,8 @@ public class UrlParser {
 				return "image/png";
 			} else if( extension.equalsIgnoreCase( "gif" ) ) {
 				return "image/gif";
-				/* css/js */
+			} else if( extension.equalsIgnoreCase( "ico" ) ) {
+				return "image/x-icon";
 			} else if( extension.equalsIgnoreCase( "css" ) ) {
 				return "text/css";
 			} else if( extension.equalsIgnoreCase( "js" ) ) {

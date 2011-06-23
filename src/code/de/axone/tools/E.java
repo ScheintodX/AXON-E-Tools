@@ -124,8 +124,16 @@ public abstract class E {
 		echo( System.out, 2, true, Text.banner( text.charAt( 0 ), text ) );
 	}
 	
+	public static void banner( char border, String text ){
+		echo( System.out, 2, true, Text.banner( border, text ) );
+	}
+	
 	public static void poster( String text ){
 		echo( System.out, 2, true, Text.poster( text.charAt( 0 ), text ) );
+	}
+	
+	public static void poster( char border, String text ){
+		echo( System.out, 2, true, Text.poster( border, text ) );
 	}
 	
 	public static void rr( boolean [] a ){
