@@ -24,7 +24,7 @@ public abstract class Mapper {
 		return map( new TreeMap<T,T>(), values );
 	}
 		
-	public static <T> LinkedHashMap<T,T> linkedhashMap( T ... values ){
+	public static <T> LinkedHashMap<T,T> linkedHashMap( T ... values ){
 		return map( new LinkedHashMap<T,T>(), values );
 	}
 		

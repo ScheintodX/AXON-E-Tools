@@ -22,31 +22,36 @@ public class Pair<L, R> {
         return new Pair<A, B>(left, right);
     }
  
-    @Override
-    public final boolean equals(Object o) {
-    	
-    	if( o == this ) return true;
-    	
-        if (!(o instanceof Pair<?,?>)) return false;
-        Pair<?, ?> other = (Pair<?,?>) o;
-        
-        return equal(getLeft(), other.getLeft()) && equal(getRight(), other.getRight());
-    }
-    
-    public static final boolean equal(Object o1, Object o2) {
-        if (o1 == null) return o2 == null;
-        return o1.equals(o2);
-    }
- 
+  
     @Override
 	public int hashCode() {
-        int hLeft = (getLeft() == null) ? 0 : getLeft().hashCode();
-        int hRight = (getRight() == null) ? 0 : getRight().hashCode();
- 
-        return hLeft + (57 * hRight);
-    }
-    
-    @Override
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ( ( left == null ) ? 0 : left.hashCode() );
+		result = prime * result + ( ( right == null ) ? 0 : right.hashCode() );
+		return result;
+	}
+
+	@Override
+	public boolean equals( Object obj ) {
+		if( this == obj ) return true;
+		if( obj == null ) return false;
+		if( getClass() != obj.getClass() ) return false;
+		
+		Pair<?,?> other = (Pair<?,?>) obj;
+		if( left == null ) {
+			if( other.left != null ) return false;
+		} else if( !left.equals( other.left ) )
+			return false;
+		if( right == null ) {
+			if( other.right != null ) return false;
+		} else if( !right.equals( other.right ) )
+			return false;
+		
+		return true;
+	}
+
+	@Override
     public String toString(){
     	return left.toString() + "<->" + right.toString();
     }
