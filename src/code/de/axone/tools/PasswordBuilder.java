@@ -81,6 +81,28 @@ public class PasswordBuilder {
 		return result.toArray( resultArray );
 	}
 	
+	public static void main( String [] args ){
+		
+		for( int i=0; i<100; i++ ){
+			
+			System.out.println( makeSimplaPasswd() );
+		}
+	}
+	
+	/**
+	 * Make a simple to type password
+	 * 
+	 * The password is in the form of aaaa1111
+	 * 
+	 * @return
+	 */
+	public static String makeSimplaPasswd(){
+		
+		return makePasswd( 4, true, false, true, false, false ) +
+		       makePasswd( 4, true, false, false, true, false );
+		
+	}
+	
 	/**
 	 * Make a password with usefull settings
 	 * 
@@ -148,19 +170,12 @@ public class PasswordBuilder {
 			
 			int idx;
 			
-			int range;
-			if( i == 0 || i == length-1 ){
-				range = chars-15;
-			} else {
-				range = chars;
-			}
-			
 			if( r != null ){
 			
-				idx = (int)( r.nextFloat() * range );
+				idx = (int)( r.nextFloat() * chars );
 			} else {
 				// Fallback to simple random
-    			idx = (int) (Math.random() * range);
+    			idx = (int) (Math.random() * chars);
 			}
 			
 			result.append( allowedChars[ idx ] );
