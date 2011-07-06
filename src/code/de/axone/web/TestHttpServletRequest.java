@@ -371,7 +371,9 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String[] getParameterValues( String arg0 ) {
-		return (String[]) parameters.entrySet().toArray();
+		String[] result = new String[ parameters.size() ];
+		for( int i=0; i< parameters.size(); i++ ) result[i] = parameters.get( i );
+		return result;
 	}
 
 	@Override

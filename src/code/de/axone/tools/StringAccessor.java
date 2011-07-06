@@ -15,6 +15,10 @@ public class StringAccessor {
 		this.a = accessible;
 	}
 	
+	public boolean has( String name ){
+		return a.doGet( name ) != null;
+	}
+	
 	// == String =====
 	public String get( String name ){
 		return SA.get( a.doGet( name ), name );
