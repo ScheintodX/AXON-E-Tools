@@ -4,7 +4,7 @@
 	<classpathentry kind="src" path="src/test"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.14.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api.jar" sourcepath="/home/flo/java/apache-tomcat-6.0.20-src.zip"/>
-	<classpathentry kind="lib" path="lib/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.4.jar" sourcepath="/home/flo/java/commons/commons-codec-1.4/commons-codec-1.4-sources.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.0.1.jar" sourcepath="/home/flo/java/httpcomponents-core-4.0.1"/>
 	<classpathentry kind="lib" path="lib/apache-mime4j-0.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>

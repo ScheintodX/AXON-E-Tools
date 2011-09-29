@@ -486,6 +486,8 @@ public final class SuperURL {
 					return "image/png";
 				} else if( extension.equalsIgnoreCase( "gif" ) ) {
 					return "image/gif";
+				} else if( extension.equalsIgnoreCase( "ico" ) ) {
+					return "image/x-icon";
 					/* css/js */
 				} else if( extension.equalsIgnoreCase( "css" ) ) {
 					return "text/css";

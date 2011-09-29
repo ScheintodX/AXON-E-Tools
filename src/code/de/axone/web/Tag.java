@@ -1,6 +1,7 @@
 package de.axone.web;
 
 import java.util.LinkedList;
+import java.util.Map;
 
 import de.axone.exception.Assert;
 import de.axone.web.encoding.AttributeEncoder;
@@ -54,12 +55,66 @@ public abstract class Tag {
 
 		return builder;
 	}
+	
+	public static StringBuilder simpleBB( StringBuilder builder,
+			String name, String content, Map<String,String> args){
+		return simpleBB( builder, name, content, true, args );
+	}
+	public static StringBuilder simpleBB( StringBuilder builder,
+			String name, String content, boolean encodeContent , Map<String,String> args ){
+
+		Assert.notNull( builder, "builder" );
+		Assert.notNull( name, "name" );
+		// Null allowed: Content, args
+
+		builder
+			.append( "<" )
+			.append( name )
+		;
+
+		if( args != null ) for( String argName : args.keySet() ){
+			
+			String argValue = args.get( argName );
+
+			builder
+				.append( " " )
+				.append( argName )
+				.append( "=\"" )
+				.append( AttributeEncoder.ENCODE( argValue ) )
+				.append( "\"" )
+			;
+		}
+
+		if( content == null ){
+
+    		builder.append( "/>" );
+		} else {
+			builder
+				.append( ">" )
+    			.append( encodeContent ? XmlEncoder.ENCODE( content ) : content )
+    			.append( "</" )
+    			.append( name )
+    			.append( ">" )
+			;
+		}
+
+		return builder;
+		
+	}
 
 	public static String simple( String name, String content, String ... args ){
 		return simpleBB( new StringBuilder(), name, content, args ).toString();
 	}
-	public static String simple( String name, String content, boolean encodeContenet, String ... args ){
-		return simpleBB( new StringBuilder(), name, content, encodeContenet, args ).toString();
+	public static String simple( String name, String content, boolean encodeContent, String ... args ){
+		return simpleBB( new StringBuilder(), name, content, encodeContent, args ).toString();
+	}
+	
+	public static String simple( String name, String content, Map<String,String> args ){
+		return simpleBB( new StringBuilder(), name, content, args ).toString();
+	}
+	public static String simpleBB( 
+			String name, String content, boolean encodeContent , Map<String,String> args ){
+		return simpleBB( new StringBuilder(), name, content, encodeContent, args ).toString();
 	}
 	
 	public static String hiddenInput( String name, String value ){
