@@ -18,13 +18,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 public class HttpUtil {
 	
-	public static void main( String [] args ) throws Exception {
-		
-		E.cho( request( 
-				new URL( "http://www.plamundo.de/pics/CshswtlOVR_DrhkwL4nD4S_85eO0CBHCN1idiOJ4F1vwHPSm5YpguA0vgGc7pEc7/06705_200.jpg" ), 
-				"ec3de308", null ) );
-	}
-	
 	public static class HttpUtilResponse {
 		
 		public int code = -1;
@@ -40,7 +33,7 @@ public class HttpUtil {
 				"code: " + code + "\n" +
 				"etag: " + eTag + "\n" +
 				"maxAge: " + maxAge + "\n" +
-				"size: " + content.length
+				"size: " + (content != null ? content.length : 0)
 			;
 		}
 	}
@@ -86,6 +79,8 @@ public class HttpUtil {
 		if( uResponse.code == 304 ) return uResponse;
 		
 		if( uResponse.code == 200 ){
+			
+			E.rr( "A" );
 		
 			Header [] eTags = response.getHeaders( "ETag" );
 			if( eTags != null && eTags.length > 0 ){
@@ -110,12 +105,11 @@ public class HttpUtil {
 			Header contentType = response.getLastHeader( "Content-Type" );
 			if( contentType != null ){
 				
-				Pattern pattern = Pattern.compile( ".*; charset=(.+)" );
+				Pattern pattern = Pattern.compile( ".*; *charset=(.+)" );
 				Matcher matcher = pattern.matcher( contentType.getValue() );
 				if( matcher.find() ){
-					String found = matcher.group();
-					// TODO: Regexe studieren. Das geht auch über die Klammern.
-					uResponse.encoding = found.substring( found.indexOf( "=" )+1 );
+					//uResponse.encoding = found.substring( found.indexOf( "=" )+1 );
+					uResponse.encoding = matcher.group(1).trim();
 				}
 			}
 			
