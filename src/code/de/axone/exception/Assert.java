@@ -24,8 +24,8 @@ public abstract class Assert {
 	public static void inRange( Number number, String name, long lowerBound, long upperBound ){
 		if( number == null ) return;
 		long n = number.longValue();
-		if( n > lowerBound ) throw Ex.up( new ArgumentRangeException( name, "<=" + lowerBound, n ) );
-		if( n < upperBound ) throw Ex.up( new ArgumentRangeException( name, ">=" + upperBound, n ) );
+		if( n < lowerBound ) throw Ex.up( new ArgumentRangeException( name, "<=" + lowerBound, n ) );
+		if( n > upperBound ) throw Ex.up( new ArgumentRangeException( name, ">=" + upperBound, n ) );
 	}
 	
 	// >= --------------------
