@@ -7,6 +7,8 @@ public abstract class Ex {
 		return up( e, 1 );
 	}
 	/*
+	// This kills in combination with assert some debugging info.
+	// Don't know why
 	public static <T extends Throwable> T up( T e, int steps ){
 		
 		StackTraceElement [] trace = e.getStackTrace();

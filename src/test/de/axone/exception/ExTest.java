@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 @Test( groups="tools.ex" )
 public class ExTest {
 
+	@Test( enabled=false ) // Not enabled as long as it kills some debugging.
 	public void testExUp(){
 		
 		assertMethod( 0, 0, 0, "except" );

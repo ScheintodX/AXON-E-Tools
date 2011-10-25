@@ -552,7 +552,7 @@ public abstract class Text {
 		
 		if( truncate >= 0 ){
 			
-			truncate += 5; // --->[ / ]<---
+			truncate += 6; // --->[ / ]<---
 			
 			if( left.length() > truncate ){
 				left = left.substring( left.length() - truncate );

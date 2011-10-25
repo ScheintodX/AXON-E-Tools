@@ -20,7 +20,7 @@ public class CacheTest {
 	static final TestEntry c = new TestEntry( C );
 
 	// Not much to test here. CacheHashMap is a simple extension of HashMap
-	// Note that caches are not synchronised so there is no need for parallel tests.
+	// TODO: There is room here for parallel tests.
 	public void testHashCache(){
 		
 		Cache<String,TestEntry> cache = new CacheHashMap<String,TestEntry>();

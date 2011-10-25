@@ -2,6 +2,9 @@ package de.axone.i18n;
 
 import static org.testng.Assert.*;
 
+import java.util.Arrays;
+import java.util.Locale;
+
 import org.testng.annotations.Test;
 
 @Test( groups="tools.country" )
@@ -13,7 +16,7 @@ public class CountryTest {
 		assertEquals( c.commonName(), "Germany" );
 		assertNotNull( c.locales() );
 		assertEquals( c.locales().length, 1 );
-		//assertTrue( c.locales().contains( Locale.GERMANY ) );
+		assertTrue( Arrays.asList( c.locales() ).contains( Locale.GERMAN ) );
 	}
 	
 	public void testUs() throws Exception {
@@ -22,7 +25,7 @@ public class CountryTest {
 		assertEquals( c.commonName(), "United States" );
 		assertNotNull( c.locales() );
 		assertEquals( c.locales().length, 1 );
-		//assertTrue( c.locales().contains( Locale.US ) );
+		assertTrue( Arrays.asList( c.locales() ).contains( Locale.ENGLISH ) );
 	}
 	
 	public void testUk() throws Exception {
@@ -31,7 +34,7 @@ public class CountryTest {
 		assertEquals( c.commonName(), "United Kingdom" );
 		assertNotNull( c.locales() );
 		assertEquals( c.locales().length, 1 );
-		//assertTrue( c.locales().contains( Locale.UK ) );
+		assertTrue( Arrays.asList( c.locales() ).contains( Locale.ENGLISH ) );
 	}
 	
 	public void testCa() throws Exception {
@@ -40,7 +43,7 @@ public class CountryTest {
 		assertEquals( c.commonName(), "Canada" );
 		assertNotNull( c.locales() );
 		assertEquals( c.locales().length, 2 );
-		//assertTrue( c.locales().contains( Locale.CANADA ) );
-		//assertTrue( c.locales().contains( Locale.CANADA_FRENCH ) );
+		assertTrue( Arrays.asList( c.locales() ).contains( Locale.ENGLISH ) );
+		assertTrue( Arrays.asList( c.locales() ).contains( Locale.FRENCH ) );
 	}
 }

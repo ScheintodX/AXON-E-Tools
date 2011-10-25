@@ -15,7 +15,6 @@ import java.util.TreeMap;
 import org.testng.annotations.Test;
 
 import de.axone.cache.CacheTest.TestEntry;
-import de.axone.tools.E;
 
 @Test( groups="tools.autocache" )
 public class AutomaticCacheTest {
@@ -130,9 +129,11 @@ public class AutomaticCacheTest {
 		
 		assertEquals( backend.size(), 2, "Test for some rare synchronization problem" );
 		
+		/*
 		E.rr( "Auto: " + auto.stats() );
 		E.rr( backend.info() );
 		E.rr( acc );
+		*/
 	}
 	
 	private static class TestThread extends Thread {

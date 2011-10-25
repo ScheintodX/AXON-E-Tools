@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 public class PasswordBuilderTest {
 	
 	
+	@Test( enabled=false )
 	public static void main( String [] args ) throws Exception {
 		
 		new PasswordBuilderTest().testHashing();
@@ -30,10 +31,8 @@ public class PasswordBuilderTest {
 			}
 		}
 	*/
-
-	
 	}	
-	@Test
+	
 	public void testHashing() throws Exception {
 		
 		for( int i=0; i<100; i++ ){
@@ -49,7 +48,6 @@ public class PasswordBuilderTest {
 	private static final long TIMING_LIMIT_LOWER = 100;
 	private static final long TIMING_LIMIT_UPPER = 1000;
 	
-	@Test
 	public void testTiming() throws Exception {
 
 		String plain = "testPw123!";

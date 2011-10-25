@@ -46,7 +46,7 @@ public enum Country {
 	BI( "Burundi", "BI", "BDI", 108, "bi", Currency.getInstance( "BIF" ), null  ),
 	KH( "Cambodia", "KH", "KHM", 116, "kh", Currency.getInstance( "KHR" ), "nnnnn"  ),
 	CM( "Cameroon", "CM", "CMR", 120, "cm", Currency.getInstance( "XAF" ), null  ),
-	CA( "Canada", "CA", "CAN", 124, "ca", Currency.getInstance( "CAD" ), "nan ana", en ),
+	CA( "Canada", "CA", "CAN", 124, "ca", Currency.getInstance( "CAD" ), "nan ana", en, fr ),
 	CV( "Cape Verde", "CV", "CPV", 132, "cv", Currency.getInstance( "CVE" ), "nnnn"  ),
 	KY( "Cayman Islands", "KY", "CYM", 136, "ky", Currency.getInstance( "KYD" ), "KYn-nnnn"  ),
 	CF( "Central African Republic", "CF", "CAF", 140, "cf", Currency.getInstance( "XAF" ), null  ),

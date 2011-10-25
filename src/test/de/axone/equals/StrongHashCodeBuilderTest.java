@@ -22,7 +22,7 @@ public class StrongHashCodeBuilderTest {
 		testStringHashes( new Jenkins96HashCodeBuilder() );
 	}
 	public static void testCollectionHashesJenkins96() throws Exception {
-		testCollectionHashes( new Jenkins96HashCodeBuilder() );
+		testCollectionHashes( new Jenkins96HashCodeBuilder( false ) );
 	}
 
 	public static void testStringHashesSha1() throws Exception {
@@ -148,6 +148,7 @@ public class StrongHashCodeBuilderTest {
 		if( equals ){
 			assertEquals( h1, h2 );
 		} else {
+			if( h1.equals( h2 ) ) E.rr( h1 );
 			assertFalse( h1.equals( h2 ) );
 		}
 		if( !ok ){
