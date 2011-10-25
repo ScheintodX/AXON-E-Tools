@@ -1,6 +1,6 @@
 package de.axone.cache;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * BackendCache as implemented by a HashMap
@@ -9,11 +9,16 @@ import java.util.HashMap;
  * @param <K>
  * @param <V>
  */
-public class CacheHashMap<K,V> extends HashMap<K,V> implements Cache.Direct<K,V> {
+public class CacheHashMap<K,V> extends ConcurrentHashMap<K,V> implements Cache.Direct<K,V> {
 
 	@Override
 	public String info() {
 		return "HashMap ("+size()+")";
+	}
+
+	@Override
+	public int capacity() {
+		return -1;
 	}
 	
 }

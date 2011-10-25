@@ -6,6 +6,8 @@ import java.util.Set;
 /**
  * Minimal interface for caches which should be implementable for any cache
  * 
+ * Note that caches *must be threadsafe*!!!!
+ * 
  * @author flo
  *
  * @param <K>
@@ -57,6 +59,13 @@ public interface Cache<K,V> {
 	 * @return the size in number of entries
 	 */
 	public int size();
+	
+	/**
+	 * Return the available capacity of the cache
+	 * 
+	 * @return the capacity in number of entries or -1 for infinite
+	 */
+	public int capacity();
 	
 	/**
 	 * Get some meaningful information. 

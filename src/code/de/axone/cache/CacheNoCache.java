@@ -59,4 +59,9 @@ public class CacheNoCache<K,V> implements Cache.Direct<K,V> {
 	public String info() {
 		return "no caching";
 	}
+
+	@Override
+	public int capacity() {
+		return 0;
+	}
 }

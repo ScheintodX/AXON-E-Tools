@@ -37,4 +37,9 @@ public class AutomaticCacheNoCache<K,V> implements AutomaticCache<K, V> {
 		return stats;
 	}
 
+	@Override
+	public int capacity() {
+		return 0;
+	}
+
 }

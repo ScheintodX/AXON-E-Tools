@@ -35,7 +35,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 	private Cache<K,V> cache;
 	
 	@SuppressWarnings( "unchecked" )
-	private final V NULL = (V)new Object();
+	private final V NULL = (V)new NullEntry();
 
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private WriteLock writeLock = lock.writeLock();
@@ -51,7 +51,6 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 	}
 	
 	@Override
-	@SuppressWarnings( "unchecked")
 	public Map<K,V> get( Collection<K> keys, DataAccessor<K,V> accessor ){
 		
 		assert keys != null && accessor != null;
@@ -59,11 +58,14 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 		HashMap<K,V> result = new HashMap<K,V>();
 		Set<K> missed = null;
 
-		readLock.lock();
 		try{
+			readLock.lock();
     		for( K key : keys ){
 
-    			Object found = cache.get( key );
+    			// Note that apparently no cast is done implicitly here.
+    			// Java treats V as Object.
+    			// Otherwise a ClassCastException would be thrown in case of NULL
+    			V found = cache.get( key );
 
     			if( found == null ){
 
@@ -72,7 +74,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
     				missed.add( key );
     			} else {
     				stats.hit();
-    				if( found != NULL ) result.put( key, (V)found );
+    				if( found != NULL ) result.put( key, found );
     			}
     		}
 		} finally {
@@ -83,8 +85,8 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 
 			Map<K,V> fetched = accessor.get( missed );
 
-			writeLock.lock();
 			try {
+				writeLock.lock();
 
 				for( K key : missed ){
 
@@ -112,9 +114,9 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 
 		assert key != null && accessor != null;
 
-		readLock.lock();
 		V result = null;
 		try{
+			readLock.lock();
 			result = cache.get( key );
 		} finally { readLock.unlock(); }
 
@@ -126,8 +128,9 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 
 			result = accessor.get( key );
 
-			writeLock.lock();
 			try {
+				writeLock.lock();
+				
     			if( result == null ){
 
         			cache.put( key, NULL );
@@ -150,16 +153,32 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 	
 	@Override
 	public int size(){
-		return cache.size();
+		readLock.lock();
+		try {
+			return cache.size();
+		} finally {
+			readLock.unlock();
+		}
 	}
+	
+	@Override
+	public int capacity() {
+		readLock.lock();
+		try {
+			return cache.capacity();
+		} finally {
+			readLock.unlock();
+		}
+	}
+
 	
 	@Override
 	public void put( K key, V value ){
 		
 		assert key != null && value != null;
 		
-		writeLock.lock();
 		try {
+			writeLock.lock();
 			cache.put( key, value );
 		} finally {
 			writeLock.unlock();
@@ -170,8 +189,8 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 	public void flush() {
 
 		// Clear cache
-		writeLock.lock();
 		try {
+			writeLock.lock();
     		cache.clear();
 		} finally {
 			writeLock.unlock();
@@ -181,6 +200,14 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 	@Override
 	public Stats stats(){
 		return stats;
+	}
+	
+	private static final class NullEntry {
+		
+		@Override
+		public String toString(){
+			return "== NULL-ENTRY ==";
+		}
 	}
 
 }

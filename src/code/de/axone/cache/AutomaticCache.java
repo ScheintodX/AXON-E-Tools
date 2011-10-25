@@ -1,7 +1,9 @@
 package de.axone.cache;
 
 import java.util.Collection;
+import java.util.Formatter;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 public interface AutomaticCache<K, V> {
 
@@ -10,8 +12,10 @@ public interface AutomaticCache<K, V> {
 	public abstract V get( K key, DataAccessor<K, V> accessor );
 
 	public abstract int size();
+	
+	public abstract int capacity();
 
-	public abstract void put( K key, V value );
+	void put( K key, V value );
 
 	public abstract void flush();
 
@@ -19,7 +23,7 @@ public interface AutomaticCache<K, V> {
 
 	public class Stats {
 		
-		private int accesses, hits;
+		private AtomicLong accesses = new AtomicLong(), hits = new AtomicLong();
 		private AutomaticCache<?,?> cache;
 		
 		public Stats( AutomaticCache<?,?> cache ){
@@ -27,21 +31,22 @@ public interface AutomaticCache<K, V> {
 		}
 		
 		void hit(){
-			accesses++;
-			hits++;
+			accesses.incrementAndGet();
+			hits.incrementAndGet();
 		}
 		
 		void miss(){
-			accesses++;
+			accesses.incrementAndGet();
 		}
 		
 		@Override
 		public String toString(){
 			StringBuilder result = new StringBuilder();
-			result
-				.append( "Ratio: " + hits + "/" + accesses + " hits =" + (int)((double)hits/accesses*100) + "%\n" )
-			    .append( " Full: " + cache.size() + " entries" )
-			;
+			Formatter format = new Formatter( result );
+			long hits = this.hits.get();
+			long accesses = this.accesses.get();
+			format.format( "Ratio: %d/%d hits = %.1f%%", hits, accesses, 100.0*hits/accesses );
+			format.format( " | Full: %d entries", cache.size() );
 			return result.toString();
 		}
 	}
