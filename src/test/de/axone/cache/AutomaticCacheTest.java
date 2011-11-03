@@ -24,12 +24,21 @@ public class AutomaticCacheTest {
 	private static final int NUM_THREADS = 1000;
 	private static final int NUM_RUNS = 100000;
 	
+	private static final String X="x", Y="y", Z="z";
+	private static final TestEntry x=new TestEntry( X ), y=new TestEntry( Y ), z=new TestEntry( Z );
+	
 	private static TestEntry[] testEntries = new TestEntry[]{ a, b, c, null };
+	private static TestEntry[] testEntries2 = new TestEntry[]{ x, y, z, null };
 	private static String [] testEntryKeys = new String[]{ A, B, C, D };
+	private static String [] testEntryKeys2 = new String[]{ X, Y, Z, D };
 
-	private static Cache<String,TestEntry> backend = new CacheLRUMap<String,TestEntry>(2);
+	private static Cache<String,TestEntry> backend = new CacheLRUMap<String,TestEntry>("AutomaticCacheTest", 4);
+	//private static Cache<String,TestEntry> backend = new CacheHashMap<String,TestEntry>();
 	private static TestDataAccessor acc = new TestDataAccessor();
 	private static AutomaticCache<String,TestEntry> auto = new AutomaticCacheImpl<String,TestEntry>( backend );
+	
+	// Second test for multiple frontend on one backend
+	private static AutomaticCache<String,TestEntry> auto2 = new AutomaticCacheImpl<String,TestEntry>( backend );
 	
 	//@Test( enabled=false )
 	public void testAutomaticCache(){
@@ -86,7 +95,7 @@ public class AutomaticCacheTest {
 	//@Test( enabled=false )
 	public void testThreaded() throws Exception {
 		
-		Thread [] threads = new Thread[NUM_THREADS];
+		TestThread [] threads = new TestThread[NUM_THREADS];
 		
 		for( int i=0; i<threads.length; i++ ){
 			
@@ -94,14 +103,15 @@ public class AutomaticCacheTest {
 			threads[i].start();
 		}
 		// Wait for threads to finish
-		for( Thread t : threads ){
+		for( TestThread t : threads ){
 			t.join();
 		}
-		for( Thread t : threads ){
+		for( TestThread t : threads ){
 			assertEquals( t.getState(), Thread.State.TERMINATED );
+			assertNull( t.error );
 		}
 		
-		assertEquals( backend.size(), 2, "Test for some rare synchronization problem" );
+		assertEquals( backend.size(), 4, "Test for some rare synchronization problem" );
 		
 		/*
 		E.rr( "Auto: " + auto.stats() );
@@ -112,7 +122,7 @@ public class AutomaticCacheTest {
 	
 	public void testThreadedMulti() throws Exception {
 		
-		Thread [] threads = new Thread[NUM_THREADS];
+		TestThreadMulti [] threads = new TestThreadMulti[NUM_THREADS];
 		
 		for( int i=0; i<threads.length; i++ ){
 			
@@ -120,14 +130,15 @@ public class AutomaticCacheTest {
 			threads[i].start();
 		}
 		// Wait for threads to finish
-		for( Thread t : threads ){
+		for( TestThreadMulti t : threads ){
 			t.join();
 		}
-		for( Thread t : threads ){
+		for( TestThreadMulti t : threads ){
 			assertEquals( t.getState(), Thread.State.TERMINATED );
+			assertNull( t.error );
 		}
 		
-		assertEquals( backend.size(), 2, "Test for some rare synchronization problem" );
+		assertEquals( backend.size(), 4, "Test for some rare synchronization problem" );
 		
 		/*
 		E.rr( "Auto: " + auto.stats() );
@@ -139,26 +150,36 @@ public class AutomaticCacheTest {
 	private static class TestThread extends Thread {
 		
 		final int no;
-		final int x;
-		TestThread( int no, int x ){
+		final int index;
+		Throwable error;
+		TestThread( int no, int index ){
 			this.no=no;
-			this.x=x;
+			this.index=index;
 		}
 		@Override
 		public void run() {
 			
-			for( int i=0; i<NUM_RUNS/NUM_THREADS; i++ ){
-				String k = testEntryKeys[x];
-				TestEntry e = testEntries[x];
-				assertEquals( auto.get( k, acc ), e );
-				//System.err.printf( "% 4d:% 6d:%s\n", no, i, e );
-				synchronized( this ){
-					try {
-						Thread.sleep( 1 );
-					} catch( InterruptedException e1 ) {
-						e1.printStackTrace();
+			try {
+				for( int i=0; i<NUM_RUNS/NUM_THREADS; i++ ){
+					String k = testEntryKeys[index];
+					String k2 = testEntryKeys2[index];
+					TestEntry e = testEntries[index];
+					TestEntry e2 = testEntries2[index];
+					assertEquals( auto.get( k, acc ), e );
+					assertEquals( auto2.get( k2, acc ), e2 );
+					//System.err.printf( "% 4d:% 6d:%s\n", no, i, e );
+					synchronized( this ){
+						try {
+							Thread.sleep( 1 );
+						} catch( InterruptedException e1 ) {
+							e1.printStackTrace();
+						}
 					}
 				}
+			} catch( Error t ){
+				
+				this.error = t;
+				throw t;
 			}
 		}
 		@Override public String toString(){
@@ -169,34 +190,49 @@ public class AutomaticCacheTest {
 	private static class TestThreadMulti extends Thread {
 		
 		final int no;
-		final List<String> keysAsList;
+		final List<String> keysAsList, keysAsList2;
+		Throwable error;
 		TestThreadMulti( int no ){
 			this.no=no;
 			keysAsList = new ArrayList<String>( Arrays.asList( testEntryKeys ) );
+			keysAsList2 = new ArrayList<String>( Arrays.asList( testEntryKeys2 ) );
 			Collections.shuffle( keysAsList );
+			Collections.shuffle( keysAsList2 );
 		}
-		//static volatile int cnt=0;
+		
 		@Override
 		public void run() {
 			
-			for( int i=0; i<NUM_RUNS/NUM_THREADS; i++ ){
-				
-				Map<String,TestEntry> result;
-				
-				result = auto.get( keysAsList, acc );
-				assertEquals( result.get( A ), a );
-				assertEquals( result.get( B ), b );
-				assertEquals( result.get( C ), c );
-				assertEquals( result.get( D ), null );
-				assertFalse( result.containsKey( D ) );
-				
-				synchronized( this ){
-					try {
-						Thread.sleep( 1 );
-					} catch( InterruptedException e1 ) {
-						e1.printStackTrace();
+			try {
+				for( int i=0; i<NUM_RUNS/NUM_THREADS; i++ ){
+					
+					Map<String,TestEntry> result, result2;
+					
+					result = auto.get( keysAsList, acc );
+					assertEquals( result.get( A ), a );
+					assertEquals( result.get( B ), b );
+					assertEquals( result.get( C ), c );
+					assertEquals( result.get( D ), null );
+					assertFalse( result.containsKey( D ) );
+					
+					result2 = auto.get( keysAsList2, acc );
+					assertEquals( result2.get( X ), x );
+					assertEquals( result2.get( Y ), y );
+					assertEquals( result2.get( Z ), z );
+					assertEquals( result2.get( D ), null );
+					assertFalse( result2.containsKey( D ) );
+					
+					synchronized( this ){
+						try {
+							Thread.sleep( 1 );
+						} catch( InterruptedException e1 ) {
+							e1.printStackTrace();
+						}
 					}
 				}
+			} catch( Error t ){
+				this.error = t;
+				throw t;
 			}
 		
 		}
@@ -219,6 +255,9 @@ public class AutomaticCacheTest {
 			if( "a".equals( key ) ) result = a;
 			else if( "b".equals( key ) ) result = b;
 			else if( "c".equals( key ) ) result = c;
+			else if( "x".equals( key ) ) result = x;
+			else if( "y".equals( key ) ) result = y;
+			else if( "z".equals( key ) ) result = z;
 			else hitcount--;
 			return result;
 		}
@@ -238,5 +277,11 @@ public class AutomaticCacheTest {
 			return "Accessor Hitcount: " + hitcount + "/" + acccount + "=" + ((int)(Math.round( 100.0*hitcount/acccount )) + "%" );
 			
 		}
+	}
+	
+	static final class TestEntry2 {
+		final String name;
+		TestEntry2( String name ){ this.name = name; }
+		@Override public String toString(){ return name; }
 	}
 }

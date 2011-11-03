@@ -17,15 +17,17 @@ import de.axone.data.LRUCache;
  */
 public class CacheLRUMap<K,V> implements Cache.Direct<K,V> {
 	
+	private final String name;
 	private final LRUCache<K,V> unsafeBackend;
 	private final Map<K,V> backend;
 	
 	private AtomicLong hits = new AtomicLong(0);
 	private AtomicLong misses = new AtomicLong(0);
 
-	public CacheLRUMap( int maxCapacity ) {
-		unsafeBackend = new LRUCache<K,V>(maxCapacity);
-		backend = Collections.synchronizedMap( unsafeBackend );
+	public CacheLRUMap( String name, int maxCapacity ) {
+		this.name = name;
+		this.unsafeBackend = new LRUCache<K,V>(maxCapacity);
+		this.backend = Collections.synchronizedMap( unsafeBackend );
 	}
 
 	@Override
@@ -37,7 +39,7 @@ public class CacheLRUMap<K,V> implements Cache.Direct<K,V> {
 		long sum = hits+misses;
 		double ratio = sum > 0 ? (double)hits/sum : 0;
 		
-		return "LRU" +
+		return "LRU '" + name + "'" +
 				" (Size: " + size() + " of " + unsafeBackend.getCapacity() + 
 				", Hits: " + hits + "/" + sum + " = " + Math.round( ratio *1000 )/10 + "%)";
 	}

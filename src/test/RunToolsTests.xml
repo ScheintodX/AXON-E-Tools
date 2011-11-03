@@ -1,8 +1,9 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
 
-<suite name="EMogul" verbose="2" parallel="false">
+<suite name="Tools" verbose="2" parallel="false">
 		
 	<test name="Tools">
+	
 		<groups>
 			<run>
 				<include name="tools.*"/>
@@ -12,6 +13,7 @@
         <packages>
             <package name="de.axone.*"/>
         </packages>
+        
 	</test>
 	
 </suite>

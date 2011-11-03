@@ -23,19 +23,19 @@ public class CacheTest {
 	// TODO: There is room here for parallel tests.
 	public void testHashCache(){
 		
-		Cache<String,TestEntry> cache = new CacheHashMap<String,TestEntry>();
+		Cache<String,TestEntry> cache = new CacheHashMap<String,TestEntry>("HashTest");
 		assertPutGet( cache, A, a );
 		assertPutGet( cache, B, b );
 		assertPutGet( cache, C, c );
 		cache.put( A, a );
 		cache.put( B, b );
 		cache.put( C, c );
-		assertEquals( cache.info(), "HashMap (3)" );
+		assertTrue( cache.info().contains( "(3)" ) );
 	}
 	
 	public void testLRUCache(){
 		
-		Cache<String,TestEntry> cache = new CacheLRUMap<String,TestEntry>(2);
+		Cache<String,TestEntry> cache = new CacheLRUMap<String,TestEntry>("LRUCache", 2);
 		assertPutGet( cache, A, a );
 		assertPutGet( cache, B, b );
 		assertPutGet( cache, C, c );
@@ -45,7 +45,7 @@ public class CacheTest {
 		assertFalse( cache.containsKey( A ) );
 		assertTrue( cache.containsKey( B ) );
 		assertTrue( cache.containsKey( C ) );
-		assertEquals( cache.info().substring( 0, 18 ), "LRU (Size: 2 of 2," );
+		assertTrue( cache.info().contains( "(Size: 2 of 2," ) );
 	}
 	
 	public void testNoCache(){
@@ -75,6 +75,6 @@ public class CacheTest {
 	static final class TestEntry {
 		final String name;
 		TestEntry( String name ){ this.name = name; }
-		@Override public String toString(){ return name; }
+		@Override public String toString(){ return "E("+name+")"; }
 	}
 }

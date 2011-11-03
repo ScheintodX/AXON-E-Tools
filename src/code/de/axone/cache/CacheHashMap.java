@@ -15,16 +15,18 @@ import java.util.Set;
  */
 public class CacheHashMap<K,V> implements Cache.Direct<K,V> {
 	
+	private final String name;
 	private final Map<K,V> backend;
 	
-	public CacheHashMap(){
+	public CacheHashMap( String name ){
 		
-		backend = Collections.synchronizedMap( new HashMap<K,V>() );
+		this.name = name;
+		this.backend = Collections.synchronizedMap( new HashMap<K,V>() );
 	}
 
 	@Override
 	public String info() {
-		return "HashMap ("+size()+")";
+		return "HashMap '" + name + "'("+size()+")";
 	}
 
 	@Override

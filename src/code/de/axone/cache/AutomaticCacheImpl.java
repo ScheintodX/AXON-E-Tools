@@ -34,8 +34,11 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 
 	private Cache<K,V> cache;
 	
+	private static final Object NULL_ENTRY = new NullEntry();
+	// Makes code more easy below
+	// Note that V translates to Object in Java Byte-Code
 	@SuppressWarnings( "unchecked" )
-	private final V NULL = (V)new NullEntry();
+	private final V NULL = (V) NULL_ENTRY;
 
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private WriteLock writeLock = lock.writeLock();
@@ -64,7 +67,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 
     			// Note that apparently no cast is done implicitly here.
     			// Java treats V as Object.
-    			// Otherwise a ClassCastException would be thrown in case of NULL
+    			// Otherwise a ClassCastException would be thrown in case of NullEntry
     			V found = cache.get( key );
 
     			if( found == null ){
@@ -114,6 +117,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 
 		assert key != null && accessor != null;
 
+		// First try to get from cache
 		V result = null;
 		try{
 			readLock.lock();
@@ -122,15 +126,20 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 
 		if( result != null ){
 
+			// If found mark hit
 			stats.hit();
+			
 		} else {
+			// Else mark miss
 			stats.miss();
 
+			// Use Accessor to fetch
 			result = accessor.get( key );
 
 			try {
 				writeLock.lock();
 				
+				// Store NULL as NullEntry so to tell apart from no result
     			if( result == null ){
 
         			cache.put( key, NULL );
