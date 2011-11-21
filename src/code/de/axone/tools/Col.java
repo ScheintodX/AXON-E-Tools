@@ -1,5 +1,6 @@
 package de.axone.tools;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public abstract class Col {
@@ -46,7 +47,7 @@ public abstract class Col {
 	Cd process( Cd dst, Cs src, Processor<V> processor ){
 		
 		for( V value : src ){
-			dst.add( processor.convert( value ) );
+			dst.add( processor.process( value ) );
 		}
 		return dst;
 	}
@@ -72,9 +73,31 @@ public abstract class Col {
 		C dst = emptyClone( src );
 		
 		for( V value : src ){
-			dst.add( processor.convert( value ) );
+			dst.add( processor.process( value ) );
 		}
 		return dst;
+	}
+	
+	/**
+	 * Processes every element in the Collection using the give Processor
+	 * 
+	 * WARNING: The Collections must be editable. This is not necessarily the
+	 * case. E.g. wrapped Arrays are immutable.
+	 * 
+	 * @param <V>
+	 * @param <C>
+	 * @param collection
+	 * @param processor
+	 * @return
+	 */
+	public static <V, C extends Collection<V>> C processInPlace( C collection, Processor<V> processor ){
+	
+		ArrayList<V> temp = new ArrayList<V>( collection );
+		collection.clear();
+		for( V value : temp ){
+			collection.add( processor.process( value ) );
+		}
+		return collection;
 	}
 	
 	/**
@@ -106,7 +129,7 @@ public abstract class Col {
 	}
 	
 	public interface Processor<T> {
-		public T convert( T value );
+		public T process( T value );
 	}
 	
 }
