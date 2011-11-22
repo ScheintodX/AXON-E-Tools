@@ -20,7 +20,7 @@ public class FileWatcherTest {
 		assertFalse( watcher.hasChanged() );
 		
 		synchronized( this ){
-			Thread.sleep( 1100 ); //Note: Unix ctime min unit is 1s
+			this.wait( 1100 ); //Note: Unix ctime min unit is 1s
 		}
 
 		assertFalse( watcher.hasChanged() );
@@ -33,22 +33,23 @@ public class FileWatcherTest {
 		assertFalse( watcher.hasChanged() );
 
 		synchronized( this ){
-			Thread.sleep( 110 );
+			this.wait( 110 );
 		}
 
 		assertTrue( watcher.hasChanged() );
 
 		synchronized( this ){
-			Thread.sleep( 1100 );
+			this.wait( 1100 );
 		}
 
 		assertFalse( watcher.hasChanged() );
 
-		tmp.delete();
+		boolean ok = tmp.delete();
+		assertTrue( ok );
 		assertFalse( watcher.hasChanged() );
 		
 		synchronized( this ){
-			Thread.sleep( 110 );
+			this.wait( 110 );
 		}
 
 		assertTrue( watcher.hasChanged() );

@@ -28,10 +28,11 @@ public class FileSetWatcherTest {
 		out.flush();
 		out.close();
 	}
-	private void wait( int ms ) throws InterruptedException{
+	private void sleep( int ms ) throws InterruptedException{
 		E.rr( "wait: " + ms + "ms" );
 		synchronized( this ){
-			Thread.sleep( ms ); // Wait for sync
+			//Thread.sleep( ms ); // Wait for sync
+			this.wait( ms );
 		}
 	}
 
@@ -40,14 +41,14 @@ public class FileSetWatcherTest {
 		File tmp = File.createTempFile( "temp1", ".txt" );
 		File tmp2 = File.createTempFile( "temp2", ".txt" );
 		
-		wait( 1100 ); // Wait for filesystems 1s
+		sleep( 1100 ); // Wait for filesystems 1s
 		
 		FileSetWatcher watcher = new FileSetWatcher( 100, tmp, tmp2 );
 
 		assertTrue( watcher.hasChanged() );
 		assertFalse( watcher.hasChanged() );
 		
-		wait( 1100 );
+		sleep( 1100 );
 
 		// no change even after long wait
 		assertFalse( watcher.hasChanged() );
@@ -58,12 +59,12 @@ public class FileSetWatcherTest {
 		// no direct change. have to wait a little
 		assertFalse( watcher.hasChanged() );
 
-		wait( 110 );
+		sleep( 110 );
 
 		// changed after time > 100
 		assertTrue( watcher.hasChanged() );
 
-		wait( 1100 );
+		sleep( 1100 );
 
 		// no change even after long wait
 		assertFalse( watcher.hasChanged() );
@@ -92,28 +93,40 @@ public class FileSetWatcherTest {
 		// no direct change
 		assertFalse( watcher.hasChanged() );
 
+		/*
 		synchronized( this ){
-			Thread.sleep( 110 );
+			//Thread.sleep( 110 );
+			this.wait( 110 );
 		}
+		*/
+		sleep( 110 );
 
 		// but after wait > 100ms
 		assertTrue( watcher.hasChanged() );
 
+		/*
 		synchronized( this ){
-			Thread.sleep( 1100 );
+			//Thread.sleep( 1100 );
+			this.sleep( 1100 );
 		}
+		*/
+		sleep( 1100 );
 
 		// still not after another wait time
 		assertFalse( watcher.hasChanged() );
 
-		tmp2.delete();
+		boolean ok = tmp2.delete();
+		assertTrue( ok );
 		// not direct 
 		assertFalse( watcher.hasChanged() );
 		
-		E.rr( "wait 110" );
+		/*
 		synchronized( this ){
-			Thread.sleep( 110 );
+			//Thread.sleep( 110 );
+			this.wait( 110 );
 		}
+		*/
+		sleep( 110 );
 
 		// but after wait
 		assertTrue( watcher.hasChanged() );

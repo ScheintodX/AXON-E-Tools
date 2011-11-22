@@ -11,7 +11,7 @@ import de.axone.tools.E;
 
 public class CountryGenerator {
 
-	private static final String filename = "/home/flo/workspace/EMogul_Data/import/countries.csv";
+	private static final String FILENAME = "/home/flo/workspace/EMogul_Data/import/countries.csv";
 	
 	private static enum FORMAT {
 		no, use,	
@@ -26,7 +26,7 @@ public class CountryGenerator {
 	
 	public static void main( String [] args ) throws Exception {
 		
-		File file = new File( filename );
+		File file = new File( FILENAME );
 		
 		BufferedReader in = new BufferedReader( new FileReader( file ) );
 		
@@ -102,13 +102,17 @@ public class CountryGenerator {
 			if( lang == null ) lang = "";
 			else {
 				String [] langParts = lang.split( "," );
-				lang = ", ";
+				StringBuilder langB = new StringBuilder();
+				//lang = ", ";
+				langB.append( ", " );
 				boolean first = true;
 				for( String langPart : langParts ){
 					if( first ) first = false;
-					else lang += ", ";
-					lang += "new Locale( \"" + langPart + "\" )";
+					else langB.append( ", " );//lang += ", ";
+					//lang += "new Locale( \"" + langPart + "\" )";
+					langB.append( "new Locale( \"" + langPart + "\" )" );
 				}
+				lang = langB.toString();
 			}
 			if( name != null ) name = "\""+name+"\"";
 			else name = "null";

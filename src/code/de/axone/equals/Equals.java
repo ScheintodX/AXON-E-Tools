@@ -718,7 +718,7 @@ public class Equals {
 		public int compare( Object o1, Object o2 ) {
 			
 			return new Integer( list.indexOf( o1 ) )
-					.compareTo( new Integer( list.indexOf( o2 ) ) );
+					.compareTo( Integer.valueOf( list.indexOf( o2 ) ) );
 			
 		}
 	}

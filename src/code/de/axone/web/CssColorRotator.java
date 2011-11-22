@@ -142,7 +142,7 @@ public class CssColorRotator {
 		
 		String result;
 		
-		if( (r&0xf) == r>>4 && (g&0xf) == g>>4 && (g&0xf) == g>>4 ){
+		if( (r&0xf) == r>>4 && (g&0xf) == g>>4 && (b&0xf) == b>>4 ){
 			result = String.format( "#%1x%1x%1x", r&0xf, g&0xf, b&0xf );
 		} else {
 			result = String.format( "#%02x%02x%02x", r, g, b );

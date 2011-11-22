@@ -234,7 +234,7 @@ public class EqualsTest {
 		
 	}
 	
-	class TestSynchroMapper implements SynchroMapper {
+	static class TestSynchroMapper implements SynchroMapper {
 
 		@Override
 		public Object copyOf( Object object ) {

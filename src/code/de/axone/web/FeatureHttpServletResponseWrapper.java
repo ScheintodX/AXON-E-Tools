@@ -58,7 +58,7 @@ public class FeatureHttpServletResponseWrapper extends HttpServletResponseWrappe
 		}
 	}
 
-	public class ServletOutputStreamImpl extends ServletOutputStream {
+	public static class ServletOutputStreamImpl extends ServletOutputStream {
 		
 		public OutputStream wrapped;
 		

@@ -41,7 +41,7 @@ public class CryptoHashCodeBuilder extends AbstractStrongHashCodeBuilder<byte[]>
 	public StrongHashCodeBuilder<byte[]> append( byte[] bytes ) {
 		if( bytes == null ) appendNull();
 		else if( bytes.length == 0 ) appendEmpty();
-		digest.update( bytes );
+		else digest.update( bytes );
 		return this;
 	}
 

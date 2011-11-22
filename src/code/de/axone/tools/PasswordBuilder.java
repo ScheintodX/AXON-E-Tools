@@ -5,6 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -153,11 +154,15 @@ public class PasswordBuilder {
 	 */
 	public static String makePasswd( int length, boolean humanize, boolean includeUpperCase, boolean includeLowerCase, boolean includeNumbers, boolean includeSpecial ){
 		
-		SecureRandom r=null;
+		Random r=null;
 		try {
 			r = SecureRandom.getInstance( "SHA1PRNG", "SUN" );
 		} catch( GeneralSecurityException e ) {
 			e.printStackTrace();
+		}
+		// Fallback if something is wrong with Java sec. Should never happen
+		if( r == null ){
+			r = new Random();
 		}
 		
 		StringBuilder result = new StringBuilder( length );
@@ -166,17 +171,11 @@ public class PasswordBuilder {
 		
 		int chars = allowedChars.length;
 		
+		int idx;
 		for( int i = 0; i < length; i++ ){
 			
-			int idx;
-			
-			if( r != null ){
-			
-				idx = (int)( r.nextFloat() * chars );
-			} else {
-				// Fallback to simple random
-    			idx = (int) (Math.random() * chars);
-			}
+			//idx = (int)( r.nextFloat() * chars );
+			idx = r.nextInt( chars );
 			
 			result.append( allowedChars[ idx ] );
 		}

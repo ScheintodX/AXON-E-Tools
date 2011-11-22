@@ -170,7 +170,8 @@ public class AutomaticCacheTest {
 					//System.err.printf( "% 4d:% 6d:%s\n", no, i, e );
 					synchronized( this ){
 						try {
-							Thread.sleep( 1 );
+							//Thread.sleep( 1 );
+							this.wait( 1 );
 						} catch( InterruptedException e1 ) {
 							e1.printStackTrace();
 						}
@@ -224,7 +225,8 @@ public class AutomaticCacheTest {
 					
 					synchronized( this ){
 						try {
-							Thread.sleep( 1 );
+							this.wait( 1 );
+							//Thread.sleep( 1 );
 						} catch( InterruptedException e1 ) {
 							e1.printStackTrace();
 						}

@@ -68,7 +68,7 @@ public class Regexer {
 		return matcher.replaceAll( replacementStr );
 	}
 	
-	private class RegexArgumentException extends IllegalArgumentException {
+	private static class RegexArgumentException extends IllegalArgumentException {
 		public RegexArgumentException( String regex, String message ){
 			super( message + " in: '" + regex + "'" );
 		}
