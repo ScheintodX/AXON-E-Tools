@@ -232,7 +232,7 @@ public class PasswordBuilder {
 				hashed = digest.digest( hashed );
 			}
 			
-			String readable = (new BASE64Encoder()).encode( hashed );
+			String readable = (new BASE64Encoder()).encodeURLSafe( hashed );
 			
 			return algo + "$" + roundsExp + "$" + salt + "$" + readable.trim();
 		} catch( NoSuchProviderException e ) {

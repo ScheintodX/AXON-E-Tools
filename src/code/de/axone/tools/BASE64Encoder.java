@@ -8,9 +8,8 @@ package de.axone.tools;
  */
 public class BASE64Encoder {
 	
-	public String encode( byte[] data ){
-		//return org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString( data );
-		return org.apache.commons.codec.binary.Base64.encodeBase64String( data );
+	public String encodeURLSafe( byte[] data ){
+		return org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString( data );
 	}
 	
 }

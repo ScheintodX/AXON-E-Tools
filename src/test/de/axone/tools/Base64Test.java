@@ -21,7 +21,7 @@ public class Base64Test {
 			byte [] dataIn = new byte[i];
 			rand.nextBytes( dataIn );
 			
-			String encS = enc.encode( dataIn );
+			String encS = enc.encodeURLSafe( dataIn );
 			
 			byte [] dataOut = dec.decode( encS );
 			
