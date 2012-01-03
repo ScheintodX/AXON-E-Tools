@@ -1,6 +1,5 @@
 package de.axone.web;
 
-import java.awt.Color;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -26,7 +25,7 @@ public class ImgColorRotator {
 	 * 
 	 * Convinience method with user-friendly input
 	 * 
-	 * @see #rotate( String, double, double, double )
+	 * @see CssColorRotator#rotate( String, double, double, double )
 	 * 
 	 * @param hueDelta  0° .. 360°
 	 * @param saturationGamma  0 .. oo in 1/1000th
@@ -90,7 +89,7 @@ public class ImgColorRotator {
 		assert imageData != null;
 		
 		// Skip rendering if nothing to do
-		if( hueDelta %1 == 0 && saturationGamma == 1 && brightnessGamma == 1 && inverse == false )
+		if( CssColorRotator.checkUnchanged( hueDelta, saturationGamma, brightnessGamma, inverse ) )
 			return imageData;
 		
 		ByteArrayInputStream bIn = new ByteArrayInputStream( imageData );
@@ -143,16 +142,6 @@ public class ImgColorRotator {
 	
 	public int rotate( int color ){
 		
-		float [] hsb = Color.RGBtoHSB( (color>>16)&0xff, (color>>8)&0xff, color&0xff, null );
-		
-		float h = (float)((hsb[0]+hueDelta)%1);
-		float s = (float)Math.pow( hsb[1], saturationGamma );
-		float b = (float)Math.pow( hsb[2], brightnessGamma );
-		
-		if( inverse ){ b = 1-b; }
-		
-		int rgb = Color.HSBtoRGB( h, s, b );
-		
-		return (color & 0xff000000) | (rgb & 0xffffff);
+		return CssColorRotator.rotate( color, hueDelta, saturationGamma, brightnessGamma, inverse );
 	}
 }

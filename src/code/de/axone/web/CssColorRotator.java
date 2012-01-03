@@ -86,7 +86,7 @@ public class CssColorRotator {
 		if( css == null ) throw new IllegalArgumentException( "css is null" );
 		
 		// Skip rendering if nothing to do
-		if( hueDelta %1 == 0 && saturationGamma == 1 && brightnessGamma == 1 && inverse == false )
+		if( checkUnchanged( hueDelta, saturationGamma, brightnessGamma, inverse ) )
 			return css;
 		
 		Matcher matcher = COLOR.matcher( css );
@@ -111,6 +111,10 @@ public class CssColorRotator {
 		matcher.appendTail( result );
 		
 		return result.toString();
+	}
+	
+	public static boolean checkUnchanged( double hueDelta, double saturationGamma, double brightnessGamma, boolean inverse ){
+		return hueDelta %1 == 0 && saturationGamma == 1 && brightnessGamma == 1 && inverse == false;
 	}
 	
 	static Color c3( String code ){
@@ -151,10 +155,32 @@ public class CssColorRotator {
 		return result;
 	}
 	
-	
 	public Color rotate( Color color ){
 		
+		return rotate( color, hueDelta, saturationGamma, brightnessGamma, inverse );
+	}
+	
+	public static Color rotate( Color color, double hueDelta, double saturationGamma, double brightnessGamma, boolean inverse ){
+		
 		float [] hsb = Color.RGBtoHSB( color.getRed(), color.getGreen(), color.getBlue(), null );
+		
+		hsb = rotateHSB( hsb, hueDelta, saturationGamma, brightnessGamma, inverse );
+		
+		return Color.getHSBColor( hsb[0], hsb[1], hsb[2] );
+	}
+
+	public static int rotate( int color, double hueDelta, double saturationGamma, double brightnessGamma, boolean inverse ){
+		
+		float [] hsb = Color.RGBtoHSB( (color>>16)&0xff, (color>>8)&0xff, color&0xff, null );
+		
+		hsb = rotateHSB( hsb, hueDelta, saturationGamma, brightnessGamma, inverse );
+		
+		int rgb = Color.HSBtoRGB( hsb[0], hsb[1], hsb[2] );
+		
+		return (color & 0xff000000) | (rgb & 0xffffff);
+	}
+	
+	public static float [] rotateHSB( float [] hsb, double hueDelta, double saturationGamma, double brightnessGamma, boolean inverse ){
 		
 		float h = (float)((hsb[0]+hueDelta)%1);
 		float s = (float)Math.pow( hsb[1], saturationGamma );
@@ -162,6 +188,7 @@ public class CssColorRotator {
 		
 		if( inverse ){ b = 1-b; }
 		
-		return Color.getHSBColor( h, s, b );
+		return new float[]{ h, s, b };
+		
 	}
 }

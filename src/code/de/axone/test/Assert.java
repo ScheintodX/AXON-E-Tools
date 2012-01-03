@@ -2,7 +2,7 @@ package de.axone.test;
 import static org.testng.Assert.*;
 
 import java.util.Collection;
-
+	
 public abstract class Assert {
 
 	public static void assertIsInstance( Object object, Class<?> clazz ){

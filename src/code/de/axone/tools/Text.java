@@ -209,7 +209,7 @@ public abstract class Text {
 		buffer.append( outer );
 		return buffer;
 	}
-
+	
 	public static StringBuilder lineNlBB( StringBuilder buffer, char c, int width ){
 		lineBB( buffer, c, width );
 		buffer.append( '\n' );
@@ -232,7 +232,38 @@ public abstract class Text {
 	public static String line( int width ){
 		return lineB( '-', width).toString();
 	}
-
+	
+	public static StringBuilder lineBB( StringBuilder buffer, char c, int width, String text, boolean alignRight ){
+		
+		if( text.length() > width-4 ) text = text.substring( 0, width-4 );
+		
+		int	left = 1;
+		int right = width - 3 - text.length();
+		
+		if( alignRight ){ // swap with xor.
+			left ^= right;
+			right ^= left;
+			left ^= right;
+		}
+		
+		lineBB( buffer, c, left );
+		buffer.append( ' ' );
+		buffer.append( text );
+		buffer.append( ' ' );
+		lineBB( buffer, c, right );
+		
+		return buffer;
+	}
+	public static StringBuilder lineB( char c, int width, String text, boolean alignRight ){
+		return lineBB( new StringBuilder(), c, width, text, alignRight );
+	}
+	public static String line( char c, int width, String text, boolean alignRight ){
+		return lineB( c, width, text, alignRight ).toString();
+	}
+	public static String line( char c, int width, String text ){
+		return line( c, width, text, false );
+	}
+	
 	/**
 	 * Returns the text surrounded by the given char.
 	 *
@@ -261,7 +292,7 @@ public abstract class Text {
 	public static String limitedText( char c, String text ){
 		return limitedTextB( c, text ).toString();
 	}
-
+	
 	/**
 	 * Returns a text with fixed width.
 	 * Too short strings are filled with spaces.
@@ -520,7 +551,7 @@ public abstract class Text {
 			min = s2; //max = s1;
 		}
 		
-		String left="";
+		StringBuilder leftB = new StringBuilder();
 		int i;
 		for( i=0; i<min.length(); i++ ){
 			
@@ -528,13 +559,13 @@ public abstract class Text {
 			char c2 = s2.charAt( i );
 			
 			if( c1!=c2 ){
-				left += "--->[:";
+				leftB.append( "--->[:" );
 				break;
 			}
-			left += c1;
+			leftB.append( c1 );
 		}
 		
-		String right="";
+		StringBuilder rightB = new StringBuilder();
 		int j;
 		for( j=0; j<min.length(); j++ ){
 			
@@ -542,11 +573,14 @@ public abstract class Text {
 			char c2 = s2.charAt( s2.length()-1 -j );
 			
 			if( c1!=c2 ){
-				right = ":]<---" + right;
+				rightB.insert( 0, ":]<---" );
 				break;
 			}
-			right = c1+right;
+			rightB.insert( 0, c1 );
 		}
+		
+		String left = leftB.toString();
+		String right = rightB.toString();
 		
 		StringBuilder result = new StringBuilder();
 		

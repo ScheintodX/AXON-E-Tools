@@ -54,6 +54,7 @@ public class SlurperTest {
 		assertEquals( bOut.length, 10 );
 		
 		bIn = "".getBytes( "ascii" );
+		in = new ByteArrayInputStream( bIn );
 		
 		bOut = Slurper.slurp( in );
 		assertEquals( bOut.length, 0 );

@@ -26,7 +26,15 @@ public class CountryGenerator {
 	
 	public static void main( String [] args ) throws Exception {
 		
-		File file = new File( FILENAME );
+		String filename;
+		
+		if( args.length > 1 ){
+			filename = args[1];
+		} else {
+			filename = FILENAME;
+		}
+		
+		File file = new File( filename );
 		
 		BufferedReader in = new BufferedReader( new FileReader( file ) );
 		

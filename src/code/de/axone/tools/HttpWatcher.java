@@ -1,8 +1,11 @@
 package de.axone.tools;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 
+import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,8 +103,12 @@ public class HttpWatcher {
 					
 					result = response;
 				}
-			} catch( Exception e ){
-				// In case of error: nothing has changed
+			} catch( ClientProtocolException e ) {
+				log.error( url.toString(), e );
+			} catch( URISyntaxException e ) {
+				log.error( url.toString(), e );
+			} catch( IOException e ) {
+				log.error( url.toString(), e );
 			}
 		}
 		

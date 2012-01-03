@@ -48,7 +48,7 @@ public class Str {
 	public static <T> StringBuilder joinB( Joiner<T> joiner, Iterable<T> objects ){
 		return joinBB( new StringBuilder(), joiner, objects );
 	}
-	public static <M,F> StringBuilder joinB( MapJoiner<M,F> joiner, Map<M,F> objects ){
+	public static <M,N> StringBuilder joinB( MapJoiner<M,N> joiner, Map<M,N> objects ){
 		return joinBB( new StringBuilder(), joiner, objects );
 	}
 	
@@ -71,7 +71,7 @@ public class Str {
 	}
 
 	// Map
-	public static <M,F> String join( MapJoiner<M,F> joiner, Map<M,F> objects ){
+	public static <M,N> String join( MapJoiner<M,N> joiner, Map<M,N> objects ){
 		return joinB( joiner, objects ).toString();
 	}
 	public static <K,V> String join( String rs, String fs, Map<K,V> map ){
@@ -133,7 +133,7 @@ public class Str {
 		public String keyToString( K nameField, int index );
 		public String valueToString( V valueField, int index );
 	}
-	public static class SimpleMapJoiner<M,F> implements MapJoiner<M,F> {
+	public static class SimpleMapJoiner<M,N> implements MapJoiner<M,N> {
 		
 		private String recordSeparator;
 		private String fieldSeparator;
@@ -159,7 +159,7 @@ public class Str {
 		}
 
 		@Override
-		public String valueToString( F valueField, int index ) {
+		public String valueToString( N valueField, int index ) {
 			return valueField.toString();
 		}
 		

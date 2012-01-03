@@ -47,7 +47,9 @@ public abstract class AsynchronousQueue<T> extends Thread {
 		log.trace( "gotoSleep" );
 		synchronized( queue ) {
 			try {
-				if( !pleaseStop && queue.size() == 0 ) queue.wait();
+				while( !pleaseStop && queue.size() == 0 ){
+					queue.wait();
+				}
 			} catch( InterruptedException e ) {}
 		}
 		log.trace( "woke up" );

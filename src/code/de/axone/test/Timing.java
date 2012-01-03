@@ -1,5 +1,6 @@
 package de.axone.test;
 
+import java.util.Formatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -101,20 +102,22 @@ public class Timing {
 				throw new IllegalStateException( "You forgot to stop timer: " + key );
 		}
 		
-		String result = "Timing:\n";
+		StringBuilder result = new StringBuilder();
+		Formatter formatter = new Formatter( result );
+		result.append( "Timing:\n" );
 		for( Object name : timers.keySet() ){
 			Timer t = timers.get( name );
-			result += Text.left( name.toString(), 30 );
-			result += String.format( "% 5dms (%4.1f%%/%4.1f%%)\n", t.sum,
+			result.append( Text.left( name.toString(), 30 ) );
+			formatter.format( "% 5dms (%4.1f%%/%4.1f%%)\n", t.sum,
 					100.0*t.sum/grand, 100.0*t.sum/total.sum );
 		}
-		result += Text.line( '=', 50 ) + "\n";
-		result += Text.left( "Sum", 30 ) + String.format( "% 5dms (%4.1f%%)\n", grand, 100.0*grand/total.sum );
-		result += Text.left( "Diff", 30 ) + String.format( "% 5dms\n", total.sum - grand );
-		result += Text.line( '-', 50 ) + "\n";
-		result += Text.left( "Total", 30 ) + String.format( "% 5dms\n", total.sum );
+		result.append( Text.line( '=', 50 ) ).append( '\n' );
+		result.append( Text.left( "Sum", 30 ) ); formatter.format( "% 5dms (%4.1f%%)\n", grand, 100.0*grand/total.sum );
+		result.append( Text.left( "Diff", 30 ) ); formatter.format( "% 5dms\n", total.sum - grand );
+		result.append( Text.line( '-', 50 ) ).append( '\n' );
+		result.append( Text.left( "Total", 30 ) ); formatter.format( "% 5dms\n", total.sum );
 				
-		return result;
+		return result.toString();
 	}
 	
 	private static class Timer {

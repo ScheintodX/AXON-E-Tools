@@ -32,7 +32,7 @@ public abstract class ClassConfigurator {
 
 	private static final String DEL = "'";
 	private static final String P_NAME = "\\w+";
-	private static final String P_VALUE = "\\w*";
+	private static final String P_VALUE = "[^']*";
 	private static final String P_NV_ARG = 
 			"(" + P_NAME + ")" +WS+ "=" +WS+ DEL + "(" + P_VALUE + ")" + DEL;
 

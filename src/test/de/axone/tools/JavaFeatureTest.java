@@ -25,7 +25,7 @@ public class JavaFeatureTest<V> {
 		String s = null;
 		try {
 			s = (String)new Object();
-			fail( "Exception is thrown here" );
+			fail( "Exception must be thrown here" );
 		} catch( ClassCastException e ){
 			assertNull( s );
 		}
@@ -36,7 +36,7 @@ public class JavaFeatureTest<V> {
 			assertNotNull( v );
 			assertEquals( v.getClass(), Object.class );
 		} catch( ClassCastException e ){
-			fail( "Exception is thrown here" );
+			fail( "Exception must not be thrown here" );
 		}
 		
 	}

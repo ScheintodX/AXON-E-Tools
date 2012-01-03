@@ -1,104 +1,29 @@
 package de.axone.tools;
 
 import java.io.PrintStream;
-import java.util.Collection;
-import java.util.Map;
+import java.util.Formatter;
 
 public abstract class E {
-	
-	static String simplifyClassName( String className ){
-		
-		int oldIndex = className.indexOf( '.' );
-		int index=oldIndex;
-		
-		if( oldIndex > 0 ){
-    		while( ( index = className.indexOf( '.', index+1 ) ) > 0 ){
-    			
-    			oldIndex = index;
-    		}
-    		return className.substring( oldIndex+1 );
-    	} else {
-    		return className;
-    	}
-	}
-	
-	static String f( String s ){
-		return s;
-	}
-	static String f( Object o ){
-		if( o == null ) return S._NULL_;
-		else if( o instanceof String ) return f( (String)o );
-		else if( o instanceof Collection<?> ) return f( (Collection<?>)o );
-		else if( o instanceof Map<?,?> ) return f( (Map<?,?>) o );
-		else if( o.getClass().isArray() ) return f( (Object[]) o );
-		else return o.toString();
-	}
-	static String f( Collection<?> l ){
-		StringBuilder r = new StringBuilder();
-		r.append( "(" );
-		boolean first = true;
-		for( Object o : l ){
-			if( first ) first = false;
-			else r.append( ", " );
-			r.append( "'" );
-			r.append( f( o ) );
-			r.append( "'" );
-		}
-		r.append( ")" );
-		return r.toString();
-	}
-	static String f( Map<?,?> m ){
-		StringBuilder r = new StringBuilder();
-		r.append( "{" );
-		boolean first = true;
-		for( Object key : m.keySet() ){
-			if( first ) first = false;
-			else r.append( ", " );
-			r.append( f( key ) );
-			r.append( "=>" );
-			r.append( f( m.get( key ) ) );
-		}
-		r.append( "}" );
-		return r.toString();
-	}
-	static String f( Object [] a ){
-		
-		StringBuilder r = new StringBuilder();
-		r.append( "[" );
-		boolean first = true;
-		for( Object o : a ){
-			if( first ) first = false;
-			else r.append( ", " );
-			r.append( "'" );
-			r.append( f( o ) );
-			r.append( "'" );
-		}
-		r.append( "]" );
-		return r.toString();
-	}
-	
-	static void echo( PrintStream out, boolean nl, Object ... os ){
-		echo( out, 3, nl, os );
-	}
 	
 	static void echo( PrintStream out, int depth, boolean nl, Object ... os ){
 		
 		Exception e = new Exception();
 		StackTraceElement[] elm = e.getStackTrace();
+		Formatter f = new Formatter( out );
 		
-		String clazz = simplifyClassName( elm[depth].getClassName() );
+		String clazz = F.simplifyClassName( elm[depth].getClassName() );
 		int line = elm[depth].getLineNumber();
-		out.print( ">>> " + clazz + "(" + line + "): " );
+		f.format( ">>> %s(%d): ", clazz, line );
 		
 		if( os != null && os.length > 0 ){
 				
-    		if( os.length > 1 ) out.println();
-        		
+			boolean first = true;
     		for( Object o : os ){
     			
-    			if( os.length > 1 ) out.print( '\t' );
-    			out.print( f(o) );
-    			if( os.length > 1 ) out.println();
+    			if( first ) first = false;
+    			else out.print( ", " );
+    			
+    			out.print( F.ormat( o ) );
     		}
     		if( nl ) out.println();
     		out.flush();
@@ -107,17 +32,8 @@ public abstract class E {
 		}
 	}
 	
-	static void echo( PrintStream out, Map<?,?> map ){
-		if( map != null ){
-			MapPair [] pairs = new MapPair[ map.size() ];
-			int i = 0;
-			for( Object key : map.keySet() ){
-				pairs[ i++ ] = new MapPair( key, map.get( key ) );
-			}
-			echo( out, 3, true, (Object[])pairs );
-		} else {
-			echo( out, 3, true, S._NULL_ );
-		}
+	static void echo( PrintStream out, boolean nl, Object ... os ){
+		echo( out, 3, nl, os );
 	}
 	
 	public static void banner( String text ){
@@ -134,10 +50,6 @@ public abstract class E {
 	
 	public static void poster( char border, String text ){
 		echo( System.out, 2, true, Text.poster( border, text ) );
-	}
-	
-	public static void rr( boolean [] a ){
-		echo( System.err, true, (Object[])A.toObjects( a ) );
 	}
 	
 	public static void rr( byte [] a ){
@@ -168,13 +80,12 @@ public abstract class E {
 		echo( System.err, true, (Object[])A.toObjects( a ) );
 	}
 	
+	public static void rr( boolean [] os ){
+		echo( System.err, true, os );
+	}
 	public static void rr( Object ... os ){
 		
 		echo( System.err, true, os );
-	}
-	public static void rr( Map<?,?> map ){
-		
-		echo( System.err, map );
 	}
 	public static void rr_( Object ... os ){
 		
@@ -185,15 +96,12 @@ public abstract class E {
 		
 		echo( System.out, true, os );
 	}
-	public static void cho( Map<?,?> map ){
-		
-		echo( System.out, map );
-	}
 	public static void cho_( Object ... os ){
 		
 		echo( System.out, false, os );
 	}
 	
+	/* === EXIT =========================================================== */
 	public static void xit( String message, int code ){
 		
 		StringBuilder text = new StringBuilder();
@@ -230,23 +138,4 @@ public abstract class E {
 		xit( t.getMessage() );
 	}
 	
-	static class MapPair{
-		private Object key, value;
-		MapPair( Object key, Object value ){
-			this.key = key;
-			this.value = value;
-		}
-		private String key(){
-			if( key == null ) return "NULL";
-			return "'" + key.toString() + "'";
-		}
-		private String value(){
-			if( value == null ) return "NULL";
-			return "\"" + f( value ) + "\"";
-		}
-		@Override
-		public String toString(){
-			return( key() + " => " + value() );
-		}
-	}
 }

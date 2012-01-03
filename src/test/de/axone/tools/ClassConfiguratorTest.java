@@ -19,7 +19,7 @@ public class ClassConfiguratorTest {
 	
 	public void testParameter() throws Exception {
 		
-		String clazz = TESTCLASS + "	( x =	'5', yyy= '6'	, z12345EneMene='Muh' ) ";
+		String clazz = TESTCLASS + "	( x =	'5', yyy= '6'	, z12345EneMene='Muh/Mäh&123\\' ) ";
 		
 		Object instance = ClassConfigurator.create( clazz );
 		assertIsInstance( instance, ClassConfiguratorTest_TestClass.class );
@@ -28,7 +28,7 @@ public class ClassConfiguratorTest {
 		
 		assertEquals( t.x, "5" );
 		assertEquals( t.yyy, "6" );
-		assertEquals( t.z12345EneMene, "Muh" );
+		assertEquals( t.z12345EneMene, "Muh/Mäh&123\\" );
 	}
 	
 	public void testEmptyParameters() throws Exception {
