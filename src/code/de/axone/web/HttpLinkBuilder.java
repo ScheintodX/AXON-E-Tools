@@ -66,12 +66,31 @@ public class HttpLinkBuilder {
 	 * @param request
 	 * @param noHost use the host part in the link
 	 * @param noPath use the path part in the link
-	 * @param keepParameters list of parameters which shall be kept
-	 * @param replaceParameters
+	 * @param keepParameters list of parameters which shall be kept or null if all are kept
+	 * @param replaceParameters key/value pairs of parameters to set to create or set to new values
 	 * @return
 	 */
 	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath, List<String> keepParameters, Map<String,String> replaceParameters ) {
 		
+		return makeLink( request, noHost, noPath, keepParameters, replaceParameters, null );
+	}
+		
+	
+	/**
+	 * Make a link to this page and replace the given parameters
+	 * 
+	 * Additional specify whether to use host and path in the link
+	 * and supply a white list of parameters which are to be kept.
+	 * 
+	 * @param request
+	 * @param noHost use the host part in the link
+	 * @param noPath use the path part in the link
+	 * @param keepParameters list of parameters which shall be kept or null if all are kept
+	 * @param replaceParameters key/value pairs of parameters to set to create or set to new values
+	 * @param removeParameters list of parameters to remove from query or null if none are removed
+	 * @return
+	 */
+	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath, List<String> keepParameters, Map<String,String> replaceParameters, List<String> removeParameters ) {
 		SuperURL url = new SuperURL( request, noHost );
 		
 		if( noPath ) url.setPath( null );
@@ -91,6 +110,22 @@ public class HttpLinkBuilder {
 			}
 		}
 		
+		if( removeParameters != null ){
+			
+			Query oldQuery = url.getQuery();
+			if( oldQuery != null && oldQuery.getPath() != null ){
+				Query newQuery = new Query();
+				for( QueryPart part : oldQuery.getPath() ){
+				
+					String key = part.getKey();
+					if( !removeParameters.contains( key ) ){
+						newQuery.addValue( key, part.getValue() );
+					}
+				}
+				url.setQuery( newQuery );
+			}
+		}
+		
 		if( replaceParameters != null ) for( String key : replaceParameters.keySet() ){
 			
 			url.setQueryParameter( key, replaceParameters.get( key ) );
@@ -98,4 +133,5 @@ public class HttpLinkBuilder {
 		
 		return url.toString( true );
 	}
+		
 }

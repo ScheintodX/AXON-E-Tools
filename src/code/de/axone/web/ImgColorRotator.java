@@ -71,8 +71,6 @@ public class ImgColorRotator {
 	 * Rotate all colors in the csv for some degrees and change it's
 	 * brightness and saturation.
 	 * 
-	 * Colors are found by patterns matching #abc and #abcdef.
-	 * 
 	 * <tt>degree</tt> is in the range from 0 to 1.0 which corresponds to 0° to 360°
 	 * <tt>saturationGamma</tt> and <tt>brightnessGamma</tt> are in the range from
 	 * 0 to endless.

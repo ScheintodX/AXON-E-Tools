@@ -152,13 +152,11 @@ public abstract class Text {
 
 		try {
 			int width = 0;
-			int lines = 0;
     		BufferedReader r = new BufferedReader( new StringReader( text ) );
     		String line;
 			while( ( line = r.readLine() ) != null ){
 
 				if( line.length() > width ) width = line.length();
-				lines++;
 			}
 
 			width += 4; // borders

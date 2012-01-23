@@ -586,6 +586,9 @@ public class Equals {
 				// Set --------------------
 				if( srcVal instanceof Set ){
 					
+					if( tarVal == null )
+						throw new IllegalArgumentException( "'tarVal' is missing" );
+					
 					@SuppressWarnings( { "unchecked" } )
 					Set<Object>
 							srcSet = (Set<Object>)srcVal,
@@ -603,6 +606,9 @@ public class Equals {
 					
 				// List --------------------
 				} else if( srcVal instanceof List ){
+					
+					if( tarVal == null )
+						throw new IllegalArgumentException( "'tarVal' is missing" );
 					
 					@SuppressWarnings( { "unchecked" } )
 					List<Object>
@@ -624,6 +630,9 @@ public class Equals {
 					
 				// Map --------------------
 				} else if( srcVal instanceof Map ){
+					
+					if( tarVal == null )
+						throw new IllegalArgumentException( "'tarVal' is missing" );
 					
 					@SuppressWarnings( { "unchecked" } )
 					Map<Object,Object>
