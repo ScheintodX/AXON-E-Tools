@@ -82,12 +82,22 @@ public class PasswordBuilder {
 		return result.toArray( resultArray );
 	}
 	
-	public static void main( String [] args ){
+	public static void main( String [] args ) throws NoSuchAlgorithmException{
 		
-		for( int i=0; i<100; i++ ){
-			
-			System.out.println( makeSimplaPasswd() );
+		int len = DEFAULT_LENGTH;
+		if( args.length == 1 ){
+			len = Integer.parseInt( args[0] );
 		}
+		
+		String plain = makePasswd( len );
+		String salt = makeSalt( DEFAULT_LENGTH );
+		
+		String hashed = hashPassword( plain, "SHA-1", salt, DEFAULT_ROUNDS_EXP );
+		
+		boolean ok = checkPassword( plain, hashed );
+		
+		System.out.printf( "%s: %s -> %s\n", ok?"OK":"ERR", plain, hashed );
+		
 	}
 	
 	/**

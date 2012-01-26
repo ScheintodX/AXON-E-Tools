@@ -220,8 +220,9 @@ public abstract class Text {
 		}
 		return buffer;
 	}
+	
 	public static StringBuilder lineB( char c, int width ){
-		StringBuilder buffer = new StringBuilder();
+		StringBuilder buffer = new StringBuilder( width );
 		return lineBB( buffer, c, width );
 	}
 	public static String line( char c, int width ){
@@ -260,6 +261,17 @@ public abstract class Text {
 	}
 	public static String line( char c, int width, String text ){
 		return line( c, width, text, false );
+	}
+	
+	public static StringBuilder xBB( StringBuilder buffer, String text, int repeat ){
+		for( ; repeat>=0; repeat-- ) buffer.append( text );
+		return buffer;
+	}
+	public static StringBuilder xB( String text, int repeat ){
+		return xBB( new StringBuilder(), text, repeat );
+	}
+	public static String x( String text, int repeat ){
+		return xB( text, repeat ).toString();
 	}
 	
 	/**
