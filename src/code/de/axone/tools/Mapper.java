@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import de.axone.exception.Assert;
 
@@ -69,6 +70,12 @@ public abstract class Mapper {
 		HashSet<T> result = new HashSet<T>( Arrays.asList( values ));
 		return result;
 	}
+	
+	public static <T> TreeSet<T> treeSet( T ... values ){
+		
+		TreeSet<T> result = new TreeSet<T>( Arrays.asList( values ));
+		return result;
+	}
 
 	// Converted Set
 	public static <T,X> HashSet<T> hashSet( Converter<T,X> converter, X ... values ){
@@ -77,6 +84,19 @@ public abstract class Mapper {
 		if( values == null ) return new HashSet<T>();
 		
 		HashSet<T> result = new HashSet<T>( values.length );
+		
+		for( X value : values ){
+			result.add( converter.convert( value ) );
+		}
+		return result;
+	}
+
+	public static <T,X> TreeSet<T> treeSet( Converter<T,X> converter, X ... values ){
+		
+		Assert.notNull( converter, "converter" );
+		if( values == null ) return new TreeSet<T>();
+		
+		TreeSet<T> result = new TreeSet<T>();
 		
 		for( X value : values ){
 			result.add( converter.convert( value ) );
