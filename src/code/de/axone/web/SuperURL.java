@@ -608,7 +608,7 @@ public final class SuperURL {
 			if( forName.containsKey( key ) ){
 				LinkedList<QueryPart> parts = forName.get( key );
 				if( parts.size() > 0 ){
-					return parts.getFirst();
+					return parts.getLast();
 				}
 			}
 			return null;

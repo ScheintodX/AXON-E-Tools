@@ -107,8 +107,8 @@ public class SuperURLTest {
 		assertEquals( query.getPart( "key1").getValue(), "val1" );
 		assertEquals( query.getValue( "key1" ), "val1" );
 		assertTrue( query.has( "key2" ) );
-		assertEquals( query.getPart( "key2").getValue(), "val2" );
-		assertEquals( query.getValue( "key2" ), "val2" );
+		assertEquals( query.getPart( "key2").getValue(), "val22" );
+		assertEquals( query.getValue( "key2" ), "val22" );
 		assertEquals( query.getParts( "key2" ).size(), 2 );
 		assertEquals( query.getValues( "key2" ).size(), 2 );
 		assertEquals( query.getParts( "key2" ).get( 0 ).getValue(), "val2" );
@@ -135,7 +135,12 @@ public class SuperURLTest {
 		query.addValue( "key2", "newval22" );
 		assertEquals( query.size(), 4 );
 		assertEquals( query.getParts( "key2" ).size(), 2 );
-		assertEquals( query.getValue( "key2" ), "newval2" );
+		assertEquals( query.getValue( "key2" ), "newval22" );
+		
+		query.addValue( "key2", "newval23" );
+		assertEquals( query.size(), 5 );
+		assertEquals( query.getParts( "key2" ).size(), 3 );
+		assertEquals( query.getValue( "key2" ), "newval23" );
 		
 	}
 	

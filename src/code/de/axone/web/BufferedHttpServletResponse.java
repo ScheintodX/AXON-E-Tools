@@ -1,5 +1,6 @@
 package de.axone.web;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -11,8 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 public class BufferedHttpServletResponse implements HttpServletResponse {
 	
-	private StringWriter out = new StringWriter();
-	private PrintWriter printer = new PrintWriter( out );
+	ByteArrayOutputStream outS;
+	
+	private StringWriter out;
+	private PrintWriter printer;
 	
 	@Override
 	public void addCookie( Cookie arg0 ) {
@@ -125,13 +128,30 @@ public class BufferedHttpServletResponse implements HttpServletResponse {
 	}
 
 	@Override
-	public ServletOutputStream getOutputStream() throws IOException {
-		throw new UnsupportedOperationException();
+	public synchronized ServletOutputStream getOutputStream() throws IOException {
+		
+		if( out != null ) throw new IllegalStateException( "Already using Writer" );
+		
+		if( outS == null ) outS = new ByteArrayOutputStream();
+	
+		return new ServletOutputStream() {
+			@Override
+			public void write( int b ) throws IOException {
+				outS.write( b );
+			}
+		};
 	}
 
 	@Override
-	public PrintWriter getWriter() throws IOException {
+	public synchronized PrintWriter getWriter() throws IOException {
 		
+		if( outS != null ) throw new IllegalStateException( "Already using OutputStream" );
+		
+		if( printer == null ){
+			out = new StringWriter();
+			printer = new PrintWriter( out );
+		}
+	
 		return printer;
 	}
 
@@ -176,7 +196,10 @@ public class BufferedHttpServletResponse implements HttpServletResponse {
 	}
 	
 	public StringBuffer getBuffer(){
-		
 		return out.getBuffer();
 	}
+	public ByteArrayOutputStream getByteArray(){
+		return outS;
+	}
+	
 }
