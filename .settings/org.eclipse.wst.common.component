@@ -2,6 +2,5 @@
 <project-modules id="moduleCoreId" project-version="1.5.0">
     <wb-module deploy-name="Tools">
         <wb-resource deploy-path="/" source-path="/src/code"/>
-        <wb-resource deploy-path="/" source-path="/src/test"/>
     </wb-module>
 </project-modules>
