@@ -8,6 +8,12 @@ public abstract class Assert {
 		if( o == null ) throw Ex.up( new ArgumentNullException( name ) );
 	}
 	
+	// ! Empty String
+	public static void notEmpty( Object o, String name ){
+		if( o == null ) return;
+		if( o.toString().length() == 0 ) throw Ex.up( new ArgumentNullException( name ) );
+	}
+	
 	// == TRUE --------------------
 	public static void isTrue( Boolean o, String name ){
 		if( o == null ) return;

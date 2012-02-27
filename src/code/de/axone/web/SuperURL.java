@@ -109,15 +109,19 @@ public final class SuperURL {
 				
 				String name = (String)names.nextElement();
 				String[] values = request.getParameterValues( name ); // Buggy
-				String value = request.getParameter( name );
+				//String value = request.getParameter( name );
 				
 				// Warn because of bug
+				/*
 				if( values.length > 1 ){
 					log.warn( "More than one parameter for: " + name + " But only one used:" + value );
 				}
+				*/
 				
 				// Default behaviour: bug-free
-				query.addValue( name, value );
+				for( String v : values ){
+					query.addValue( name, v );
+				}
 				
 			}
 			
