@@ -45,8 +45,9 @@ public interface AutomaticCache<K, V> {
 			Formatter format = new Formatter( result );
 			long hits = this.hits.get();
 			long accesses = this.accesses.get();
-			format.format( "Ratio: %d/%d hits = %.1f%%", hits, accesses, 100.0*hits/accesses );
-			format.format( " | Full: %d entries", cache.size() );
+			format.format( "Ratio: %d/%d hits = %.1f%% | Full: %d/%d entries = %.1f%%",
+					hits, accesses, 100.0*hits/accesses,
+					cache.size(), cache.capacity(), 100.0*cache.size()/cache.capacity() );
 			return result.toString();
 		}
 	}

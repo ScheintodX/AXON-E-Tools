@@ -40,6 +40,7 @@ public class PasswordBuilderTest {
 			// Plain should work, too
 			assertTrue( PasswordBuilder.checkPassword( plain, plain ) );
 			String hashed = PasswordBuilder.hashPassword( plain, "SHA1" );
+			E.rr( hashed );
 			assertTrue( PasswordBuilder.checkPassword( plain, hashed ) );
 		}
 	}

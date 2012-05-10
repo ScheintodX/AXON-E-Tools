@@ -5,7 +5,9 @@ import java.util.Formatter;
 
 public abstract class E {
 	
-	static void echo( PrintStream out, int depth, boolean nl, Object ... os ){
+	static void printPos( PrintStream out, int depth ){
+		
+		depth++;
 		
 		Exception e = new Exception();
 		StackTraceElement[] elm = e.getStackTrace();
@@ -14,6 +16,11 @@ public abstract class E {
 		String clazz = F.simplifyClassName( elm[depth].getClassName() );
 		int line = elm[depth].getLineNumber();
 		f.format( ">>> %s(%d): ", clazz, line );
+	}
+	
+	static void echo( PrintStream out, int depth, boolean nl, Object ... os ){
+		
+		printPos( out, depth );
 		
 		if( os != null && os.length > 0 ){
 				
@@ -30,6 +37,14 @@ public abstract class E {
 		} else {
 			out.println( S._NULL_ );
 		}
+	}
+	
+	static void printf( PrintStream out, boolean nl, String format, Object ... args ){
+		
+		printPos( out, 2 );
+		
+		out.printf( format, args );
+		if( nl ) out.println();
 	}
 	
 	static void echo( PrintStream out, boolean nl, Object ... os ){
@@ -91,6 +106,14 @@ public abstract class E {
 		
 		echo( System.err, false, os );
 	}
+	public static void rrf( String format, Object ... args ){
+		
+		printf( System.err, true, format, args );
+	}
+	public static void rrf_( String format, Object ... args ){
+		
+		printf( System.err, false, format, args );
+	}
 	
 	public static void cho( Object ... os ){
 		
@@ -99,6 +122,14 @@ public abstract class E {
 	public static void cho_( Object ... os ){
 		
 		echo( System.out, false, os );
+	}
+	public static void chof( String format, Object ... args ){
+		
+		printf( System.out, true, format, args );
+	}
+	public static void chof_( String format, Object ... args ){
+		
+		printf( System.out, false, format, args );
 	}
 	
 	/* === EXIT =========================================================== */

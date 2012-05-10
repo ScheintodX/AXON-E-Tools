@@ -1,6 +1,5 @@
 package de.axone.exception;
 
-
 public abstract class Assert {
 
 	// != NULL --------------------
@@ -30,8 +29,15 @@ public abstract class Assert {
 	public static void inRange( Number number, String name, long lowerBound, long upperBound ){
 		if( number == null ) return;
 		long n = number.longValue();
-		if( n < lowerBound ) throw Ex.up( new ArgumentRangeException( name, "<=" + lowerBound, n ) );
-		if( n > upperBound ) throw Ex.up( new ArgumentRangeException( name, ">=" + upperBound, n ) );
+		if( n < lowerBound ) throw Ex.up( new ArgumentRangeException( name, "< " + lowerBound, n ) );
+		if( n > upperBound ) throw Ex.up( new ArgumentRangeException( name, "> " + upperBound, n ) );
+	}
+	
+	// Length lt ----------------
+	public static void lengthLTE( CharSequence text, String name, int length ){
+		if( text == null ) return;
+		int l = text.length();
+		if( l > length ) throw Ex.up( new ArgumentRangeException( name, " length >" + length, l ) );
 	}
 	
 	// >= --------------------

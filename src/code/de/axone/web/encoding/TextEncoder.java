@@ -2,9 +2,7 @@ package de.axone.web.encoding;
 
 
 /**
- * Encodes Text so it can be used in mails
- * 
- * Just in case a placeholder. Does nothing by now
+ * Encodes Text so only text is returned. All special chars are removed
  * 
  * @author flo
  *
@@ -19,7 +17,7 @@ public class TextEncoder implements Encoder {
 	
 	public static String ENCODE( String value ) {
 		
-		return value;
+		return value.replaceAll( "\\W", "" );
 	}
 
 	@Override

@@ -64,14 +64,14 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 		try{
 			readLock.lock();
     		for( K key : keys ){
-
+    			
     			// Note that apparently no cast is done implicitly here.
     			// Java treats V as Object.
     			// Otherwise a ClassCastException would be thrown in case of NullEntry
     			V found = cache.get( key );
 
     			if( found == null ){
-
+    				
     				stats.miss();
     				if( missed == null ) missed = new HashSet<K>();
     				missed.add( key );
@@ -92,9 +92,9 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 				writeLock.lock();
 
 				for( K key : missed ){
-
+					
 					V value = fetched.get( key );
-
+					
 					if( value == null ){
 
 						cache.put( key, NULL );
@@ -108,7 +108,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 				writeLock.unlock();
 			}
 		}
-
+		
 		return result;
 	}
 
