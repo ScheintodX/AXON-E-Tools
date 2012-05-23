@@ -1,6 +1,7 @@
 package de.axone.tools;
 
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Map;
 
 public class F {
@@ -27,11 +28,27 @@ public class F {
 		return r.toString();
 	}
 
-	private static void formatCollection( StringBuilder r, Collection<?> l ){
+	private static void formatIterable( StringBuilder r, Iterable<?> l ){
 		
 		r.append( "(" );
 		boolean first = true;
 		for( Object o : l ){
+			if( first ) first = false;
+			else r.append( ", " );
+			
+			formatItem( r, o );
+		}
+		r.append( ")" );
+	}
+
+	private static void formatEnumeration( StringBuilder r, Enumeration<?> l ){
+		
+		r.append( "(" );
+		boolean first = true;
+		
+		while( l.hasMoreElements() ){
+			
+			Object o = l.nextElement();
 			if( first ) first = false;
 			else r.append( ", " );
 			
@@ -120,8 +137,9 @@ public class F {
 		
 		if( o == null ) r.append( S._NULL_ );
 		else if( o instanceof String ) formatString( r, (String)o );
-		else if( o instanceof Collection<?> ) formatCollection( r, (Collection<?>)o );
+		else if( o instanceof Iterable<?> ) formatIterable( r, (Collection<?>)o );
 		else if( o instanceof Map<?,?> ) formatMap( r, (Map<?,?>) o );
+		else if( o instanceof Enumeration<?> ) formatEnumeration( r, (Enumeration<?>) o );
 		else if( o.getClass().isArray() ) formatArray( r, o );
 		else r.append( o );
 	}
