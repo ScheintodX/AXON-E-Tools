@@ -64,20 +64,32 @@ public abstract class InputBuilder {
 		
 		StringBuilder result = new StringBuilder();
 		
+		String nameE = AttributeEncoder.ENCODE( name );
+		String keyE = AttributeEncoder.ENCODE( key );
+		String valueE = AttributeEncoder.ENCODE( value );
+		String idE = nameE + "_" + keyE;
+		
 		result
+			.append( "<span class=\"radio\">" )
 			.append( "<input type=\"radio\" name=\"" )
-			.append( AttributeEncoder.ENCODE( name ) )
+			.append( nameE )
 			.append( "\" value=\"" )
-			.append( AttributeEncoder.ENCODE( key ) )
+			.append( keyE )
+			.append( "\" id=\"" )
+			.append( idE )
 			.append( '"' )
 		;
 		if( selected ){
 			result.append( " checked=\"checked\"" );
 		}
 		result
-			.append( '>' )
-			.append( XmlEncoder.ENCODE( value ) )
-			.append( "</input>" )
+			.append( "/>" )
+			.append( "<label for=\"" )
+			.append( idE )
+			.append( "\">" )
+			.append( valueE )
+			.append( "</label>" )
+			.append( "</span>" )
 		;
 		
 		return result;
