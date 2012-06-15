@@ -5,6 +5,8 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 
 import de.axone.tools.AbstractStringAccessor;
+import de.axone.tools.S;
+import de.axone.tools.Str;
 
 public class RequestUtil extends AbstractStringAccessor {
 	
@@ -60,5 +62,27 @@ public class RequestUtil extends AbstractStringAccessor {
 			return value.substring( key.length() );
 		}
 		return null;
+	}
+	
+	@Override
+	public String toString(){
+		
+		StringBuilder result = new StringBuilder();
+		
+		Enumeration<?> names = request.getParameterNames();
+
+		while( names.hasMoreElements() ){
+			
+			String name = (String)names.nextElement();
+			String [] value = request.getParameterValues( name );
+			
+			result
+					.append( name )
+					.append( ": " )
+					.append( Str.join( ", ", value ) )
+					.append( S.nl );
+		}
+		
+		return result.toString();
 	}
 }

@@ -160,6 +160,20 @@ public abstract class Mapper {
 	}
 	*/
 	
+	public static <X,Y,M extends Map<X,Y>> M clean( M map ){
+		
+		LinkedList<X> empty = new LinkedList<X>();
+		for( X key : map.keySet() ){
+			
+			if( map.get( key ) == null ) empty.add( key );
+		}
+		for( X key : empty ){
+			map.remove( key );
+		}
+		
+		return map;
+	}
+	
 	public interface Converter<T,X> {
 		public T convert( X value );
 	}

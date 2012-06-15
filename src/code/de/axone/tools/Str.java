@@ -160,7 +160,7 @@ public class Str {
 
 		@Override
 		public String valueToString( N valueField, int index ) {
-			return valueField.toString();
+			return valueField != null ? valueField.toString() : "-null-";
 		}
 		
 	}
