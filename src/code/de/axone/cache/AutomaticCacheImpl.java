@@ -53,6 +53,10 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 		cache = backend;
 	}
 	
+	public static <X,Y> AutomaticCache<X,Y> wrap( Cache<X,Y> cache ){
+		return new AutomaticCacheImpl<X,Y>( cache );
+	}
+	
 	@Override
 	public Map<K,V> get( Collection<K> keys, DataAccessor<K,V> accessor ){
 		

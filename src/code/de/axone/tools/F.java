@@ -137,7 +137,7 @@ public class F {
 		
 		if( o == null ) r.append( S._NULL_ );
 		else if( o instanceof String ) formatString( r, (String)o );
-		else if( o instanceof Iterable<?> ) formatIterable( r, (Collection<?>)o );
+		else if( o instanceof Iterable<?> ) formatIterable( r, (Iterable<?>)o );
 		else if( o instanceof Map<?,?> ) formatMap( r, (Map<?,?>) o );
 		else if( o instanceof Enumeration<?> ) formatEnumeration( r, (Enumeration<?>) o );
 		else if( o.getClass().isArray() ) formatArray( r, o );

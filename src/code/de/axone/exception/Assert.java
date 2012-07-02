@@ -1,16 +1,43 @@
 package de.axone.exception;
 
+import java.util.Collection;
+import java.util.Map;
+
 public abstract class Assert {
 
 	// != NULL --------------------
 	public static void notNull( Object o, String name ){
 		if( o == null ) throw Ex.up( new ArgumentNullException( name ) );
 	}
+	// gt 0
+	public static void gt0( Number number, String name ){
+		if( number == null ) return;
+		if( number.doubleValue() <= 0 ) throw Ex.up( new ArgumentNullException( name ) );
+		
+	}
+	// eq 1
+	public static void eq1( Number number, String name ){
+		if( number == null ) return;
+		if( number.longValue() != 1 ) throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' is not 1" ) );
+		
+	}
 	
 	// ! Empty String
 	public static void notEmpty( Object o, String name ){
 		if( o == null ) return;
 		if( o.toString().length() == 0 ) throw Ex.up( new ArgumentNullException( name ) );
+	}
+	
+	// ! Empty String
+	public static void notEmpty( Collection<?> o, String name ){
+		if( o == null ) return;
+		if( o.size() == 0 ) throw Ex.up( new ArgumentNullException( name ) );
+	}
+	
+	// ! Empty String
+	public static void notEmpty( Map<?,?> o, String name ){
+		if( o == null ) return;
+		if( o.size() == 0 ) throw Ex.up( new ArgumentNullException( name ) );
 	}
 	
 	// == TRUE --------------------
@@ -38,6 +65,20 @@ public abstract class Assert {
 		if( text == null ) return;
 		int l = text.length();
 		if( l > length ) throw Ex.up( new ArgumentRangeException( name, " length >" + length, l ) );
+	}
+	
+	// Length gt ----------------
+	public static void lengthGTE( CharSequence text, String name, int length ){
+		if( text == null ) return;
+		int l = text.length();
+		if( l < length ) throw Ex.up( new ArgumentRangeException( name, " length <" + length, l ) );
+	}
+	
+	// Length eq ----------------
+	public static void lengthEQ( CharSequence text, String name, int length ){
+		if( text == null ) return;
+		int l = text.length();
+		if( l != length ) throw Ex.up( new ArgumentRangeException( name, " length ==" + length, l ) );
 	}
 	
 	// >= --------------------

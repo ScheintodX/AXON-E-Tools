@@ -160,6 +160,20 @@ public abstract class Mapper {
 	}
 	*/
 	
+	public static Map<String,String> split( String rs, String fs, String joined ){
+		
+		Map<String,String> result = new TreeMap<String,String>();
+		String[] records = joined.split( rs );
+		for( String record : records ){
+			
+			String[] fields = record.split( fs );
+			for( int i=0; i<2; i++ ) fields[i] = fields[i].trim();
+			
+			result.put( fields[0], fields[1] );
+		}
+		return result;
+	}
+	
 	public static <X,Y,M extends Map<X,Y>> M clean( M map ){
 		
 		LinkedList<X> empty = new LinkedList<X>();

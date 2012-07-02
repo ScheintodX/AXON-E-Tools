@@ -46,6 +46,18 @@ public abstract class E {
 		out.printf( format, args );
 		if( nl ) out.println();
 	}
+	static void log( PrintStream out, boolean nl, String format, Object ...args ){
+		
+		printPos( out, 2 );
+		
+		for( Object arg : args ){
+			
+			format = format.replaceFirst( "\\{\\}", F.ormat( arg ) );
+		}
+		out.print( format );
+		
+		if( nl ) out.println();
+	}
 	
 	static void echo( PrintStream out, boolean nl, Object ... os ){
 		echo( out, 3, nl, os );
@@ -113,6 +125,10 @@ public abstract class E {
 	public static void rrf_( String format, Object ... args ){
 		
 		printf( System.err, false, format, args );
+	}
+	public static void rrl( String format, Object ... args ){
+		
+		log( System.err, true, format, args );
 	}
 	
 	public static void cho( Object ... os ){
