@@ -1,5 +1,6 @@
 package de.axone.cache;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -81,7 +82,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
     				missed.add( key );
     			} else {
     				stats.hit();
-    				if( found != NULL ) result.put( key, found );
+    				if( !NULL.equals( found ) ) result.put( key, found );
     			}
     		}
 		} finally {
@@ -157,7 +158,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 			}
 		}
 
-		if( result == NULL ){
+		if( NULL.equals( result ) ){
 			result = null;
 		}
 
@@ -215,12 +216,25 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 		return stats;
 	}
 	
-	private static final class NullEntry {
+	private static final class NullEntry implements Serializable {
+		
+		public static final long serialVersionUID = 1L;
 		
 		@Override
 		public String toString(){
 			return "== NULL-ENTRY ==";
 		}
+		
+		@Override
+		public boolean equals( Object obj ) {
+			return obj==null || obj.getClass() == NullEntry.class;
+		}
+
+		@Override
+		public int hashCode() {
+			return 0;
+		}
+
 	}
 
 }
