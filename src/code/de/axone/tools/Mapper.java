@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import de.axone.data.Pair;
 import de.axone.exception.Assert;
 
 public abstract class Mapper {
@@ -24,7 +25,6 @@ public abstract class Mapper {
 	public static <T> TreeMap<T,T> treeMap( T ... values ){
 		return map( new TreeMap<T,T>(), values );
 	}
-		
 	public static <T> LinkedHashMap<T,T> linkedHashMap( T ... values ){
 		return map( new LinkedHashMap<T,T>(), values );
 	}
@@ -64,6 +64,19 @@ public abstract class Mapper {
 		return result;
 	}
 
+	public static <K,V> TreeMap<K,V> treeMap( Pair<K,V> ... values ){
+		return map( new TreeMap<K,V>(), values );
+	}
+	public static <K,V> HashMap<K,V> hashMap( Pair<K,V> ... values ){
+		return map( new HashMap<K,V>(), values );
+	}
+	public static <K,V,M extends Map<K,V>> M map( M result, Pair<K,V> ... values ){
+		for( Pair<K,V> value : values ){
+			result.put( value.getLeft(), value.getRight() );
+		}
+		return result;
+	}
+		
 	// Set
 	public static <T> HashSet<T> hashSet( T ... values ){
 

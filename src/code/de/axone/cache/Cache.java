@@ -84,7 +84,7 @@ public interface Cache<K,V> {
 	 * @param <K>
 	 * @param <V>
 	 */
-	public static interface Direct<K,V> extends Cache<K,V> {
+	public interface Direct<K,V> extends Cache<K,V> {
 		
 		/**
 		 * @see java.util.Map#keySet()
@@ -97,6 +97,17 @@ public interface Cache<K,V> {
 	     * @return A collection of all values
 	     */
 	    Collection<V> values();
+	}
+	
+	/**
+	 * Can be implemented optionally and provides additional runtime information
+	 * for this cache
+	 * 
+	 * @author flo
+	 */
+	public interface Watched {
+		
+		public double ratio();
 	}
 	
 }

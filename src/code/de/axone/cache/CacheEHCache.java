@@ -4,13 +4,15 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
 
-public class CacheEHCache<K,V> implements Cache<K,V> {
+public class CacheEHCache<K,V> implements Cache<K,V>, Cache.Watched {
 	
 	private final net.sf.ehcache.Cache backend;
 	
 	public CacheEHCache( net.sf.ehcache.Cache ehCache ){
 		this.backend = ehCache;
 	}
+	
+	private Watcher watcher = new Watcher();
 	
 	public static <I,J> CacheEHCache<I,J>  instance( String name, long size ){
 		
@@ -43,7 +45,12 @@ public class CacheEHCache<K,V> implements Cache<K,V> {
 		
 		Element element = backend.get( key );
 		
-		if( element == null ) return null;
+		if( element == null ){
+			watcher.miss();
+			return null;
+		}
+		
+		watcher.hit();
 		
 		@SuppressWarnings( "unchecked" )
 		V result = (V)element.getValue();
@@ -53,7 +60,12 @@ public class CacheEHCache<K,V> implements Cache<K,V> {
 	@Override
 	public boolean containsKey( Object key ) {
 		
-		return backend.isKeyInCache( key );
+		boolean result = backend.isKeyInCache( key );
+		
+		if( result ) watcher.hit();
+		else watcher.miss();
+		
+		return result;
 	}
 
 	@Override
@@ -78,12 +90,16 @@ public class CacheEHCache<K,V> implements Cache<K,V> {
 
 	@Override
 	public int capacity() {
-		return Integer.MAX_VALUE;
+		return -1;
 	}
 
 	@Override
 	public String info() {
 		return backend.toString();
+	}
+	@Override
+	public double ratio() {
+		return watcher.ratio();
 	}
 
 }

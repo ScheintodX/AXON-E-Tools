@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 
 import de.axone.data.LRUCache;
 
@@ -15,14 +14,13 @@ import de.axone.data.LRUCache;
  * @param <K>
  * @param <V>
  */
-public class CacheLRUMap<K,V> implements Cache.Direct<K,V> {
+public class CacheLRUMap<K,V> implements Cache.Direct<K,V>, Cache.Watched {
 	
 	private final String name;
 	private final LRUCache<K,V> unsafeBackend;
 	private final Map<K,V> backend;
 	
-	private AtomicLong hits = new AtomicLong(0);
-	private AtomicLong misses = new AtomicLong(0);
+	private Watcher watcher = new Watcher();
 
 	public CacheLRUMap( String name, int maxCapacity ) {
 		this.name = name;
@@ -31,17 +29,17 @@ public class CacheLRUMap<K,V> implements Cache.Direct<K,V> {
 	}
 
 	@Override
+	public double ratio() {
+		
+		return watcher.ratio();
+	}
+
+	@Override
 	public String info() {
-		
-		long hits = this.hits.get();
-		long misses = this.misses.get();
-		
-		long sum = hits+misses;
-		double ratio = sum > 0 ? (double)hits/sum : 0;
 		
 		return "LRU '" + name + "'" +
 				" (Size: " + size() + " of " + unsafeBackend.getCapacity() + 
-				", Hits: " + hits + "/" + sum + " = " + Math.round( ratio *1000 )/10 + "%)";
+				", Hits: " + watcher.hits() + "/" + watcher.accesses() + " = " + Math.round( watcher.ratio() *1000 )/10.0 + "%)";
 	}
 	
 	@Override
@@ -49,8 +47,8 @@ public class CacheLRUMap<K,V> implements Cache.Direct<K,V> {
 		
 		boolean result = backend.containsKey( key );
 		
-		if( result ) hits.incrementAndGet();
-		else misses.incrementAndGet();
+		if( result ) watcher.hit();
+		else watcher.miss();
 		
 		return result;
 	}
@@ -59,8 +57,8 @@ public class CacheLRUMap<K,V> implements Cache.Direct<K,V> {
 		
 		V result = backend.get( key );
 		
-		if( result != null ) hits.incrementAndGet();
-		else misses.incrementAndGet();
+		if( result != null ) watcher.hit();
+		else watcher.miss();
 		
 		return result;
 	}
