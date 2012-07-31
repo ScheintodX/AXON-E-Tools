@@ -2,6 +2,7 @@ package de.axone.cache;
 
 import static org.testng.Assert.*;
 
+import java.io.File;
 import java.util.HashMap;
 
 import net.sf.ehcache.CacheManager;
@@ -17,7 +18,8 @@ public class CacheEHCacheTest {
 
 	public void testEHCache() throws Exception {
 		
-		CacheEHCache<String,TestValue> cache = CacheEHCache.instance( "testcache", 10 );
+		CacheEHCache<String,TestValue> cache = CacheEHCache.instance(
+				new File( "/tmp/ehcache" ), "testcache", 10 );
 		
 		/*
 		assertFalse( cache.containsKey( TESTKEY ) );

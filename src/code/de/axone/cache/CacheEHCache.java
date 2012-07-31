@@ -1,5 +1,7 @@
 package de.axone.cache;
 
+import java.io.File;
+
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
@@ -14,12 +16,12 @@ public class CacheEHCache<K,V> implements Cache<K,V>, Cache.Watched {
 	
 	private Watcher watcher = new Watcher();
 	
-	public static <I,J> CacheEHCache<I,J>  instance( String name, long size ){
+	public static <I,J> CacheEHCache<I,J>  instance( File tmpDir, String name, long size ){
 		
 		CacheConfiguration config = new CacheConfiguration();
 		config.setName( name );
 		config.setDiskPersistent( true );
-		config.setDiskStorePath( "/tmp/ehcache" );
+		config.setDiskStorePath( tmpDir.getAbsolutePath() );
 		config.setMaxEntriesLocalHeap( size );
 		CacheManager manager = CacheManager.getInstance();
 		
