@@ -8,4 +8,8 @@ public class Counter {
 	public Counter( long count ){ this.count = count; }
 	public void inc(){ count++; }
 	public long count(){ return count; };
+	@Override
+	public String toString(){
+		return "(c:" + count + ")";
+	}
 }

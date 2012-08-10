@@ -92,7 +92,15 @@ public final class SuperURL {
 			URI uri;
 			if( request.getRequestURL() != null ){
 				
-    			uri = new URI( request.getRequestURL().toString() );
+				URL url;
+				try {
+					url = new URL( request.getRequestURL().toString() );
+				} catch( MalformedURLException e ) {
+					// Should not happen
+					throw new URISyntaxException( request.getRequestURL().toString(), "Cannot parse as url" );
+				}
+				
+    			uri = new URI( url.getProtocol(), url.getHost(), url.getPath(), url.getQuery() );
 			} else {
 				uri = new URI( "" );
 				noHost = true;
@@ -127,7 +135,7 @@ public final class SuperURL {
 			
 		} catch( URISyntaxException e ) {
 			
-			// This should not happen since the uri in querstien
+			// This should not happen since the uri in questien
 			// led us here in the first place
 			e.printStackTrace();
 		}

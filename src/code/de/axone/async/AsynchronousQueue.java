@@ -64,7 +64,6 @@ public abstract class AsynchronousQueue<T> extends Thread {
 		log.debug( "STARTING" );
 
 		do {
-
 			T data = pop();
 
 			if( data != null ) {
@@ -73,7 +72,10 @@ public abstract class AsynchronousQueue<T> extends Thread {
 				try {
 					process( data );
 					synchronized( queue ){ inProcess=0; }
-					if( log.isTraceEnabled() ) log.trace( "done: " + info( data ) );
+					if( log.isTraceEnabled() ){
+						log.trace( "done: " + info( data ) );
+						log.trace( "remaining:" + size() );
+					}
 				} catch( Exception e ){
 					log.error( "Error processing: " + info( data ), e );
 				}
