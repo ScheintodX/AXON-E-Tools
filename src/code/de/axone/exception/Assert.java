@@ -28,13 +28,13 @@ public abstract class Assert {
 		if( o.toString().length() == 0 ) throw Ex.up( new ArgumentNullException( name ) );
 	}
 	
-	// ! Empty String
+	// ! Empty Collection
 	public static void notEmpty( Collection<?> o, String name ){
 		if( o == null ) return;
 		if( o.size() == 0 ) throw Ex.up( new ArgumentNullException( name ) );
 	}
 	
-	// ! Empty String
+	// ! Empty Map
 	public static void notEmpty( Map<?,?> o, String name ){
 		if( o == null ) return;
 		if( o.size() == 0 ) throw Ex.up( new ArgumentNullException( name ) );

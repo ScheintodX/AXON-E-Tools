@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.axone.exception.Assert;
 import de.axone.tools.Str;
 
 
@@ -90,21 +91,27 @@ public final class SuperURL {
 		try {
 			
 			URI uri;
-			if( request.getRequestURL() != null ){
+			StringBuffer urlStr = request.getRequestURL();
+			
+			if( urlStr != null ){
 				
+				/*
 				URL url;
 				try {
-					url = new URL( request.getRequestURL().toString() );
+					url = new URL( urlStr.toString() );
 				} catch( MalformedURLException e ) {
 					// Should not happen
 					throw new URISyntaxException( request.getRequestURL().toString(), "Cannot parse as url" );
 				}
+				*/
 				
-    			uri = new URI( url.getProtocol(), url.getHost(), url.getPath(), url.getQuery() );
+    			//uri = new URI( url.getProtocol(), url.getHost(), url.getPath(), url.getQuery() );
+				uri = new URI( urlStr.toString() );
 			} else {
 				uri = new URI( "" );
 				noHost = true;
 			}
+			
 			
 			initialize( uri, noHost );
 			
@@ -372,6 +379,7 @@ public final class SuperURL {
 		private boolean endsWithSlash;
 		private boolean startsWithSlash;
 		
+		public Path(){}
 		public Path( LinkedList<String> path, boolean endsWithSlash ){
 			this.path = path;
 			this.endsWithSlash = endsWithSlash;
@@ -427,9 +435,13 @@ public final class SuperURL {
 			return null;
 		}
 		public void replaceLast( String part ){
+			Assert.notNull( part, "part" );
+			Assert.notEmpty( part, "part" );
 			if( path != null && path.size() > 0 ) path.set( path.size()-1, part );
 		}
 		public void addLast( String part ){
+			Assert.notNull( part, "part" );
+			Assert.notEmpty( part, "part" );
 			if( path == null ) path = new LinkedList<String>();
 			path.addLast( part );
 		}
@@ -442,9 +454,13 @@ public final class SuperURL {
 			return null;
 		}
 		public void replaceFirst( String part ){
+			Assert.notNull( part, "part" );
+			Assert.notEmpty( part, "part" );
 			if( path != null && path.size() > 0 ) path.set( 0, part );
 		}
 		public void addFirst( String part ){
+			Assert.notNull( part, "part" );
+			Assert.notEmpty( part, "part" );
 			if( path == null ) path = new LinkedList<String>();
 			path.addFirst( part );
 		}

@@ -2,6 +2,8 @@ package de.axone.web;
 
 import java.util.HashMap;
 
+import de.axone.tools.Str;
+
 public class PathParser {
 	
 	private HashMap<String, String> values = new HashMap<String,String>();
@@ -43,6 +45,12 @@ public class PathParser {
 		if( trimmed.length() == 0 ) return null;
 		
 		return Long.parseLong( trimmed );
+	}
+	
+	@Override
+	public String toString(){
+		
+		return Str.join( ",", "=", values );
 	}
 	
 }

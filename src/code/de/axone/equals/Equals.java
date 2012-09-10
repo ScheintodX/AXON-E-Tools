@@ -376,15 +376,6 @@ public class Equals {
 			Object v1 = m.invoke( o1 );
 			Object v2 = m.invoke( o2 );
 			
-			/*
-			if( v1 != null && !v1.equals( v1 ) || v2 != null && !v2.equals( v1 ) ){
-			
-				if( v1 != null && (!(v1 instanceof Collections) || ((Collection<?>)v1).size() == 0 ) ){
-					E.rr( "----->" + m.getName() + "<-----" );
-					debug( v1, v2 );
-				}
-			}
-			*/
 			v1 = applyOptions( v1, options );
 			v2 = applyOptions( v2, options );
 			
@@ -394,43 +385,6 @@ public class Equals {
 			builder.append( v1, v2 );
 		}
 	}
-	
-	/*
-	@SuppressWarnings( { "unchecked", "rawtypes" } )
-	private static void debug( Object o1, Object o2 ){
-		
-		if( o1 == null ){
-			E.rr( "o1 is null" );
-			
-		} else if( o2 == null ){
-			E.rr( "o2 is null" );
-			
-		} else {
-			
-			if( o1 instanceof Set ){
-				
-				List l1=new LinkedList( (Set)o1 );
-				Collections.sort( l1, CompareAll );
-				List l2=new LinkedList<Object>( (Set)o2 );
-				Collections.sort( l2, CompareAll );
-				
-				o1 = l1;
-				o2 = l2;
-			}
-			
-			E.rr( Text.diff( o1.toString(), o2.toString() ) );
-		}
-	}
-	
-	private static final Comparator<Object> CompareAll = new Comparator<Object>(){
-
-		@Override
-		public int compare( Object o1, Object o2 ) {
-			return o1.toString().compareTo( o2.toString() );
-		}
-		
-	};
-	*/
 	
 	/*
 	 * Uses commons HashCodeBuilder to generate a hash code
@@ -730,5 +684,7 @@ public class Equals {
 					.compareTo( Integer.valueOf( list.indexOf( o2 ) ) );
 			
 		}
+		
 	}
+	
 }
