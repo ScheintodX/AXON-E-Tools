@@ -82,8 +82,9 @@ public class PasswordBuilder {
 		return result.toArray( resultArray );
 	}
 	
-	public static void main( String [] args ) throws NoSuchAlgorithmException{
+	public static void main( String [] args ) throws Exception {
 		
+		/*
 		int len = DEFAULT_LENGTH;
 		if( args.length == 1 ){
 			len = Integer.parseInt( args[0] );
@@ -97,6 +98,9 @@ public class PasswordBuilder {
 		boolean ok = checkPassword( plain, hashed );
 		
 		System.out.printf( "%s: %s -> %s\n", ok?"OK":"ERR", plain, hashed );
+		
+		*/
+		E.rr( makeSimplaPasswd() );
 		
 	}
 	
