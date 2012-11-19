@@ -81,6 +81,18 @@ public abstract class Assert {
 		if( l != length ) throw Ex.up( new ArgumentRangeException( name, " length ==" + length, l ) );
 	}
 	
+	// Contains ----------------
+	public static void contains( String text, String name, String part ){
+		if( text == null ) return;
+		if( ! text.contains( part ) ) throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' doesn't contain '" + part + "'" ) );
+	}
+	
+	// Not Contains ----------------
+	public static void containsNot( String text, String name, String part ){
+		if( text == null ) return;
+		if( text.contains( part ) ) throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' contains '" + part + "'" ) );
+	}
+	
 	// >= --------------------
 	public static void gte( Number number, String name, long bound ){
 		if( number == null ) return;

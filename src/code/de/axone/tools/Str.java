@@ -123,6 +123,7 @@ public class Str {
 		}
 		@Override
 		public String toString( T object, int index ){
+			if( object == null ) return null;
 			return object.toString();
 		}
 	}

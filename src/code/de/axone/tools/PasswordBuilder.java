@@ -19,26 +19,28 @@ public class PasswordBuilder {
 	public static final String DEFAULT_PROVIDER = "SUN";
 	
 	public static final String HASH_SPLIT = "\\$";
+	
+	private static final char [] allowedCharsDENIC =
+			"aAbBcCdDeEfFgGhHijJkKLmMnNpPqQrRsStTuUvVwWxXyYzZ23456789+-/".toCharArray();
 
-	private static final char [] allowedCharsLowerCase = {
-		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-	};
-	private static final char [] allowedCharsUpperCase = {
-		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-	};
-	private static final char [] allowedCharsNumbers = {
-		'2', '3','4', '5', '6', '7', '8', '9',
-	};
-	private static final char [] allowedCharsSpecial = {
-		'!', '$', '*', '#', '+', '-', '=', '%', '(', ')', '?', '/', '&', '@'
-	};
+	private static final char [] allowedCharsLowerCase =
+			"abcdefghijkmnopqrstuvwxyz".toCharArray();
+	
+	private static final char [] allowedCharsUpperCase =
+			"ABCDEFGHJKLMNPQRSTUVWXYZ".toCharArray();
+	
+	private static final char [] allowedCharsNumbers =
+			"23456789".toCharArray();
+	
+	private static final char [] allowedCharsSpecial = 
+			"!$*#+-=%()?/&@".toCharArray();
 	
 	private static void addAll( Set<Character> set, char[] toAdd ){
 		
 		for( char c : toAdd ) set.add( c );
 	}
 	
-	private static Character[] makeValues( boolean humanize, boolean includeUpperCase, boolean includeLowerCase, boolean includeNumbers, boolean includeSpecial ){
+	private static char[] makeValues( boolean humanize, boolean includeUpperCase, boolean includeLowerCase, boolean includeNumbers, boolean includeSpecial ){
 		
 		int c=0;
 		if( includeUpperCase ) c++;
@@ -77,9 +79,14 @@ public class PasswordBuilder {
 			addAll( result, allowedCharsSpecial );
 		}
 		
-		Character [] resultArray = new Character[ result.size() ];
+		//Character [] resultArray = new Character[ result.size() ];
+		char [] resultArray = new char[ result.size() ];
+		int i=0;
+		for( Character rc : result ){
+			resultArray[ i++ ] = rc.charValue();
+		}
 		
-		return result.toArray( resultArray );
+		return resultArray;
 	}
 	
 	public static void main( String [] args ) throws Exception {
@@ -100,7 +107,9 @@ public class PasswordBuilder {
 		System.out.printf( "%s: %s -> %s\n", ok?"OK":"ERR", plain, hashed );
 		
 		*/
-		E.rr( makeSimplaPasswd() );
+		//E.rr( makeSimplaPasswd() );
+		for( int i=0; i<10; i++ )
+				E.rr( makePasswd( allowedCharsDENIC, 12 ) );
 		
 	}
 	
@@ -168,6 +177,13 @@ public class PasswordBuilder {
 	 */
 	public static String makePasswd( int length, boolean humanize, boolean includeUpperCase, boolean includeLowerCase, boolean includeNumbers, boolean includeSpecial ){
 		
+		char [] allowedChars = makeValues( humanize, includeUpperCase, includeLowerCase, includeNumbers, includeSpecial );
+		
+		return makePasswd( allowedChars, length );
+	}
+	
+	public static String makePasswd( char [] vocabulary, int length ){
+		
 		Random r=null;
 		try {
 			r = SecureRandom.getInstance( "SHA1PRNG", "SUN" );
@@ -181,9 +197,7 @@ public class PasswordBuilder {
 		
 		StringBuilder result = new StringBuilder( length );
 		
-		Character [] allowedChars = makeValues( humanize, includeUpperCase, includeLowerCase, includeNumbers, includeSpecial );
-		
-		int chars = allowedChars.length;
+		int chars = vocabulary.length;
 		
 		int idx;
 		for( int i = 0; i < length; i++ ){
@@ -191,10 +205,11 @@ public class PasswordBuilder {
 			//idx = (int)( r.nextFloat() * chars );
 			idx = r.nextInt( chars );
 			
-			result.append( allowedChars[ idx ] );
+			result.append( vocabulary[ idx ] );
 		}
 		
 		return result.toString();
+		
 	}
 	
 	private static String makeSalt( int chars ){
