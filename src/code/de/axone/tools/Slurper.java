@@ -18,6 +18,9 @@ import java.util.Arrays;
  * This methods don't close the source. So encapsulate in try/finally
  * and do it manually by yourself.
  * 
+ * TODO: Die Sache mit den Buffern lässt sich bestimmt weiter optimieren
+ * und kürzen.
+ * 
  * @author flo
  */
 public class Slurper {

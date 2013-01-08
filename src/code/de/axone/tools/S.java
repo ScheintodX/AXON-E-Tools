@@ -11,4 +11,5 @@ public interface S {
 	public static final String NBSP = "&nbsp;";
 	public static final String TRUE = "true";
 	public static final String FALSE = "false";
+	public static final char ESC = (char)27;
 }

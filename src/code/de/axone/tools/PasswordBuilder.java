@@ -109,7 +109,7 @@ public class PasswordBuilder {
 		*/
 		//E.rr( makeSimplaPasswd() );
 		for( int i=0; i<10; i++ )
-				E.rr( makePasswd( allowedCharsDENIC, 12 ) );
+				E.rr( makeSimplaPasswd() );
 		
 	}
 	

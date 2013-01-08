@@ -79,6 +79,10 @@ public abstract class E {
 		echo( System.out, 2, true, Text.poster( border, text ) );
 	}
 	
+	public static void rr(){
+		echo( System.err, true, "" );
+	}
+	
 	public static void rr( byte [] a ){
 		echo( System.err, true, (Object[])A.toObjects( a ) );
 	}
@@ -131,6 +135,10 @@ public abstract class E {
 		log( System.err, true, format, args );
 	}
 	
+	public static void cho(){
+		
+		echo( System.out, true, "" );
+	}
 	public static void cho( Object ... os ){
 		
 		echo( System.out, true, os );

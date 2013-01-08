@@ -127,6 +127,19 @@ public class Str {
 			return object.toString();
 		}
 	}
+	public static final Joiner<String> CSVJOINER = new Joiner<String>() {
+
+		@Override
+		public String getSeparator() {
+			return ", ";
+		}
+
+		@Override
+		public String toString( String object, int index ) {
+			return '"' + object.replace( "\"", "\"\"" ) + '"';
+		}
+
+	};
 	
 	public interface MapJoiner<K,V> {
 		public String getRecordSeparator();

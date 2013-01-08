@@ -1,5 +1,6 @@
 package de.axone.tools;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
@@ -136,16 +137,26 @@ public class F {
 	private static void format( StringBuilder r, Object o ){
 		
 		if( o == null ) r.append( S._NULL_ );
-		else if( o instanceof String ) formatString( r, (String)o );
-		else if( o instanceof Iterable<?> ) formatIterable( r, (Iterable<?>)o );
-		else if( o instanceof Map<?,?> ) formatMap( r, (Map<?,?>) o );
-		else if( o instanceof Enumeration<?> ) formatEnumeration( r, (Enumeration<?>) o );
-		else if( o.getClass().isArray() ) formatArray( r, o );
-		else r.append( o );
+		else {
+			// TODO: Explicit vorhandenes toString checken
+			if( o instanceof String ) formatString( r, (String)o );
+			else if( o instanceof Path ) formatPath( r, (Path)o );
+			else if( o instanceof Iterable<?> ) formatIterable( r, (Iterable<?>)o );
+			else if( o instanceof Map<?,?> ) formatMap( r, (Map<?,?>) o );
+			else if( o instanceof Enumeration<?> ) formatEnumeration( r, (Enumeration<?>) o );
+			else if( o.getClass().isArray() ) formatArray( r, o );
+			else r.append( o );
+		}
 	}
 	
 	private static void formatString( StringBuilder r, String s ){
 		r.append( s );
+	}
+	
+	// We need this because Path is recursive and Iterable
+	// TODO: General recusion handling ...
+	private static void formatPath( StringBuilder r, Path p ){
+		r.append( p.toFile().getAbsolutePath() );
 	}
 	
 	private static void formatItem( StringBuilder r, Object o ){
