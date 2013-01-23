@@ -4,6 +4,8 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
+import de.axone.web.SuperURL.Path;
+
 @Test( groups="web.superurl" )
 public class SuperURLTest {
 
@@ -287,6 +289,33 @@ public class SuperURLTest {
     	
     	assertEquals( url.toString(), refUrl + "/" );
     	assertEquals( urlSlash.toString(), refUrl + "/" );
+    }
+    
+    public void testKnownProblems() throws Exception {
+    	
+    	String urlS = "http://headshop-de.localhost:8080" +
+    			"/tree/3015/5mm-Glas" +
+    			"/article/00393/Weedstar-Mad-Professor-(3.Semester)-40cm-hoch.xhtml[/url]";
+    	SuperURL url = new SuperURL( urlS );
+    	assertEquals( url.toString(), urlS );
+    	assertEquals( url.toString( true ),"http://headshop-de.localhost:8080" +
+    			"/tree/3015/5mm-Glas" +
+    			"/article/00393/Weedstar-Mad-Professor-%283.Semester%29-40cm-hoch.xhtml%5B/url%5D" );
+    }
+    
+    public void testEncoding() throws Exception {
+    	
+    	SuperURL url = new SuperURL( "http://www.axon-e.de/Bläh" );
+    	assertEquals( url.toString( true ), "http://www.axon-e.de/Bl%C3%A4h" );
+    	assertEquals( url.toString( false ), "http://www.axon-e.de/Bläh" );
+    	
+    	url = new SuperURL();
+    	url.setScheme( "http" );
+    	url.setHost( new SuperURL.Host( "www.äxon-e.de" ) );
+    	url.setPath( new Path( "Bläh" ) );
+    	assertEquals( url.toString( true ), "http://www.äxon-e.de/Bl%C3%A4h" );
+    	assertEquals( url.toString( false ), "http://www.äxon-e.de/Bläh" );
+    	
     }
     
 }

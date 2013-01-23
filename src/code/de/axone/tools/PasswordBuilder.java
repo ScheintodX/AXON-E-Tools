@@ -20,8 +20,10 @@ public class PasswordBuilder {
 	
 	public static final String HASH_SPLIT = "\\$";
 	
+	/*
 	private static final char [] allowedCharsDENIC =
 			"aAbBcCdDeEfFgGhHijJkKLmMnNpPqQrRsStTuUvVwWxXyYzZ23456789+-/".toCharArray();
+	*/
 
 	private static final char [] allowedCharsLowerCase =
 			"abcdefghijkmnopqrstuvwxyz".toCharArray();

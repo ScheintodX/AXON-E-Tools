@@ -43,6 +43,8 @@ import de.axone.tools.Str;
  * 
  * More for URLs: RFC 2396
  * 
+ * Note that all encoding is done using UTF-8!
+ * 
  * see <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>
  * @author flo
  */
@@ -52,12 +54,19 @@ public final class SuperURL {
 			LoggerFactory.getLogger( SuperURL.class );
 	
 	private String scheme;
+	boolean includeScheme = true;
 	private UserInfo userInfo;
+	boolean includeUserInfo = true;
 	private Host host;
+	boolean includeHost = true;
 	private Integer port;
+	boolean includePort = true;
 	private Path path;
+	boolean includePath = true;
 	private Query query;
+	boolean includeQuery = true;
 	private String fragment;
+	boolean includeFragment = true;
 	
 	public SuperURL(){}
 	
@@ -68,7 +77,7 @@ public final class SuperURL {
 	
 	public SuperURL( String parse, boolean noHost ) throws URISyntaxException{
 		
-		this( new URI( parse ), noHost );
+		this( new URI( fixForChrome( parse ) ), noHost );
 	}
 	
 	public SuperURL( URI uri ){
@@ -88,30 +97,21 @@ public final class SuperURL {
 	
 	public SuperURL( HttpServletRequest request, boolean noHost ) {
 		
+		StringBuffer urlSB = request.getRequestURL();
+		
 		try {
 			
 			URI uri;
-			StringBuffer urlStr = request.getRequestURL();
 			
-			if( urlStr != null ){
+			if( urlSB != null ){
 				
-				/*
-				URL url;
-				try {
-					url = new URL( urlStr.toString() );
-				} catch( MalformedURLException e ) {
-					// Should not happen
-					throw new URISyntaxException( request.getRequestURL().toString(), "Cannot parse as url" );
-				}
-				*/
+				String urlStr = fixForChrome( urlSB.toString() );
 				
-    			//uri = new URI( url.getProtocol(), url.getHost(), url.getPath(), url.getQuery() );
-				uri = new URI( urlStr.toString() );
+				uri = new URI( urlStr );
 			} else {
 				uri = new URI( "" );
 				noHost = true;
 			}
-			
 			
 			initialize( uri, noHost );
 			
@@ -123,17 +123,8 @@ public final class SuperURL {
 				}
 				
 				String name = (String)names.nextElement();
-				String[] values = request.getParameterValues( name ); // Buggy
-				//String value = request.getParameter( name );
+				String[] values = request.getParameterValues( name ); // Buggy (warum?)
 				
-				// Warn because of bug
-				/*
-				if( values.length > 1 ){
-					log.warn( "More than one parameter for: " + name + " But only one used:" + value );
-				}
-				*/
-				
-				// Default behaviour: bug-free
 				for( String v : values ){
 					query.addValue( name, v );
 				}
@@ -142,9 +133,7 @@ public final class SuperURL {
 			
 		} catch( URISyntaxException e ) {
 			
-			// This should not happen since the uri in questien
-			// led us here in the first place
-			e.printStackTrace();
+			throw new IllegalArgumentException( "Error processing URL: " + urlSB, e );
 		}
 		
 	}
@@ -182,12 +171,25 @@ public final class SuperURL {
 	public void setScheme( String scheme ) {
 		this.scheme = scheme;
 	}
+	public void setIncludeScheme( boolean includeScheme ){
+		this.includeScheme = includeScheme;
+	}
+	public boolean isIncludeScheme(){
+		return includeScheme;
+	}
+	
 
 	public UserInfo getUserInfo() {
 		return userInfo;
 	}
 	public void setUserInfo( UserInfo userInfo ) {
 		this.userInfo = userInfo;
+	}
+	public void setIncludeUserInfo( boolean includeUserInfo ){
+		this.includeUserInfo = includeUserInfo;
+	}
+	public boolean isIncludeUserInfo(){
+		return includeUserInfo;
 	}
 
 	public Host getHost() {
@@ -196,12 +198,24 @@ public final class SuperURL {
 	public void setHost( Host host ) {
 		this.host = host;
 	}
+	public void setIncludeHost( boolean includeHost ){
+		this.includeHost = includeHost;
+	}
+	public boolean isIncludeHost(){
+		return includeHost;
+	}
 
 	public Integer getPort() {
 		return port;
 	}
 	public void setPort( Integer port ) {
 		this.port = port;
+	}
+	public void setIncludePort( boolean includePort ){
+		this.includePort = includePort;
+	}
+	public boolean isIncludePort(){
+		return includePort;
 	}
 
 	public String getFragment() {
@@ -210,6 +224,12 @@ public final class SuperURL {
 	public void setFragment( String fragment ) {
 		this.fragment = fragment;
 	}
+	public void setIncludeFragment( boolean includeFragment ){
+		this.includeFragment = includeFragment;
+	}
+	public boolean isIncludeFragment(){
+		return includeFragment;
+	}
 	
 	public Path getPath() {
 		return path;
@@ -217,12 +237,24 @@ public final class SuperURL {
 	public void setPath( Path path ) {
 		this.path = path;
 	}
+	public void setIncludePath( boolean includePath ){
+		this.includePath = includePath;
+	}
+	public boolean isIncludePath(){
+		return includePath;
+	}
 
 	public Query getQuery() {
 		return query;
 	}
 	public void setQuery( Query query ) {
 		this.query = query;
+	}
+	public void setIncludeQuery( boolean includeQuery ){
+		this.includeQuery = includeQuery;
+	}
+	public boolean isIncludeQuery(){
+		return includeQuery;
 	}
 	
 	/* --- Helpers --- */
@@ -260,40 +292,40 @@ public final class SuperURL {
 	
 	public StringBuilder toStringBB( StringBuilder result, boolean encode ){
 		
-		if( scheme != null ){
+		if( includeScheme && scheme != null ){
 			result.append( scheme ).append( "://" );
 		}
 		
-		if( userInfo != null ){
+		if( includeUserInfo && userInfo != null ){
 			userInfo.toStringBB( result, encode );
 			result.append( '@' );
 		}
 		
-		if( host != null ){
-			host.toStringBB( result, encode );
+		if( includeHost && host != null ){
+			// Domains don't get url encoded
+			host.toStringBB( result, false );
 		}
 		
-		if( port != null ){
+		if( includePort && port != null ){
 			result.append( ':' ).append( port );
 		}
 		
-		if( path != null ){
+		if( includePath && path != null ){
 			path.toStringBB( result, encode );
 		}
 		
-		if( query != null && query.size() > 0 ){
+		if( includeQuery && query != null && query.size() > 0 ){
 			result.append( '?' );
 			query.toStringBB( result, encode );
 		}
 		
-		if( fragment != null ){
+		if( includeFragment && fragment != null ){
 			
 			String fragmentStr = fragment;
-			
 			if( encode ) fragmentStr = urlify( fragmentStr );
-			
 			result.append( '#' ).append( fragmentStr );
 		}
+		
 		return result;
 	}
 	public StringBuilder toStringB( boolean encode ){
@@ -332,8 +364,9 @@ public final class SuperURL {
     	public LinkedList<String> getParts(){
     		return parts;
     	}
-    	public void setParts( LinkedList<String> parts ){
+    	public Host setParts( LinkedList<String> parts ){
     		this.parts = parts;
+    		return this;
     	}
     	public int getSize(){
     		return this.parts.size();
@@ -434,44 +467,58 @@ public final class SuperURL {
 			if( path != null && path.size() > 0 ) return path.getLast();
 			return null;
 		}
-		public void replaceLast( String part ){
+		public Path replaceLast( String part ){
 			Assert.notNull( part, "part" );
 			Assert.notEmpty( part, "part" );
 			if( path != null && path.size() > 0 ) path.set( path.size()-1, part );
+			return this;
 		}
-		public void addLast( String part ){
+		public Path addLast( String part ){
 			Assert.notNull( part, "part" );
 			Assert.notEmpty( part, "part" );
 			if( path == null ) path = new LinkedList<String>();
 			path.addLast( part );
+			return this;
 		}
-		public void removeLast(){
+		public Path addAll( Path path ){
+			for( String item : path ){
+				addLast( item );
+			}
+			setEndsWithSlash( path.isEndsWithSlash() );
+			return this;
+		}
+		public Path removeLast(){
 			if( path != null && path.size() > 0 ) path.removeLast();
+			return this;
 		}
 		
 		public String getFirst(){
 			if( path != null && path.size() > 0 ) return path.getFirst();
 			return null;
 		}
-		public void replaceFirst( String part ){
+		public Path replaceFirst( String part ){
 			Assert.notNull( part, "part" );
 			Assert.notEmpty( part, "part" );
 			if( path != null && path.size() > 0 ) path.set( 0, part );
+			return this;
 		}
-		public void addFirst( String part ){
+		public Path addFirst( String part ){
 			Assert.notNull( part, "part" );
 			Assert.notEmpty( part, "part" );
 			if( path == null ) path = new LinkedList<String>();
 			path.addFirst( part );
+			return this;
 		}
-		public void removeFirst(){
+		public Path removeFirst(){
 			if( path != null && path.size() > 0 ) path.removeFirst();
+			return this;
 		}
-		public void append( Path path ){
+		public Path append( Path path ){
 			for( String part : path.path ){
 				addLast( part );
 			}
 			endsWithSlash = path.isEndsWithSlash();
+			return this;
 		}
 		
 		public String getExtension(){
@@ -661,7 +708,7 @@ public final class SuperURL {
 			}
 		}
 		
-		public void addValue( String key, String value ){
+		public Query addValue( String key, String value ){
 			
 			if( ! forName.containsKey( key ) ){
 				forName.put( key, new LinkedList<QueryPart>() );
@@ -669,13 +716,15 @@ public final class SuperURL {
 			QueryPart part = new QueryPart( key, value );
 			forName.get( key ).addLast( part );
 			path.add( part );
+			return this;
 		}
 		
-		public void setValue( String key, String value ){
+		public Query setValue( String key, String value ){
 			remValue( key );
 			addValue( key, value );
+			return this;
 		}
-		public void remValue( String key ){
+		public Query remValue( String key ){
 			
 			if( forName.containsKey( key ) ){
 				
@@ -686,6 +735,7 @@ public final class SuperURL {
 				}
 				forName.remove( key );
 			}
+			return this;
 		}
 			
 		public StringBuilder toStringBB( StringBuilder result, boolean encode ){
@@ -801,15 +851,17 @@ public final class SuperURL {
 		public String getUser() {
 			return user;
 		}
-		public void setUser( String user ) {
+		public UserInfo setUser( String user ) {
 			this.user = user;
+			return this;
 		}
 
 		public String getPass() {
 			return pass;
 		}
-		public void setPass( String pass ) {
+		public UserInfo setPass( String pass ) {
 			this.pass = pass;
+			return this;
 		}
 		
 		public StringBuilder toStringBB( StringBuilder result, boolean encode ){
@@ -850,6 +902,12 @@ public final class SuperURL {
 		} catch( UnsupportedEncodingException e ) {
 			throw new RuntimeException( "Cannot urlify " + text );
 		}
+	}
+	
+	private static String fixForChrome( String old ){
+		
+		if( ! ( old.contains( "[" ) || old.contains( "]" ) ) ) return old;
+		return old.replace( "[", "%5B" ).replace( "]", "%5D" );
 	}
 	
 	public URL toURL() throws MalformedURLException{

@@ -24,9 +24,9 @@ public class HttpLinkBuilder {
 	 * @param request
 	 * @return
 	 */
-	public static String makeLink( HttpServletRequest request ){
+	public static String makeLink( HttpServletRequest request, boolean encode ){
 		
-		return makeLink( request, null );
+		return makeLink( request, null, encode );
 	}
 	
 	/**
@@ -36,9 +36,9 @@ public class HttpLinkBuilder {
 	 * @param replaceParameters
 	 * @return
 	 */
-	public static String makeLink( HttpServletRequest request, Map<String,String> replaceParameters ) {
+	public static String makeLink( HttpServletRequest request, Map<String,String> replaceParameters, boolean encode ) {
 		
-		return makeLink( request, false, false, null, replaceParameters );
+		return makeLink( request, false, false, null, replaceParameters, encode );
 	}
 	
 	/**
@@ -52,9 +52,9 @@ public class HttpLinkBuilder {
 	 * @param replaceParameters
 	 * @return
 	 */
-	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath, Map<String,String> replaceParameters ) {
+	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath, Map<String,String> replaceParameters, boolean encode ) {
 		
-		return makeLink( request, noHost, noPath, null, replaceParameters );
+		return makeLink( request, noHost, noPath, null, replaceParameters, encode );
 	}
 	
 	/**
@@ -70,9 +70,9 @@ public class HttpLinkBuilder {
 	 * @param replaceParameters key/value pairs of parameters to set to create or set to new values
 	 * @return
 	 */
-	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath, List<String> keepParameters, Map<String,String> replaceParameters ) {
+	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath, List<String> keepParameters, Map<String,String> replaceParameters, boolean encode ) {
 		
-		return makeLink( request, noHost, noPath, keepParameters, replaceParameters, null );
+		return makeLink( request, noHost, noPath, keepParameters, replaceParameters, null, encode );
 	}
 		
 	
@@ -90,7 +90,8 @@ public class HttpLinkBuilder {
 	 * @param removeParameters list of parameters to remove from query or null if none are removed
 	 * @return
 	 */
-	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath, List<String> keepParameters, Map<String,String> replaceParameters, List<String> removeParameters ) {
+	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath, List<String> keepParameters, Map<String,String> replaceParameters, List<String> removeParameters, boolean encode ) {
+		
 		SuperURL url = new SuperURL( request, noHost );
 		
 		if( noPath ) url.setPath( null );
@@ -131,7 +132,7 @@ public class HttpLinkBuilder {
 			url.setQueryParameter( key, replaceParameters.get( key ) );
 		}
 		
-		return url.toString( true );
+		return url.toString( encode );
 	}
 		
 }
