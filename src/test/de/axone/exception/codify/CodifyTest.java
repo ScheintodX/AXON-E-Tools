@@ -19,7 +19,7 @@ public class CodifyTest {
 		assertEquals( desc.line(), 14 );
 		assertEquals( desc.method(), "testCodify" );
 		assertEquals( desc.exception(), "IllegalArgumentException" );
-		assertEquals( desc.text(), "No Arg" );
+		assertEquals( desc.message(), "No Arg" );
 		
 		CodifiedException ce = new CodifiedException( e );
 		String code = ce.code();
@@ -30,7 +30,7 @@ public class CodifyTest {
 	
 	public void testReport() throws Exception {
 		
-		Exception e = new IllegalArgumentException( "No Arg" );
+		Exception e = new Exception( new IllegalArgumentException( "No Arg" ) );
 		
 		Codifier.report( e );
 		

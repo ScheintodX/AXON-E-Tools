@@ -1,9 +1,7 @@
 package de.axone.exception.codify;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -11,18 +9,20 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.TreeMap;
 
+import de.axone.tools.S;
 import de.axone.tools.Str;
 import de.axone.tools.Str.MapJoiner;
 import de.axone.web.SuperURL;
 
 public abstract class Codifier {
 	
-	private static volatile String baseUrl = "http://tracker.axon-e.de/codify.php/";
+	private static final String ENCODING = "iso-8859-1";
+	private static volatile String baseUrl = "http://www.axon-e.de/codify/codify.php/";
 	
 	public static void report( Throwable throwable ) throws IOException {
 		
 		if( throwable instanceof Codified ){
-			report( throwable.getCause() );
+			report( ((Codified)throwable).getRealCause() );
 			return;
 		}
 		
@@ -30,37 +30,30 @@ public abstract class Codifier {
 		
 		URL url = url( throwable );
 		
-		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		con.setUseCaches( false );
-		
 		String parameters = Str.join( URL_JOINER, desc.map() );
 		
-		con.setRequestProperty( "User-Agent", "WebTools" );
-		con.setDoOutput( true );
-		con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); 
-		con.setRequestProperty("charset", "utf-8");
-		con.setRequestProperty("Content-Length", "" + Integer.toString(parameters.getBytes().length));
-		con.setUseCaches (false);
-		
-		DataOutputStream wr = new DataOutputStream( con.getOutputStream() );
-		try {
-			wr.writeBytes(parameters);
-			wr.flush();
-			wr.close();
-		} finally {
-			con.disconnect();
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+		con.setDoOutput(true);
+		con.setRequestProperty( "User-Agent", "Codify/1.0" );
+
+		OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream(), ENCODING );
+
+		writer.write(parameters);
+		writer.flush();
+
+		/*
+		String line;
+		BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+		while ((line = reader.readLine()) != null) {
+		    System.out.println(line);
 		}
+		reader.close();         
+		*/
 		
-		BufferedReader in = new BufferedReader( new InputStreamReader( con.getInputStream() ) );
-		try {
-			String line;
-			while( ( line = in.readLine() ) != null ){
-				
-				System.err.println( line );
-			}
-		} finally {
-			in.close();
-		}
+		writer.close();
+		
 	}
 	
 	private static MapJoiner<String,String> URL_JOINER = new MapJoiner<String,String>() {
@@ -74,7 +67,7 @@ public abstract class Codifier {
 		@Override
 		public String keyToString( String nameField, int index ) {
 			try {
-				return URLEncoder.encode( nameField, "UTF-8" );
+				return URLEncoder.encode( nameField, ENCODING );
 			} catch( UnsupportedEncodingException e ) {
 				return "CANNOT_ENCODE_NAME";
 			}
@@ -83,7 +76,7 @@ public abstract class Codifier {
 		@Override
 		public String valueToString( String valueField, int index ) {
 			try {
-				return URLEncoder.encode( valueField, "UTF-8" );
+				return URLEncoder.encode( valueField, ENCODING );
 			} catch( UnsupportedEncodingException e ) {
 				return "CANNOT_ENCODE_VALUE";
 			}
@@ -91,6 +84,7 @@ public abstract class Codifier {
 	};
 	
 	public static String codify( Throwable throwable ){
+		
 		return new Description( throwable ).code();
 	}
 	
@@ -123,40 +117,50 @@ public abstract class Codifier {
 		return throwable.getMessage() + " [" + link( throwable ) + "]";
 	}
 	
+	public static String localizedMessage( Throwable throwable ){
+		return throwable.getLocalizedMessage() + " [" + link( throwable ) + "]";
+	}
+	
 	public static class Description {
 		
-		private final String file;
-		private final String method;
-		private final int line;
-		private final String text;
-		private final String exception;
+		private final Throwable t;
+		private final StackTraceElement e;
 		
 		public Description( Throwable t ){
 			
-			StackTraceElement e = t.getStackTrace()[ 0 ];
-			
-			file = e.getFileName();
-			method = e.getMethodName();
-			line = e.getLineNumber();
-			text = t.getMessage();
-			exception = t.getClass().getSimpleName();
+			this.t = t;
+			this.e = t.getStackTrace()[ 0 ];
 		}
 		
-		public String file(){ return file; }
-		public String method(){ return method; }
-		public int line(){ return line; }
-		public String exception(){ return exception; }
-		public String text(){ return text; }
+		public String file(){ return e.getFileName(); }
+		public String method(){ return e.getMethodName(); }
+		public int line(){ return e.getLineNumber(); }
+		public String exception(){ return t.getClass().getSimpleName(); }
+		public String message(){ return t.getMessage(); }
+		public String stack(){
+			StringBuilder result = new StringBuilder();
+			appendStackTrace( result, t );
+			return result.toString();
+		}
+		private void appendStackTrace( StringBuilder b, Throwable t ){
+			if( t == null ) return;
+			b.append( t.getClass().getCanonicalName() ).append(":\n");
+			for( StackTraceElement e : t.getStackTrace() ){
+				b.append( "\t" ).append( e.toString() ).append( S.nl );
+			}
+			appendStackTrace( b, t.getCause() );
+		}
 		
 		public Map<String,String> map(){
 			
 			Map<String,String> result = new TreeMap<String,String>();
 			
-			result.put( "f", file() );
-			result.put( "m", method() );
-			result.put( "l", ""+line() );
-			result.put( "e", exception() );
-			result.put( "t", text() );
+			result.put( "file", file() );
+			result.put( "method", method() );
+			result.put( "line", ""+line() );
+			result.put( "exception", exception() );
+			result.put( "message", message() );
+			result.put( "stack", stack() );
 			
 			return result;
 		}
@@ -167,7 +171,7 @@ public abstract class Codifier {
 			int methodCode = method().hashCode();
 			int lineCode = line();
 			int exceptionCode = exception().hashCode();
-			int textCode = text().hashCode();
+			int textCode = message().hashCode();
 			
 			String combinedCode = String.format( "%08x/%08x/%08d/%08x/%08x",
 					fileCode, methodCode, lineCode, exceptionCode, textCode );
