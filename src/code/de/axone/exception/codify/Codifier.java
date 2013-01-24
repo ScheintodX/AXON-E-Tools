@@ -1,7 +1,11 @@
 package de.axone.exception.codify;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -9,7 +13,7 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.TreeMap;
 
-import de.axone.tools.S;
+import de.axone.tools.Mapper;
 import de.axone.tools.Str;
 import de.axone.tools.Str.MapJoiner;
 import de.axone.web.SuperURL;
@@ -17,12 +21,23 @@ import de.axone.web.SuperURL;
 public abstract class Codifier {
 	
 	private static final String ENCODING = "iso-8859-1";
+	
 	private static volatile String baseUrl = "http://www.axon-e.de/codify/codify.php/";
+	private static volatile boolean includeLink = false;
+	private static volatile String version = "1.0";
+	
 	
 	public static void report( Throwable throwable ) throws IOException {
+		report( throwable, null );
+	}
+	public static void report( Throwable throwable, Object context ) throws IOException {
+		report( throwable, Mapper.treeMap( "context", context.toString() ) );
+	}
+	
+	public static void report( Throwable throwable, Map<String,String> parametersAdd ) throws IOException {
 		
 		if( throwable instanceof Codified ){
-			report( ((Codified)throwable).getRealCause() );
+			report( ((Codified)throwable).getRealCause(), parametersAdd );
 			return;
 		}
 		
@@ -30,7 +45,11 @@ public abstract class Codifier {
 		
 		URL url = url( throwable );
 		
-		String parameters = Str.join( URL_JOINER, desc.map() );
+		Map<String,String> parametersUse = new TreeMap<String,String>();
+		if( parametersAdd != null ) parametersUse.putAll( parametersAdd );
+		parametersUse.putAll( desc.map() );
+		
+		String parameters = Str.join( URL_JOINER, parametersUse );
 		
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
@@ -42,15 +61,19 @@ public abstract class Codifier {
 		writer.write(parameters);
 		writer.flush();
 
-		/*
-		String line;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
-		while ((line = reader.readLine()) != null) {
-		    System.out.println(line);
+		// This is needed. Without reading the answer the request isn't send properly.
+		// Quantum effects?
+		while (reader.readLine() != null);
+		/*
+		String line;
+		while( (line=reader.readLine()) != null){
+			System.err.println( line );
 		}
-		reader.close();         
 		*/
+		
+		reader.close();         
 		
 		writer.close();
 		
@@ -96,6 +119,14 @@ public abstract class Codifier {
 		Codifier.baseUrl = baseUrl;
 	}
 	
+	public synchronized static void setIncludeLink( boolean includeLink ){
+		Codifier.includeLink = includeLink;
+	}
+	
+	public synchronized static void setVersion( String version ){
+		Codifier.version = version;
+	}
+	
 	public static URL url( Throwable throwable ) {
 		
 		try {
@@ -114,11 +145,11 @@ public abstract class Codifier {
 	}
 	
 	public static String message( Throwable throwable ){
-		return throwable.getMessage() + " [" + link( throwable ) + "]";
+		return throwable.getMessage() + " [" + (includeLink ? link( throwable ) : codify( throwable )) + "]";
 	}
 	
 	public static String localizedMessage( Throwable throwable ){
-		return throwable.getLocalizedMessage() + " [" + link( throwable ) + "]";
+		return throwable.getLocalizedMessage() + " [" + (includeLink ? link( throwable ) : codify( throwable )) + "]";
 	}
 	
 	public static class Description {
@@ -137,11 +168,13 @@ public abstract class Codifier {
 		public int line(){ return e.getLineNumber(); }
 		public String exception(){ return t.getClass().getSimpleName(); }
 		public String message(){ return t.getMessage(); }
+		/*
 		public String stack(){
 			StringBuilder result = new StringBuilder();
 			appendStackTrace( result, t );
 			return result.toString();
 		}
+		
 		private void appendStackTrace( StringBuilder b, Throwable t ){
 			if( t == null ) return;
 			b.append( t.getClass().getCanonicalName() ).append(":\n");
@@ -149,6 +182,13 @@ public abstract class Codifier {
 				b.append( "\t" ).append( e.toString() ).append( S.nl );
 			}
 			appendStackTrace( b, t.getCause() );
+		}
+		*/
+		public String stack(){
+			StringWriter s = new StringWriter();
+			PrintWriter pw = new PrintWriter( s );
+			t.printStackTrace( pw );
+			return s.getBuffer().toString();
 		}
 		
 		public Map<String,String> map(){
@@ -161,6 +201,7 @@ public abstract class Codifier {
 			result.put( "exception", exception() );
 			result.put( "message", message() );
 			result.put( "stack", stack() );
+			result.put( "version", version );
 			
 			return result;
 		}
