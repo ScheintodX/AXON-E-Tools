@@ -48,6 +48,7 @@ public abstract class Codifier {
 		Map<String,String> parametersUse = new TreeMap<String,String>();
 		if( parametersAdd != null ) parametersUse.putAll( parametersAdd );
 		parametersUse.putAll( desc.map() );
+		parametersUse.put( "action", "report" );
 		
 		String parameters = Str.join( URL_JOINER, parametersUse );
 		
