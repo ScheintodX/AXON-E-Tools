@@ -70,7 +70,7 @@ public class HttpUtil {
 		}
 		
 		HttpResponse response = client.execute( httpget );
-		E.poster( printHttpInfo( httpget, response ) );
+		//E.poster( printHttpInfo( httpget, response ) );
 		
 		HttpUtilResponse uResponse = new HttpUtilResponse();
 		uResponse.code = response.getStatusLine().getStatusCode();
@@ -80,8 +80,6 @@ public class HttpUtil {
 		
 		if( uResponse.code == 200 ){
 			
-			E.rr( "A" );
-		
 			Header [] eTags = response.getHeaders( "ETag" );
 			if( eTags != null && eTags.length > 0 ){
 				uResponse.eTag = eTags[ eTags.length-1 ].getValue();

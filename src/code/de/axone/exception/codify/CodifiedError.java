@@ -11,57 +11,57 @@ public class CodifiedError extends Error implements Codified {
 
 	@Override
 	public String code() {
-		return Codifier.codify( super.getCause() );
+		return Codifier.codify( getWrapped() );
 	}
 	
 	@Override
 	public String getMessage() {
-		return Codifier.message( super.getCause() );
+		return Codifier.message( getWrapped() );
 	}
 	
 	@Override
 	public String getLocalizedMessage() {
-		return Codifier.localizedMessage( super.getCause() );
+		return Codifier.localizedMessage( getWrapped() );
 	}
 
 	@Override
 	public synchronized Throwable getCause() {
-		return super.getCause().getCause();
+		return getWrapped().getCause();
 	}
 	
 	@Override
-	public synchronized Throwable getRealCause() {
+	public synchronized Throwable getWrapped() {
 		return super.getCause();
 	}
 
 	@Override
 	public synchronized Throwable initCause( Throwable cause ) {
-		return super.getCause().initCause( cause );
+		return getWrapped().initCause( cause );
 	}
 
 	@Override
 	public String toString() {
-		return super.getCause().toString();
+		return getWrapped().toString();
 	}
 
 	@Override
 	public void printStackTrace() {
-		super.getCause().printStackTrace();
+		getWrapped().printStackTrace();
 	}
 
 	@Override
 	public void printStackTrace( PrintStream s ) {
-		super.getCause().printStackTrace( s );
+		getWrapped().printStackTrace( s );
 	}
 
 	@Override
 	public void printStackTrace( PrintWriter s ) {
-		super.getCause().printStackTrace( s );
+		getWrapped().printStackTrace( s );
 	}
 
 	@Override
 	public StackTraceElement[] getStackTrace() {
-		return super.getCause().getStackTrace();
+		return getWrapped().getStackTrace();
 	}
 	
 }

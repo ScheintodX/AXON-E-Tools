@@ -14,18 +14,19 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import de.axone.tools.Mapper;
+import de.axone.tools.S;
 import de.axone.tools.Str;
 import de.axone.tools.Str.MapJoiner;
 import de.axone.web.SuperURL;
 
 public abstract class Codifier {
 	
-	private static final String ENCODING = "iso-8859-1";
+	private static final String ENCODING = "utf-8";
 	
 	private static volatile String baseUrl = "http://www.axon-e.de/codify/codify.php/";
 	private static volatile boolean includeLink = false;
+	private static volatile String project = "Codifier";
 	private static volatile String version = "1.0";
-	
 	
 	public static void report( Throwable throwable ) throws IOException {
 		report( throwable, null );
@@ -37,7 +38,7 @@ public abstract class Codifier {
 	public static void report( Throwable throwable, Map<String,String> parametersAdd ) throws IOException {
 		
 		if( throwable instanceof Codified ){
-			report( ((Codified)throwable).getRealCause(), parametersAdd );
+			report( ((Codified)throwable).getWrapped(), parametersAdd );
 			return;
 		}
 		
@@ -72,9 +73,8 @@ public abstract class Codifier {
 		while( (line=reader.readLine()) != null){
 			System.err.println( line );
 		}
-		*/
-		
 		reader.close();         
+		*/
 		
 		writer.close();
 		
@@ -99,6 +99,7 @@ public abstract class Codifier {
 
 		@Override
 		public String valueToString( String valueField, int index ) {
+			if( valueField == null ) return S.NULL;
 			try {
 				return URLEncoder.encode( valueField, ENCODING );
 			} catch( UnsupportedEncodingException e ) {
@@ -124,6 +125,9 @@ public abstract class Codifier {
 		Codifier.includeLink = includeLink;
 	}
 	
+	public synchronized static void setProject( String project ){
+		Codifier.project = project;
+	}
 	public synchronized static void setVersion( String version ){
 		Codifier.version = version;
 	}
@@ -196,6 +200,7 @@ public abstract class Codifier {
 			
 			Map<String,String> result = new TreeMap<String,String>();
 			
+			result.put( "project", project );
 			result.put( "file", file() );
 			result.put( "method", method() );
 			result.put( "line", ""+line() );
@@ -213,10 +218,10 @@ public abstract class Codifier {
 			int methodCode = method().hashCode();
 			int lineCode = line();
 			int exceptionCode = exception().hashCode();
-			int textCode = message().hashCode();
+			int textCode = message() != null ? message().hashCode() : 0;
 			
-			String combinedCode = String.format( "%08x/%08x/%08d/%08x/%08x",
-					fileCode, methodCode, lineCode, exceptionCode, textCode );
+			String combinedCode = String.format( "%s/%08x/%08x/%08d/%08x/%08x",
+					project, fileCode, methodCode, lineCode, exceptionCode, textCode );
 			
 			return combinedCode;
 		}

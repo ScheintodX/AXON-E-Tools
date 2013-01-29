@@ -30,7 +30,7 @@ public class CodifiedRuntimeException extends RuntimeException implements Codifi
 	}
 	
 	@Override
-	public synchronized Throwable getRealCause() {
+	public synchronized Throwable getWrapped() {
 		return super.getCause();
 	}
 

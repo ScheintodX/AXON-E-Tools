@@ -30,7 +30,7 @@ public class CodifiedThrowable extends Throwable implements Codified {
 	}
 	
 	@Override
-	public synchronized Throwable getRealCause() {
+	public synchronized Throwable getWrapped() {
 		return super.getCause();
 	}
 
