@@ -38,7 +38,7 @@ public class HttpUtil {
 		}
 	}
 	
-	private static String printHttpInfo( HttpGet httpget, HttpResponse response ){
+	public static String printHttpInfo( HttpGet httpget, HttpResponse response ){
 		
 		StringBuilder result = new StringBuilder();
 		

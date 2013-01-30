@@ -1,7 +1,9 @@
 package de.axone.test;
 import static org.testng.Assert.*;
 
+import java.util.Arrays;
 import java.util.Collection;
+
 	
 public abstract class Assert {
 
@@ -19,7 +21,7 @@ public abstract class Assert {
 		assertEquals( string, "", message );
 	}
 	
-	public static void assertEqualsIgnoreOrder( Object [] actual, Object [] expected ){
+	public static <T> void assertEqualsIgnoreOrder( T [] actual, T [] expected ){
 		
 		assertEquals( actual.length, expected.length, "length" );
 		
@@ -41,9 +43,43 @@ public abstract class Assert {
 				fail( "Expected: " + expected[ i ] + " has no match" );
 		}
 	}
-	public static void assertEqualsIgnoreOrder( Collection<?> actual, Collection<?> expected ){
+	
+	public static <T> void assertEqualsIgnoreOrder( Collection<T> actual, Collection<T> expected ){
 		
 		assertEqualsIgnoreOrder( actual.toArray(), expected.toArray() );
+	}
+	
+	public static <T> void assertContains( Collection<T> actual, T expected ){
+		assertNotNull( actual );
+		if( ! actual.contains( expected ) )
+			fail( "Not contained: " + expected );
+	}
+	public static <T> void assertContains( T [] actual, T expected ){
+		assertNotNull( actual );
+		assertContains( Arrays.asList( actual ), expected );
+	}
+	
+	public static void assertName( Named object, String expectedName ){
+		assertNotNull( object );
+		assertEquals( object.getName(), expectedName );
+	}
+	
+	public static void assertContainsName( Collection<? extends Named> set, String expectedName ){
+		for( Named x : set ){
+			String name = x.getName();
+			if( expectedName == null && name == null ) return;
+			if( expectedName != null && expectedName.equals( name ) ) return;
+		}
+		fail( "Not contained: " + expectedName );
+	}
+	public static void assertNotContainsName( Collection<? extends Named> set, String notExpectedName ){
+		for( Named x : set ){
+			String name = x.getName();
+			if( notExpectedName == null && name == null )
+					fail( "contains null name" );
+			if( notExpectedName != null && notExpectedName.equals( name ) )
+					fail( "contains: " + notExpectedName );
+		}
 	}
 	
 	/*

@@ -138,4 +138,5 @@ public abstract class Assert {
 		if( o == null ) return;
 		if( ! o.getClass().isInstance( clz ) ) throw Ex.up( new ArgumentClassException( name, clz ) );
 	}
+	
 }

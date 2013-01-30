@@ -372,7 +372,9 @@ public abstract class Text {
 	 * @param value
 	 * @return the value with the passed thru string builder
 	 */
-	public static StringBuilder valueBB( StringBuilder builder, int indent, String label, String value ){
+	public static StringBuilder valueBB( StringBuilder builder, int indent, String label, Object valueO ){
+		
+		String value = valueO != null ? valueO.toString() : S._NULL_;
 
 		for( int i = 0; i < indent; i++ ) builder.append( ' ' );
 
@@ -386,13 +388,14 @@ public abstract class Text {
 		return builder;
 	}
 
-	public static StringBuilder valueB( int indent, String label, String value ){
+	public static StringBuilder valueB( int indent, String label, Object valueO ){
+		String value = valueO != null ? valueO.toString() : S._NULL_;
 		StringBuilder result = new StringBuilder( indent + label.length() + value.length() + 3 );
-		return valueBB( result, indent, label, value );
+		return valueBB( result, indent, label, valueO );
 	}
 
-	public static String value( int indent, String label, String value ){
-		return valueB( indent, label, value ).toString();
+	public static String value( int indent, String label, Object valueO ){
+		return valueB( indent, label, valueO ).toString();
 	}
 
 	/**
