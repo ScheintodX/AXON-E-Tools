@@ -1,9 +1,12 @@
 package de.axone.async;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.axone.exception.codify.Codifier;
 
 public abstract class AsynchronousQueue<T> extends Thread {
 	
@@ -78,6 +81,12 @@ public abstract class AsynchronousQueue<T> extends Thread {
 					}
 				} catch( Exception e ){
 					log.error( "Error processing: " + info( data ), e );
+					
+					try {
+						Codifier.report( e );
+					} catch( IOException e1 ) {
+						log.error( "Cannot report", e );
+					}
 				}
 			}
 
