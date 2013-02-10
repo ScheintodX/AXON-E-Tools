@@ -23,7 +23,7 @@ public abstract class Codifier {
 	
 	private static final String ENCODING = "utf-8";
 	
-	private static volatile String baseUrl = "http://www.axon-e.de/codify/codify.php/";
+	private static volatile String baseUrl = "http://codify.axon-e.de/codify.php/";
 	private static volatile boolean includeLink = false;
 	private static volatile String project = "Codifier";
 	private static volatile String version = "1.0";
@@ -214,11 +214,11 @@ public abstract class Codifier {
 		
 		public String code(){
 			
-			int fileCode = file().hashCode();
-			int methodCode = method().hashCode();
-			int lineCode = line();
-			int exceptionCode = exception().hashCode();
-			int textCode = message() != null ? message().hashCode() : 0;
+			int fileCode = Hash.hash( file() );
+			int methodCode = Hash.hash( method() );
+			int lineCode = Hash.hash( line() );
+			int exceptionCode = Hash.hash( exception() );
+			int textCode = message() != null ? Hash.hash( message() ) : 0;
 			
 			String combinedCode = String.format( "%s/%08x/%08x/%08d/%08x/%08x",
 					project, fileCode, methodCode, lineCode, exceptionCode, textCode );
