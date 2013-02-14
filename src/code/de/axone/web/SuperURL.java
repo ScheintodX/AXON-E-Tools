@@ -563,6 +563,8 @@ public final class SuperURL {
 					return "image/gif";
 				} else if( extension.equalsIgnoreCase( "ico" ) ) {
 					return "image/x-icon";
+				} else if( extension.equalsIgnoreCase( "svg" ) ) {
+					return "image/svg+xml";
 					/* css/js */
 				} else if( extension.equalsIgnoreCase( "css" ) ) {
 					return "text/css";
@@ -571,6 +573,7 @@ public final class SuperURL {
 					/* html */
 				} else if( extension.equalsIgnoreCase( "htm" )
 						|| extension.equalsIgnoreCase( "html" )
+						/* Not! application/xhtml+xml. Not good in any browser. */
 						|| extension.equalsIgnoreCase( "xhtml" ) ) {
 					return "text/html";
 				} else if( extension.equalsIgnoreCase( "txt" ) ) {

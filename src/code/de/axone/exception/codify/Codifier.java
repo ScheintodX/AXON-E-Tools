@@ -57,6 +57,7 @@ public abstract class Codifier {
 
 		con.setDoOutput(true);
 		con.setRequestProperty( "User-Agent", "Codify/1.0" );
+		con.setInstanceFollowRedirects( false );
 
 		OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream(), ENCODING );
 
@@ -68,7 +69,9 @@ public abstract class Codifier {
 		// This is needed. Without reading the answer the request isn't send properly.
 		// Quantum effects?
 		while (reader.readLine() != null);
+		
 		/*
+		// Debugging:
 		String line;
 		while( (line=reader.readLine()) != null){
 			System.err.println( line );
@@ -220,8 +223,8 @@ public abstract class Codifier {
 			int exceptionCode = Hash.hash( exception() );
 			int textCode = message() != null ? Hash.hash( message() ) : 0;
 			
-			String combinedCode = String.format( "%s/%08x/%08x/%08d/%08x/%08x",
-					project, fileCode, methodCode, lineCode, exceptionCode, textCode );
+			String combinedCode = String.format( "%08x/%08x/%08d/%08x/%08x",
+					fileCode, methodCode, lineCode, exceptionCode, textCode );
 			
 			return combinedCode;
 		}
