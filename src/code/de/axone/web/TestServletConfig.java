@@ -19,7 +19,7 @@ public class TestServletConfig implements ServletConfig {
 		this.initParameters = initParameters;
 	}
 	@Override
-	public Enumeration<?> getInitParameterNames() {
+	public Enumeration<String> getInitParameterNames() {
 		return Collections.enumeration( initParameters.keySet() );
 	}
 

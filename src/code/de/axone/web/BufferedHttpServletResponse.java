@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;
@@ -200,6 +201,28 @@ public class BufferedHttpServletResponse implements HttpServletResponse {
 	}
 	public ByteArrayOutputStream getByteArray(){
 		return outS;
+	}
+	
+	/* Since 3.0 */
+
+	@Override
+	public int getStatus() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String getHeader( String name ) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Collection<String> getHeaders( String name ) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Collection<String> getHeaderNames() {
+		throw new UnsupportedOperationException();
 	}
 	
 }

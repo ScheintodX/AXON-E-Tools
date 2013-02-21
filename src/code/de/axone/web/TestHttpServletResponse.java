@@ -3,6 +3,8 @@ package de.axone.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -248,5 +250,26 @@ public class TestHttpServletResponse implements HttpServletResponse {
 			
 			content.append( cbuf, off, len );
 		}
+	}
+	
+	/* Since 3.0 -------------------------------------------- */
+
+	@Override
+	public int getStatus() {
+		return statusCode;
+	}
+	
+	@Override
+	public String getHeader( String name ) {
+		return headers.get( name );
+	}
+	@Override
+	public Collection<String> getHeaders( String name ) {
+		//TODO: Das sollte an die Spec angeglichen werden. u.a. fehlen hier die date headers
+		return Arrays.asList( headers.get( name ) );
+	}
+	@Override
+	public Collection<String> getHeaderNames() {
+		return headers.keySet();
 	}
 }

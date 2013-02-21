@@ -4,15 +4,24 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 /**
  * Empty stub for HttpServletRequest which does nothing
@@ -25,7 +34,7 @@ import javax.servlet.http.HttpSession;
  * (Really, this does make sense: WebTemplates are mainly for
  * <em>Web</em>. But they can be used to genereate emails as
  * well. And in emails an HttpServletRequest doesn't make
- * much sense. So if you want to make shure the template
+ * much sense. So if you want to make sure the template
  * renders but doesn't use anything about the request use
  * this as stub to render( ...);)
  * 
@@ -60,12 +69,12 @@ public class NoHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public Enumeration<?> getHeaderNames() {
+	public Enumeration<String> getHeaderNames() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Enumeration<?> getHeaders( String arg0 ) {
+	public Enumeration<String> getHeaders( String arg0 ) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -165,7 +174,7 @@ public class NoHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public Enumeration<?> getAttributeNames() {
+	public Enumeration<String> getAttributeNames() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -210,7 +219,7 @@ public class NoHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public Enumeration<?> getLocales() {
+	public Enumeration<Locale> getLocales() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -220,12 +229,12 @@ public class NoHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public Map<?,?> getParameterMap() {
+	public Map<String, String[]> getParameterMap() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Enumeration<?> getParameterNames() {
+	public Enumeration<String> getParameterNames() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -302,6 +311,73 @@ public class NoHttpServletRequest implements HttpServletRequest {
 	@Override
 	public void setCharacterEncoding( String arg0 )
 			throws UnsupportedEncodingException {
+		throw new UnsupportedOperationException();
+	}
+	
+	/* Since 3.0 */
+
+	@Override
+	public ServletContext getServletContext() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public AsyncContext startAsync() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public AsyncContext startAsync( ServletRequest servletRequest,
+			ServletResponse servletResponse ) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean isAsyncStarted() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean isAsyncSupported() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public AsyncContext getAsyncContext() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public DispatcherType getDispatcherType() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean authenticate( HttpServletResponse response )
+			throws IOException, ServletException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void login( String username, String password )
+			throws ServletException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void logout() throws ServletException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Collection<Part> getParts() throws IOException,
+			IllegalStateException, ServletException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Part getPart( String name ) throws IOException,
+			IllegalStateException, ServletException {
 		throw new UnsupportedOperationException();
 	}
 

@@ -231,7 +231,10 @@ public final class SuperURL {
 		return includeFragment;
 	}
 	
+	// TODO: Da ist das automatische erzeugen des Pfades dazu gekommen.
+	// Das können jetzt also beim Aufrufer Checks entfernt werden.
 	public Path getPath() {
+		if( path == null ) path = new Path();
 		return path;
 	}
 	public void setPath( Path path ) {
@@ -245,6 +248,7 @@ public final class SuperURL {
 	}
 
 	public Query getQuery() {
+		if( query == null ) query = new Query();
 		return query;
 	}
 	public void setQuery( Query query ) {

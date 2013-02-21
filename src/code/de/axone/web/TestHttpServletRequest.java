@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -15,11 +16,19 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 
 public class TestHttpServletRequest implements HttpServletRequest {
@@ -74,13 +83,13 @@ public class TestHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public Enumeration<?> getHeaderNames() {
+	public Enumeration<String> getHeaderNames() {
 		return Collections.enumeration( headers.keySet() );
 	}
 
 	@Override
-	public Enumeration<?> getHeaders( String key ) {
-		return Collections.enumeration( headers.entrySet() );
+	public Enumeration<String> getHeaders( String key ) {
+		return Collections.enumeration( headers.values() );
 	}
 
 	@Override
@@ -245,7 +254,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 	private Map<String, Object> attributes = new HashMap<String, Object>();
 
 	@Override
-	public Enumeration<?> getAttributeNames() {
+	public Enumeration<String> getAttributeNames() {
 		return Collections.enumeration( attributes.keySet() );
 	}
 
@@ -339,7 +348,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public Enumeration<?> getLocales() {
+	public Enumeration<Locale> getLocales() {
 		return Collections.enumeration( locales );
 	}
 	private List<Locale> locales = new LinkedList<Locale>();
@@ -349,39 +358,34 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getParameter( String key ) {
-		return parameters.get( key );
+		String [] parameterA = parameters.get( key );
+		if( parameterA == null || parameterA.length == 0 ) return null;
+		return parameterA[0];
 	}
-	private Map<String, String> parameters = new HashMap<String, String>();
-	public void setParameters( Map<String, String> parameters ){
+	private Map<String, String[]> parameters = new HashMap<>();
+	public void setParameters( Map<String, String[]> parameters ){
 		this.parameters = parameters;
 	}
-    public void setParameter( String key, String value ){
+    public void setParameter( String key, String [] value ){
     	parameters.put( key, value );
+    }
+    public void setParameter( String key, String value ){
+    	parameters.put( key, new String[]{ value } );
     }
 	
 	@Override
-	public Map<?,?> getParameterMap() {
+	public Map<String,String[]> getParameterMap() {
 		return parameters;
 	}
 
 	@Override
-	public Enumeration<?> getParameterNames() {
+	public Enumeration<String> getParameterNames() {
 		return Collections.enumeration( parameters.keySet() );
 	}
 
 	@Override
 	public String[] getParameterValues( String arg0 ) {
-		/*
-		String[] result = new String[ parameters.size() ];
-		for( int i=0; i< parameters.size(); i++ ) result[i] = parameters.get( i );
-		return result;
-		*/
-		String value = parameters.get( arg0 );
-		if( value == null ){
-			return new String[]{};
-		} else {
-			return new String[]{ value };
-		}
+		return parameters.get( arg0 );
 	}
 
 	@Override
@@ -490,4 +494,99 @@ public class TestHttpServletRequest implements HttpServletRequest {
 		}
 		
 	}
+	
+	/* Since 3.0 --------------------------------------------------- */
+
+	@Override
+	public ServletContext getServletContext() {
+		return servletContext;
+	}
+	private ServletContext servletContext;
+	public void setServletContext( ServletContext servletContext ){
+		this.servletContext = servletContext;
+	}
+
+	@Override
+	public AsyncContext getAsyncContext() {
+		return null;
+	}
+	private AsyncContext asyncContext;
+	public void setAsyncContext( AsyncContext asyncContext ){
+		this.asyncContext = asyncContext;
+	}
+
+	@Override
+	public AsyncContext startAsync() {
+		return asyncContext;
+	}
+	
+	@Override
+	public AsyncContext startAsync( ServletRequest servletRequest,
+			ServletResponse servletResponse ) {
+		return asyncContext;
+	}
+
+	@Override
+	public boolean isAsyncStarted() {
+		return isAsyncStarted;
+	}
+	private boolean isAsyncStarted;
+	public void setIsAsyncStarted( boolean isAsyncStarted ){
+		this.isAsyncStarted = isAsyncStarted;
+	}
+
+	@Override
+	public boolean isAsyncSupported() {
+		return isAsyncSupported;
+	}
+	private boolean isAsyncSupported;
+	public void setIsAsyncSupported( boolean isAsyncSupported ){
+		this.isAsyncSupported = isAsyncSupported;
+	}
+
+	@Override
+	public DispatcherType getDispatcherType() {
+		return dispatcherType;
+	}
+	private DispatcherType dispatcherType;
+	public void setDispatcherType( DispatcherType dispatcherType ){
+		this.dispatcherType = dispatcherType;
+	}
+
+	private boolean isAuthenticated = false;
+	@Override
+	public boolean authenticate( HttpServletResponse response )
+			throws IOException, ServletException {
+		return isAuthenticated;
+	}
+
+	@Override
+	public void login( String username, String password )
+			throws ServletException {
+		this.isAuthenticated = true;
+	}
+
+	@Override
+	public void logout() throws ServletException {
+		this.isAuthenticated = false;
+	}
+	
+	
+	private Map<String,Part> parts;
+	@Override
+	public Collection<Part> getParts() throws IOException,
+			IllegalStateException, ServletException {
+		return parts.values();
+	}
+
+	@Override
+	public Part getPart( String name ) throws IOException,
+			IllegalStateException, ServletException {
+		return parts.get( name );
+	}
+	
+	public void setParts( Map<String,Part> parts ){
+		this.parts = parts;
+	}
+	
 }

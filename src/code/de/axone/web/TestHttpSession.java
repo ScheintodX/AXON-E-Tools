@@ -18,7 +18,7 @@ public class TestHttpSession implements HttpSession {
 	HashMap<String,Object>attributes = new HashMap<String,Object>();
 
 	@Override
-	public Enumeration<?> getAttributeNames() {
+	public Enumeration<String> getAttributeNames() {
 		return (new Vector( attributes.keySet() )).elements();
 	}
 

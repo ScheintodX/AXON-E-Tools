@@ -8,15 +8,23 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterRegistration;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
+import javax.servlet.ServletRegistration.Dynamic;
+import javax.servlet.SessionCookieConfig;
+import javax.servlet.SessionTrackingMode;
+import javax.servlet.descriptor.JspConfigDescriptor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +53,7 @@ public class TestServletContext implements ServletContext {
 		attributes.put( name, object );
 	}
 	@Override
-	public Enumeration<?> getAttributeNames() {
+	public Enumeration<String> getAttributeNames() {
 		return Collections.enumeration( attributes.keySet() );
 	}
 
@@ -71,14 +79,14 @@ public class TestServletContext implements ServletContext {
 	/* --- Parameters --- */
 	@Override
 	public String getInitParameter( String name ) {
-		return null;
+		return initParameters.get( name );
 	}
 	Map<String,String> initParameters = new HashMap<String,String>();
 	public void setInitParameters( Map<String,String> initParameters ){
 		this.initParameters = initParameters;
 	}
 	@Override
-	public Enumeration<?> getInitParameterNames() {
+	public Enumeration<String> getInitParameterNames() {
 		return Collections.enumeration( initParameters.keySet() );
 	}
 
@@ -120,7 +128,7 @@ public class TestServletContext implements ServletContext {
 		return null;
 	}
 	@Override
-	public Set<?> getResourcePaths( String path ) {
+	public Set<String> getResourcePaths( String path ) {
 		
 		File dir = new File( path );
 		
@@ -148,11 +156,11 @@ public class TestServletContext implements ServletContext {
 		this.servlets = servlets;
 	}
 	@Override
-	public Enumeration<?> getServletNames() {
+	public Enumeration<String> getServletNames() {
 		return Collections.enumeration( servlets.keySet() );
 	}
 	@Override
-	public Enumeration<?> getServlets() {
+	public Enumeration<Servlet> getServlets() {
 		return Collections.enumeration( servlets.values() );
 	}
 
@@ -205,6 +213,155 @@ public class TestServletContext implements ServletContext {
 	private String mimeType;
 	public void setMimeType( String mimeType ){
 		this.mimeType = mimeType;
+	}
+	
+	/* Since 3.0 -------------------------------------------- */
+	
+	@Override
+	public int getEffectiveMajorVersion() {
+		return effectiveMajorVersion;
+	}
+	private int effectiveMajorVersion;
+	public void setEffectiveMajorVersion( int effectiveMajorVersion ){
+		this.effectiveMajorVersion = effectiveMajorVersion;
+	}
+	
+	@Override
+	public int getEffectiveMinorVersion() {
+		return effectiveMinorVersion;
+	}
+	private int effectiveMinorVersion;
+	public void setEffectiveMinorVersion( int effectiveMinorVersion ){
+		this.effectiveMinorVersion = effectiveMinorVersion;
+	}
+	
+	@Override
+	public boolean setInitParameter( String name, String value ) {
+		initParameters.put( name, value );
+		return true;
+	}
+	
+	@Override
+	public Dynamic addServlet( String servletName, String className ) {
+		
+		try {
+			servlets.put( servletName, (Servlet)Class.forName( className ).newInstance() );
+		} catch( InstantiationException | IllegalAccessException | ClassNotFoundException e ) {
+			throw new RuntimeException( e );
+		}
+		
+		// TODO: Rückgabe-Wert sollte was anders sein...
+		return null;
+	}
+	@Override
+	public Dynamic addServlet( String servletName, Servlet servlet ) {
+		
+		servlets.put( servletName, servlet );
+		
+		// TODO: Rückgabe-Wert sollte was anders sein...
+		return null;
+	}
+	@Override
+	public Dynamic addServlet( String servletName,
+			Class<? extends Servlet> servletClass ) {
+		
+		try {
+			servlets.put( servletName, servletClass.newInstance() );
+		} catch( InstantiationException | IllegalAccessException e ) {
+			throw new RuntimeException( e );
+		}
+		
+		// TODO: Rückgabe-Wert sollte was anders sein...
+		return null;
+	}
+	@Override
+	public <T extends Servlet> T createServlet( Class<T> c )
+			throws ServletException {
+		
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public ServletRegistration getServletRegistration( String servletName ) {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public Map<String, ? extends ServletRegistration> getServletRegistrations() {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public javax.servlet.FilterRegistration.Dynamic addFilter(
+			String filterName, String className ) {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public javax.servlet.FilterRegistration.Dynamic addFilter(
+			String filterName, Filter filter ) {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public javax.servlet.FilterRegistration.Dynamic addFilter(
+			String filterName, Class<? extends Filter> filterClass ) {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public <T extends Filter> T createFilter( Class<T> c )
+			throws ServletException {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public FilterRegistration getFilterRegistration( String filterName ) {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public SessionCookieConfig getSessionCookieConfig() {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public void setSessionTrackingModes(
+			Set<SessionTrackingMode> sessionTrackingModes )
+			throws IllegalStateException, IllegalArgumentException {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public void addListener( Class<? extends EventListener> listenerClass ) {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public void addListener( String className ) {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public <T extends EventListener> void addListener( T t ) {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public <T extends EventListener> T createListener( Class<T> c )
+			throws ServletException {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public void declareRoles( String ... roleNames ) {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public ClassLoader getClassLoader() {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public JspConfigDescriptor getJspConfigDescriptor() {
+		throw new UnsupportedOperationException();
 	}
 
 }

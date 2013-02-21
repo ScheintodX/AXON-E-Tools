@@ -8,6 +8,11 @@ import de.axone.tools.AbstractStringAccessor;
 import de.axone.tools.S;
 import de.axone.tools.Str;
 
+/**
+ * Helper class for accessing information stored in a request
+ * 
+ * @author flo
+ */
 public class RequestUtil extends AbstractStringAccessor {
 	
 	private HttpServletRequest request;
