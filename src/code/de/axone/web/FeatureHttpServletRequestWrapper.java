@@ -5,6 +5,13 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+/**
+ * HttpServletRequest Wrapper which can be used to override
+ * request parameters.
+ * 
+ * @author flo
+ *
+ */
 public class FeatureHttpServletRequestWrapper extends HttpServletRequestWrapper {
 	
 	private HashMap<String,String> parametersOverride =

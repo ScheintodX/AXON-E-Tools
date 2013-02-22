@@ -28,12 +28,14 @@ public class Str {
 		return join( joinWith, A.toObjects( ints ) ).toString();
 	}
 
+	@SafeVarargs
 	public static <T> String join( String joinWith, T ... objects ){
 		return joinB( joinWith, Arrays.asList( objects ) ).toString();
 	}
 	public static <T> String join( String joinWith, Iterable<T> objects ){
 		return joinB( joinWith, objects ).toString();
 	}
+	@SafeVarargs
 	public static <T> String join( Joiner<T> joiner, T ... objects ){
 		return joinB( joiner, Arrays.asList( objects ) ).toString();
 	}

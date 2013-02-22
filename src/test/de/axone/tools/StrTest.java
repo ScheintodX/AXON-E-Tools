@@ -7,7 +7,6 @@ import org.testng.annotations.Test;
 @Test( groups="tools.str" )
 public class StrTest {
 
-	@SuppressWarnings( "unchecked" )
 	public void testStr() throws Exception {
 		
 		// Direct via ...

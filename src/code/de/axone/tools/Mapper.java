@@ -18,17 +18,22 @@ import de.axone.exception.Assert;
 public abstract class Mapper {
 
 	// Maps for Lists
+	@SafeVarargs
 	public static <T> HashMap<T,T> hashMap( T ... values ){
 		return map( new HashMap<T,T>(), values );
 	}
 		
+	@SafeVarargs
 	public static <T> TreeMap<T,T> treeMap( T ... values ){
 		return map( new TreeMap<T,T>(), values );
 	}
+	
+	@SafeVarargs
 	public static <T> LinkedHashMap<T,T> linkedHashMap( T ... values ){
 		return map( new LinkedHashMap<T,T>(), values );
 	}
 		
+	@SafeVarargs
 	public static <T,M extends Map<T,T>> M map( M result, T ... values ){
 
 		if( (values.length % 2) != 0 )
@@ -64,12 +69,15 @@ public abstract class Mapper {
 		return result;
 	}
 
+	@SafeVarargs
 	public static <K,V> TreeMap<K,V> treeMap( Pair<K,V> ... values ){
 		return map( new TreeMap<K,V>(), values );
 	}
+	@SafeVarargs
 	public static <K,V> HashMap<K,V> hashMap( Pair<K,V> ... values ){
 		return map( new HashMap<K,V>(), values );
 	}
+	@SafeVarargs
 	public static <K,V,M extends Map<K,V>> M map( M result, Pair<K,V> ... values ){
 		for( Pair<K,V> value : values ){
 			result.put( value.getLeft(), value.getRight() );
@@ -78,12 +86,14 @@ public abstract class Mapper {
 	}
 		
 	// Set
+	@SafeVarargs
 	public static <T> HashSet<T> hashSet( T ... values ){
 
 		HashSet<T> result = new HashSet<T>( Arrays.asList( values ));
 		return result;
 	}
 	
+	@SafeVarargs
 	public static <T> TreeSet<T> treeSet( T ... values ){
 		
 		TreeSet<T> result = new TreeSet<T>( Arrays.asList( values ));
@@ -91,6 +101,7 @@ public abstract class Mapper {
 	}
 
 	// Converted Set
+	@SafeVarargs
 	public static <T,X> HashSet<T> hashSet( Converter<T,X> converter, X ... values ){
 		
 		Assert.notNull( converter, "converter" );
@@ -104,6 +115,7 @@ public abstract class Mapper {
 		return result;
 	}
 
+	@SafeVarargs
 	public static <T,X> TreeSet<T> treeSet( Converter<T,X> converter, X ... values ){
 		
 		Assert.notNull( converter, "converter" );
@@ -117,33 +129,38 @@ public abstract class Mapper {
 		return result;
 	}
 
+	@SafeVarargs
 	public static <T> LinkedList<T> linkedList( T ... values ){
 
 		return new LinkedList<T>( Arrays.asList( values ) );
 	}
 	
+	@SafeVarargs
 	public static <T> ArrayList<T> arrayList( T ... values ){
 
 		return new ArrayList<T>( Arrays.asList( values ) );
 	}
 	
+	@SafeVarargs
 	public static <T,X> LinkedList<T> linkedList( Converter<T,X> converter, X ... values ){
 		
 		return collection( new LinkedList<T>(), converter, values );
 	}
 	
+	@SafeVarargs
 	public static <T,X> ArrayList<T> arrayList( Converter<T,X> converter, X ... values ){
 		
 		return collection( new ArrayList<T>( values.length ), converter, values );
 	}
 	
+	@SafeVarargs
 	public static <T,X,C extends Collection<T>> C collection( C result, Converter<T,X> converter, X ... values ){
 		
 		fill( result, converter, values );
 		return result;
 	}
 		
-	
+	@SafeVarargs
 	private static <T,X> void fill( Collection<T> result, Converter<T,X> converter, X ... values ){
 		
 		Assert.notNull(  converter, "converter" );

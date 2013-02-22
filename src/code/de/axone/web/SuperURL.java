@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -723,6 +724,28 @@ public final class SuperURL {
 			QueryPart part = new QueryPart( key, value );
 			forName.get( key ).addLast( part );
 			path.add( part );
+			return this;
+		}
+		
+		public Query addAll( Map<String,String> values ){
+			
+			if( values != null ) for( String key : values.keySet() ){
+				addValue( key, values.get( key ) );
+			}
+			return this;
+		}
+		
+		public Query setAll( Map<String,String> values ){
+			
+			if( values != null ) for( String key : values.keySet() ){
+				setValue( key, values.get( key ) );
+			}
+			return this;
+		}
+		public Query addAll( Query other ){
+			for( QueryPart part : other.getPath() ){
+				addValue( part.getKey(), part.getValue() );
+			}
 			return this;
 		}
 		
