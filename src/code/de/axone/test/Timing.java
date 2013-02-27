@@ -103,6 +103,7 @@ public class Timing {
 		}
 		
 		StringBuilder result = new StringBuilder();
+		@SuppressWarnings( "resource" )
 		Formatter formatter = new Formatter( result );
 		result.append( "Timing:\n" );
 		for( Object name : timers.keySet() ){

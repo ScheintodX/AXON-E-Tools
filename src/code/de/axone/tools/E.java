@@ -1,7 +1,6 @@
 package de.axone.tools;
 
 import java.io.PrintStream;
-import java.util.Formatter;
 
 public abstract class E {
 	
@@ -11,11 +10,11 @@ public abstract class E {
 		
 		Exception e = new Exception();
 		StackTraceElement[] elm = e.getStackTrace();
-		Formatter f = new Formatter( out );
 		
 		String clazz = F.simplifyClassName( elm[depth].getClassName() );
 		int line = elm[depth].getLineNumber();
-		f.format( ">>> %s(%d): ", clazz, line );
+		
+		out.printf( ">>> %s(%d): ", clazz, line );
 	}
 	
 	static void echo( PrintStream out, int depth, boolean nl, Object ... os ){

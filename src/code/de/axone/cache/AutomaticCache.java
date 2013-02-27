@@ -42,6 +42,7 @@ public interface AutomaticCache<K, V> {
 		@Override
 		public String toString(){
 			StringBuilder result = new StringBuilder();
+			@SuppressWarnings( "resource" )
 			Formatter format = new Formatter( result );
 			long hits = this.hits.get();
 			long accesses = this.accesses.get();

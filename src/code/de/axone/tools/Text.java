@@ -451,6 +451,7 @@ public abstract class Text {
 	}
 	public static StringBuilder arrayHexBB( StringBuilder builder, byte[] data, int width, int indent ){
 
+		@SuppressWarnings( "resource" )
 		Formatter f = new Formatter( builder );
 
 		if( indent > 0 ) indentBB( builder, indent );
@@ -483,6 +484,7 @@ public abstract class Text {
 	}
 	public static StringBuilder arrayHexBB( StringBuilder builder, ByteBuffer data, int width, int indent ){
 
+		@SuppressWarnings( "resource" )
 		Formatter f = new Formatter( builder );
 
 		if( indent > 0 ) indentBB( builder, indent );

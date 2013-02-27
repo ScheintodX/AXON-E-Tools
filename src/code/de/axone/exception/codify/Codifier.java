@@ -13,13 +13,22 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.axone.tools.Mapper;
 import de.axone.tools.S;
 import de.axone.tools.Str;
 import de.axone.tools.Str.MapJoiner;
 import de.axone.web.SuperURL;
 
+// TODO: Registrieren von Packages. Oder macht man das besser online? Oder beides?
+// Vermutlich beides, da man lokal so auch eine Unterscheidung der eigenen Packages
+// hinbekommt, online dagegen Package-Listen gepflegt werden können
+
 public abstract class Codifier {
+	
+	private static final Logger log = LoggerFactory.getLogger( Codifier.class );
 	
 	private static final String ENCODING = "utf-8";
 	
@@ -51,6 +60,16 @@ public abstract class Codifier {
 		parametersUse.putAll( desc.map() );
 		parametersUse.put( "action", "report" );
 		
+		if( log.isDebugEnabled() ){
+			if( ! log.isTraceEnabled() ){
+				Map<String,String> parametersLog = new TreeMap<>( parametersUse );
+				parametersLog.remove( "stack" );
+				log.debug( "Report: {}", parametersLog );
+			} else {
+				log.trace( "Report: {}", parametersUse );
+			}
+		}
+		
 		String parameters = Str.join( URL_JOINER, parametersUse );
 		
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -59,27 +78,32 @@ public abstract class Codifier {
 		con.setRequestProperty( "User-Agent", "Codify/1.0" );
 		con.setInstanceFollowRedirects( false );
 
-		OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream(), ENCODING );
-
-		writer.write(parameters);
-		writer.flush();
-
-		BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-
-		// This is needed. Without reading the answer the request isn't send properly.
-		// Quantum effects?
-		while (reader.readLine() != null);
+		try( OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream(), ENCODING ) ){
 		
-		/*
-		// Debugging:
-		String line;
-		while( (line=reader.readLine()) != null){
-			System.err.println( line );
+			writer.write(parameters);
+			writer.flush();
+	
+			try( BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream())) ){
+	
+				// Debugging:
+				
+				if( log.isDebugEnabled() ){
+					
+					StringBuilder resultText = new StringBuilder();
+					String line;
+					while( (line=reader.readLine()) != null){
+			
+						resultText.append( line );
+					}
+					log.debug( resultText.toString() );
+				} else {
+					
+					// This is needed. Without reading the answer the request isn't send properly.
+					// Quantum effects?
+					while( reader.readLine() != null );
+				}
+			}
 		}
-		reader.close();         
-		*/
-		
-		writer.close();
 		
 	}
 	
