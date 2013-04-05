@@ -7,25 +7,25 @@ public class Str {
 
 	// --- J o i n ------------------------------------------------------
 	public static String join( String joinWith, boolean [] ints ){
-		return join( joinWith, A.toObjects( ints ) ).toString();
+		return join( joinWith, A.objects( ints ) ).toString();
 	}
 	public static String join( String joinWith, char [] ints ){
-		return join( joinWith, A.toObjects( ints ) ).toString();
+		return join( joinWith, A.objects( ints ) ).toString();
 	}
 	public static String join( String joinWith, short [] ints ){
-		return join( joinWith, A.toObjects( ints ) ).toString();
+		return join( joinWith, A.objects( ints ) ).toString();
 	}
 	public static String join( String joinWith, int [] ints ){
-		return join( joinWith, A.toObjects( ints ) ).toString();
+		return join( joinWith, A.objects( ints ) ).toString();
 	}
 	public static String join( String joinWith, long [] ints ){
-		return join( joinWith, A.toObjects( ints ) ).toString();
+		return join( joinWith, A.objects( ints ) ).toString();
 	}
 	public static String join( String joinWith, float [] ints ){
-		return join( joinWith, A.toObjects( ints ) ).toString();
+		return join( joinWith, A.objects( ints ) ).toString();
 	}
 	public static String join( String joinWith, double [] ints ){
-		return join( joinWith, A.toObjects( ints ) ).toString();
+		return join( joinWith, A.objects( ints ) ).toString();
 	}
 
 	@SafeVarargs

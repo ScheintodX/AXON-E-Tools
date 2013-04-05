@@ -83,31 +83,31 @@ public abstract class E {
 	}
 	
 	public static void rr( byte [] a ){
-		echo( System.err, true, (Object[])A.toObjects( a ) );
+		echo( System.err, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( char [] a ){
-		echo( System.err, true, (Object[])A.toObjects( a ) );
+		echo( System.err, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( short [] a ){
-		echo( System.err, true, (Object[])A.toObjects( a ) );
+		echo( System.err, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( int [] a ){
-		echo( System.err, true, (Object[])A.toObjects( a ) );
+		echo( System.err, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( long [] a ){
-		echo( System.err, true, (Object[])A.toObjects( a ) );
+		echo( System.err, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( float [] a ){
-		echo( System.err, true, (Object[])A.toObjects( a ) );
+		echo( System.err, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( double [] a ){
-		echo( System.err, true, (Object[])A.toObjects( a ) );
+		echo( System.err, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( boolean [] os ){

@@ -179,6 +179,7 @@ public abstract class Mapper {
 			U value = map.get( key );
 			result.add( key.toString() + joinWith + value.toString() );
 		}
+		
 		return result;
 	}
 	
