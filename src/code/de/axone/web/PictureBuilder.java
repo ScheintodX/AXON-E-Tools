@@ -169,8 +169,6 @@ public class PictureBuilder {
 
 	public boolean exists() {
 		
-		//E.rr( main.getAbsolutePath() );
-
 		return main != null && main.isFile() && main.canRead();
 	}
 
@@ -441,7 +439,7 @@ public class PictureBuilder {
 		}
 	}
 
-	private static final JpegFilter JPEG = new JpegFilter();
+	public static final JpegFilter JPEG = new JpegFilter();
 
 	private static class JpegFilter implements FilenameFilter {
 

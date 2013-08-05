@@ -1,5 +1,6 @@
 package de.axone.tools;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -14,7 +15,7 @@ import java.util.regex.Pattern;
  * Format of Parameter-String is: classpath[( parameter1=value1[, ...] )] where
  * values are strings.
  * 
- * Every in this way created class must conform to following conditions:
+ * Every class created in this way must conform to following conditions:
  * 
  * <ol>
  * <li>Class must have an public parameterless constructor</li>
@@ -48,7 +49,10 @@ public abstract class ClassConfigurator {
 	
 	/**
 	 * Create a new Instance of the class specified in the description
-	 * initialized by these parameters
+	 * initialized by these parameters.
+	 * 
+	 * The constuctor to call is found via the given construcotorparameters
+	 * which then are used to construct the object.
 	 * 
 	 * @param description
 	 * @throws ClassNotFoundException
@@ -60,7 +64,7 @@ public abstract class ClassConfigurator {
 	 * @throws IllegalArgumentException
 	 * @return the created object
 	 */
-	public static Object create(String description) throws ClassNotFoundException,
+	public static Object create(String description, Class<?> [] constructorClasses, Object [] constructorParameters ) throws ClassNotFoundException,
 			InstantiationException, IllegalAccessException, SecurityException,
 			NoSuchMethodException, IllegalArgumentException,
 			InvocationTargetException {
@@ -90,9 +94,30 @@ public abstract class ClassConfigurator {
 
 		Class<?> clazz = Class.forName(className);
 
-		Object instance = clazz.newInstance();
+		Object instance = construct( clazz, constructorClasses, constructorParameters );
 		
 		configure( instance, parameters );
+		
+		return instance;
+	}
+	
+	public static Object create(String description ) throws ClassNotFoundException,
+			InstantiationException, IllegalAccessException, SecurityException,
+			NoSuchMethodException, IllegalArgumentException,
+			InvocationTargetException {
+		
+		return create( description, null, null );
+	}
+	
+	public static <T> T construct( Class<T> clazz, Class<?> [] constructorClasses, Object [] constructorParameters )
+			throws InstantiationException, IllegalAccessException, NoSuchMethodException,
+			SecurityException, IllegalArgumentException, InvocationTargetException{
+		
+		Constructor<T> constructor = clazz.getConstructor( constructorClasses );
+		
+		T instance = constructor.newInstance( constructorParameters );
+		
+		//T instance = clazz.newInstance();
 		
 		return instance;
 	}

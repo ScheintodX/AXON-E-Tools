@@ -1,6 +1,6 @@
 package de.axone.data;
 
-public class Pair<L, R> {
+public class Pair<L, R> implements Comparable<Pair<L,R>> {
 	 
     private final L left;
     private final R right;
@@ -21,7 +21,6 @@ public class Pair<L, R> {
     public static <A, B> Pair<A, B> create(A left, B right) {
         return new Pair<A, B>(left, right);
     }
- 
   
     @Override
 	public int hashCode() {
@@ -55,5 +54,38 @@ public class Pair<L, R> {
     public String toString(){
     	return left.toString() + "<->" + right.toString();
     }
+	
+	private static final int BEFORE = -1, EQUALS = 0, AFTER = 1;
+
+	@Override
+	public int compareTo( Pair<L, R> o ) {
+		
+		int i;
+		if( o == this ) return EQUALS;
+		
+		i = compare( this.left, o.left );
+		if( i != 0 ) return i;
+		
+		return compare( this.right, o.right );
+	}
+	
+	private static int compare( Object a, Object b ){
+		
+		if( a==null ){
+			if( b==null ) return EQUALS;
+			else return BEFORE;
+		} else {
+			if( b==null ) return AFTER;
+			else {
+				if( !( a instanceof Comparable ) )
+					throw new IllegalArgumentException( a.getClass().getSimpleName() + " must implement Comparable to work" );
+				
+				@SuppressWarnings( { "rawtypes", "unchecked" } )
+				int result = ((Comparable)a).compareTo( b );
+				return result;
+			}
+		}
+	}
+	
 }
 

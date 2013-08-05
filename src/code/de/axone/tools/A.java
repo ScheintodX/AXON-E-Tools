@@ -1,5 +1,6 @@
 package de.axone.tools;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -138,6 +139,17 @@ public class A {
 	// Generic
 	@SafeVarargs
 	public static <X> X[] Array( X ... values ){ return values; }
+	
+	public static <X> X[] Array( Collection<X> values ){
+		
+		if( values == null || values.size() == 0 )
+			throw new IllegalArgumentException( "values is null or empty" );
+		
+		@SuppressWarnings( "unchecked" )
+		X[] result = (X[])Array.newInstance( values.iterator().next().getClass(), values.size() );
+		
+		return values.toArray( result );
+	}
 	
 	@SafeVarargs
 	public static <X> List<X> List( X ... values ){

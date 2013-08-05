@@ -181,16 +181,16 @@ public class Equals {
 		
 		Class<?> clz = o.getClass();
 		
-		EqualsClass ec = clz.getAnnotation( EqualsClass.class );
-		Assert.notNull( ec, "@EqualsClass for " + o.getClass().getSimpleName() );
+		EqualsClass equalsClassA = clz.getAnnotation( EqualsClass.class );
+		Assert.notNull( equalsClassA, "@EqualsClass for " + o.getClass().getSimpleName() );
 		
 		EnumSet<EqualsOption.Option> globalOptions = EnumSet.noneOf( EqualsOption.Option.class );
-		EqualsOption eo = clz.getAnnotation( EqualsOption.class );
-		if( eo != null ){
-			globalOptions = EnumSet.copyOf( Arrays.asList( eo.options()  ) );
+		EqualsOption equalsOptionA = clz.getAnnotation( EqualsOption.class );
+		if( equalsOptionA != null ){
+			globalOptions = EnumSet.copyOf( Arrays.asList( equalsOptionA.options()  ) );
 		}
 		
-		switch( ec.workOn() ){
+		switch( equalsClassA.workOn() ){
 		
 			case FIELDS:{
 				throw new NotImplementedException();
@@ -202,30 +202,30 @@ public class Equals {
 				Method [] methods = clz.getDeclaredMethods();
 				Arrays.sort( methods, MethodSorter );
 				
-				for( Method m : methods ){
+				for( Method method : methods ){
 					
-					boolean isPrivate = Modifier.isPrivate( m.getModifiers() );
+					boolean isPrivate = Modifier.isPrivate( method.getModifiers() );
 					
-					EqualsField ef = m.getAnnotation( EqualsField.class );
+					EqualsField equalsFieldA = method.getAnnotation( EqualsField.class );
 					
-					eo = m.getAnnotation( EqualsOption.class );
+					equalsOptionA = method.getAnnotation( EqualsOption.class );
 					EnumSet<EqualsOption.Option> localOptions = EnumSet.copyOf( globalOptions );
-					if( eo != null ){
-						localOptions.addAll( Arrays.asList( eo.options() ) );
+					if( equalsOptionA != null ){
+						localOptions.addAll( Arrays.asList( equalsOptionA.options() ) );
 					}
 					
 					boolean isInclude;
-					if( ef != null ){
-						isInclude = ef.include();
+					if( equalsFieldA != null ){
+						isInclude = equalsFieldA.include();
 					} else {
-						isInclude = ec.select() == Select.ALL;
-						Transient tAn = m.getAnnotation( Transient.class );
-						Id idAn = m.getAnnotation( Id.class );
-						if( tAn != null ) isInclude = false;
-						if( idAn != null ) isInclude = false;
+						isInclude = equalsClassA.select() == Select.ALL;
+						Transient transientA = method.getAnnotation( Transient.class );
+						Id idA = method.getAnnotation( Id.class );
+						if( transientA != null ) isInclude = false;
+						if( idA != null ) isInclude = false;
 					}
 					
-					String name = m.getName();
+					String name = method.getName();
 					if( 
 							( 
 								( name.length() > 3 && name.startsWith( "get" )
@@ -233,13 +233,13 @@ public class Equals {
 								|| name.length() > 2 && name.startsWith( "is" )
 										&& Character.isUpperCase( name.charAt( 2 ) ) )
 							)
-							&& m.getReturnType() != Void.class
-							&& m.getGenericParameterTypes().length == 0
-							&& ( ec.includePrivate() || !isPrivate )
+							&& method.getReturnType() != Void.class
+							&& method.getGenericParameterTypes().length == 0
+							&& ( equalsClassA.includePrivate() || !isPrivate )
 							&& isInclude
 					){
 						try {
-							wrapper.invoke( m, localOptions );
+							wrapper.invoke( method, localOptions );
 						} catch( Exception e ) {
 							throw new RuntimeException( "Error in " + name, e );
 						}
@@ -409,6 +409,7 @@ public class Equals {
 			value = reasonable( value );
 			
 			builder.append( value );
+			
 		}
 	}
 	
@@ -456,8 +457,6 @@ public class Equals {
 		
 		private Object sync( Object o ){
 			
-			//E.rr( "sync: " + o );
-			
 			Object result;
 			
 			// return original if no SynchroProvider
@@ -466,7 +465,6 @@ public class Equals {
 			// use providers copyOf to make a copy
 			else result = synchro.copyOf( o );
 			
-			//E.rr( result );
 			return result;
 		}
 		
@@ -491,8 +489,6 @@ public class Equals {
 			
 			Object tarVal = getter.invoke( target );
 			Object srcVal = getter.invoke( source );
-			
-			//E.rr( "=========> " + srcVal.getClass() );
 			
 			tarVal = applyOptions( tarVal, options );
 			srcVal = applyOptions( srcVal, options );
@@ -605,15 +601,14 @@ public class Equals {
 					
 					// Copy all and new keys
 					for( Object key : srcMap.keySet() ){
-						//E.rr( key );
+						
 						Object srcValue = srcMap.get( key );
 						Object tarValue = tarMap.get( key );
-						//E.rr( srcValue + "->" + tarValue );
 							
 						if( tarValue == null || !tarValue.equals( srcValue ) ){
 							
 							Object x = sync(srcValue);
-							//E.rr( x );
+							
 							tarMap.put( key, x );
 						}
 					}

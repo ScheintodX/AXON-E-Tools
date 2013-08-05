@@ -403,7 +403,23 @@ public class SuperProperties {
 
 	@Override
 	public String toString(){
-		return "SuperProperties. Prefix: " + prefix + " baseDir: " + (rootDir != null ? rootDir.getPath() : "null");
+		
+		StringBuilder result = new StringBuilder();
+		
+		result	.append( "SuperProperties.\n    Prefix: " ).append( prefix )
+				.append( "\n    baseDir: " ).append( rootDir != null ? rootDir.getPath() : "null" )
+				.append( "\n    Data: " );
+		;
+		
+		for( Object key : backend.keySet() ){
+			String keyS = (String) key;
+			if( keyS.startsWith( prefix ) ){
+				result	.append( "\n        " ).append( keyS )
+						.append( ": " ).append( backend.get( keyS ) );
+			}
+		}
+		
+		return result.toString();
 	}
 
 	/* *************** private *************** */

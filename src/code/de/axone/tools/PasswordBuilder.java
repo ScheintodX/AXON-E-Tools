@@ -93,7 +93,6 @@ public class PasswordBuilder {
 	
 	public static void main( String [] args ) throws Exception {
 		
-		/*
 		int len = DEFAULT_LENGTH;
 		if( args.length == 1 ){
 			len = Integer.parseInt( args[0] );
@@ -108,10 +107,11 @@ public class PasswordBuilder {
 		
 		System.out.printf( "%s: %s -> %s\n", ok?"OK":"ERR", plain, hashed );
 		
-		*/
-		//E.rr( makeSimplaPasswd() );
+		/*
 		for( int i=0; i<10; i++ )
 				E.rr( makeSimplaPasswd() );
+		*/
+		
 		
 	}
 	

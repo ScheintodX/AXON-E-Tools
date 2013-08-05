@@ -33,6 +33,20 @@ public class StringAccessor {
 		return SA.getRequired( a.doGet( name ), name, defaultValue );
 	}
 	
+	// == Integer =====
+	public Integer getInteger( String name ){
+		return SA.getInteger( a.doGet( name ), name );
+	}
+	public int getInteger( String name, int defaultValue ){
+		return SA.getInteger( a.doGet( name ), name, defaultValue );
+	}
+	public int getIntegerRequired( String name ){
+		return SA.getIntegerRequired( a.doGet( name ), name );
+	}
+	public int getIntegerRequired( String name, Integer defaultValue ){
+		return SA.getIntegerRequired( a.doGet( name ), name, defaultValue );
+	}
+	
 	// == Long =====
 	public Long getLong( String name ){
 		return SA.getLong( a.doGet( name ), name );

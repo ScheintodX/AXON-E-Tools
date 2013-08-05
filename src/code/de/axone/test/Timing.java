@@ -4,6 +4,8 @@ import java.util.Formatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+
 import de.axone.tools.E;
 import de.axone.tools.Text;
 
@@ -33,11 +35,24 @@ public class Timing {
 	// Preserve first call order
 	private final Map<Object, Timer> timers = new LinkedHashMap<Object,Timer>();
 	
+	private final Logger logger;
+	
+	public Timing(){
+		this.logger = null;
+	}
+	public Timing( Logger logger ){
+		this.logger = logger;
+	}
+	
 	public synchronized void start(){
 		start( TOTAL );
 	}
 	
 	public synchronized void start( Object name ){
+		
+		if( logger != null && logger.isDebugEnabled() ){
+			logger.debug( "Start: " + name );
+		}
 		Timer t = timers.get( name );
 		if( t == null ){
 			t = new Timer();
@@ -55,7 +70,7 @@ public class Timing {
 	
 	public synchronized void stop( Object name ){
 		
-		// remember time here because this is more excact
+		// remember time here because this is more exact
 		long time = System.currentTimeMillis();
 		
 		Timer t = timers.get( name );
@@ -65,8 +80,14 @@ public class Timing {
 		if( t.start == 0 )
 			throw new IllegalStateException( "Timer " + name + " was not running" );
 		
-		t.sum += time - t.start;
+		long diff = time-t.start;
+		t.sum += diff;
 		t.start = 0;
+		
+		if( logger != null && logger.isTraceEnabled() ){
+			logger.trace( "Stop {} in {} ms", ""+name, diff );
+		}
+		
 	}
 	
 	public synchronized long time( Object name ){

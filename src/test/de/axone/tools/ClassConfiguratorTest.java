@@ -45,4 +45,20 @@ public class ClassConfiguratorTest {
 		assertEmpty( t.z12345EneMene );
 	}
 
+	public void testConstructor() throws Exception {
+		
+		String clazz = TESTCLASS + "(yyy='test')";
+		
+		Class<?> [] cClasses = new Class<?>[]{ Integer.class, String.class };
+		Object [] cParas = new Object[]{ 5, "abc" };
+		
+		Object instance = ClassConfigurator.create( clazz, cClasses, cParas );
+		
+		assertIsInstance( instance, ClassConfiguratorTest_TestClass.class );
+		
+		ClassConfiguratorTest_TestClass t = (ClassConfiguratorTest_TestClass)instance;
+		assertEquals( t.i, Integer.valueOf( 5 ) );
+		assertEquals( t.x, "abc" );
+		assertEquals( t.yyy, "test" );
+	}
 }

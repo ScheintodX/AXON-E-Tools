@@ -119,7 +119,7 @@ public abstract class SA {
 	public static BigDecimal getBigDecimal( String value, String name ){
 		String v = get( value, name );
 		if( v == null ) return null;
-		return new BigDecimal( value );
+		return new BigDecimal( v );
 	}
 	public static BigDecimal getBigDecimal( String value, String name, BigDecimal defaultValue ){
 		BigDecimal v = getBigDecimal( value, name );

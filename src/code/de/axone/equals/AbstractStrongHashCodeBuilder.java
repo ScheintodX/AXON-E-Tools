@@ -146,10 +146,12 @@ public abstract class AbstractStrongHashCodeBuilder<T> implements StrongHashCode
 		else if( o instanceof Set ) append( (Set<?>)o );
 		else if( o instanceof Collection ) append( (Collection<?>)o );
 		else if( o instanceof Map ) append( (Map<?,?>)o );
+		// Special enum treatment to get it stable over vm-restarts.
+		else if( o instanceof Enum ) append( ((Enum<?>)o).name() );
 		// Special treatment for currency which has no hashcode method
 		// This leads to a somewhat changed behaviour since this is stable
 		// over program runs and calling hashcode isn't.
-		/* Moved to equals because is althoug needed in normal hashcode
+		/* Moved to equals because is needed in normal hashcode, too
 		else if( o instanceof Currency ){
 			//E.rr(  ((Currency)o).getCurrencyCode()  );
 			append( ((Currency)o).getCurrencyCode() );
