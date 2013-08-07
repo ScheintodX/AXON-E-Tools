@@ -727,18 +727,18 @@ public final class SuperURL {
 			return this;
 		}
 		
-		public Query addAll( Map<String,String> values ){
+		public Query addAll( Map<String,Object> values ){
 			
 			if( values != null ) for( String key : values.keySet() ){
-				addValue( key, values.get( key ) );
+				addValue( key, values.get( key ).toString() );
 			}
 			return this;
 		}
 		
-		public Query setAll( Map<String,String> values ){
+		public Query setAll( Map<String,Object> values ){
 			
 			if( values != null ) for( String key : values.keySet() ){
-				setValue( key, values.get( key ) );
+				setValue( key, values.get( key ).toString() );
 			}
 			return this;
 		}

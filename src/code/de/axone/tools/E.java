@@ -14,7 +14,7 @@ public abstract class E {
 		String clazz = F.simplifyClassName( elm[depth].getClassName() );
 		int line = elm[depth].getLineNumber();
 		
-		out.printf( ">>> %s(%d): ", clazz, line );
+		out.printf( ">>> (%s.java:%d) ", clazz, line );
 	}
 	
 	static void echo( PrintStream out, int depth, boolean nl, Object ... os ){

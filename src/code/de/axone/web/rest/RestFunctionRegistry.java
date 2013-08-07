@@ -1,5 +1,6 @@
 package de.axone.web.rest;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -86,22 +87,29 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 						
 					} catch( Throwable t ){
 						
+						t.printStackTrace();
 						throw new RestFunctionException( t );
 					}
 					
 				} catch( RestFunctionException e ){
 					
-					if( !resp.isCommitted() ){
-						resp.setStatus( 500 );
-					}
-					PrintWriter out = resp.getWriter();
+					handleException( f, e, req, resp );
 					
-					e.write( req.mapper(), out );
-					
-					log.error( "Exception while running '" + f.name() + "'", e );
 				}
 			}
 		}
+	}
+	
+	protected void handleException( RestFunction<?,?> f, RestFunctionException e, REQUEST req, HttpServletResponse resp ) throws IOException{
+		
+		if( !resp.isCommitted() ){
+			resp.setStatus( 500 );
+		}
+		PrintWriter out = resp.getWriter();
+		
+		e.write( req.mapper(), out );
+		
+		log.error( "Exception while running '" + f.name() + "'", e );
 	}
 	
 	private void renderHelp( RestRequest req, HttpServletResponse resp )

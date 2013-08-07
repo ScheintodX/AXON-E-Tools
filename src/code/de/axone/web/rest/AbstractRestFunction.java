@@ -1,8 +1,6 @@
 package de.axone.web.rest;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Map;
 
@@ -74,12 +72,10 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 		T jsonData;
 		
 		try {
-			BufferedReader in = new BufferedReader( new InputStreamReader( req.getInputStream() ) );
-			String data = in.readLine();
-			
-			jsonData = req.mapper().readValue( data, type );
+			jsonData = req.mapper().readValue( req.getInputStream(), type );
 			
 		} catch( IOException e ) {
+			e.printStackTrace();
 			throw new RestFunctionException( "Cannot read JSON String", e );
 		}
 		

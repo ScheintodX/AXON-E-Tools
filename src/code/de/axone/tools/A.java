@@ -1,6 +1,7 @@
 package de.axone.tools;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -149,6 +150,61 @@ public class A {
 		X[] result = (X[])Array.newInstance( values.iterator().next().getClass(), values.size() );
 		
 		return values.toArray( result );
+	}
+	
+	/*
+	public static String[][] ArrayArray( Collection<? extends Collection<String>> values ){
+		
+		String[][] result = new String[ values.size() ][];
+		int i=0;
+		for( Collection<String> row : values ){
+			result[i] = row.toArray( new String[ row.size() ] );
+			i++;
+		}
+		return result;
+	}
+	*/
+	
+	/*
+	public static void main( String [] args ){
+		
+		List<List<String>> x = Arrays.asList(
+				Arrays.asList( "a", "b", "c" ),
+				Arrays.asList( "d", "e" ),
+				Arrays.asList( "f" )
+		);
+		
+		String [][] y = ArrayArray( String.class, x );
+		
+		E.rr( y );
+	}
+	*/
+	
+	public static <X> X[][] Array2D( Class<X> xClass, Collection<? extends Collection<X>> values ){
+		
+		@SuppressWarnings( "unchecked" )
+		X[][] result = (X[][])Array.newInstance( xClass , values.size(), 0 );
+		
+		int i=0;
+		for( Collection<X> row : values ){
+			
+			@SuppressWarnings( "unchecked" )
+			X[] rowAsArray = (X[])Array.newInstance( xClass, row.size() );
+			result[i] = row.toArray( rowAsArray );
+			i++;
+		}
+		return result;
+	}
+	
+	public static <X> List<List<X>> List2D( X[][] values ){
+		
+		List<List<X>> result = new ArrayList<>( values.length );
+		
+			for( X [] row : values ){
+				result.add( Arrays.asList( row ) );
+			}
+		
+		return result;
 	}
 	
 	@SafeVarargs

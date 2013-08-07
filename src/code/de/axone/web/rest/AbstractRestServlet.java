@@ -7,7 +7,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.axone.web.SuperURL;
+
 public abstract class AbstractRestServlet<DATA, REQUEST extends RestRequest> extends HttpServlet {
+	
+	private static final Logger log = LoggerFactory.getLogger( AbstractRestServlet.class );
 
 	public enum Method { GET, POST, PUT, DELETE; }
 	
@@ -21,6 +28,11 @@ public abstract class AbstractRestServlet<DATA, REQUEST extends RestRequest> ext
 	protected abstract REQUEST makeRequest( HttpServletRequest req, HttpServletResponse resp );
 	
 	protected void _process( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException {
+		
+		if( log.isTraceEnabled() ){
+			SuperURL u = new SuperURL( req );
+			log.trace( "Request for: {}", u.toString() );
+		}
 		
 		resp.setCharacterEncoding( "utf-8" );
 		resp.setContentType( "application/json" );
