@@ -141,44 +141,17 @@ public class A {
 	@SafeVarargs
 	public static <X> X[] Array( X ... values ){ return values; }
 	
-	public static <X> X[] Array( Collection<X> values ){
+	public static <X> X[] Array( Collection<X> values, Class<X> clazz ){
 		
 		if( values == null || values.size() == 0 )
 			throw new IllegalArgumentException( "values is null or empty" );
 		
 		@SuppressWarnings( "unchecked" )
-		X[] result = (X[])Array.newInstance( values.iterator().next().getClass(), values.size() );
+		//X[] result = (X[])Array.newInstance( values.iterator().next().getClass(), values.size() );
+		X[] result = (X[])Array.newInstance( clazz, values.size() );
 		
 		return values.toArray( result );
 	}
-	
-	/*
-	public static String[][] ArrayArray( Collection<? extends Collection<String>> values ){
-		
-		String[][] result = new String[ values.size() ][];
-		int i=0;
-		for( Collection<String> row : values ){
-			result[i] = row.toArray( new String[ row.size() ] );
-			i++;
-		}
-		return result;
-	}
-	*/
-	
-	/*
-	public static void main( String [] args ){
-		
-		List<List<String>> x = Arrays.asList(
-				Arrays.asList( "a", "b", "c" ),
-				Arrays.asList( "d", "e" ),
-				Arrays.asList( "f" )
-		);
-		
-		String [][] y = ArrayArray( String.class, x );
-		
-		E.rr( y );
-	}
-	*/
 	
 	public static <X> X[][] Array2D( Class<X> xClass, Collection<? extends Collection<X>> values ){
 		

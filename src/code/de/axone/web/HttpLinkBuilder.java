@@ -90,7 +90,9 @@ public class HttpLinkBuilder {
 	 * @param removeParameters list of parameters to remove from query or null if none are removed
 	 * @return
 	 */
-	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath, List<String> keepParameters, Map<String,String> replaceParameters, List<String> removeParameters, boolean encode ) {
+	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath,
+			List<String> keepParameters, Map<String,String> replaceParameters, List<String> removeParameters,
+			boolean encode ) {
 		
 		SuperURL url = new SuperURL( request, noHost );
 		
@@ -112,7 +114,6 @@ public class HttpLinkBuilder {
 		}
 		
 		if( removeParameters != null ){
-			
 			Query oldQuery = url.getQuery();
 			if( oldQuery != null && oldQuery.getPath() != null ){
 				Query newQuery = new Query();

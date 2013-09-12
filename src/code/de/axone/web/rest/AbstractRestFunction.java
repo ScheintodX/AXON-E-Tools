@@ -50,7 +50,6 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 				out.write( template );
 			}
 		}
-
 		out.write( description().toHtml() );
 		
 	}
@@ -67,12 +66,37 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 	}
 
 	protected <T> T readData( REQUEST req, Class<T> type )
-			throws RestFunctionException{
+			throws RestFunctionException {
 		
 		T jsonData;
 		
+		String data = req.getParameter( "data" );
+		
+		/*
+		// Only for debugging
+		if( data == null ){
+			
+			try ( BufferedReader in = new BufferedReader( new InputStreamReader( req.getInputStream() ) ); ){
+				
+				data = "";
+				String line;
+				while( ( line = in.readLine() ) != null ){
+					data += line;
+				}
+			} catch( IOException e ){
+				throw new RestFunctionException( e );
+			}
+		}
+		E.rr( data );
+		*/
+		
 		try {
-			jsonData = req.mapper().readValue( req.getInputStream(), type );
+			if( data != null ){
+				jsonData = req.mapper().readValue( data, type );
+			} else {
+				jsonData = req.mapper().readValue( req.getInputStream(), type );
+			}
+			
 			
 		} catch( IOException e ) {
 			e.printStackTrace();

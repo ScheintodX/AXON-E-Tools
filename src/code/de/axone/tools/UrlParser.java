@@ -161,6 +161,9 @@ public class UrlParser {
 	}
 
 	public static String contentTypeFor( String uri ) {
+		return contentTypeFor( uri, false );
+	}
+	public static String contentTypeFor( String uri, boolean modern ) {
 
 		String extension = extension( uri );
 
@@ -185,9 +188,14 @@ public class UrlParser {
 				return "text/javascript";
 				/* html */
 			} else if( extension.equalsIgnoreCase( "htm" )
-					|| extension.equalsIgnoreCase( "html" )
-					|| extension.equalsIgnoreCase( "xhtml" ) ) {
+					|| extension.equalsIgnoreCase( "html" ) ){
 				return "text/html";
+			} else if( extension.equalsIgnoreCase( "xhtml" ) ) {
+				if( modern ){
+					return "application/xhtml+xml";
+				} else {
+					return "text/html";
+				}
 			} else if( extension.equalsIgnoreCase( "txt" ) ) {
 				return "text/plain";
 			}

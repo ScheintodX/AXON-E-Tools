@@ -52,9 +52,12 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 				
 				RestFunctionRoute route = routes.get( i );
 				
+				url.getPath().setEndsWithSlash( false );
+				
+				String path = url.getPath().toString();
+				
 				parameters = route.match(
-						req.getRestMethod(),
-						url.getPath().toString() );
+						req.getRestMethod(), path );
 				
 				if( parameters != null ){
 					
@@ -65,9 +68,9 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 			}
 
 			if( f == null ) {
+				
 				log.warn( "No function: " + req.getRequestURI() );
 				renderHelp( req, resp );
-				
 			} else {
 				
 				log.info( "Client requested {}", f.name() );
@@ -100,14 +103,17 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 		}
 	}
 	
-	protected void handleException( RestFunction<?,?> f, RestFunctionException e, REQUEST req, HttpServletResponse resp ) throws IOException{
+	protected void handleException( RestFunction<?,?> f,
+			RestFunctionException e, REQUEST req, HttpServletResponse resp ) throws IOException{
 		
 		if( !resp.isCommitted() ){
 			resp.setStatus( 500 );
 		}
 		PrintWriter out = resp.getWriter();
 		
-		e.write( req.mapper(), out );
+		JsonResponse response = JsonResponseImpl.ERROR( e );
+		
+		req.mapper().writeValue( out, response );
 		
 		log.error( "Exception while running '" + f.name() + "'", e );
 	}
@@ -120,14 +126,18 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 
 		PrintWriter out = resp.getWriter();
 					
-		out.println( "<html><head><title>Functions</title></head><body>" );
+		out.println( "<!DOCTYPE html>" );
+		out.println( "<html><head><title>Functions</title>" );
+		out.println( "<script src=\"//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js\"></script>" );
+		out.println( "<script src=\"/static/admin/js/ajax_help.js?yui=false\"></script>" );
+		out.println( "</head><body>\n" );
 		
 		for( RestFunction<DATA, REQUEST> function : functions ){
 
 			function.renderHelp( out, null, false );
 		}
 		
-		out.println( "</body></html>" );
+		out.println( "\n</body></html>" );
 	}
 
 	public void register( RestFunction<DATA, REQUEST> function ) {

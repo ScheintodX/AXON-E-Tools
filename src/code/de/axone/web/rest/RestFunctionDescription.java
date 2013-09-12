@@ -1,6 +1,18 @@
 package de.axone.web.rest;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.axone.tools.Mapper;
+import de.axone.tools.PasswordBuilder;
+import de.axone.web.Tag;
 
 
 public class RestFunctionDescription {
@@ -74,7 +86,7 @@ public class RestFunctionDescription {
 		private String description;
 		private LinkedHashMap<String, Parameter> parameters = new LinkedHashMap<String, Parameter>();
 		private Parameter returnValue;
-		private Example example;
+		private List<Example> examples = new LinkedList<Example>();
 		private String html;
 
 		public Method( String name, String description ) {
@@ -90,10 +102,8 @@ public class RestFunctionDescription {
 			parameters.put( name, new Parameter( name, description ) );
 			return this;
 		}
-		public Method addParameter( String name, String description,
-				String defaultValue ) {
-			parameters.put( name, new Parameter( name, description,
-					defaultValue ) );
+		public Method addParameter( String name, String description, String defaultValue ) {
+			parameters.put( name, new Parameter( name, description, defaultValue ) );
 			return this;
 		}
 
@@ -101,17 +111,13 @@ public class RestFunctionDescription {
 			returnValue = new Parameter( name, description );
 			return this;
 		}
-		public Method setExample( String method, String path ){
-			this.example = new Example( method, path, null, null );
+		public Method addExample( Example example ) {
+			this.examples.add( example );
 			return this;
 		}
-		public Method setExample( String method, String path, String comment ){
-			this.example = new Example( method, path, comment, null );
-			return this;
-		}
-		public Method setExample( String method, String path, Example.Argument argument ){
-			this.example = new Example( method, path, null, argument );
-			return this;
+		public Method addExample( Example example, String explain ) {
+			example.setExplain( explain );
+			return addExample( example );
 		}
 		public Method setHtml( String html ){
 			this.html = html;
@@ -121,17 +127,22 @@ public class RestFunctionDescription {
 
 			StringBuilder result = new StringBuilder();
 
-			result.append( "<div class=\"method\">\n" );
-			result.append( "<h2>" ).append( name ).append( "</h2>\n" );
-			result.append( "<p>" ).append( description ).append( "</p>\n" );
+			result
+				.append( "<div class=\"method\">\n" )
+				.append( "<h2>" ).append( name ).append( "</h2>\n" )
+				.append( "<p>" ).append( description ).append( "</p>\n" )
+			;
 
 			if( parameters.size() > 0 ) {
 
 				result.append( "<ul class=\"parameters\">" );
 
 				for( Parameter parameter : parameters.values() ) {
-					result.append( "<li>" ).append( parameter.toHtml() )
-							.append( "</li>\n" );
+					
+					result
+						.append( "<li>" )
+						.append( parameter.toHtml() )
+						.append( "</li>\n" );
 				}
 
 				result.append( "</ul>\n" );
@@ -139,14 +150,20 @@ public class RestFunctionDescription {
 
 			if( returnValue != null ) {
 
-				result.append( "<p>Returns: " ).append( returnValue.toHtml() )
-						.append( "</p>\n" );
+				result
+					.append( "<p>Returns: " )
+					.append( returnValue.toHtml() )
+					.append( "</p>\n" );
 			}
 
-			if( example != null ){
+			if( examples.size() > 0 ){
+				
+				for( Example example : examples ){
 
-				result.append( "<p class=\"example\">Example: <tt>" ).append( example.toHtml() )
-						.append( "</tt></p>\n" );
+					result.append( "<p class=\"example\">Example:" );
+					example.toHtml( result );
+					result.append( "</p>\n" );
+				}
 			}
 			
 			if( html != null ){
@@ -167,10 +184,12 @@ public class RestFunctionDescription {
 		private String defaultValue;
 
 		public Parameter( String name, String description ) {
+			
 			this( name, description, null );
 		}
 
 		public Parameter( String name, String description, String defaultValue ) {
+			
 			this.name = name;
 			this.description = description;
 			this.defaultValue = defaultValue;
@@ -180,92 +199,146 @@ public class RestFunctionDescription {
 
 			StringBuilder result = new StringBuilder();
 
-			result.append( "<span class=\"parameter\">" ).append(
-					"<em class=\"name\">" ).append( name ).append( "</em>" )
-					.append( " <span class=\"description\">" ).append(
-							description ).append( "</span>" );
+			result
+				.append( "<span class=\"parameter\">" )
+				.append( "    <em class=\"name\">" ).append( name ).append( "</em>" )
+				.append( "    <span class=\"description\">" ).append( description ).append( "</span>" )
+			;
 
-			if( defaultValue != null ) result.append(
-					" <tt class=\"defaultValue\">" ).append( name ).append( "</tt>" );
+			if( defaultValue != null ) {
+				result.append( "    <tt class=\"defaultValue\">" ).append( name ).append( "</tt>" );
+			}
 
 			result.append( "</span>" );
 
 			return result;
 		}
 	}
-
-	public static class Example {
+	
+	public interface Example {
 		
-		private final String method, path, comment;
-		private final Argument argument;
-
-		public Example( String method, String path, String comment, Argument argument ){
-
+		public abstract StringBuilder toHtml( StringBuilder result );
+		public void setExplain( String explain );
+		public String explain();
+	}
+	
+	public abstract static class AbstractExample implements Example {
+		
+		protected final String method;
+		protected final String path;
+		protected String explain;
+	
+		public AbstractExample( String method, String path ){
 			this.method = method;
 			this.path = path;
-			this.comment = comment;
-			this.argument = argument;
 		}
 		
-		public StringBuilder toHtml(){
-
-			StringBuilder result = new StringBuilder();
-
-			result
-				.append( "<span class=\"example\">" )
-				.append( method )
-				.append( ": <tt>" )
-				.append( path )
-			;
-			if( argument != null ) result
-				.append( ": " )
-				.append( argument.value )
-			;
-			result
-				.append( "</tt>" )
-			;
-			
-			if( comment != null ) result
-				.append( " // " )
-				.append( comment )
-			;
-				
-			result
-    			.append( "</span>\n" )
-    		;
-
-			if( argument != null ){
-    			result
-    				.append( "<form method=\"" ).append( method )
-    				.append( "\" action=\"" ).append( path ).append( "\">" )
-    				.append( argument.toHtml().toString() )
-    				.append( "<input type=\"submit\" />" )
-    				.append( "</form>\n" )
-    			;
-			}
-
+		@Override
+		public void setExplain( String explain ){
+			this.explain = explain;
+		}
+		@Override
+		public String explain(){
+			return explain;
+		}
+		@Override
+		public StringBuilder toHtml( StringBuilder result ){
 			return result;
 		}
+	}
+	
+	public static class GetExample extends AbstractExample {
 		
-		public static class Argument {
+		public GetExample( String path ){
+			super( "GET", path );
+		}
+
+		@Override
+		public StringBuilder toHtml( StringBuilder result ) {
 			
-			private final String name, value;
+			Tag.simpleBB( result, "a", path, "href", path );
 			
-			public Argument( String name, String value ){
-				this.name = name;
-				this.value = value;
-			}
+			return super.toHtml( result );
+		}
+	}
+	
+	
+	public static class FormExample extends AbstractExample {
+		
+		protected Map<String,String> arguments;
+		private final String id;
+		
+		public FormExample( String method, String path, Map<String,String> arguments ){
+			super( method, path );
+			this.arguments = arguments;
+			this.id = PasswordBuilder.makeSimplaPasswd();
+		}
+		public FormExample( String method, String path, String ... arguments ){
+			this( method, path, Mapper.treeMap( arguments ) );
+		}
+
+		@Override
+		public StringBuilder toHtml( StringBuilder result ) {
 			
-			public StringBuilder toHtml(){
+			StringBuilder content = new StringBuilder();
+			
+			for( String name : arguments.keySet() ){
 				
-				StringBuilder result = new StringBuilder();
-    			result
-    				.append( "<input type=\"text\" name=\"" )
-	    			.append( name ).append( "\" value=\"" ).append( value ).append( "\" />");
-    			
-    			return result;
+				String idStr = id + "_" + name;
+				
+				Tag.simpleBB( content, "label", name,
+						"for", idStr );
+				
+				Tag.simpleBB( content, "input", null,
+						"id", idStr, "name", name, "value", arguments.get( name ) );
 			}
 			
+			Tag.simpleBB( content, "input", null,
+					"type", "hidden", "name", "action", "value", method );
+		
+			Tag.simpleBB( content, "input", null, "type", "submit" );
+			
+			Tag.simpleBB( result, "form", content.toString(), false, 
+					"name", id, "action", path, "method", "POST" );
+			
+			return super.toHtml( result );
+		}
+	}
+	
+	public static class JsonExample extends AbstractExample {
+		
+		protected Object json;
+		
+		public JsonExample( String method, String path, Object json ){
+			super( method, path );
+			this.json = json;
+		}
+
+		@Override
+		public StringBuilder toHtml( StringBuilder result ) {
+			
+			ObjectMapper mapper = new ObjectMapper();
+			
+			mapper.setSerializationInclusion( JsonInclude.Include.NON_NULL );
+			
+			String data;
+			try( StringWriter s = new StringWriter() ){
+				mapper.writeValue( s, json );
+				data = s.toString();
+			} catch( IOException e ) {
+				throw new IllegalArgumentException( "Cannot encode Json" );
+			};
+			
+			StringBuilder content = new StringBuilder();
+			
+			Tag.simpleBB( content, "input", null, "name", "data", "value", data );
+			
+			Tag.simpleBB( content, "input", null, "type", "submit" );
+			
+			Tag.simpleBB( result, "form", content.toString(), false, 
+					"class", "jsonForm", "action", path, "method", method );
+			
+			return super.toHtml( result );
 		}
 	}
 	

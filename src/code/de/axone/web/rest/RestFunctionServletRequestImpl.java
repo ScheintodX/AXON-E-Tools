@@ -11,6 +11,11 @@ public class RestFunctionServletRequestImpl extends HttpServletRequestWrapper im
 
 	public static enum Method {
 		GET, POST, PUT, DELETE;
+		
+		public static Method forString( String action ){
+			if( action == null ) return null;
+			return Method.valueOf( action.toUpperCase() );
+		}
 	}
 	
 	public RestFunctionServletRequestImpl( HttpServletRequest request ) {
@@ -38,10 +43,13 @@ public class RestFunctionServletRequestImpl extends HttpServletRequestWrapper im
 			mapper = new ObjectMapper();
 			mapper.configure( SerializationFeature.INDENT_OUTPUT, true );
 			mapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
+			// JS uses unix timestamps!!!
+			//mapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false );
 		}
 		
 		return mapper;
 	}
+	
 	
 	
 	

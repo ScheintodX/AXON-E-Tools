@@ -12,8 +12,10 @@ public abstract class Tag {
 
 	public static StringBuilder simpleBB( StringBuilder builder,
 			String name, String content, String ...args){
+		
 		return simpleBB( builder, name, content, true, args );
 	}
+	
 	public static StringBuilder simpleBB( StringBuilder builder,
 			String name, String content, boolean encodeContent , String ...args){
 		
@@ -58,8 +60,10 @@ public abstract class Tag {
 	
 	public static StringBuilder simpleBB( StringBuilder builder,
 			String name, String content, Map<String,String> args){
+		
 		return simpleBB( builder, name, content, true, args );
 	}
+	
 	public static StringBuilder simpleBB( StringBuilder builder,
 			String name, String content, boolean encodeContent , Map<String,String> args ){
 
@@ -105,6 +109,7 @@ public abstract class Tag {
 	public static String simple( String name, String content, String ... args ){
 		return simpleBB( new StringBuilder(), name, content, args ).toString();
 	}
+	
 	public static String simple( String name, String content, boolean encodeContent, String ... args ){
 		return simpleBB( new StringBuilder(), name, content, encodeContent, args ).toString();
 	}
@@ -112,7 +117,8 @@ public abstract class Tag {
 	public static String simple( String name, String content, Map<String,String> args ){
 		return simpleBB( new StringBuilder(), name, content, args ).toString();
 	}
-	public static String simpleBB( 
+	
+	public static String simple( 
 			String name, String content, boolean encodeContent , Map<String,String> args ){
 		return simpleBB( new StringBuilder(), name, content, encodeContent, args ).toString();
 	}
@@ -127,6 +133,7 @@ public abstract class Tag {
 	public static String link( String target, String text, String clazz, String ... args ){
 		return linkBB( new StringBuilder(), target, text, clazz, args ).toString();
 	}
+	
 	public static StringBuilder linkBB( StringBuilder result, String target, String text, String clazz, String ... args ){
 		
 		if( args != null && args.length % 2 != 0 )

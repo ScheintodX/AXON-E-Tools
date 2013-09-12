@@ -1,33 +1,39 @@
 package de.axone.web.rest;
 
-import java.io.IOException;
-import java.io.Writer;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 public class RestFunctionException extends Exception {
+	
+	private static final int DEFAULT_CODE = 500;
+	
+	private int code;
 
-	public RestFunctionException(String message) { super( message ); }
+	public RestFunctionException( String message ) {
+		this( DEFAULT_CODE, message );
+	}
+	public RestFunctionException( int code, String message ) {
+		super( message );
+		this.code = code;
+	}
 
-	public RestFunctionException(Throwable cause) { super( cause ); }
+	public RestFunctionException( Throwable cause ) {
+		this( DEFAULT_CODE, cause );
+	}
+	public RestFunctionException( int code, Throwable cause ) {
+		super( cause );
+		this.code = code;
+	}
 
-	public RestFunctionException(String message, Throwable cause) { super( message, cause ); }
-
-	public void write( ObjectMapper mapper, Writer out ) throws IOException{
-		
-		mapper.writeValue( out, new Json() );
+	public RestFunctionException( String message, Throwable cause ) {
+		this( DEFAULT_CODE, message, cause );
+	}
+	public RestFunctionException( int code, String message, Throwable cause ) {
+		super( message, cause );
+		this.code = code;
 	}
 	
-	@SuppressWarnings( "unused" )
-	private class Json {
-		
-		public boolean getError(){ return true; }
-		public String getErrorMessage(){ return getMessage(); }
-		
-		public StackTraceElement [] getStackTrace(){
-			
-			return RestFunctionException.this.getStackTrace();
-		}
+	public int code(){
+		return code;
 	}
+
 }
