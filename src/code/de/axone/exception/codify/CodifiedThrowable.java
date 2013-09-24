@@ -5,6 +5,11 @@ import java.io.PrintWriter;
 
 public class CodifiedThrowable extends Throwable implements Codified {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6995740363080772362L;
+
 	public CodifiedThrowable( Throwable cause ){
 		super( cause );
 	}

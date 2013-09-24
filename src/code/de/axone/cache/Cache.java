@@ -79,6 +79,9 @@ public interface Cache<K,V> {
 	/**
 	 * Implements more of Map interface for direct access
 	 * 
+	 * This is additional because we cannot expect distributed caches
+	 * to have a keyset fast (if at all) available.
+	 * 
 	 * @author flo
 	 *
 	 * @param <K>

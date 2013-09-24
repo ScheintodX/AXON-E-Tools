@@ -5,6 +5,10 @@ import java.util.Map;
 
 public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3846790577344139807L;
 	private int capacity;
 
 	public LRUCache(int capacity) {

@@ -38,7 +38,6 @@ public class CacheEHCache<K,V> implements Cache<K,V>, Cache.Watched {
 	public V put( K key, V value ) {
 		
 		backend.put( new Element( key, value ) );
-		//backend.flush();
 		return value;
 	}
 

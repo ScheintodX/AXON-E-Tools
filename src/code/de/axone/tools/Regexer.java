@@ -69,6 +69,11 @@ public class Regexer {
 	}
 	
 	private static class RegexArgumentException extends IllegalArgumentException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 272448262604797033L;
+
 		public RegexArgumentException( String regex, String message ){
 			super( message + " in: '" + regex + "'" );
 		}

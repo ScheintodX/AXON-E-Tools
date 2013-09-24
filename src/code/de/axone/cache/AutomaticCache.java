@@ -20,6 +20,8 @@ public interface AutomaticCache<K, V> {
 	public abstract void flush();
 
 	public abstract Stats stats();
+	
+	public abstract void remove( K key );
 
 	public class Stats {
 		

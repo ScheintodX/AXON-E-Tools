@@ -42,4 +42,9 @@ public class AutomaticCacheNoCache<K,V> implements AutomaticCache<K, V> {
 		return 0;
 	}
 
+	@Override
+	public void remove( K key ) {
+		// NOP
+	}
+
 }

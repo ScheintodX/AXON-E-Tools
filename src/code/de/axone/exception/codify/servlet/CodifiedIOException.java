@@ -9,6 +9,11 @@ import de.axone.exception.codify.Codifier;
 
 class CodifiedIOException extends IOException implements Codified {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7706891727387565336L;
+
 	public CodifiedIOException( IOException cause ){
 		super( cause );
 	}

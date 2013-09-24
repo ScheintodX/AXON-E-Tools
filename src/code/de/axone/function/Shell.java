@@ -127,6 +127,11 @@ public class Shell {
 	
 	public static class CommandMap extends HashMap<String,Command> {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -2055035604320220554L;
+
 		public void put( Command command ){
 			put( command.name(), command );
 		}

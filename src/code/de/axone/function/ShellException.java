@@ -2,6 +2,11 @@ package de.axone.function;
 
 public class ShellException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1341624231630893897L;
+
 	public ShellException() {
 		super();
 	}

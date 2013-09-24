@@ -200,6 +200,21 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 	}
 	
 	@Override
+	public void remove( K key ){
+		
+		assert key != null;
+		
+		try {
+			writeLock.lock();
+			cache.remove( key );
+		} finally {
+			writeLock.unlock();
+		}
+			
+		
+	}
+	
+	@Override
 	public void flush() {
 
 		// Clear cache
@@ -235,6 +250,10 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 			return 0;
 		}
 
+	}
+	
+	public interface CacheKey<X> extends Serializable {
+		public String asString();
 	}
 
 }

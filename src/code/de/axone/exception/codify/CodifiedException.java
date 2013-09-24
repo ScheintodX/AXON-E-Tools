@@ -5,6 +5,11 @@ import java.io.PrintWriter;
 
 public class CodifiedException extends Exception implements Codified {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1545792037575510699L;
+
 	public CodifiedException( Exception cause ){
 		super( cause );
 	}

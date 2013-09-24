@@ -52,6 +52,11 @@ public class CacheEHCacheTest {
 	}
 	
 	private static final class TestValue extends HashMap<String,String>{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 433153539345496387L;
+
 		TestValue( boolean init ){
 			put( "A", "a" );
 			put( "B", "b" );

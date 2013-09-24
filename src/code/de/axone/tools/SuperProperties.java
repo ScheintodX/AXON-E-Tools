@@ -440,22 +440,41 @@ public class SuperProperties {
 	/* *************** exceptions *************** */
 
 	public static class PropertiesException extends Exception {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -1399195266886800097L;
+
 		private PropertiesException( String cause ){ super( cause ); }
 	}
 
 	public static class PropertyNotFoundException extends PropertiesException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7014470488286327371L;
+
 		private PropertyNotFoundException( String propertyName ){
 			super( "Property not found: " + propertyName );
 		}
 	}
 
 	public static class PropertyEmptyException extends PropertiesException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -8619269284604950197L;
+
 		private PropertyEmptyException( String propertyName ){
 			super( "Property is empty: " + propertyName );
 		}
 	}
 
 	public static class PropertyConversationException extends PropertiesException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 30336261348480483L;
 		private enum Format {BOOL,INT,FLOAT,DOUBLE};
 		private PropertyConversationException( String propertyName, String value, Format format ){
 			super( "Cannot convert value of " + propertyName + " (" + value + ") to " + format );
@@ -463,6 +482,11 @@ public class SuperProperties {
 	}
 
 	public static class PropertyInstantiationException extends PropertiesException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7399765717886263434L;
+
 		private PropertyInstantiationException( String propertyName, String value ){
 			super( "Cannot instantiate " + propertyName + ": '" + value + "'" );
 		}

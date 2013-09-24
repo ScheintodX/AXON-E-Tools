@@ -14,6 +14,10 @@ import de.axone.web.SuperURL;
 
 public abstract class AbstractRestServlet<DATA, REQUEST extends RestRequest> extends HttpServlet {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2270602676285881313L;
 	private static final Logger log = LoggerFactory.getLogger( AbstractRestServlet.class );
 
 	public enum Method { GET, POST, PUT, DELETE; }

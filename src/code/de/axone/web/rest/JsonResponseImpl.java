@@ -128,6 +128,10 @@ public class JsonResponseImpl implements JsonResponse {
 		
 		private class WrappedThrowable extends JsonResponseException {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -4372453687500907898L;
 			@Override
 			public String getMessage(){
 				return message;
@@ -140,6 +144,11 @@ public class JsonResponseImpl implements JsonResponse {
 	}
 	
 	public static class JsonResponseException extends RuntimeException {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 8862829876634590375L;
 
 		public JsonResponseException() { super(); }
 

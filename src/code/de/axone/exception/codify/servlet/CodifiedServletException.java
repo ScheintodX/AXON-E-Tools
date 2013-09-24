@@ -10,6 +10,11 @@ import de.axone.exception.codify.Codifier;
 
 class CodifiedServletException extends ServletException implements Codified {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 453828715431535720L;
+
 	public CodifiedServletException ( ServletException cause ){
 		super( cause );
 	}
