@@ -3,6 +3,8 @@ package de.axone.web.rest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import de.axone.exception.IllegalNamedArgumentException;
+
 public class JsonResponseImpl implements JsonResponse {
 	
 	public static class OK extends JsonResponseImpl {
@@ -23,6 +25,13 @@ public class JsonResponseImpl implements JsonResponse {
 		}
 	}
 	
+	public static class INVALID extends JsonResponseImpl {
+		public INVALID(){
+			super( Status.INVALID );
+		}
+	}
+	
+	
 	public static JsonResponse OK(){
 		return new JsonResponseImpl.OK();
 	}
@@ -41,6 +50,14 @@ public class JsonResponseImpl implements JsonResponse {
 		return result;
 	}
 	
+	public static JsonResponse INVALID( IllegalNamedArgumentException e ){
+		
+		JsonResponseImpl result = new JsonResponseImpl.INVALID();
+		result.messages = new JsonResponse.Message[1];
+		result.messages[ 0 ] = new MessageImpl( e.getArgumentName(), e.getMessage() );
+		return result;
+	}
+	
 	JsonResponseImpl(){
 	}
 	JsonResponseImpl( Status status ){
@@ -53,6 +70,7 @@ public class JsonResponseImpl implements JsonResponse {
 	
 	private Status status;
 	private Error error;
+	private Message [] messages;
 	
 	@Override
 	public Status getStatus() {
@@ -70,6 +88,16 @@ public class JsonResponseImpl implements JsonResponse {
 	public void setError( Error error ){
 		this.error = error;
 	}
+	
+	@Override
+	@JsonDeserialize( as=MessageImpl.class )
+	public Message[] getMessages() {
+		return messages;
+	}
+	public void setMessages( Message [] messages ){
+		this.messages = messages;
+	}
+	
 	
 	public static class ErrorImpl implements JsonResponse.Error {
 		
@@ -128,19 +156,39 @@ public class JsonResponseImpl implements JsonResponse {
 		
 		private class WrappedThrowable extends JsonResponseException {
 			
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = -4372453687500907898L;
 			@Override
+			
 			public String getMessage(){
 				return message;
 			}
+			
 			@Override
 			public StackTraceElement [] getStackTrace(){
 				return stackTrace;
 			}
 		}
+	}
+	
+	public static class MessageImpl implements Message {
+		
+		private final String field, message;
+		
+		public MessageImpl( String field, String message ){
+			this.field = field;
+			this.message = message;
+		}
+
+		@Override
+		public String getField() {
+			return field;
+		}
+
+		@Override
+		public String getMessage() {
+			return message;
+		}
+		
 	}
 	
 	public static class JsonResponseException extends RuntimeException {
@@ -165,5 +213,6 @@ public class JsonResponseImpl implements JsonResponse {
 		}
 		
 	}
-	
+
+
 }

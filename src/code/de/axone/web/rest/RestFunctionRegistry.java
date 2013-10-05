@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.axone.exception.IllegalNamedArgumentException;
 import de.axone.web.SuperURL;
 import de.axone.web.rest.RestFunctionServletRequestImpl.Method;
 
@@ -77,24 +78,13 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 				
 				url.getPath().removeFirst();
 				try {
-					try {
 						
-						log.debug( "Running: {}", f.name() );
-						
-						f.run( data, req.getRestMethod(), parameters, url,
-								resp.getWriter(), req, resp );
-						
-					} catch( RestFunctionException t ){
-						
-						throw t;
-						
-					} catch( Throwable t ){
-						
-						t.printStackTrace();
-						throw new RestFunctionException( t );
-					}
+					log.debug( "Running: {}", f.name() );
 					
-				} catch( RestFunctionException e ){
+					f.run( data, req.getRestMethod(), parameters, url,
+							resp.getWriter(), req, resp );
+					
+				} catch( Throwable e ){
 					
 					handleException( f, e, req, resp );
 					
@@ -104,14 +94,29 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 	}
 	
 	protected void handleException( RestFunction<?,?> f,
-			RestFunctionException e, REQUEST req, HttpServletResponse resp ) throws IOException{
+			Throwable e, REQUEST req, HttpServletResponse resp ) throws IOException{
 		
+		int status;
+		
+		if( e instanceof RestFunctionException ){
+			status = ((RestFunctionException) e).code();
+		} else if( e instanceof IllegalNamedArgumentException ){
+			status = 420; // Policy Not Fulfilled
+		} else {
+			status = 500;
+		}
+			
 		if( !resp.isCommitted() ){
-			resp.setStatus( 500 );
+			resp.setStatus( status );
 		}
 		PrintWriter out = resp.getWriter();
 		
-		JsonResponse response = JsonResponseImpl.ERROR( e );
+		JsonResponse response;
+		if( e instanceof IllegalNamedArgumentException ){
+			response = JsonResponseImpl.INVALID( (IllegalNamedArgumentException) e );
+		} else {
+			response = JsonResponseImpl.ERROR( e );
+		}
 		
 		req.mapper().writeValue( out, response );
 		

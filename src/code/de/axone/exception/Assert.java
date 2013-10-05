@@ -3,6 +3,8 @@ package de.axone.exception;
 import java.util.Collection;
 import java.util.Map;
 
+import de.axone.tools.E;
+
 public abstract class Assert {
 
 	// != NULL --------------------
@@ -20,6 +22,11 @@ public abstract class Assert {
 		if( number == null ) return;
 		if( number.longValue() != 1 ) throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' is not 1" ) );
 		
+	}
+	
+	// Not null or empty
+	public static void notNullOrEmpty( Object o, String name ){
+		if( o == null || o.toString().length() == 0 ) throw Ex.up( new ArgumentNullException( name ) );
 	}
 	
 	// ! Empty String
@@ -101,6 +108,7 @@ public abstract class Assert {
 	}
 	// <= --------------------
 	public static void lte( Number number, String name, long bound ){
+		E.rr( number, name, bound );
 		if( number == null ) return;
 		long n = number.longValue();
 		if( n > bound ) throw Ex.up( new ArgumentRangeException( name, "<=" + bound, n ) );

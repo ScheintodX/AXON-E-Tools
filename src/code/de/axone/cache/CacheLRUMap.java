@@ -97,4 +97,8 @@ public class CacheLRUMap<K,V> implements Cache.Direct<K,V>, Cache.Watched {
 		return backend.values();
 	}
 
+	@Override
+	public String toString(){
+		return backend.toString();
+	}
 }
