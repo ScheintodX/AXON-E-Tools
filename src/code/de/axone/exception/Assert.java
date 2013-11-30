@@ -88,6 +88,41 @@ public abstract class Assert {
 		if( l != length ) throw Ex.up( new ArgumentRangeException( name, " length ==" + length, l ) );
 	}
 	
+	// Size of countable objects (not Strings!) ----
+	// Collections
+	public static void size( Collection<?> object, String name, int size ){
+		isSize( object != null ? object.size() : null, name, size );
+	}
+	// Arrays
+	public static void size( boolean [] object, String name, int size ){
+		isSize( object != null ? object.length : null, name, size );
+	}
+	public static void size( char [] object, String name, int size ){
+		isSize( object != null ? object.length : null, name, size );
+	}
+	public static void size( short [] object, String name, int size ){
+		isSize( object != null ? object.length : null, name, size );
+	}
+	public static void size( int [] object, String name, int size ){
+		isSize( object != null ? object.length : null, name, size );
+	}
+	public static void size( long [] object, String name, int size ){
+		isSize( object != null ? object.length : null, name, size );
+	}
+	public static void size( float [] object, String name, int size ){
+		isSize( object != null ? object.length : null, name, size );
+	}
+	public static void size( double [] object, String name, int size ){
+		isSize( object != null ? object.length : null, name, size );
+	}
+	public static <T>void size( T [] object, String name, int size ){
+		isSize( object != null ? object.length : null, name, size );
+	}
+	private static void isSize( Integer isSize, String name, int size ){
+		if( isSize == null ) return;
+		if( isSize != size ) throw Ex.up( new ArgumentRangeException( name, " size ==" + size, isSize ), 2 );
+	}
+	
 	// Contains ----------------
 	public static void contains( String text, String name, String part ){
 		if( text == null ) return;
