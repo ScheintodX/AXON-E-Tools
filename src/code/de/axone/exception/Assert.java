@@ -1,6 +1,7 @@
 package de.axone.exception;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
 
 import de.axone.tools.E;
@@ -164,12 +165,21 @@ public abstract class Assert {
 	// eq --------------------
 	public static void equal( Object o1, String name, Object o2 ){
 		if( o1 == null ) return;
-		if( ! o1.equals( o2 ) ) throw Ex.up( new ArgumentRangeException( name, "eq " + o2, o1 ) );
+		if( ! o1.equals( o2 ) ) throw Ex.up( new ArgumentRangeException( name, "eq" + o2, o1 ) );
+	}
+	// compareTo equal -------
+	public static <T>void compareEQ( Comparable<T> o1, String name, T o2 ){
+		if( o1 == null ) return;
+		if( o1.compareTo( o2 ) != 0 ) throw Ex.up( new ArgumentRangeException( name, "compare to" + o2, o1 ) );
+	}
+	public static <T>void compareEQ( T o1, String name, T o2, Comparator<T> comparator ){
+		if( o1 == null ) return;
+		if( comparator.compare( o1, o2 ) != 0 ) throw Ex.up( new ArgumentRangeException( name, "compare to" + o2, o1 ) );
 	}
 	// == --------------------
 	public static void ident( Object o1, String name, Object o2 ){
 		if( o1 == null ) return;
-		if( o1 != o2 ) throw Ex.up( new ArgumentRangeException( name, "== " + o2, o1 ) );
+		if( o1 != o2 ) throw Ex.up( new ArgumentRangeException( name, "==" + o2, o1 ) );
 	}
 	// instance --------------------
 	public static void isInstance( Object o, String name, Class<?> clz ){
