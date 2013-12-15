@@ -11,7 +11,7 @@ import de.axone.data.Charsets;
 public class BASE64Decoder {
 	
 	public byte [] decode( String buffer ){
-		return org.apache.commons.codec.binary.Base64.decodeBase64( buffer );
+		return Base64ApacheCommons.Decode( buffer );
 	}
 	
 	public String decodeToString( String buffer ){

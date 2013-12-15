@@ -12,7 +12,7 @@ import de.axone.data.Charsets;
 public class BASE64Encoder {
 	
 	public String encodeURLSafe( byte[] data ){
-		return org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString( data );
+		return Base64ApacheCommons.EncodeURLSafe( data );
 	}
 	
 	public String encodeURLSafe( String data ){
