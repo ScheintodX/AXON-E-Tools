@@ -450,15 +450,17 @@ public final class SuperURL {
 		public boolean isEndsWithSlash(){
 			return endsWithSlash;
 		}
-		public void setEndsWithSlash( boolean isDir ){
+		public Path setEndsWithSlash( boolean isDir ){
 			endsWithSlash = isDir;
+			return this;
 		}
 		
 		public boolean isStartsWithSlash(){
 			return startsWithSlash;
 		}
-		public void setStartsWithSlash( boolean isDir ){
+		public Path setStartsWithSlash( boolean isDir ){
 			startsWithSlash = isDir;
+			return this;
 		}
 		
 		public boolean isAbsolute(){
@@ -490,6 +492,12 @@ public final class SuperURL {
 				addLast( item );
 			}
 			setEndsWithSlash( path.isEndsWithSlash() );
+			return this;
+		}
+		public Path addAll( String ... path ){
+			for( String item : path ){
+				addLast( item );
+			}
 			return this;
 		}
 		public Path removeLast(){
@@ -716,12 +724,12 @@ public final class SuperURL {
 			}
 		}
 		
-		public Query addValue( String key, String value ){
+		public Query addValue( String key, Object value ){
 			
 			if( ! forName.containsKey( key ) ){
 				forName.put( key, new LinkedList<QueryPart>() );
 			}
-			QueryPart part = new QueryPart( key, value );
+			QueryPart part = new QueryPart( key, value.toString() );
 			forName.get( key ).addLast( part );
 			path.add( part );
 			return this;

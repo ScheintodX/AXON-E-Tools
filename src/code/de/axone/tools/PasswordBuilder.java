@@ -263,14 +263,13 @@ public class PasswordBuilder {
 				hashed = digest.digest( hashed );
 			}
 			
-			String readable = (new BASE64Encoder()).encodeURLSafe( hashed );
+			String readable = Base64ApacheCommons.EncodeURLSafe( hashed );
 			
 			return algo + "$" + roundsExp + "$" + salt + "$" + readable.trim();
+			
 		} catch( NoSuchProviderException e ) {
 			throw new Error( "Unknown Provider: " + DEFAULT_PROVIDER );
 		}
-		
-		
 	}
 	
 	public static String hashPassword( String plain, String algo )
