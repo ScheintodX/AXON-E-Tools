@@ -26,6 +26,23 @@ public interface RestFunctionRoute {
 		private final List<String> parameterNames = new LinkedList<>();
 		private final Map<String,Integer> parameterIndizes = new TreeMap<>();
 		
+		/* Constructor hell because of EnumSet */
+		public Simple( String pattern, Method method ){
+			this( pattern, EnumSet.of( method ) );
+		}
+		public Simple( String pattern, Method m1, Method m2 ){
+			this( pattern, EnumSet.of( m1, m2 ) );
+		}
+		public Simple( String pattern, Method m1, Method m2, Method m3 ){
+			this( pattern, EnumSet.of( m1, m2, m3 ) );
+		}
+		public Simple( String pattern, Method m1, Method m2, Method m3, Method m4 ){
+			this( pattern, EnumSet.of( m1, m2, m3, m4 ) );
+		}
+		public Simple( String pattern, Method first, Method ... rest ){
+			this( pattern, EnumSet.of( first, rest ) );
+		}
+		
 		public Simple( String pattern, EnumSet<Method> methods ){
 			this( pattern );
 			this.methods = methods;

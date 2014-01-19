@@ -3,11 +3,6 @@ package de.axone.exception;
 
 public class IllegalNamedArgumentException extends IllegalArgumentException {
 
-	@Override
-	public String getMessage() {
-		return "'" + getArgumentName() + "' " + super.getMessage();
-	}
-
 	private static final long serialVersionUID = -5252132632378096617L;
 	
 	private final String argumentName;
@@ -36,5 +31,10 @@ public class IllegalNamedArgumentException extends IllegalArgumentException {
 		return argumentName;
 	}
 	
+	@Override
+	public String getMessage() {
+		return "'" + getArgumentName() + "' " + super.getMessage();
+	}
+
 
 }

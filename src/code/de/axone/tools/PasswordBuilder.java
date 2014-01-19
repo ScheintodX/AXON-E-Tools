@@ -1,5 +1,7 @@
 package de.axone.tools;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -93,6 +95,29 @@ public class PasswordBuilder {
 	
 	public static void main( String [] args ) throws Exception {
 		
+		int i=0;
+		try( BufferedReader in = new BufferedReader( new InputStreamReader( System.in ) ) ){
+			
+			String line;
+			while( ( line = in.readLine() ) != null ){
+				
+				i++;
+				
+				String [] parts = line.split( "\\s+", 2 );
+				Assert.equal( parts.length, "parts", 2 );
+				
+				String id = parts[0];
+				String pass = parts[1];
+				
+				System.out.printf( "UPDATE user SET password='%s' where id=%s;\n",
+						PasswordBuilder.hashPassword( pass ), id );
+			}
+		} catch( Exception e ){
+			E.rr( "In line: " + i );
+			throw e;
+		}
+		
+		/*
 		int len = DEFAULT_LENGTH;
 		if( args.length == 1 ){
 			len = Integer.parseInt( args[0] );
@@ -106,6 +131,7 @@ public class PasswordBuilder {
 		boolean ok = checkPassword( plain, hashed );
 		
 		System.out.printf( "%s: %s -> %s\n", ok?"OK":"ERR", plain, hashed );
+		*/
 		
 		/*
 		for( int i=0; i<10; i++ )

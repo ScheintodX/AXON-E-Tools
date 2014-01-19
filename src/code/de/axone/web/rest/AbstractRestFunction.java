@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import de.axone.tools.E;
+import de.axone.tools.Slurper;
 import de.axone.web.SuperURL;
 import de.axone.web.rest.RestFunctionServletRequestImpl.Method;
 
@@ -64,7 +66,7 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 
 			return text;
 	}
-
+	
 	protected <T> T readData( REQUEST req, Class<T> type )
 			throws RestFunctionException {
 		
@@ -72,23 +74,17 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 		
 		String data = req.getParameter( "data" );
 		
-		/*
 		// Only for debugging
 		if( data == null ){
 			
-			try ( BufferedReader in = new BufferedReader( new InputStreamReader( req.getInputStream() ) ); ){
-				
-				data = "";
-				String line;
-				while( ( line = in.readLine() ) != null ){
-					data += line;
-				}
-			} catch( IOException e ){
+			try {
+				data = Slurper.slurpString( req.getInputStream() );
+			} catch( IOException e ) {
 				throw new RestFunctionException( e );
 			}
 		}
+		E.rr( type.getSimpleName() );
 		E.rr( data );
-		*/
 		
 		try {
 			if( data != null ){

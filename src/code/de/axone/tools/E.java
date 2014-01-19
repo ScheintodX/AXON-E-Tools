@@ -17,9 +17,9 @@ public abstract class E {
 		out.printf( ">>> (%s.java:%d) ", clazz, line );
 	}
 	
-	static void echo( PrintStream out, int depth, boolean nl, Object ... os ){
+	static void echo( PrintStream out, int depth, boolean lino, boolean nl, Object ... os ){
 		
-		printPos( out, depth );
+		if( lino ) printPos( out, depth );
 		
 		if( os != null && os.length > 0 ){
 				
@@ -31,11 +31,10 @@ public abstract class E {
     			
     			out.print( F.ormat( o ) );
     		}
-    		if( nl ) out.println();
-    		out.flush();
-		} else {
-			out.println( S._NULL_ );
 		}
+		
+		if( nl ) out.println();
+		out.flush();
 	}
 	
 	static void printf( PrintStream out, boolean nl, String format, Object ... args ){
@@ -58,68 +57,68 @@ public abstract class E {
 		if( nl ) out.println();
 	}
 	
-	static void echo( PrintStream out, boolean nl, Object ... os ){
-		echo( out, 3, nl, os );
+	static void echo( PrintStream out, boolean lino, boolean nl, Object ... os ){
+		echo( out, 3, lino, nl, os );
 	}
 	
 	public static void banner( String text ){
-		echo( System.out, 2, true, Text.banner( text.charAt( 0 ), text ) );
+		echo( System.out, 2, true, true, Text.banner( text.charAt( 0 ), text ) );
 	}
 	
 	public static void banner( char border, String text ){
-		echo( System.out, 2, true, Text.banner( border, text ) );
+		echo( System.out, 2, true, true, Text.banner( border, text ) );
 	}
 	
 	public static void poster( String text ){
-		echo( System.out, 2, true, Text.poster( text.charAt( 0 ), text ) );
+		echo( System.out, 2, true, true, Text.poster( text.charAt( 0 ), text ) );
 	}
 	
 	public static void poster( char border, String text ){
-		echo( System.out, 2, true, Text.poster( border, text ) );
+		echo( System.out, 2, true, true, Text.poster( border, text ) );
 	}
 	
 	public static void rr(){
-		echo( System.err, true, "" );
+		echo( System.err, true, true, "" );
 	}
 	
 	public static void rr( byte [] a ){
-		echo( System.err, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( char [] a ){
-		echo( System.err, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( short [] a ){
-		echo( System.err, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( int [] a ){
-		echo( System.err, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( long [] a ){
-		echo( System.err, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( float [] a ){
-		echo( System.err, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( double [] a ){
-		echo( System.err, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( boolean [] os ){
-		echo( System.err, true, os );
+		echo( System.err, true, true, os );
 	}
 	public static void rr( Object ... os ){
 		
-		echo( System.err, true, os );
+		echo( System.err, true, true, os );
 	}
 	public static void rr_( Object ... os ){
 		
-		echo( System.err, false, os );
+		echo( System.err, true, false, os );
 	}
 	public static void rrf( String format, Object ... args ){
 		
@@ -136,15 +135,23 @@ public abstract class E {
 	
 	public static void cho(){
 		
-		echo( System.out, true, "" );
+		echo( System.out, true, true, "" );
 	}
 	public static void cho( Object ... os ){
 		
-		echo( System.out, true, os );
+		echo( System.out, true, true, os );
 	}
 	public static void cho_( Object ... os ){
 		
-		echo( System.out, false, os );
+		echo( System.out, true, false, os );
+	}
+	public static void _cho_( Object ... os ){
+		
+		echo( System.out, false, false, os );
+	}
+	public static void _cho( Object ... os ){
+		
+		echo( System.out, false, true, os );
 	}
 	public static void chof( String format, Object ... args ){
 		
@@ -168,10 +175,10 @@ public abstract class E {
 		
 		if( code == 0 ){
 			text.append( "OK" );
-    		echo( System.out, 3, true, text.toString() );
+    		echo( System.out, 3, true, true, text.toString() );
 		} else {
 			text.append( code );
-    		echo( System.err, 3, true, text.toString() );
+    		echo( System.err, 3, true, true, text.toString() );
 		}
 		System.exit( code );
 	}

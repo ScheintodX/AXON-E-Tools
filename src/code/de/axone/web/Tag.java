@@ -169,4 +169,11 @@ public abstract class Tag {
 		
 		return simpleBB( result, "a", text, false, tagArgs.toArray( new String[ tagArgs.size() ] ) );
 	}
+	
+	/*
+	 * Just a test for now. But we could insert simplified versions here.
+	 */
+	public static String a( String content, String ... args ){
+		return simple( "a", content, args );
+	}
 }

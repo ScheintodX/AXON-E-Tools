@@ -31,6 +31,28 @@ public class Slurper {
 	private static final byte [] EMPTY_ARRAY = new byte[]{};
 	private static final ByteBuffer EMPTY_BUFFER = ByteBuffer.allocate(0);
 	
+	private static final String DEFAULT_CHARSET = "utf8";
+	
+	public static String slurpString( InputStream in ) throws IOException {
+		return slurpString( in, DEFAULT_CHARSET );
+	}
+	public static String slurpString( InputStream in, int startsize ) throws IOException {
+		return slurpString( in, DEFAULT_CHARSET, startsize );
+	}
+	public static String slurpString( InputStream in, int startsize, int extendsize ) throws IOException {
+		return slurpString( in, DEFAULT_CHARSET, startsize, extendsize );
+	}
+	
+	public static String slurpString( InputStream in, String charsetName ) throws IOException {
+		return new String( slurp( in ), charsetName );
+	}
+	public static String slurpString( InputStream in, String charsetName, int startsize ) throws IOException {
+		return new String( slurp( in, startsize ), charsetName );
+	}
+	public static String slurpString( InputStream in, String charsetName, int startsize, int extendsize ) throws IOException {
+		return new String( slurp( in, startsize, extendsize ), charsetName );
+	}
+	
 	public static byte[] slurp( InputStream in ) throws IOException{
 		return slurp( in, DEFAULT_STARTSIZE, DEFAULT_EXTENDSIZE );
 	}
