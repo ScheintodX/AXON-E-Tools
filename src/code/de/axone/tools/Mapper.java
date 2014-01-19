@@ -44,6 +44,31 @@ public abstract class Mapper {
 		}
 		return result;
 	}
+	
+	// Map List to Map via key extraction
+	public <K,O, M extends Map<K,O>> M map( M result, KeyExtractor<K,O> extractor, Iterable<O> objects ){
+		
+		for( O value : objects ){
+			result.put( extractor.extract( value ), value );
+		}
+		return result;
+	}
+	
+	public <K,O> HashMap<K,O> hashMap( KeyExtractor<K,O> extractor, Iterable<O> objects ){
+		return map( new HashMap<K,O>(), extractor, objects );
+	}
+	public <K,O> TreeMap<K,O> treeMap( KeyExtractor<K,O> extractor, Iterable<O> objects ){
+		return map( new TreeMap<K,O>(), extractor, objects );
+	}
+	
+	@SuppressWarnings( "unchecked" )
+	public <K,O> HashMap<K,O> hashMap( KeyExtractor<K,O> extractor, O ... object ){
+		return map( new HashMap<K,O>(), extractor, Arrays.asList( object ) );
+	}
+	@SuppressWarnings( "unchecked" )
+	public <K,O> TreeMap<K,O> treeMap( KeyExtractor<K,O> extractor, O ... object ){
+		return map( new TreeMap<K,O>(), extractor, Arrays.asList( object ) );
+	}
 
 	// Maps for two Arrays
 	public static <K,V> HashMap<K,V> hashMap( K[] k, V[] v ){
@@ -221,5 +246,8 @@ public abstract class Mapper {
 	
 	public interface Converter<T,X> {
 		public T convert( X value );
+	}
+	public interface KeyExtractor<K,O> {
+		public K extract( O object );
 	}
 }
