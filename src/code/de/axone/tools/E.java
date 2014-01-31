@@ -4,7 +4,7 @@ import java.io.PrintStream;
 
 public abstract class E {
 	
-	static void printPos( PrintStream out, int depth ){
+	protected static void printPos( PrintStream out, int depth ){
 		
 		depth++;
 		
@@ -17,7 +17,7 @@ public abstract class E {
 		out.printf( ">>> (%s.java:%d) ", clazz, line );
 	}
 	
-	static void echo( PrintStream out, int depth, boolean lino, boolean nl, Object ... os ){
+	protected static void echo( PrintStream out, int depth, boolean lino, boolean nl, Object ... os ){
 		
 		if( lino ) printPos( out, depth );
 		
@@ -37,16 +37,17 @@ public abstract class E {
 		out.flush();
 	}
 	
-	static void printf( PrintStream out, boolean nl, String format, Object ... args ){
+	protected static void printf( PrintStream out, boolean lino, boolean nl, String format, Object ... args ){
 		
-		printPos( out, 2 );
+		if( lino ) printPos( out, 2 );
 		
 		out.printf( format, args );
 		if( nl ) out.println();
 	}
-	static void log( PrintStream out, boolean nl, String format, Object ...args ){
+	
+	protected static void log( PrintStream out, boolean lino, boolean nl, String format, Object ...args ){
 		
-		printPos( out, 2 );
+		if( lino ) printPos( out, 2 );
 		
 		for( Object arg : args ){
 			
@@ -57,7 +58,7 @@ public abstract class E {
 		if( nl ) out.println();
 	}
 	
-	static void echo( PrintStream out, boolean lino, boolean nl, Object ... os ){
+	protected static void echo( PrintStream out, boolean lino, boolean nl, Object ... os ){
 		echo( out, 3, lino, nl, os );
 	}
 	
@@ -122,15 +123,35 @@ public abstract class E {
 	}
 	public static void rrf( String format, Object ... args ){
 		
-		printf( System.err, true, format, args );
+		printf( System.err, true, true, format, args );
 	}
 	public static void rrf_( String format, Object ... args ){
 		
-		printf( System.err, false, format, args );
+		printf( System.err, true, false, format, args );
+	}
+	public static void _rrf( String format, Object ... args ){
+		
+		printf( System.err, false, true, format, args );
+	}
+	public static void _rrf_( String format, Object ... args ){
+		
+		printf( System.err, false, false, format, args );
 	}
 	public static void rrl( String format, Object ... args ){
 		
-		log( System.err, true, format, args );
+		log( System.err, true, true, format, args );
+	}
+	public static void _rrl( String format, Object ... args ){
+		
+		log( System.err, false, true, format, args );
+	}
+	public static void rrl_( String format, Object ... args ){
+		
+		log( System.err, true, false, format, args );
+	}
+	public static void _rrl_( String format, Object ... args ){
+		
+		log( System.err, false, false, format, args );
 	}
 	
 	public static void cho(){
@@ -155,11 +176,19 @@ public abstract class E {
 	}
 	public static void chof( String format, Object ... args ){
 		
-		printf( System.out, true, format, args );
+		printf( System.out, true, true, format, args );
 	}
 	public static void chof_( String format, Object ... args ){
 		
-		printf( System.out, false, format, args );
+		printf( System.out, true, false, format, args );
+	}
+	public static void _chof( String format, Object ... args ){
+		
+		printf( System.out, false, true, format, args );
+	}
+	public static void _chof_( String format, Object ... args ){
+		
+		printf( System.out, false, false, format, args );
 	}
 	
 	/* === EXIT =========================================================== */
