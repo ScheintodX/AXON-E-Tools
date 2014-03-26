@@ -9,4 +9,4 @@ package de.axone.tools;
  * 
  * @author flo
  */
-public class BASE64 extends Base64ApacheCommons {}
+public class EXTBASE64 extends Base64ApacheCommons {}
