@@ -47,4 +47,9 @@ public class AutomaticCacheNoCache<K,V> implements AutomaticCache<K, V> {
 		// NOP
 	}
 
+	@Override
+	public boolean containsKey( K key ) {
+		return false;
+	}
+
 }

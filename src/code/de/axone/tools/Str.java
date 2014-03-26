@@ -36,32 +36,57 @@ public class Str {
 		return joinB( joinWith, objects ).toString();
 	}
 	@SafeVarargs
+	public static <T> String joinIgnoreEmpty( String joinWith, T ... objects ){
+		return joinIgnoreEmptyB( joinWith, Arrays.asList( objects ) ).toString();
+	}
+	public static <T> String joinIgnoreEmpty( String joinWith, Iterable<T> objects ){
+		return joinIgnoreEmptyB( joinWith, objects ).toString();
+	}
+	@SafeVarargs
 	public static <T> String join( Joiner<T> joiner, T ... objects ){
 		return joinB( joiner, Arrays.asList( objects ) ).toString();
 	}
 	public static <T> String join( Joiner<T> joiner, Iterable<T> objects ){
 		return joinB( joiner, objects ).toString();
 	}
+	@SafeVarargs
+	public static <T> String joinIgnoreEmpty( Joiner<T> joiner, T ... objects ){
+		return joinIgnoreEmptyB( joiner, Arrays.asList( objects ) ).toString();
+	}
+	public static <T> String joinIgnoreEmpty( Joiner<T> joiner, Iterable<T> objects ){
+		return joinIgnoreEmptyB( joiner, objects ).toString();
+	}
 	
 	// joinB 
 	public static <T> StringBuilder joinB( String joinWith, Iterable<T> objects ){
-		return joinBB( new StringBuilder(), joinWith, objects );
+		return joinBB( new StringBuilder(), joinWith, false, objects );
 	}
 	public static <T> StringBuilder joinB( Joiner<T> joiner, Iterable<T> objects ){
-		return joinBB( new StringBuilder(), joiner, objects );
+		return joinBB( new StringBuilder(), joiner, false, objects );
 	}
 	public static <M,N> StringBuilder joinB( MapJoiner<M,N> joiner, Map<M,N> objects ){
-		return joinBB( new StringBuilder(), joiner, objects );
+		return joinBB( new StringBuilder(), joiner, false, objects );
+	}
+	public static <T> StringBuilder joinIgnoreEmptyB( String joinWith, Iterable<T> objects ){
+		return joinBB( new StringBuilder(), joinWith, true, objects );
+	}
+	public static <T> StringBuilder joinIgnoreEmptyB( Joiner<T> joiner, Iterable<T> objects ){
+		return joinBB( new StringBuilder(), joiner, true, objects );
+	}
+	public static <M,N> StringBuilder joinIgnoreEmptyB( MapJoiner<M,N> joiner, Map<M,N> objects ){
+		return joinBB( new StringBuilder(), joiner, true, objects );
 	}
 	
 	// joinBB
-	public static <T> StringBuilder joinBB( StringBuilder result, String joinWith, Iterable<T> objects ){
-		return joinBB( result, new SimpleJoiner<T>( joinWith ), objects );
+	public static <T> StringBuilder joinBB( StringBuilder result, String joinWith, boolean ignoreEmpty, Iterable<T> objects ){
+		return joinBB( result, new SimpleJoiner<T>( joinWith ), ignoreEmpty, objects );
 	}
-	public static <T> StringBuilder joinBB( StringBuilder result, Joiner<T> joiner, Iterable<T> objects ){
+	public static <T> StringBuilder joinBB( StringBuilder result, Joiner<T> joiner, boolean ignoreEmpty, Iterable<T> objects ){
 
 		int index=0;
 		if( objects != null ) for( T object : objects ){
+			
+			if( object == null && ignoreEmpty ) continue;
 
 			if( index > 0 ) result.append( joiner.getSeparator() );
 
@@ -80,22 +105,35 @@ public class Str {
 		return joinB( rs, fs, map ).toString();
 	}
 	public static <K,V> StringBuilder joinB( String rs, String fs, Map<K,V> map ){
-		return joinBB( new StringBuilder(), rs, fs, map );
+		return joinBB( new StringBuilder(), rs, fs, false, map );
 	}
-	public static <K,V> StringBuilder joinBB( StringBuilder result, String rs, String fs, Map<K,V> map ){
-		return joinBB( result, new SimpleMapJoiner<K,V>( rs, fs ), map );
+	public static <M,N> String joinIgnoreEmpty( MapJoiner<M,N> joiner, Map<M,N> objects ){
+		return joinIgnoreEmptyB( joiner, objects ).toString();
 	}
-	public static <K,V> StringBuilder joinBB( StringBuilder result, MapJoiner<K,V> joiner, Map<K,V> map ){
+	public static <K,V> String joinIgnoreEmpty( String rs, String fs, Map<K,V> map ){
+		return joinIgnoreEmptyB( rs, fs, map ).toString();
+	}
+	public static <K,V> StringBuilder joinIgnoreEmptyB( String rs, String fs, Map<K,V> map ){
+		return joinBB( new StringBuilder(), rs, fs, true, map );
+	}
+	public static <K,V> StringBuilder joinBB( StringBuilder result, String rs, String fs, boolean ignoreEmpty, Map<K,V> map ){
+		return joinBB( result, new SimpleMapJoiner<K,V>( rs, fs ), ignoreEmpty, map );
+	}
+	public static <K,V> StringBuilder joinBB( StringBuilder result, MapJoiner<K,V> joiner, boolean ignoreEmpty, Map<K,V> map ){
 		
 		int index = 0;
 		if( map != null ) for( K o : map.keySet() ){
+			
+			V value = map.get( o );
+			
+			if( value == null && ! ignoreEmpty ) continue;
 
 			if( index > 0 ) result.append( joiner.getRecordSeparator() );
 
 			result
 				.append( joiner.keyToString( o, index ) )
 				.append( joiner.getFieldSeparator() )
-				.append( joiner.valueToString( map.get( o ), index ) )
+				.append( joiner.valueToString( value, index ) )
 			;
 			
 			index++;

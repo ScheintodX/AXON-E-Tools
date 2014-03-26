@@ -10,6 +10,8 @@ public interface AutomaticCache<K, V> {
 	public abstract Map<K, V> get( Collection<K> keys, DataAccessor<K, V> accessor );
 
 	public abstract V get( K key, DataAccessor<K, V> accessor );
+	
+	public boolean containsKey( K key );
 
 	public abstract int size();
 	

@@ -20,6 +20,12 @@ public abstract class Assert {
 	public static void assertEmpty( CharSequence string, String message ){
 		assertEquals( string, "", message );
 	}
+	public static void assertEmpty( Collection<?> collection ){
+		assertEquals( collection.size(), 0 );
+	}
+	public static void assertEmpty( Object [] arr ){
+		assertEquals( arr.length, 0 );
+	}
 	
 	public static <T> void assertEqualsIgnoreOrder( T [] actual, T [] expected ){
 		

@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
  */
 public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 
-	private Cache<K,V> cache;
+	private Cache<K,V> backend;
 	
 	private static final Object NULL_ENTRY = new NullEntry();
 	// Makes code more easy below
@@ -51,13 +51,18 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 		
 		assert backend != null;
 		
-		cache = backend;
+		this.backend = backend;
 	}
 	
 	public static <X,Y> AutomaticCache<X,Y> wrap( Cache<X,Y> cache ){
 		return new AutomaticCacheImpl<X,Y>( cache );
 	}
 	
+	@Override
+	public boolean containsKey( K key ) {
+		return backend.containsKey( key );
+	}
+
 	@Override
 	public Map<K,V> get( Collection<K> keys, DataAccessor<K,V> accessor ){
 		
@@ -73,7 +78,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
     			// Note that apparently no cast is done implicitly here.
     			// Java treats V as Object.
     			// Otherwise a ClassCastException would be thrown in case of NullEntry
-    			V found = cache.get( key );
+    			V found = backend.get( key );
 
     			if( found == null ){
     				
@@ -102,10 +107,10 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 					
 					if( value == null ){
 
-						cache.put( key, NULL );
+						backend.put( key, NULL );
 					} else {
 						result.put( key, value );
-						cache.put( key, value );
+						backend.put( key, value );
 					}
 				}
 
@@ -126,7 +131,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 		V result = null;
 		try{
 			readLock.lock();
-			result = cache.get( key );
+			result = backend.get( key );
 		} finally { readLock.unlock(); }
 
 		if( result != null ){
@@ -147,9 +152,9 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 				// Store NULL as NullEntry so to tell apart from no result
     			if( result == null ){
 
-        			cache.put( key, NULL );
+        			backend.put( key, NULL );
     			} else {
-    				cache.put( key, result );
+    				backend.put( key, result );
     			}
 
 			} finally {
@@ -169,7 +174,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 	public int size(){
 		readLock.lock();
 		try {
-			return cache.size();
+			return backend.size();
 		} finally {
 			readLock.unlock();
 		}
@@ -179,7 +184,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 	public int capacity() {
 		readLock.lock();
 		try {
-			return cache.capacity();
+			return backend.capacity();
 		} finally {
 			readLock.unlock();
 		}
@@ -193,7 +198,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 		
 		try {
 			writeLock.lock();
-			cache.put( key, value );
+			backend.put( key, value );
 		} finally {
 			writeLock.unlock();
 		}
@@ -206,7 +211,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 		
 		try {
 			writeLock.lock();
-			cache.remove( key );
+			backend.remove( key );
 		} finally {
 			writeLock.unlock();
 		}
@@ -220,7 +225,7 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 		// Clear cache
 		try {
 			writeLock.lock();
-    		cache.clear();
+    		backend.clear();
 		} finally {
 			writeLock.unlock();
 		}

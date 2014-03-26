@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
 
-import de.axone.tools.E;
-
 public abstract class Assert {
 
 	// != NULL --------------------
@@ -144,7 +142,6 @@ public abstract class Assert {
 	}
 	// <= --------------------
 	public static void lte( Number number, String name, long bound ){
-		E.rr( number, name, bound );
 		if( number == null ) return;
 		long n = number.longValue();
 		if( n > bound ) throw Ex.up( new ArgumentRangeException( name, "<=" + bound, n ) );

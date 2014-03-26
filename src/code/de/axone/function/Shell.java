@@ -17,7 +17,6 @@ public class Shell {
 	private static final String RUN = "--run";
 	
 	public static final String systemHelp = 
-			"Tool to access FDS data.\n" +
 			"Type help COMMAND to get further help.";
 	
 	private static CommandMap commands = 

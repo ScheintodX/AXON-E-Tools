@@ -29,9 +29,7 @@ public class ArgumentParserShell implements ArgumentParser {
 		
 		// preparse
 		String name = null;
-		for( int i = 1; i < args.length; i++ ){
-			
-			String arg = args[ i ];
+		for( String arg : args ){
 			
 			if( arg.startsWith( ARG_PREFIX ) ){
 				if( name != null ){
