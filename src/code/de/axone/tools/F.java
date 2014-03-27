@@ -4,8 +4,15 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class F {
+	
+	private static final Pattern NESTED_CLASS = Pattern.compile( "\\$[\\w_]+" );
+	static String removeNestedClasses( String className ){
+		
+		return NESTED_CLASS.matcher( className ).replaceAll( "" );
+	}
 
 	static String simplifyClassName( String className ){
 		

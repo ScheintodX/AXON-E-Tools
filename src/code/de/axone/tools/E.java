@@ -12,6 +12,7 @@ public abstract class E {
 		StackTraceElement[] elm = e.getStackTrace();
 		
 		String clazz = F.simplifyClassName( elm[depth].getClassName() );
+		clazz = F.removeNestedClasses( clazz );
 		int line = elm[depth].getLineNumber();
 		
 		out.printf( ">>> (%s.java:%d) ", clazz, line );
