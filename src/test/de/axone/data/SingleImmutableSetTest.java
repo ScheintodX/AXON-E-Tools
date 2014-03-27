@@ -8,8 +8,6 @@ import java.util.Iterator;
 
 import org.testng.annotations.Test;
 
-import de.axone.tools.E;
-
 @Test( groups="tools.singleimmutableset" )
 public class SingleImmutableSetTest {
 
@@ -27,8 +25,6 @@ public class SingleImmutableSetTest {
 		assertFalse( it.hasNext() );
 		assertEquals( it.next(), null );
 				
-		E.rr( s1, s2, s3 );
-		
 		int c=0;
 		for( String s : s1 ){
 			assertEquals( s, "foo" );

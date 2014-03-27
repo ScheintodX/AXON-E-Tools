@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.testng.annotations.Test;
 
@@ -50,7 +51,7 @@ public class ETest {
 			String string="text";
 			
 			E.cho( (Object)null );		assertOut( s, "(-null-)" );
-			E.cho( (Object[])null );		assertOut( s, "(-null-)" );
+			E.cho( (Object[])null );	assertOut( s, "(-null-)" );
 			
 			E.cho( string );	assertOut( s, "text" );
 			
@@ -149,15 +150,26 @@ public class ETest {
 			}
 		}
 	}
+	
+	private static final Pattern CLASS_PREFIX =
+			Pattern.compile( "^>>> \\(ETest.java:[0-9]+\\) " );
+	private static final Pattern NL = 
+			Pattern.compile( "\n$" );
+	private static final String EMPTY = "";
 
 	private void assertOut( StringOutputStream s, String text ){
 		
 		String ref = s.toString();
 		
+		ref = CLASS_PREFIX.matcher( ref ).replaceAll( EMPTY );
+		ref = NL.matcher( ref ).replaceAll( EMPTY );
+		
+		/*
 		ref = ref
-				.replaceAll( "^>>> ETest\\([0-9]+\\): ", "" )
+				.replaceAll( "^>>> \\(ETest.java:[0-9]+\\) ", "" )
 				.replaceAll( "\n$", "" );
 		;
+		*/
 		
 		assertEquals( ref, text );
 		

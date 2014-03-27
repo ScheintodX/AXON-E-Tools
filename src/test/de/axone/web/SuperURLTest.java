@@ -195,8 +195,10 @@ public class SuperURLTest {
     	assertNull( empty.getScheme() );
     	assertNull( empty.getUserInfo() );
     	assertNull( empty.getHost() );
-    	assertNull( empty.getPath() );
-    	assertNull( empty.getQuery() );
+    	assertNotNull( empty.getPath() );
+    	assertEquals( empty.getPath().length(), 0 );
+    	assertNotNull( empty.getQuery() );
+    	assertEquals( empty.getQuery().size(), 0 );
     	assertNull( empty.getFragment() );
     	
     	// Constructor with empty URI. (Nonsense but has to work nevertheless)

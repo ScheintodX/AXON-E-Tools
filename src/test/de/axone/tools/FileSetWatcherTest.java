@@ -29,7 +29,6 @@ public class FileSetWatcherTest {
 		out.close();
 	}
 	private void sleep( int ms ) throws InterruptedException{
-		E.rr( "wait: " + ms + "ms" );
 		synchronized( this ){
 			//Thread.sleep( ms ); // Wait for sync
 			this.wait( ms );

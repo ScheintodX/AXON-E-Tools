@@ -24,7 +24,8 @@ public class CodifyTest {
 		CodifiedException ce = new CodifiedException( e );
 		String code = ce.code();
 		
-		assertEquals( code, "bedc13ba/4b60fdb6/00000014/5142c15c/8b45bf77" );		
+		// This needs to stay stable
+		assertEquals( code, "df3f0659/4605efe4/00000014/132835a5/7d28c319" );		
 		
 	}
 	

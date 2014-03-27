@@ -74,7 +74,6 @@ public class FileSetWatcher implements Watcher {
 
 				if( ! file.exists() ){
 	
-					E.rr( file + "doesn't exist" );
 	    			log.warn( "File " + file.getAbsolutePath() + " does not exist"  );
 					return true;
 				}
@@ -82,8 +81,6 @@ public class FileSetWatcher implements Watcher {
 	    		double modifiedTime = file.lastModified();
 	    		
 	    		if( lastModifiedTime < modifiedTime ){
-	    			
-	    			E.rr( file + "has changed with: " + modifiedTime );
 	    			
 	    			if( log.isDebugEnabled() ) log.debug(
 	    					String.format( "File %s has changed (%d<%d)",

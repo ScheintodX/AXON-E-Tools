@@ -16,7 +16,7 @@ import de.axone.exception.Assert;
 public class PasswordBuilder {
 	
 	public static final int DEFAULT_LENGTH = 12;
-	public static final int DEFAULT_ROUNDS_EXP = 10; // <1024 rounds
+	public static final int DEFAULT_ROUNDS_EXP = 12; // <4096 rounds
 	public static final String DEFAULT_ALGO = "SHA-256";
 	public static final String DEFAULT_PROVIDER = "SUN";
 	

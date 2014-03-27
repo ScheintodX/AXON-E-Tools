@@ -21,8 +21,11 @@ public abstract class E {
 		
 		if( lino ) printPos( out, depth );
 		
-		if( os != null && os.length > 0 ){
-				
+		if( os == null ){
+			out.print( F.ormat( os ) );
+		} else if( os.length == 0 ){
+			out.print( "- [] -" );
+		} else {
 			boolean first = true;
     		for( Object o : os ){
     			
