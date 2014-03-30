@@ -1,0 +1,25 @@
+Funky: Allgemeine Funktions Bibliothek vereint viele mögliche Funktionsaufrufe
+
+Applikationen bieten viele mögliche Schnittstellen um mit ihnen zu Kommunizieren. Dabei sind
+häufig mehrere Schnittstellen für die selbe Funktionalität notwendig. Um hier nicht alles doppelt
+und dreifach entwickeln zu müssen stellt Funky ein einheitliches Interface bereit um verschiedene
+APIS zu bedienen.
+
+
+Mögliche Beispiele des Aufrufs:
+
+Java:
+List<File> files = ls( new File( "/home/flo" ), true );
+
+Shell1:
+ls -a /home/flo 
+Shell2:
+ls --all --dir=/home/flo
+
+Web:
+http://localhost/ls?dir=/home/flo&show=all
+
+Rest1:
+http://localhost/ls/all/home/flo
+Rest2: POST/PUT/GET
+http://localhost/ls?json={"dir":"/home/flo","all":true}
