@@ -1,5 +1,6 @@
-package de.axone.funky;
+package de.axone.funky.types;
 
+import de.axone.funky.ArgumentType;
 import de.axone.tools.EasyParser;
 
 public class ArgumentType_Boolean implements ArgumentType<Boolean> {

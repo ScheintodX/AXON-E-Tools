@@ -1,6 +1,8 @@
-package de.axone.funky;
+package de.axone.funky.types;
 
 import java.util.EnumSet;
+
+import de.axone.funky.ArgumentValidator;
 
 public class ArgumentValidator_Enum<T extends Enum<T>> implements ArgumentValidator<T> {
 	

@@ -1,4 +1,6 @@
-package de.axone.funky;
+package de.axone.funky.types;
+
+import de.axone.funky.ArgumentType;
 
 public class ArgumentType_Enum<T extends Enum<T>> implements ArgumentType<T> {
 	

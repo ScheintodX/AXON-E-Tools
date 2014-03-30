@@ -2,6 +2,7 @@ package de.axone.funky;
 
 import de.axone.funky.shell.FunctionDescriptionBuilder;
 import de.axone.funky.shell.Shell;
+import de.axone.funky.types.ArgumentType_Enum;
 
 
 public class Funky {
