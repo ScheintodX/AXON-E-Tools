@@ -3,9 +3,9 @@ package de.axone.funky.shell;
 import de.axone.exception.Assert;
 import de.axone.funky.Argument;
 import de.axone.funky.ArgumentImpl;
-import de.axone.funky.ArgumentTypes;
 import de.axone.funky.FunctionDescription;
 import de.axone.funky.FunctionDescriptionImpl;
+import de.axone.funky.types.ArgumentTypes;
 
 /**
  * Build a function description using a shell-like syntax:
@@ -19,7 +19,7 @@ import de.axone.funky.FunctionDescriptionImpl;
  * 
  * @author flo
  */
-public abstract class FunctionDescriptionBuilder {
+public abstract class FunctionDescriptionBuilder_Shell {
 	
 	public static FunctionDescription build( String description ){
 		

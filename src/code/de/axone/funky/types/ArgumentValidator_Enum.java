@@ -8,8 +8,12 @@ public class ArgumentValidator_Enum<T extends Enum<T>> implements ArgumentValida
 	
 	private EnumSet<T> enums;
 	
+	@SafeVarargs
 	public ArgumentValidator_Enum( T first, T ... rest ){
 		this.enums = EnumSet.of( first, rest );
+	}
+	public ArgumentValidator_Enum( Class<T> clazz ){
+		this.enums = EnumSet.allOf( clazz );
 	}
 
 	@Override

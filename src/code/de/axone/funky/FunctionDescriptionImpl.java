@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.axone.funky.types.ArgumentTypes;
+
 public class FunctionDescriptionImpl implements FunctionDescription {
 	
 	private final String name;
@@ -34,7 +36,10 @@ public class FunctionDescriptionImpl implements FunctionDescription {
 		
 		return argument( ArgumentImpl.Required( type, name, description ) );
 	}
-	
+	public <C,T extends ArgumentType<C>> FunctionDescriptionImpl required( String name, String description ) {
+		
+		return required( ArgumentTypes.STRING, name, description );
+	}
 	public <C,T extends ArgumentType<C>> FunctionDescriptionImpl required( T type, String name ) {
 		
 		return required( type, name, null );
@@ -44,7 +49,10 @@ public class FunctionDescriptionImpl implements FunctionDescription {
 		
 		return argument( ArgumentImpl.Optional( type, name, description ) );
 	}
-
+	public <C,T extends ArgumentType<C>> FunctionDescriptionImpl optional( String name, String description ) {
+		
+		return optional( ArgumentTypes.STRING, name, description );
+	}
 	public <C,T extends ArgumentType<C>> FunctionDescriptionImpl optional( T type, String name ) {
 		
 		return optional( type, name, null );
