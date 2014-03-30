@@ -2,7 +2,6 @@ package de.axone.funky.shell;
 
 import de.axone.funky.Argument;
 import de.axone.funky.ArgumentValidator;
-import de.axone.funky.Caller_Shell;
 import de.axone.funky.FunctionDescription;
 import de.axone.funky.Manual;
 import de.axone.tools.S;

@@ -1,6 +1,5 @@
 package de.axone.funky.shell;
 
-import de.axone.funky.Caller_Shell;
 import de.axone.funky.Environment;
 import de.axone.funky.FunctionDescription;
 import de.axone.funky.Manual;
