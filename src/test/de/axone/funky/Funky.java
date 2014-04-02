@@ -1,12 +1,14 @@
 package de.axone.funky;
 
+import java.util.Map;
+
 import org.testng.annotations.Test;
 
 import de.axone.funky.shell.FunctionDescriptionBuilder_Shell;
 import de.axone.funky.shell.Shell;
-import de.axone.funky.types.ArgumentType_Enum;
 import de.axone.funky.types.ArgumentTypes;
 import de.axone.funky.types.ArgumentValidators;
+import de.axone.tools.E;
 
 
 @Test( groups="tools.funky" )
@@ -22,10 +24,10 @@ public class Funky {
 				.optional( ArgumentTypes.BOOLEAN, "all", "Include hidden files (e.g. files starting with dot (.)" )
 				.argument(
 						ArgumentImpl.Optional(
-								ArgumentType_Enum.Instance( COLORS.class ),
+								ArgumentTypes.ENUM( COLORS.class ),
 								"color", "Color status" )
-						//.validate( ArgumentValidators.EnumOf( COLORS.none, COLORS.full ) )
-						.validate( ArgumentValidators.Enum( COLORS.class ) )
+						.validate( ArgumentValidators.EnumOf( COLORS.none, COLORS.full ) )
+						//.validate( ArgumentValidators.Enum( COLORS.class ) )
 				);
 		;
 		
@@ -35,6 +37,9 @@ public class Funky {
 		FunctionDescription ls2 = FunctionDescriptionBuilder_Shell.build(
 				"ls [--all] [--color=none|some|full] dir" );
 		shell.man( ls2 );
+		
+		Map<String,Object> values = shell.parser().parse( ls, "ls --all --color=none /home/flo" );
+		E.rr( values );
 		
 	}
 }

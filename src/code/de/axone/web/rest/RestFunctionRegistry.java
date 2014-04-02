@@ -154,6 +154,10 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 		register( new RestFunctionRoute.Simple( route ), function );
 	}
 	
+	public void register( String route, Method methods, RestFunction<DATA, REQUEST> function ){
+		register( new RestFunctionRoute.Simple( route, methods ), function );
+	}
+	
 	public void register( String route, EnumSet<Method> methods, RestFunction<DATA, REQUEST> function ){
 		register( new RestFunctionRoute.Simple( route, methods ), function );
 	}
