@@ -3,9 +3,11 @@ package de.axone.funky.shell;
 import de.axone.exception.Assert;
 import de.axone.funky.Argument;
 import de.axone.funky.ArgumentImpl;
+import de.axone.funky.ArgumentType;
 import de.axone.funky.FunctionDescription;
 import de.axone.funky.FunctionDescriptionImpl;
 import de.axone.funky.types.ArgumentTypes;
+import de.axone.funky.types.ArgumentValidator_OneOf;
 
 /**
  * Build a function description using a shell-like syntax:
@@ -48,7 +50,7 @@ public abstract class FunctionDescriptionBuilder_Shell {
 		}
 		
 		String name;
-		String option;
+		String option = null;
 		if( arg.contains( "=" ) ){
 			
 			String [] split = arg.split( "=", 2 );
@@ -64,6 +66,12 @@ public abstract class FunctionDescriptionBuilder_Shell {
 			positional = false;
 		}
 		
-		return new ArgumentImpl<>( ArgumentTypes.STRING, name, null, null, null, optional, positional );
+		ArgumentImpl<String,ArgumentType<String>> result = new ArgumentImpl<>( ArgumentTypes.STRING, name, null, null, null, optional, positional );
+		
+		if( option != null ){
+			result.validate( new ArgumentValidator_OneOf( option.split( "\\s*\\|\\s*" ) ) );
+		}
+		
+		return result;
 	}
 }

@@ -1,11 +1,11 @@
 package de.axone.test;
-//import static org.testng.Assert.*;
+import static org.testng.Assert.*;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 	
-public abstract class Assert extends org.testng.Assert {
+public abstract class Assert {
 
 	public static void assertIsInstance( Object object, Class<?> clazz ){
 		assertTrue( clazz.isAssignableFrom( object.getClass() ) );
