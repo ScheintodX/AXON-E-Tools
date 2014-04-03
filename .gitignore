@@ -1,2 +1,4 @@
 test-output
 bin
+build
+.gradle
