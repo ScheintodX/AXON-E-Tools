@@ -5,20 +5,6 @@ repositories {
 	mavenCentral()
 }
 
-sourceSets {
-
-	main {
-		java {
-			srcDir 'src/code'
-		}
-	}
-	test {
-		java {
-			srcDir 'src/test'
-		}
-	}
-}
-
 dependencies {
 	compile 'org.hibernate.common:hibernate-commons-annotations:4.0.2.Final'
 	compile 'ch.qos.logback:logback-classic:1.0.11'
