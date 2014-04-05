@@ -1,7 +1,5 @@
 package de.axone.funky;
 
-import java.util.Map;
-
 import org.testng.annotations.Test;
 
 import de.axone.funky.shell.FunctionDescriptionBuilder_Shell;
@@ -34,12 +32,15 @@ public class Funky {
 		Shell shell = new Shell();
 		shell.man( ls );
 		
-		FunctionDescription ls2 = FunctionDescriptionBuilder_Shell.build(
-				"ls [--all] [--color=none|some|full] dir" );
+		String description = "ls [--all] [--color=none|some|full] dir";
+		
+		FunctionDescription ls2 = FunctionDescriptionBuilder_Shell.build( description );
+				
+		E.rr( description );
 		shell.man( ls2 );
 		
-		Map<String,Object> values = shell.parser().parse( ls, "ls --all --color=none /home/flo" );
-		E.rr( values );
+		//Map<String,Object> values = shell.parser().parse( ls, "ls --all --color=none /home/flo" );
+		//E.rr( values );
 		
 	}
 }
