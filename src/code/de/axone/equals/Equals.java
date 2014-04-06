@@ -157,11 +157,11 @@ public class Equals {
 	 * @param <T>
 	 * @param target
 	 * @param source
-	 * @param synchroProvider to do coping or <tt>null</tt>
+	 * @param synchroMapper to do coping or <tt>null</tt>
 	 * @return the target (not a copy)
 	 */
 	public static <T extends Synchronizable<T>> T synchronize(
-			T target, T source, SynchroMapper synchroProvider ) {
+			T target, T source, SynchroMapper synchroMapper ) {
 		
 		Assert.notNull( source, "source" );
 		
@@ -170,7 +170,7 @@ public class Equals {
 		// No synchronisation for equal objects
 		if( target == source || target.equals( source ) ) return target;
 		
-		SyncroWrapper<T> wrapper = new SyncroWrapper<T>( target, source, synchroProvider );
+		SyncroWrapper<T> wrapper = new SyncroWrapper<T>( target, source, synchroMapper );
 		
 		process( wrapper, target, source );
 		
@@ -357,7 +357,7 @@ public class Equals {
 						
 						try {
 							
-							wrapper.invoke( field, localOptions );
+							wrapper.invoke( name, field, localOptions );
 							
 						} catch( Exception e ) {
 							throw new RuntimeException( "Error in " + name, e );
@@ -408,14 +408,15 @@ public class Equals {
 							&& isInclude
 					){
 						
-						String setterName = "set"+m2n( name );
+						String varName = m2n( name );
+						String setterName = "set"+varName;
 						
 						try {
 							
 							Method setter = targetClz.getMethod( setterName,
 									new Class<?> []{ getter.getReturnType() } );
 							
-							wrapper.invoke( setter, getter, localOptions );
+							wrapper.invoke( tLc( varName ), setter, getter, localOptions );
 							
 						} catch( Exception e ) {
 							throw new RuntimeException( "Error in " + name, e );
@@ -503,6 +504,9 @@ public class Equals {
 		else throw new IllegalArgumentException( "Not a valid getter: " + methodName );
 		
 	}
+	private static String tLc( String name ){
+		return name.substring( 0,1 ).toLowerCase() + name.substring( 1 );
+	}
 	
 	private interface Wrapper<T> {
 		public void invoke( Method method, EnumSet<EqualsOption.Option> options )
@@ -512,9 +516,9 @@ public class Equals {
 	}
 	
 	private interface CopyWrapper<T> {
-		public void invoke( Method setter, Method getter, EnumSet<EqualsOption.Option> options )
+		public void invoke( String name, Method setter, Method getter, EnumSet<EqualsOption.Option> options )
 				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException;
-		public void invoke( Field field, EnumSet<EqualsOption.Option> options )
+		public void invoke( String name, Field field, EnumSet<EqualsOption.Option> options )
 				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException;
 	}
 	
@@ -642,6 +646,26 @@ public class Equals {
 		}
 	}
 	
+	private static final DefaultSynchroMapper DEFAULT_SYNCHRO_MAPPER = new DefaultSynchroMapper();
+	
+	public static class DefaultSynchroMapper implements SynchroMapper {
+
+		@Override
+		public Object copyOf( String name, Object object ) {
+			return object;
+		}
+
+		@Override
+		public Object emptyInstanceOf( String name, Object object )
+				throws InstantiationException, IllegalAccessException {
+			
+			if( object == null ) return null;
+			
+			Class<?> clz = object.getClass();
+			return clz.newInstance();
+		}
+	}
+	
 	/*
 	 * directly sync on object into another
 	 * uses SynchroProvider to do customisation
@@ -650,42 +674,16 @@ public class Equals {
 		
 		final T target;
 		final T source;
-		final SynchroMapper synchro;
+		final SynchroMapper sm;
 		
-		SyncroWrapper( T target, T source, SynchroMapper synchro ){
+		SyncroWrapper( T target, T source, SynchroMapper mapper ){
 			this.target = target;
 			this.source = source;
-			this.synchro = synchro;
-		}
-		
-		private Object sync( Object o ){
-			
-			Object result;
-			
-			// return original if no SynchroProvider
-			if( synchro == null ) result = o;
-			
-			// use providers copyOf to make a copy
-			else result = synchro.copyOf( o );
-			
-			return result;
-		}
-		
-		private Object cloneEmpty( Object o ) throws InstantiationException, IllegalAccessException{
-			
-			if( o == null ) return 0;
-			
-			if( synchro == null ){
-				Class<?> clz = o.getClass();
-				return clz.newInstance();
-			} else {
-				return synchro.emptyInstanceOf( o );
-			}
-			
+			this.sm = mapper != null ? mapper : DEFAULT_SYNCHRO_MAPPER;
 		}
 		
 		@Override
-		public void invoke( Method setter, Method getter, EnumSet<EqualsOption.Option> options ) throws IllegalArgumentException,
+		public void invoke( String name, Method setter, Method getter, EnumSet<EqualsOption.Option> options ) throws IllegalArgumentException,
 				IllegalAccessException, InvocationTargetException, InstantiationException {
 			
 			//Class<?> type = getter.getReturnType();
@@ -715,7 +713,7 @@ public class Equals {
 				// This is ugly but i don't know better.
 				@SuppressWarnings( { "rawtypes", "unchecked", "unused" } )
 				Synchronizable t2 = Equals.synchronize(
-						(Synchronizable)tarVal, (Synchronizable)srcVal, synchro );
+						(Synchronizable)tarVal, (Synchronizable)srcVal, sm );
 				
 				// This may be setting value to itself or setting a null to a new value
 				setter.invoke( target, tarVal );
@@ -731,8 +729,8 @@ public class Equals {
 					// Note that we *can't* handle unmodifiable sets
 					// But they are of no great use to this anyway.
 					
-					tarVal = cloneEmpty( srcVal );
-					setter.invoke( target, sync( tarVal ) );
+					tarVal = sm.emptyInstanceOf( name, srcVal );
+					setter.invoke( target, sm.copyOf( name, tarVal ) );
 						
 				}
 				
@@ -743,9 +741,9 @@ public class Equals {
 						throw new IllegalArgumentException( "'tarVal' is missing" );
 					
 					@SuppressWarnings( { "unchecked" } )
-					Set<Object>
-							srcSet = (Set<Object>)srcVal,
-							tarSet = (Set<Object>)tarVal;
+					Set<Object> srcSet = (Set<Object>)srcVal;
+					@SuppressWarnings( { "unchecked" } )
+					Set<Object> tarSet = (Set<Object>)tarVal;
 					
 					// Delete from old what's not in new
 					tarSet.retainAll( srcSet );
@@ -753,7 +751,7 @@ public class Equals {
 					// Keep the old ones and add only the new ones.
 					for( Object o : srcSet ){
 						if( ! tarSet.contains( o ) ){
-							tarSet.add( sync( o ) );
+							tarSet.add( sm.copyOf( name, o ) );
 						}
 					}
 					
@@ -776,7 +774,7 @@ public class Equals {
 					}
 					for( Object o : srcList ){
 						if( ! tarList.contains( o ) ){
-							tarList.add( sync( o ) );
+							tarList.add( sm.copyOf( name, o ) );
 						}
 					}
 					Collections.sort( tarList, new List2ListSorter( srcList ) );
@@ -810,7 +808,7 @@ public class Equals {
 							
 						if( tarValue == null || !tarValue.equals( srcValue ) ){
 							
-							Object x = sync(srcValue);
+							Object x = sm.copyOf( name, srcValue );
 							
 							tarMap.put( key, x );
 						}
@@ -818,14 +816,14 @@ public class Equals {
 				
 				} else {
 				
-					setter.invoke( target, sync( srcVal ) );
+					setter.invoke( target, sm.copyOf( name, srcVal ) );
 				}
 			}
 			
 		}
 		
 		@Override
-		public void invoke( Field field, EnumSet<EqualsOption.Option> options ) throws IllegalArgumentException,
+		public void invoke( String name, Field field, EnumSet<EqualsOption.Option> options ) throws IllegalArgumentException,
 				IllegalAccessException, InvocationTargetException, InstantiationException {
 			
 			//Class<?> type = getter.getReturnType();
@@ -855,7 +853,7 @@ public class Equals {
 				// This is ugly but i don't know better.
 				@SuppressWarnings( { "rawtypes", "unchecked", "unused" } )
 				Synchronizable t2 = Equals.synchronize(
-						(Synchronizable)tarVal, (Synchronizable)srcVal, synchro );
+						(Synchronizable)tarVal, (Synchronizable)srcVal, sm );
 				
 				// This may be setting value to itself or setting a null to a new value
 				field.set( target, tarVal );
@@ -871,8 +869,8 @@ public class Equals {
 					// Note that we *can't* handle unmodifiable sets
 					// But they are of no great use to this anyway.
 					
-					tarVal = cloneEmpty( srcVal );
-					field.set( target, sync( tarVal ) );
+					tarVal = sm.emptyInstanceOf( name, srcVal );
+					field.set( target, sm.copyOf( name, tarVal ) );
 						
 				}
 				
@@ -893,7 +891,7 @@ public class Equals {
 					// Keep the old ones and add only the new ones.
 					for( Object o : srcSet ){
 						if( ! tarSet.contains( o ) ){
-							tarSet.add( sync( o ) );
+							tarSet.add( sm.copyOf( name, o ) );
 						}
 					}
 					
@@ -916,7 +914,7 @@ public class Equals {
 					}
 					for( Object o : srcList ){
 						if( ! tarList.contains( o ) ){
-							tarList.add( sync( o ) );
+							tarList.add( sm.copyOf( name, o ) );
 						}
 					}
 					Collections.sort( tarList, new List2ListSorter( srcList ) );
@@ -950,7 +948,7 @@ public class Equals {
 							
 						if( tarValue == null || !tarValue.equals( srcValue ) ){
 							
-							Object x = sync(srcValue);
+							Object x = sm.copyOf( name, srcValue );
 							
 							tarMap.put( key, x );
 						}
@@ -958,12 +956,12 @@ public class Equals {
 				
 				} else {
 				
-					field.set( target, sync( srcVal ) );
+					field.set( target, sm.copyOf( name, srcVal ) );
 				}
 			}
 			
 		}
-		
+
 	}
 			
 	/*

@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.Id;
 import javax.persistence.Transient;
@@ -20,6 +21,7 @@ import org.testng.annotations.Test;
 import de.axone.equals.Equals.Synchronizable;
 import de.axone.equals.EqualsClass.Select;
 import de.axone.equals.EqualsClass.WorkOn;
+import de.axone.tools.Sets;
 
 @Test( groups="tools.equals" )
 public class EqualsTest {
@@ -310,7 +312,9 @@ public class EqualsTest {
 		
 		O o = new O( 0, null, null, false, null );
 		
-		Equals.synchronize( o, oo.o1, new TestSynchroMapper() );
+		TestSynchroMapper sm = new TestSynchroMapper();
+		
+		Equals.synchronize( o, oo.o1, sm );
 		
 		assertFalse( o.equals( oo.o1 ) );
 		assertFalse( o.getSet() == oo.o1.getSet() );
@@ -336,7 +340,11 @@ public class EqualsTest {
 		
 		O o_ = new O();
 		
-		Equals.synchronize( o_, oo.o1, new TestSynchroMapper() );
+		assertEquals( sm.fields, Sets.treeSetOf( "b", "bd", "int", "list", "map", "set", "string", "x", "b") );
+		
+		sm = new TestSynchroMapper();
+		
+		Equals.synchronize( o_, oo.o1, sm );
 		
 		assertFalse( o_.equals( oo.o1 ) );
 		assertFalse( o_.getSet() == oo.o1.getSet() );
@@ -359,6 +367,8 @@ public class EqualsTest {
 		
 		assertFalse( o_.getMap().equals( oo.o1.getMap() ) );
 		assertEquals( o_.getMap().get( "s" ), "s1X" );
+		
+		assertEquals( sm.fields, Sets.treeSetOf( "b", "bd", "int", "list", "map", "set", "string", "x", "b") );
 		
 	}
 	
@@ -421,9 +431,14 @@ public class EqualsTest {
 	}
 	
 	static class TestSynchroMapper implements SynchroMapper {
+		
+		Set<String> fields = new TreeSet<>();
 
 		@Override
-		public Object copyOf( Object object ) {
+		public Object copyOf( String name, Object object ) {
+			
+			fields.add( name );
+			
 			if( object instanceof String ){
 				return ((String)object) + "X";
 			}
@@ -431,8 +446,10 @@ public class EqualsTest {
 		}
 
 		@Override
-		public Object emptyInstanceOf( Object object )
+		public Object emptyInstanceOf( String name, Object object )
 				throws InstantiationException, IllegalAccessException {
+			
+			fields.add( name );
 			
 			return object.getClass().newInstance();
 		}
