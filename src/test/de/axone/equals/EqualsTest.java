@@ -41,10 +41,32 @@ public class EqualsTest {
 		private O o50 = new O( 1, "s1", new X( "x1" ), true, null );
 	}
 
-	// @Test( groups="tools.equals" )
+	private static final class oo {
+		
+		private o o1 = new o( 1, "s1", new X( "x1" ), true, "2.0" );
+		private o o11 = new o( 1, "s1", new X( "x1" ), true, "2.0" );
+		
+		private o o2 = new o( 2, "s1", new X( "x1" ), true, "2.0" );
+		private o o3 = new o( 1, "s2", new X( "x1" ), true, "2.0" );
+		private o o4 = new o( 1, "s2", new X( "x2" ), true, "2.0" );
+		private o o5 = new o( 1, "s2", new X( "x2" ), false, "2.0" );
+		private o o6 = new o( 1, "s2", new X( "x2" ), true, "2.00" );
+		
+		private o o20 = new o( 0, "s1", new X( "x1" ), true, "2.0" );
+		private o o30 = new o( 1, null, new X( "x1" ), true, "2.0" );
+		private o o40 = new o( 1, "s1", null,          true, "2.0" );
+		private o o50 = new o( 1, "s1", new X( "x1" ), true, null );
+	}
+
 	public void verySimpleTest(){
 		
 		O o = new O( 1, "s1", null, true, null );
+		assertNotNull( o.hashCode() );
+	}
+	
+	public void verySimpleTest_(){
+		
+		o o = new o( 1, "s1", null, true, null );
 		assertNotNull( o.hashCode() );
 	}
 		
@@ -106,108 +128,194 @@ public class EqualsTest {
 	// @Test( enabled=false )
 	public void testBuilder(){
 		
-		OO O = new OO();
+		OO o = new OO();
 		
-		assertTrue( O.o1.equals( O.o1 ) );
-		assertTrue( O.o11.equals( O.o11 ) );
-		assertTrue( O.o1.equals( O.o11 ) );
-		assertTrue( O.o11.equals( O.o1 ) );
+		assertTrue( o.o1.equals( o.o1 ) );
+		assertTrue( o.o11.equals( o.o11 ) );
+		assertTrue( o.o1.equals( o.o11 ) );
+		assertTrue( o.o11.equals( o.o1 ) );
 		
-		assertFalse( O.o1.equals( O.o2 ) );
-		assertFalse( O.o1.equals( O.o3 ) );
-		assertFalse( O.o1.equals( O.o4 ) );
-		assertFalse( O.o1.equals( O.o5 ) );
-		assertFalse( O.o1.equals( O.o6 ) );
+		assertFalse( o.o1.equals( o.o2 ) );
+		assertFalse( o.o1.equals( o.o3 ) );
+		assertFalse( o.o1.equals( o.o4 ) );
+		assertFalse( o.o1.equals( o.o5 ) );
+		assertFalse( o.o1.equals( o.o6 ) );
 		
-		assertFalse( O.o1.equals( O.o20 ) );
-		assertFalse( O.o1.equals( O.o30 ) );
-		assertFalse( O.o1.equals( O.o40 ) );
-		assertFalse( O.o1.equals( O.o50 ) );
+		assertFalse( o.o1.equals( o.o20 ) );
+		assertFalse( o.o1.equals( o.o30 ) );
+		assertFalse( o.o1.equals( o.o40 ) );
+		assertFalse( o.o1.equals( o.o50 ) );
+	}
+	public void testBuilder_(){
+		
+		oo o = new oo();
+		
+		assertTrue( o.o1.equals( o.o1 ) );
+		assertTrue( o.o11.equals( o.o11 ) );
+		assertTrue( o.o1.equals( o.o11 ) );
+		assertTrue( o.o11.equals( o.o1 ) );
+		
+		assertFalse( o.o1.equals( o.o2 ) );
+		assertFalse( o.o1.equals( o.o3 ) );
+		assertFalse( o.o1.equals( o.o4 ) );
+		assertFalse( o.o1.equals( o.o5 ) );
+		assertFalse( o.o1.equals( o.o6 ) );
+		
+		assertFalse( o.o1.equals( o.o20 ) );
+		assertFalse( o.o1.equals( o.o30 ) );
+		assertFalse( o.o1.equals( o.o40 ) );
+		assertFalse( o.o1.equals( o.o50 ) );
 	}
 	
 	// @Test( enabled=false )
 	public void testHashcode(){
 		
-		OO O = new OO();
+		OO o = new OO();
 		
-		assertTrue( O.o1.hashCode() == O.o1.hashCode() );
-		assertTrue( O.o11.hashCode() == O.o11.hashCode() );
-		assertTrue( O.o1.hashCode() == O.o11.hashCode() );
-		assertTrue( O.o11.hashCode() == O.o1.hashCode() );
+		assertTrue( o.o1.hashCode() == o.o1.hashCode() );
+		assertTrue( o.o11.hashCode() == o.o11.hashCode() );
+		assertTrue( o.o1.hashCode() == o.o11.hashCode() );
+		assertTrue( o.o11.hashCode() == o.o1.hashCode() );
 		
-		assertFalse( O.o1.hashCode() == O.o2.hashCode() );
-		assertFalse( O.o1.hashCode() == O.o3.hashCode() );
-		assertFalse( O.o1.hashCode() == O.o4.hashCode() );
-		assertFalse( O.o1.hashCode() == O.o5.hashCode() );
-		assertFalse( O.o1.hashCode() == O.o6.hashCode() ); // BigDecimals scale affect hashCode
+		assertFalse( o.o1.hashCode() == o.o2.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o3.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o4.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o5.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o6.hashCode() ); // BigDecimals scale affect hashCode
 		
-		assertFalse( O.o1.hashCode() == O.o20.hashCode() );
-		assertFalse( O.o1.hashCode() == O.o30.hashCode() );
-		assertFalse( O.o1.hashCode() == O.o40.hashCode() );
-		assertFalse( O.o1.hashCode() == O.o50.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o20.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o30.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o40.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o50.hashCode() );
+	}
+	public void testHashcode_(){
+		
+		oo o = new oo();
+		
+		assertTrue( o.o1.hashCode() == o.o1.hashCode() );
+		assertTrue( o.o11.hashCode() == o.o11.hashCode() );
+		assertTrue( o.o1.hashCode() == o.o11.hashCode() );
+		assertTrue( o.o11.hashCode() == o.o1.hashCode() );
+		
+		assertFalse( o.o1.hashCode() == o.o2.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o3.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o4.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o5.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o6.hashCode() ); // BigDecimals scale affect hashCode
+		
+		assertFalse( o.o1.hashCode() == o.o20.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o30.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o40.hashCode() );
+		assertFalse( o.o1.hashCode() == o.o50.hashCode() );
 	}
 	
 	// @Test( enabled=false )
 	public void testStrongHashCode(){
 		
-		OO O = new OO();
+		OO o = new OO();
 		
-		assertTrue( O.o1.strongHashCode().equals( O.o1.strongHashCode() ) );
-		assertTrue( O.o11.strongHashCode().equals( O.o11.strongHashCode() ) );
-		assertTrue( O.o1.strongHashCode().equals( O.o11.strongHashCode() ) );
-		assertTrue( O.o11.strongHashCode().equals( O.o1.strongHashCode() ) );
+		assertTrue( o.o1.strongHashCode().equals( o.o1.strongHashCode() ) );
+		assertTrue( o.o11.strongHashCode().equals( o.o11.strongHashCode() ) );
+		assertTrue( o.o1.strongHashCode().equals( o.o11.strongHashCode() ) );
+		assertTrue( o.o11.strongHashCode().equals( o.o1.strongHashCode() ) );
 		
-		assertFalse( O.o1.strongHashCode().equals( O.o2.strongHashCode() ) );
-		assertFalse( O.o1.strongHashCode().equals( O.o3.strongHashCode() ) );
-		assertFalse( O.o1.strongHashCode().equals( O.o4.strongHashCode() ) );
-		assertFalse( O.o1.strongHashCode().equals( O.o5.strongHashCode() ) );
-		assertFalse( O.o1.strongHashCode().equals( O.o6.strongHashCode() ) ); // BigDecimals scale affect strongHashCode
+		assertFalse( o.o1.strongHashCode().equals( o.o2.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o3.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o4.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o5.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o6.strongHashCode() ) ); // BigDecimals scale affect strongHashCode
 		
-		assertFalse( O.o1.strongHashCode().equals( O.o20.strongHashCode() ) );
-		assertFalse( O.o1.strongHashCode().equals( O.o30.strongHashCode() ) );
-		assertFalse( O.o1.strongHashCode().equals( O.o40.strongHashCode() ) );
-		assertFalse( O.o1.strongHashCode().equals( O.o50.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o20.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o30.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o40.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o50.strongHashCode() ) );
+	}
+	
+	public void testStrongHashCode_(){
+		
+		oo o = new oo();
+		
+		assertTrue( o.o1.strongHashCode().equals( o.o1.strongHashCode() ) );
+		assertTrue( o.o11.strongHashCode().equals( o.o11.strongHashCode() ) );
+		assertTrue( o.o1.strongHashCode().equals( o.o11.strongHashCode() ) );
+		assertTrue( o.o11.strongHashCode().equals( o.o1.strongHashCode() ) );
+		
+		assertFalse( o.o1.strongHashCode().equals( o.o2.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o3.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o4.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o5.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o6.strongHashCode() ) ); // BigDecimals scale affect strongHashCode
+		
+		assertFalse( o.o1.strongHashCode().equals( o.o20.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o30.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o40.strongHashCode() ) );
+		assertFalse( o.o1.strongHashCode().equals( o.o50.strongHashCode() ) );
 	}
 	
 	// @Test( enabled=false )
 	public void testSynchronize(){
 		
-		OO O = new OO();
+		OO oo = new OO();
 		
 		O o = new O( 0, null, null, false, null );
 		
-		assertEquals( Equals.synchronize( o, O.o1, null ), O.o1 );
-		assertFalse( o.getList() == O.o1.getList() );
-		assertFalse( o.getSet() == O.o1.getSet() );
-		assertFalse( o.getMap() == O.o1.getMap() );
-		assertEquals( Equals.synchronize( o, O.o11, null ), O.o11 );
+		assertEquals( Equals.synchronize( o, oo.o1, null ), oo.o1 );
+		assertFalse( o.getList() == oo.o1.getList() );
+		assertFalse( o.getSet() == oo.o1.getSet() );
+		assertFalse( o.getMap() == oo.o1.getMap() );
+		assertEquals( Equals.synchronize( o, oo.o11, null ), oo.o11 );
 		
-		assertEquals( Equals.synchronize( o, O.o2, null ), O.o2 );
-		assertEquals( Equals.synchronize( o, O.o3, null ), O.o3 );
-		assertEquals( Equals.synchronize( o, O.o4, null ), O.o4 );
-		assertEquals( Equals.synchronize( o, O.o5, null ), O.o5 );
-		assertEquals( Equals.synchronize( o, O.o6, null ), O.o6 );
+		assertEquals( Equals.synchronize( o, oo.o2, null ), oo.o2 );
+		assertEquals( Equals.synchronize( o, oo.o3, null ), oo.o3 );
+		assertEquals( Equals.synchronize( o, oo.o4, null ), oo.o4 );
+		assertEquals( Equals.synchronize( o, oo.o5, null ), oo.o5 );
+		assertEquals( Equals.synchronize( o, oo.o6, null ), oo.o6 );
 		
-		assertEquals( Equals.synchronize( o, O.o20, null ), O.o20 );
-		assertEquals( Equals.synchronize( o, O.o30, null ), O.o30 );
-		assertEquals( Equals.synchronize( o, O.o40, null ), O.o40 );
-		assertEquals( Equals.synchronize( o, O.o50, null ), O.o50 );
+		assertEquals( Equals.synchronize( o, oo.o20, null ), oo.o20 );
+		assertEquals( Equals.synchronize( o, oo.o30, null ), oo.o30 );
+		assertEquals( Equals.synchronize( o, oo.o40, null ), oo.o40 );
+		assertEquals( Equals.synchronize( o, oo.o50, null ), oo.o50 );
+		
+	}
+	
+	public void testSynchronize_(){
+		
+		oo oo = new oo();
+		
+		o o = new o( 0, null, null, false, null );
+		
+		assertEquals( Equals.synchronize( o, oo.o1, null ), oo.o1 );
+		assertFalse( o.list == oo.o1.list );
+		assertFalse( o.set == oo.o1.set );
+		assertFalse( o.map == oo.o1.map );
+		assertEquals( Equals.synchronize( o, oo.o11, null ), oo.o11 );
+		
+		assertEquals( Equals.synchronize( o, oo.o2, null ), oo.o2 );
+		assertEquals( Equals.synchronize( o, oo.o3, null ), oo.o3 );
+		assertEquals( Equals.synchronize( o, oo.o4, null ), oo.o4 );
+		assertEquals( Equals.synchronize( o, oo.o5, null ), oo.o5 );
+		assertEquals( Equals.synchronize( o, oo.o6, null ), oo.o6 );
+		
+		assertEquals( Equals.synchronize( o, oo.o20, null ), oo.o20 );
+		assertEquals( Equals.synchronize( o, oo.o30, null ), oo.o30 );
+		assertEquals( Equals.synchronize( o, oo.o40, null ), oo.o40 );
+		assertEquals( Equals.synchronize( o, oo.o50, null ), oo.o50 );
 		
 	}
 	
 	// Remember to re-enable tests above
 	public void testSynchronizeMapper(){
 		
-		OO O = new OO();
+		OO oo = new OO();
 		
 		O o = new O( 0, null, null, false, null );
 		
-		Equals.synchronize( o, O.o1, new TestSynchroMapper() );
+		Equals.synchronize( o, oo.o1, new TestSynchroMapper() );
 		
-		assertFalse( o.equals( O.o1 ) );
-		assertFalse( o.getSet() == O.o1.getSet() );
-		assertFalse( o.getList() == O.o1.getList() );
-		assertFalse( o.getMap() == O.o1.getMap() );
+		assertFalse( o.equals( oo.o1 ) );
+		assertFalse( o.getSet() == oo.o1.getSet() );
+		assertFalse( o.getList() == oo.o1.getList() );
+		assertFalse( o.getMap() == oo.o1.getMap() );
 		
 		assertNotNull( o.getSet() );
 		assertNotNull( o.getList() );
@@ -215,25 +323,25 @@ public class EqualsTest {
 		
 		assertEquals( o.getString(), "s1X" );
 		
-		assertFalse( o.getSet().equals( O.o1.getSet() ) );
+		assertFalse( o.getSet().equals( oo.o1.getSet() ) );
 		assertTrue( o.getSet().contains( "s1X" ) );
 		assertFalse( o.getSet().contains( "s1" ) );
 		
-		assertFalse( o.getList().equals( O.o1.getList() ) );
+		assertFalse( o.getList().equals( oo.o1.getList() ) );
 		assertTrue( o.getList().contains( "s1X" ) );
 		assertFalse( o.getList().contains( "s1" ) );
 		
-		assertFalse( o.getMap().equals( O.o1.getMap() ) );
+		assertFalse( o.getMap().equals( oo.o1.getMap() ) );
 		assertEquals( o.getMap().get( "s" ), "s1X" );
 		
 		O o_ = new O();
 		
-		Equals.synchronize( o_, O.o1, new TestSynchroMapper() );
+		Equals.synchronize( o_, oo.o1, new TestSynchroMapper() );
 		
-		assertFalse( o_.equals( O.o1 ) );
-		assertFalse( o_.getSet() == O.o1.getSet() );
-		assertFalse( o_.getList() == O.o1.getList() );
-		assertFalse( o_.getMap() == O.o1.getMap() );
+		assertFalse( o_.equals( oo.o1 ) );
+		assertFalse( o_.getSet() == oo.o1.getSet() );
+		assertFalse( o_.getList() == oo.o1.getList() );
+		assertFalse( o_.getMap() == oo.o1.getMap() );
 		
 		assertNotNull( o_.getSet() );
 		assertNotNull( o_.getList() );
@@ -241,16 +349,74 @@ public class EqualsTest {
 		
 		assertEquals( o_.getString(), "s1X" );
 		
-		assertFalse( o_.getSet().equals( O.o1.getSet() ) );
+		assertFalse( o_.getSet().equals( oo.o1.getSet() ) );
 		assertTrue( o_.getSet().contains( "s1X" ) );
 		assertFalse( o_.getSet().contains( "s1" ) );
 		
-		assertFalse( o_.getList().equals( O.o1.getList() ) );
+		assertFalse( o_.getList().equals( oo.o1.getList() ) );
 		assertTrue( o_.getList().contains( "s1X" ) );
 		assertFalse( o_.getList().contains( "s1" ) );
 		
-		assertFalse( o_.getMap().equals( O.o1.getMap() ) );
+		assertFalse( o_.getMap().equals( oo.o1.getMap() ) );
 		assertEquals( o_.getMap().get( "s" ), "s1X" );
+		
+	}
+	
+	public void testSynchronizeMapper_(){
+		
+		oo oo = new oo();
+		
+		o o = new o( 0, null, null, false, null );
+		
+		Equals.synchronize( o, oo.o1, new TestSynchroMapper() );
+		
+		assertFalse( o.equals( oo.o1 ) );
+		assertFalse( o.set == oo.o1.set );
+		assertFalse( o.list == oo.o1.list );
+		assertFalse( o.map == oo.o1.map );
+		
+		assertNotNull( o.set );
+		assertNotNull( o.list );
+		assertNotNull( o.map );
+		
+		assertEquals( o.s, "s1X" );
+		
+		assertFalse( o.set.equals( oo.o1.set ) );
+		assertTrue( o.set.contains( "s1X" ) );
+		assertFalse( o.set.contains( "s1" ) );
+		
+		assertFalse( o.list.equals( oo.o1.list ) );
+		assertTrue( o.list.contains( "s1X" ) );
+		assertFalse( o.list.contains( "s1" ) );
+		
+		assertFalse( o.map.equals( oo.o1.map ) );
+		assertEquals( o.map.get( "s" ), "s1X" );
+		
+		o o_ = new o();
+		
+		Equals.synchronize( o_, oo.o1, new TestSynchroMapper() );
+		
+		assertFalse( o_.equals( oo.o1 ) );
+		assertFalse( o_.set == oo.o1.set );
+		assertFalse( o_.list == oo.o1.list );
+		assertFalse( o_.map == oo.o1.map );
+		
+		assertNotNull( o_.set );
+		assertNotNull( o_.list );
+		assertNotNull( o_.map );
+		
+		assertEquals( o_.s, "s1X" );
+		
+		assertFalse( o_.set.equals( oo.o1.set ) );
+		assertTrue( o_.set.contains( "s1X" ) );
+		assertFalse( o_.set.contains( "s1" ) );
+		
+		assertFalse( o_.list.equals( oo.o1.list ) );
+		assertTrue( o_.list.contains( "s1X" ) );
+		assertFalse( o_.list.contains( "s1" ) );
+		
+		assertFalse( o_.map.equals( oo.o1.map ) );
+		assertEquals( o_.map.get( "s" ), "s1X" );
 		
 	}
 	
@@ -376,6 +542,86 @@ public class EqualsTest {
 		@Override
 		public O emptyInstance() {
 			return new O();
+		}
+
+	}
+	
+	@SuppressWarnings( "unused" )
+	@EqualsClass( workOn = WorkOn.FIELDS )
+	private static class o implements Synchronizable<o>, StrongHash {
+		
+		public int i;
+		public String s;
+		public X x;
+		public boolean b;
+		public BigDecimal bd;
+		public Set<Object> set;
+		public List<Object> list;
+		public Map<Object,Object> map;
+		
+		@EqualsField( include=false )
+		public double ignore1 = Math.random();
+		private double ignore2 = Math.random();
+		@Id
+		public double ignore4 = Math.random();
+		@Transient
+		public double ignore5 = Math.random();
+		
+		
+		o(){}
+		
+		o( int i, String s, X x, boolean b, String bd ){
+			
+			this.i=i;
+			this.s=s;
+			this.x=x;
+			this.b=b;
+			this.bd=(bd==null)?null:new BigDecimal( bd );
+			
+			List<Object> setList = new LinkedList<Object>();
+			setList.add( i );
+			if( s!=null )setList.add( s );
+			if( x!=null )setList.add( x );
+			setList.add( b );
+			Collections.shuffle( setList );
+			this.set = new HashSet<Object>( setList );
+			
+			list = new LinkedList<Object>();
+			list.add( i );
+			if( s!=null )list.add( s );
+			if( x!=null )list.add( x );
+			list.add( b );
+			
+			map = new HashMap<Object,Object>();
+			map.put( "i", i );
+			map.put( "s", s );
+			map.put( "x", x );
+			map.put( "b", b );
+			map.put( "bd", bd );
+		}
+		
+		
+		@Override
+		public boolean equals( Object other ){
+			return Equals.equals( this, other );
+		}
+		@Override
+		public int hashCode(){
+			return Equals.hash( this );
+		}
+		@Override
+		public String strongHashCode(){
+			return Equals.strongHashString( this );
+		}
+
+		@Override
+		public void synchronizeFrom( o other ) {
+			Equals.synchronize( this, other, null );
+		}
+		
+		@Override
+		public o emptyInstance() {
+			return new o();
 		}
 
 	}
