@@ -3,6 +3,8 @@ package de.axone.funky;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.axone.tools.S;
+
 public class ArgumentImpl<C,T extends ArgumentType<C>> implements Argument<C,T> {
 	
 	private final T type;
@@ -99,6 +101,35 @@ public class ArgumentImpl<C,T extends ArgumentType<C>> implements Argument<C,T> 
 	@Override
 	public List<ArgumentValidator<C>> validators() {
 		return validators;
+	}
+	
+	@Override
+	public String toString() {
+		
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append( name );
+		
+		if( type != null )
+			builder.append( " [" ).append( type.name() ).append( "]" );
+		
+		if( shortName != null )
+			builder.append( " (" ).append( shortName ).append( ")" );
+		
+		if( optional ) builder.append( "(o)" );
+		if( positional ) builder.append( "(p)" );
+		
+		if( description != null )
+			builder.append( " " ).append( description );
+		
+		if( longDescription != null )
+			builder.append( S.nl ).append( longDescription );
+		
+		if( validators != null )
+			for( ArgumentValidator<C> validator : validators )
+				builder.append( validator );
+		
+		return builder.toString();
 	}
 
 }

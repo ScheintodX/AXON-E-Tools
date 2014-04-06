@@ -36,11 +36,19 @@ public class Funky {
 		
 		FunctionDescription ls2 = FunctionDescriptionBuilder_Shell.build( description );
 				
-		E.rr( description );
+		//E.rr( description );
 		shell.man( ls2 );
 		
 		//Map<String,Object> values = shell.parser().parse( ls, "ls --all --color=none /home/flo" );
 		//E.rr( values );
 		
+		FunctionSet set = new FunctionSetImpl( "git" )
+				.description( FunctionDescriptionBuilder_Shell.build( "git status" ) )
+				.description( FunctionDescriptionBuilder_Shell.build( "git clone url" ) )
+				.description( FunctionDescriptionBuilder_Shell.build( "git commit [--all] --message" ) )
+		;
+		
+		
+		E.rr( set );
 	}
 }

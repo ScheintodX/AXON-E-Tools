@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.axone.funky.types.ArgumentTypes;
+import de.axone.tools.S;
+import de.axone.tools.Text;
 
 public class FunctionDescriptionImpl implements FunctionDescription {
 	
@@ -72,6 +74,27 @@ public class FunctionDescriptionImpl implements FunctionDescription {
 	@Override
 	public List<Argument<?, ?>> arguments() {
 		return Collections.unmodifiableList( arguments );
+	}
+	
+	@Override
+	public String toString(){
+		
+		StringBuilder result = new StringBuilder();
+		
+		result.append( name() );
+		
+		for( Argument<?,?> argument : arguments ){
+			result.append( " " ).append( argument.name() );
+		}
+		
+		result.append( S.nl ).append( Text.line( '-', 79 ) ).append( S.nl );
+		
+		for( Argument<?,?> argument : arguments ){
+			result.append( argument ).append( S.nl );
+		}
+		
+		return result.toString();
+		
 	}
 
 }
