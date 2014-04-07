@@ -1,5 +1,7 @@
 package de.axone.exception;
 
+import de.axone.web.rest.FieldException;
+
 public class ArgumentClassException extends IllegalNamedArgumentException implements FieldException {
 
 	private static final long serialVersionUID = -9172997426679904688L;

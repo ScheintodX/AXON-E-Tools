@@ -1,4 +1,4 @@
-package de.axone.exception;
+package de.axone.web.rest;
 
 public interface FieldException {
 
