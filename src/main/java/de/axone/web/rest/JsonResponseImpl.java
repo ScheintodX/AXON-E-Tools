@@ -90,7 +90,7 @@ public class JsonResponseImpl implements JsonResponse {
 	}
 	
 	@Override
-	@JsonDeserialize( as=MessageImpl.class )
+	@JsonDeserialize( contentAs=MessageImpl.class )
 	public Message[] getMessages() {
 		return messages;
 	}
@@ -125,20 +125,12 @@ public class JsonResponseImpl implements JsonResponse {
 		}
 		
 		@Override
-		public int getCode() {
-			return code;
-		}
-		public void setCode( int code ){
-			this.code = code;
-		}
+		public int getCode() { return code; }
+		public void setCode( int code ){ this.code = code; }
 
 		@Override
-		public String getMessage() {
-			return message;
-		}
-		public void setMessage( String message ){
-			this.message = message;
-		}
+		public String getMessage() { return message; }
+		public void setMessage( String message ){ this.message = message; }
 		
 		@Override
 		public StackTraceElement [] getStackTrace() {
@@ -172,7 +164,9 @@ public class JsonResponseImpl implements JsonResponse {
 	
 	public static class MessageImpl implements Message {
 		
-		private final String field, message;
+		private String field, message;
+		
+		public MessageImpl(){}
 		
 		public MessageImpl( String field, String message ){
 			this.field = field;
@@ -180,14 +174,12 @@ public class JsonResponseImpl implements JsonResponse {
 		}
 
 		@Override
-		public String getField() {
-			return field;
-		}
+		public String getField() { return field; }
+		public void setField( String field ){ this.field = field; }
 
 		@Override
-		public String getMessage() {
-			return message;
-		}
+		public String getMessage() { return message; }
+		public void setMessage( String message ){ this.message = message; }
 		
 	}
 	
