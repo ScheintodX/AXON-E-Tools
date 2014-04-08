@@ -3,6 +3,7 @@ package de.axone.equals;
 import static org.testng.Assert.*;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -483,6 +484,16 @@ public class EqualsTest {
 			fields.add( name );
 			
 			return object.getClass().newInstance();
+		}
+
+		@Override
+		public <T> T find( String name, Collection<T> collection, T src ) {
+			
+			for( T t : collection ){
+				if( t.equals( src ) ) return t;
+			}
+			
+			return null;
 		}
 		
 	}

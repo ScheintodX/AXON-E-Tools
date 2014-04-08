@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import de.axone.equals.EqualsClass.Select;
 import de.axone.exception.Assert;
+import de.axone.tools.E;
 
 /**
  * This a Helper class for implementing the equals and the hashcode
@@ -273,7 +274,8 @@ public class Equals {
 				}
 				
 				if( 
-						( equalsClassA.includePrivate() || !accessor.isPrivate() )
+						!accessor.isStatic()
+						&& ( equalsClassA.includePrivate() || !accessor.isPrivate() )
 						&& isInclude
 				){
 					
@@ -397,6 +399,7 @@ public class Equals {
 	
 	public static interface Accessor {
 		public boolean isPrivate();
+		public boolean isStatic();
 		public <T extends Annotation> T getAnnotation( Class<T> annotationClass );
 		public String getName();
 		public boolean isGetable();
@@ -418,6 +421,10 @@ public class Equals {
 		@Override
 		public boolean isPrivate() {
 			return Modifier.isPrivate( field.getModifiers() );
+		}
+		@Override
+		public boolean isStatic() {
+			return Modifier.isStatic( field.getModifiers() );
 		}
 		@Override
 		public <T extends Annotation> T getAnnotation( Class<T> annotationClass ){
@@ -457,6 +464,10 @@ public class Equals {
 		@Override
 		public boolean isPrivate() {
 			return Modifier.isPrivate( getter.getModifiers() );
+		}
+		@Override
+		public boolean isStatic() {
+			return Modifier.isStatic( getter.getModifiers() );
 		}
 		
 		@Override
@@ -565,6 +576,16 @@ public class Equals {
 			Class<?> clz = object.getClass();
 			return clz.newInstance();
 		}
+
+		@Override
+		public <T> T find( String name, Collection<T> collection, T src ) {
+			
+			for( T t : collection ){
+				if( t.equals( src ) ) return t;
+			}
+			
+			return null;
+		}
 	}
 	
 	/*
@@ -589,6 +610,9 @@ public class Equals {
 		
 			Object tarVal = accessor.get( target );
 			Object srcVal = accessor.get( source );
+			
+			String tarClz = tarVal != null ? tarVal.getClass().getSimpleName() : "/NULL/";
+			E.rr( accessor.getName(), "("+tarClz+")", tarVal, "<--", srcVal );
 			
 			//E.rr( accessor.getName(), tarVal, srcVal );
 			
@@ -621,6 +645,7 @@ public class Equals {
 				
 			} else {
 				
+				// First create Set / List / Map if none there
 				if( tarVal == null && (
 						srcVal instanceof Set
 						|| srcVal instanceof List
@@ -668,15 +693,32 @@ public class Equals {
 							tarList = (List<Object>)tarVal;
 					
 					for( Iterator<Object> it = tarList.iterator(); it.hasNext(); ){
-						Object o = it.next();
+						Object t = it.next();
+						Object s = sm.find( accessor.getName(), srcList, t );
+						if( s == null ){
+							it.remove();
+						}
+						
+						/*
 						if( ! srcList.contains( o ) ){
 							it.remove();
 						}
+						*/
 					}
-					for( Object o : srcList ){
+					for( Object s : srcList ){
+						Object t = sm.find( accessor.getName(), tarList, s );
+						if( t == null ){
+							tarList.add( sm.copyOf( accessor.getName(), s ) );
+						} else {
+							if( t instanceof Synchronizable ){
+								Equals.synchronize( (Synchronizable)t, (Synchronizable)s, sm );
+							}
+						}
+						/*
 						if( ! tarList.contains( o ) ){
 							tarList.add( sm.copyOf( accessor.getName(), o ) );
 						}
+						*/
 					}
 					Collections.sort( tarList, new List2ListSorter( srcList ) );
 					
