@@ -21,7 +21,6 @@ import org.testng.annotations.Test;
 import de.axone.equals.Equals.Synchronizable;
 import de.axone.equals.EqualsClass.Select;
 import de.axone.equals.EqualsClass.WorkOn;
-import de.axone.tools.E;
 import de.axone.tools.Sets;
 
 @Test( groups="tools.equals" )
@@ -61,14 +60,14 @@ public class EqualsTest {
 		private o o50 = new o( 1, "s1", new X( "x1" ), true, null );
 	}
 
-	@Test( enabled=false )
+	//@Test( enabled=false )
 	public void verySimpleTest(){
 		
 		O o = new O( 1, "s1", null, true, null );
 		assertNotNull( o.hashCode() );
 	}
 	
-	@Test( enabled=false )
+	//@Test( enabled=false )
 	public void verySimpleTest_(){
 		
 		o o = new o( 1, "s1", null, true, null );
@@ -78,7 +77,7 @@ public class EqualsTest {
 	// This method tests, that EqualsBuilder from Commons uses equals on
 	// BigDecimal to compare to BigDecimals. Note that this was changed
 	// in the past and could change again.
-	@Test( enabled=false )
+	//@Test( enabled=false )
 	public void testCommonsForBigDecimalHandling(){
 		
 		BigDecimal a = new BigDecimal( "2.0" );
@@ -121,7 +120,7 @@ public class EqualsTest {
 		assertFalse( eb.isEquals() );
 	}
 	
-	@Test( enabled=false )
+	//@Test( enabled=false )
 	public void testAnnotations(){
 		
 		EqualsClass ec = O.class.getAnnotation( EqualsClass.class );
@@ -135,62 +134,68 @@ public class EqualsTest {
 		O s1 = new O( 1, "s1", new X( "x1" ), true, "2.0" );
 		O x1 = new O();
 		
-		E.rr( s1 );
-		E.rr( x1 );
+		//E.rr( s1 );
+		//E.rr( x1 );
+		
+		assertNotEquals( x1, s1 );
 		
 		Equals.synchronize( x1, s1, null );
+		assertEquals( x1, s1 ); // Must equal according to Equals rules
 		
-		E.rr( s1 );
-		E.rr( x1 );
+		// Must still differ
+		assertNotEquals( x1.ignore, s1.ignore );
+		
+		//E.rr( s1 );
+		//E.rr( x1 );
 		
 	}
 	
 	
-	@Test( enabled=false )
+	//@Test( enabled=false )
 	public void testBuilder(){
 		
 		OO o = new OO();
 		
-		assertTrue( o.o1.equals( o.o1 ) );
-		assertTrue( o.o11.equals( o.o11 ) );
-		assertTrue( o.o1.equals( o.o11 ) );
-		assertTrue( o.o11.equals( o.o1 ) );
+		assertEquals( o.o1, o.o1 );
+		assertEquals( o.o11, o.o11 );
+		assertEquals( o.o1, o.o11 );
+		assertEquals( o.o11, o.o1 );
 		
-		assertFalse( o.o1.equals( o.o2 ) );
-		assertFalse( o.o1.equals( o.o3 ) );
-		assertFalse( o.o1.equals( o.o4 ) );
-		assertFalse( o.o1.equals( o.o5 ) );
-		assertFalse( o.o1.equals( o.o6 ) );
+		assertNotEquals( o.o1, o.o2 );
+		assertNotEquals( o.o1, o.o3 );
+		assertNotEquals( o.o1, o.o4 );
+		assertNotEquals( o.o1, o.o5 );
+		assertNotEquals( o.o1, o.o6 );
 		
-		assertFalse( o.o1.equals( o.o20 ) );
-		assertFalse( o.o1.equals( o.o30 ) );
-		assertFalse( o.o1.equals( o.o40 ) );
-		assertFalse( o.o1.equals( o.o50 ) );
+		assertNotEquals( o.o1, o.o20 );
+		assertNotEquals( o.o1, o.o30 );
+		assertNotEquals( o.o1, o.o40 );
+		assertNotEquals( o.o1, o.o50 );
 	}
 	
-	@Test( enabled=false )
+	//@Test( enabled=false )
 	public void testBuilder_(){
 		
 		oo o = new oo();
 		
-		assertTrue( o.o1.equals( o.o1 ) );
-		assertTrue( o.o11.equals( o.o11 ) );
-		assertTrue( o.o1.equals( o.o11 ) );
-		assertTrue( o.o11.equals( o.o1 ) );
+		assertEquals( o.o1, o.o1 );
+		assertEquals( o.o11, o.o11 );
+		assertEquals( o.o1, o.o11 );
+		assertEquals( o.o11, o.o1 );
 		
-		assertFalse( o.o1.equals( o.o2 ) );
-		assertFalse( o.o1.equals( o.o3 ) );
-		assertFalse( o.o1.equals( o.o4 ) );
-		assertFalse( o.o1.equals( o.o5 ) );
-		assertFalse( o.o1.equals( o.o6 ) );
+		assertNotEquals( o.o1, o.o2 );
+		assertNotEquals( o.o1, o.o3 );
+		assertNotEquals( o.o1, o.o4 );
+		assertNotEquals( o.o1, o.o5 );
+		assertNotEquals( o.o1, o.o6 );
 		
-		assertFalse( o.o1.equals( o.o20 ) );
-		assertFalse( o.o1.equals( o.o30 ) );
-		assertFalse( o.o1.equals( o.o40 ) );
-		assertFalse( o.o1.equals( o.o50 ) );
+		assertNotEquals( o.o1, o.o20 );
+		assertNotEquals( o.o1, o.o30 );
+		assertNotEquals( o.o1, o.o40 );
+		assertNotEquals( o.o1, o.o50 );
 	}
 	
-	@Test( enabled=false )
+	//@Test( enabled=false )
 	public void testHashcode(){
 		
 		OO o = new OO();
@@ -212,7 +217,7 @@ public class EqualsTest {
 		assertFalse( o.o1.hashCode() == o.o50.hashCode() );
 	}
 	
-	@Test( enabled=false )
+	//@Test( enabled=false )
 	public void testHashcode_(){
 		
 		oo o = new oo();
@@ -234,7 +239,7 @@ public class EqualsTest {
 		assertFalse( o.o1.hashCode() == o.o50.hashCode() );
 	}
 	
-	@Test( enabled=false )
+	//@Test( enabled=false )
 	public void testStrongHashCode(){
 		
 		OO o = new OO();
@@ -256,7 +261,7 @@ public class EqualsTest {
 		assertFalse( o.o1.strongHashCode().equals( o.o50.strongHashCode() ) );
 	}
 	
-	@Test( enabled=false )
+	//@Test( enabled=false )
 	public void testStrongHashCode_(){
 		
 		oo o = new oo();
@@ -278,7 +283,7 @@ public class EqualsTest {
 		assertFalse( o.o1.strongHashCode().equals( o.o50.strongHashCode() ) );
 	}
 	
-	@Test( enabled=false )
+	//@Test( enabled=false )
 	public void testSynchronize(){
 		
 		OO oo = new OO();
@@ -304,7 +309,7 @@ public class EqualsTest {
 		
 	}
 	
-	@Test( enabled=false )
+	//@Test( enabled=false )
 	public void testSynchronize_(){
 		
 		oo oo = new oo();
@@ -330,7 +335,7 @@ public class EqualsTest {
 		
 	}
 	
-	@Test( enabled=false )
+	//@Test( enabled=false )
 	public void testSynchronizeMapper(){
 		
 		OO oo = new OO();
@@ -397,7 +402,7 @@ public class EqualsTest {
 		
 	}
 	
-	@Test( enabled=false )
+	////@Test( enabled=false )
 	public void testSynchronizeMapper_(){
 		
 		oo oo = new oo();
@@ -549,7 +554,7 @@ public class EqualsTest {
 		
 		@EqualsField( include=false )
 		public double getIgnore1(){ return ignore; };
-		public double getignore2(){ return ignore; };
+		private double getignore2(){ return ignore; };
 		public double getIgnore3( int x ){ return ignore; }
 		
 		@Id
@@ -603,6 +608,7 @@ public class EqualsTest {
 		
 		@EqualsField( include=false )
 		public double ignore1 = Math.random();
+		//Private should be ignored if not told otherwise
 		private double ignore2 = Math.random();
 		@Id
 		public double ignore4 = Math.random();

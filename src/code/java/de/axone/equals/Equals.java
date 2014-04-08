@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,10 +24,11 @@ import javax.persistence.Transient;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.axone.equals.EqualsClass.Select;
 import de.axone.exception.Assert;
-import de.axone.tools.E;
 
 /**
  * This a Helper class for implementing the equals and the hashcode
@@ -58,6 +60,8 @@ import de.axone.tools.E;
  */
 public class Equals {
 	
+	private static final Logger log = LoggerFactory.getLogger( Equals.class );
+	
 	/**
 	 * Generate a java hash code for the given object
 	 * 
@@ -74,7 +78,7 @@ public class Equals {
 		HashCodeBuilder builder = new HashCodeBuilder();
 		HashWrapper<T> wrapper = new HashWrapper<T>( builder, object );
 		
-		process( wrapper, object );
+		process( wrapper, null, object );
 		
 		return builder.toHashCode();
 	}
@@ -99,7 +103,7 @@ public class Equals {
 		EqualsBuilder builder = new EqualsBuilder();
 		EqualsWrapper<T> wrapper = new EqualsWrapper<T>( builder, o1, o2 );
 		
-		process( wrapper, o1 );
+		process( wrapper, null, o1 );
 		
 		return builder.isEquals();
 	}
@@ -135,7 +139,7 @@ public class Equals {
 		StrongHashCodeBuilder<byte[]> builder = new CryptoHashCodeBuilder();
 		StrongHashWrapper<byte[],T> wrapper = new StrongHashWrapper<byte[],T>( builder, object );
 		
-		process( wrapper, object );
+		process( wrapper, null, object );
 		
 		return builder.toHashCode();
 	}
@@ -178,13 +182,8 @@ public class Equals {
 		
 		return target;
 	}
-
-	private static <T> void process( Wrapper<T> wrapper, T o ) {
-		
-		Class<?> clz = o.getClass();
-		
-		EqualsClass equalsClassA = clz.getAnnotation( EqualsClass.class );
-		Assert.notNull( equalsClassA, "@EqualsClass for " + o.getClass().getSimpleName() );
+	
+	private static <T> EnumSet<EqualsOption.Option> globalOptions( Class<?> clz ){
 		
 		EnumSet<EqualsOption.Option> globalOptions = EnumSet.noneOf( EqualsOption.Option.class );
 		EqualsOption equalsOptionA = clz.getAnnotation( EqualsOption.class );
@@ -192,253 +191,111 @@ public class Equals {
 			globalOptions = EnumSet.copyOf( Arrays.asList( equalsOptionA.options()  ) );
 		}
 		
+		return globalOptions;
+		
+	}
+	
+	private static <T> void process( Wrapper<T> wrapper, T target, T source ) {
+		
+		Class<?> sourceClz = source.getClass();
+		if( target != null ){
+			Class<?> targetClz = target.getClass();
+			Assert.equal( targetClz, "target and source class", sourceClz );
+			Assert.isTrue( wrapper instanceof CopyWrapper, "Must use an CopyWrapper" );
+		}
+		
+		// Class's annotation
+		EqualsClass equalsClassA = sourceClz.getAnnotation( EqualsClass.class );
+		Assert.notNull( equalsClassA, "@EqualsClass for " + sourceClz.getSimpleName() );
+		
+		EnumSet<EqualsOption.Option> globalOptions = globalOptions( sourceClz );
+		
+		// Build accessor list either of fields or methods
+		List<Accessor> accessors;
 		switch( equalsClassA.workOn() ){
 		
 			case FIELDS:{
 				// Sort methods because order matters for hashCode
-				Field [] fields = clz.getDeclaredFields();
+				Field [] fields = sourceClz.getDeclaredFields();
 				Arrays.sort( fields, FIELD_SORTER );
 				
+				accessors = new ArrayList<>( fields.length );
 				for( Field field : fields ){
-					
-					boolean isPrivate = Modifier.isPrivate( field.getModifiers() );
-					
-					EqualsField equalsFieldA = field.getAnnotation( EqualsField.class );
-					
-					equalsOptionA = field.getAnnotation( EqualsOption.class );
-					EnumSet<EqualsOption.Option> localOptions = EnumSet.copyOf( globalOptions );
-					if( equalsOptionA != null ){
-						localOptions.addAll( Arrays.asList( equalsOptionA.options() ) );
-					}
-					
-					boolean isInclude;
-					if( equalsFieldA != null ){
-						isInclude = equalsFieldA.include();
-					} else {
-						isInclude = equalsClassA.select() == Select.ALL;
-						Transient transientA = field.getAnnotation( Transient.class );
-						Id idA = field.getAnnotation( Id.class );
-						if( transientA != null ) isInclude = false;
-						if( idA != null ) isInclude = false;
-					}
-					
-					String name = field.getName();
-					if( 
-							( equalsClassA.includePrivate() || !isPrivate )
-							&& isInclude
-					){
-						try {
-							wrapper.invoke( field, localOptions );
-						} catch( Exception e ) {
-							throw new RuntimeException( "Error in " + name, e );
-						}
-					}
+					accessors.add( new FieldAccessor( field ) );
 				}
 			} break;
 				
 			case METHODS:{
 				
 				// Sort methods because order matters for hashCode
-				Method [] methods = clz.getDeclaredMethods();
+				Method [] methods = sourceClz.getDeclaredMethods();
 				Arrays.sort( methods, METHOD_SORTER );
 				
+				accessors = new ArrayList<>( methods.length );
 				for( Method method : methods ){
 					
-					boolean isPrivate = Modifier.isPrivate( method.getModifiers() );
-					
-					EqualsField equalsFieldA = method.getAnnotation( EqualsField.class );
-					
-					equalsOptionA = method.getAnnotation( EqualsOption.class );
-					EnumSet<EqualsOption.Option> localOptions = EnumSet.copyOf( globalOptions );
-					if( equalsOptionA != null ){
-						localOptions.addAll( Arrays.asList( equalsOptionA.options() ) );
-					}
-					
-					boolean isInclude;
-					if( equalsFieldA != null ){
-						isInclude = equalsFieldA.include();
-					} else {
-						isInclude = equalsClassA.select() == Select.ALL;
-						Transient transientA = method.getAnnotation( Transient.class );
-						Id idA = method.getAnnotation( Id.class );
-						if( transientA != null ) isInclude = false;
-						if( idA != null ) isInclude = false;
-					}
-					
-					String name = method.getName();
-					if( 
-							( 
-								( name.length() > 3 && name.startsWith( "get" )
-										&& Character.isUpperCase( name.charAt( 3 ) )
-								|| name.length() > 2 && name.startsWith( "is" )
-										&& Character.isUpperCase( name.charAt( 2 ) ) )
-							)
-							&& method.getReturnType() != Void.class
-							&& method.getGenericParameterTypes().length == 0
-							&& ( equalsClassA.includePrivate() || !isPrivate )
-							&& isInclude
-					){
-						try {
-							wrapper.invoke( method, localOptions );
-						} catch( Exception e ) {
-							throw new RuntimeException( "Error in " + name, e );
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	private static <T extends Synchronizable<?> > void process( CopyWrapper<T> wrapper, T target, T source ) {
-		
-		Class<?> targetClz = target.getClass();
-		Class<?> sourceClz = source.getClass();
-		Assert.equal( targetClz, "target and source class", sourceClz );
-		
-		// Class's annotation
-		EqualsClass ec = targetClz.getAnnotation( EqualsClass.class );
-		Assert.notNull( ec, "@EqualsClass for " + target.getClass().getSimpleName() );
-		
-		EnumSet<EqualsOption.Option> globalOptions = EnumSet.noneOf( EqualsOption.Option.class );
-		EqualsOption eo = targetClz.getAnnotation( EqualsOption.class );
-		if( eo != null ){
-			globalOptions = EnumSet.copyOf( Arrays.asList( eo.options()  ) );
-		}
-		
-		switch( ec.workOn() ){
-		
-			case FIELDS:{
-				
-				// All fields of class
-				for( Field field : targetClz.getDeclaredFields() ){
-					
-					boolean isPrivate = Modifier.isPrivate( field.getModifiers() );
-					
-					// Field's annotation
-					EqualsField ef = field.getAnnotation( EqualsField.class );
-					
-					// Field's options + global options
-					eo = field.getAnnotation( EqualsOption.class );
-					EnumSet<EqualsOption.Option> localOptions = EnumSet.copyOf( globalOptions );
-					if( eo != null ){
-						localOptions.addAll( Arrays.asList( eo.options() ) );
-					}
-					
-					boolean isInclude;
-					if( ef != null ){
-						isInclude = ef.include();
-					} else {
-						isInclude = ec.select() == Select.ALL;
-						Transient tAn = field.getAnnotation( Transient.class );
-						Id idAn = field.getAnnotation( Id.class );
-						if( tAn != null ) isInclude = false;
-						if( idAn != null ) isInclude = false;
-					}
-					
-					String name = field.getName();
-					if( 
-							( ec.includePrivate() || !isPrivate )
-							&& isInclude
-					){
-						
-						try {
-							
-							wrapper.invoke( name, field, localOptions );
-							
-						} catch( Exception e ) {
-							throw new RuntimeException( "Error in " + name, e );
-						}
-						
-					}
+					accessors.add( new MethodAccessor( sourceClz, method ) );
 				}
 			} break;
+			
+			default:
+				throw new IllegalArgumentException( "Unknown workOn: " + equalsClassA.workOn() );
+		}
+		
+		for( Accessor accessor : accessors ){
+			
+			if( accessor.isGetable() ){
 				
-			case METHODS:{
+				if( target != null && !accessor.isSetable() ){
+					log.warn( "Skipping missing setter for: {}", accessor.getName() );
+					continue;
+				}
 				
-				for( Method getter : targetClz.getDeclaredMethods() ){
+				// Field's annotation
+				EqualsField equalsFieldA = accessor.getAnnotation( EqualsField.class );
+				
+				// Field's options + global options
+				EqualsOption equalsOptionA = accessor.getAnnotation( EqualsOption.class );
+				EnumSet<EqualsOption.Option> localOptions = EnumSet.copyOf( globalOptions );
+				if( equalsOptionA != null ){
+					localOptions.addAll( Arrays.asList( equalsOptionA.options() ) );
+				}
+				
+				boolean isInclude;
+				if( equalsFieldA != null ){
+					isInclude = equalsFieldA.include();
+				} else {
+					isInclude = equalsClassA.select() == Select.ALL;
+					Transient tAn = accessor.getAnnotation( Transient.class );
+					Id idAn = accessor.getAnnotation( Id.class );
+					if( tAn != null ) isInclude = false;
+					if( idAn != null ) isInclude = false;
+				}
+				
+				if( 
+						( equalsClassA.includePrivate() || !accessor.isPrivate() )
+						&& isInclude
+				){
 					
-					//Accessor getter = null;
-					
-					boolean isPrivate = Modifier.isPrivate( getter.getModifiers() );
-					
-					EqualsField ef = getter.getAnnotation( EqualsField.class );
-					
-					eo = getter.getAnnotation( EqualsOption.class );
-					EnumSet<EqualsOption.Option> localOptions = EnumSet.copyOf( globalOptions );
-					if( eo != null ){
-						localOptions.addAll( Arrays.asList( eo.options() ) );
+					try {
+						
+						wrapper.invoke( accessor, localOptions );
+						
+					} catch( Exception e ) {
+						throw new RuntimeException( "Error in " + accessor.getName(), e );
 					}
 					
-					boolean isInclude;
-					if( ef != null ){
-						isInclude = ef.include();
-					} else {
-						isInclude = ec.select() == Select.ALL;
-						Transient tAn = getter.getAnnotation( Transient.class );
-						Id idAn = getter.getAnnotation( Id.class );
-						if( tAn != null ) isInclude = false;
-						if( idAn != null ) isInclude = false;
-					}
-					
-					String name = getter.getName();
-					if( 
-							( 
-								( name.length() > 3 && name.startsWith( "get" )
-										&& Character.isUpperCase( name.charAt( 3 ) )
-								|| name.length() > 2 && name.startsWith( "is" )
-										&& Character.isUpperCase( name.charAt( 2 ) ) )
-							)
-							&& getter.getReturnType() != Void.class
-							&& getter.getGenericParameterTypes().length == 0
-							&& ( ec.includePrivate() || !isPrivate )
-							&& isInclude
-					){
-						
-						String varName = m2n( name );
-						String setterName = "set"+varName;
-						
-						try {
-							
-							Method setter = targetClz.getMethod( setterName,
-									new Class<?> []{ getter.getReturnType() } );
-							
-							wrapper.invoke( tLc( varName ), setter, getter, localOptions );
-							
-						} catch( Exception e ) {
-							throw new RuntimeException( "Error in " + name, e );
-						}
-						
-					}
 				}
 			}
-			
 		}
-	}
-	
-	private static String m2n( String methodName ){
-		
-		if( methodName.startsWith( "get" ) ) return methodName.substring( 3 );
-		else if( methodName.startsWith( "is" ) ) return methodName.substring( 2 );
-		else throw new IllegalArgumentException( "Not a valid getter: " + methodName );
-		
-	}
-	private static String tLc( String name ){
-		return name.substring( 0,1 ).toLowerCase() + name.substring( 1 );
 	}
 	
 	private interface Wrapper<T> {
-		public void invoke( Method method, EnumSet<EqualsOption.Option> options )
-				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
-		public void invoke( Field field, EnumSet<EqualsOption.Option> options )
-				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
+		public void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options ) throws IllegalArgumentException,
+				IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException;
 	}
 	
-	private interface CopyWrapper<T> {
-		public void invoke( String name, Method setter, Method getter, EnumSet<EqualsOption.Option> options )
-				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException;
-		public void invoke( String name, Field field, EnumSet<EqualsOption.Option> options )
-				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException;
-	}
+	private interface CopyWrapper<T> extends Wrapper<T> {}
 	
 	/*
 	 * Uses commons EqualsBuilder to process equals
@@ -454,20 +311,7 @@ public class Equals {
 		}
 
 		@Override
-		public void invoke( Method method, EnumSet<EqualsOption.Option> options )
-				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-			
-			invoke( new MethodAccessor( method ), options );
-		}
-		
-		@Override
-		public void invoke( Field field, EnumSet<EqualsOption.Option> options )
-				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-			
-			invoke( new FieldAccessor( field ), options );
-		}
-		
-		private void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options )
+		public void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options )
 				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 			
 			Object v1 = accessor.get( o1 );
@@ -497,20 +341,7 @@ public class Equals {
 		}
 		
 		@Override
-		public void invoke( Method method, EnumSet<EqualsOption.Option> options )
-				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-			
-			invoke( new MethodAccessor( method ), options );
-		}
-		
-		@Override
-		public void invoke( Field field, EnumSet<EqualsOption.Option> options )
-				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-			
-			invoke( new FieldAccessor( field ), options );
-		}
-		
-		private void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options )
+		public void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options )
 				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 			
 			Object value = accessor.get( o );
@@ -536,20 +367,7 @@ public class Equals {
 		}
 		
 		@Override
-		public void invoke( Method method, EnumSet<EqualsOption.Option> options )
-				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-			
-			invoke( new MethodAccessor( method ), options );
-		}
-		
-		@Override
-		public void invoke( Field field, EnumSet<EqualsOption.Option> options )
-				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-			
-			invoke( new FieldAccessor( field ), options );
-		}
-		
-		private void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options )
+		public void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options )
 				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 			
 			Object value = accessor.get( o );
@@ -586,10 +404,11 @@ public class Equals {
 		public Object get( Object o )
 				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
 		public void set( Object o, Object value )
-				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
+				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException;
 	}
 	
 	private static class FieldAccessor implements Accessor {
+		
 		private final Field field;
 
 		public FieldAccessor( Field field ) {
@@ -626,59 +445,101 @@ public class Equals {
 	
 	private static class MethodAccessor implements Accessor {
 		
-		private static Method method;
+		private final Class<?> clazz;
+		private final Method getter;
+		private Method setter; // cached
+		private String subname; // cached
 		
-		public MethodAccessor( Method method ){
-			this.method = method;
+		public MethodAccessor( Class<?> clazz, Method getter ){
+			this.clazz = clazz;
+			this.getter = getter;
 		}
 		@Override
 		public boolean isPrivate() {
-			return Modifier.isPrivate( method.getModifiers() );
+			return Modifier.isPrivate( getter.getModifiers() );
 		}
 		
 		@Override
 		public <T extends Annotation> T getAnnotation( Class<T> annotationClass ){
-			return method.getAnnotation( annotationClass );
+			return getter.getAnnotation( annotationClass );
 		}
+		
 		@Override
 		public String getName(){
-			return method.getName();
+			
+			String subname = subname();
+			
+			if( subname == null )
+				throw new IllegalArgumentException( "Must start with get/is" );
+			
+			return tLc( subname );
+			
 		}
+		
+		private static final String tLc( String name ){
+			return name.substring( 0,1 ).toLowerCase() + name.substring( 1 );
+		}
+	
+		
 		@Override
 		public boolean isGetable() {
-			String name = method.getName();
+			
+			String subname = subname();
 			return
-					( 
-						( name.length() > 3 && name.startsWith( "get" )
-								&& Character.isUpperCase( name.charAt( 3 ) )
-						|| name.length() > 2 && name.startsWith( "is" )
-								&& Character.isUpperCase( name.charAt( 2 ) ) )
-					)
-					&& method.getReturnType() != Void.class
-					&& method.getGenericParameterTypes().length == 0
+					subname != null 
+					&& getter.getReturnType() != Void.class
+					&& getter.getGenericParameterTypes().length == 0
 			;
 		}
+		
 		@Override
 		public boolean isSetable() {
-			String name = method.getName();
-			return
-					( 
-						( name.length() > 3 && name.startsWith( "set" )
-								&& Character.isUpperCase( name.charAt( 3 ) ) )
-					)
-					&& method.getReturnType() == Void.class
-					&& method.getGenericParameterTypes().length == 1
-			;
+				try {
+					setter();
+				} catch( NoSuchMethodException | SecurityException e ) {
+					return false;
+				}
+				return true;
 		}
+		
+		private String subname(){
+			
+			if( subname == null ){
+				String name = getter.getName();
+				if( name.startsWith( "get" ) ) subname = name.substring( 3 );
+				else if( name.startsWith( "is" ) ) subname = name.substring( 2 );
+			}
+			return subname;
+			
+		}
+		
+		private Method setter() throws NoSuchMethodException, SecurityException{
+			
+			if( setter == null ){
+			
+				String subname = subname();
+				
+				if( subname == null )
+					throw new NoSuchMethodException( "Must start with get/is" );
+				
+				String setterName = "set" + subname();
+				
+				Class<?> getterType = getter.getReturnType();
+				
+				setter = clazz.getMethod( setterName, getterType );
+			}
+			return setter;
+		}
+		
 		@Override
 		public Object get( Object o ) throws IllegalArgumentException,
 				IllegalAccessException, InvocationTargetException {
-			return method.invoke( o );
+			return getter.invoke( o );
 		}
 		@Override
 		public void set( Object o, Object value )
-				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-			method.invoke( o, value );
+				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
+			setter().invoke( o, value );
 			
 		}
 	}
@@ -689,7 +550,7 @@ public class Equals {
 
 		@Override
 		public Object copyOf( String name, Object object ) {
-			E.rr( "copyOf: " + name );
+			//E.rr( "copyOf: " + name );
 			return object;
 		}
 
@@ -697,7 +558,7 @@ public class Equals {
 		public Object emptyInstanceOf( String name, Object object )
 				throws InstantiationException, IllegalAccessException {
 			
-			E.rr( "emptyInstanceOf: " + name );
+			//E.rr( "emptyInstanceOf: " + name );
 			
 			if( object == null ) return null;
 			
@@ -723,15 +584,13 @@ public class Equals {
 		}
 		
 		@Override
-		public void invoke( String name, Method setter, Method getter, EnumSet<EqualsOption.Option> options ) throws IllegalArgumentException,
-				IllegalAccessException, InvocationTargetException, InstantiationException {
+		public void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options ) throws IllegalArgumentException,
+				IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException {
+		
+			Object tarVal = accessor.get( target );
+			Object srcVal = accessor.get( source );
 			
-			//Class<?> type = getter.getReturnType();
-			
-			Object tarVal = getter.invoke( target );
-			Object srcVal = getter.invoke( source );
-			
-			E.rr( name, tarVal, srcVal );
+			//E.rr( accessor.getName(), tarVal, srcVal );
 			
 			tarVal = applyOptions( tarVal, options );
 			srcVal = applyOptions( srcVal, options );
@@ -742,7 +601,7 @@ public class Equals {
 			// Set null to null
 			// From now srcVal cannot be null;
 			if( srcVal == null ){
-				setter.invoke( target, (Object)null );
+				accessor.set( target, (Object)null );
 				return;
 			}
 			
@@ -758,7 +617,7 @@ public class Equals {
 						(Synchronizable)tarVal, (Synchronizable)srcVal, sm );
 				
 				// This may be setting value to itself or setting a null to a new value
-				setter.invoke( target, tarVal );
+				accessor.set( target, tarVal );
 				
 			} else {
 				
@@ -771,8 +630,8 @@ public class Equals {
 					// Note that we *can't* handle unmodifiable sets
 					// But they are of no great use to this anyway.
 					
-					tarVal = sm.emptyInstanceOf( name, srcVal );
-					setter.invoke( target, sm.copyOf( name, tarVal ) );
+					tarVal = sm.emptyInstanceOf( accessor.getName(), srcVal );
+					accessor.set( target, sm.copyOf( accessor.getName(), tarVal ) );
 						
 				}
 				
@@ -793,7 +652,7 @@ public class Equals {
 					// Keep the old ones and add only the new ones.
 					for( Object o : srcSet ){
 						if( ! tarSet.contains( o ) ){
-							tarSet.add( sm.copyOf( name, o ) );
+							tarSet.add( sm.copyOf( accessor.getName(), o ) );
 						}
 					}
 					
@@ -816,7 +675,7 @@ public class Equals {
 					}
 					for( Object o : srcList ){
 						if( ! tarList.contains( o ) ){
-							tarList.add( sm.copyOf( name, o ) );
+							tarList.add( sm.copyOf( accessor.getName(), o ) );
 						}
 					}
 					Collections.sort( tarList, new List2ListSorter( srcList ) );
@@ -850,7 +709,7 @@ public class Equals {
 							
 						if( tarValue == null || !tarValue.equals( srcValue ) ){
 							
-							Object x = sm.copyOf( name, srcValue );
+							Object x = sm.copyOf( accessor.getName(), srcValue );
 							
 							tarMap.put( key, x );
 						}
@@ -858,160 +717,12 @@ public class Equals {
 				
 				} else {
 				
-					setter.invoke( target, sm.copyOf( name, srcVal ) );
+					accessor.set( target, sm.copyOf( accessor.getName(), srcVal ) );
 				}
 			}
 			
 		}
 		
-		@Override
-		public void invoke( String name, Field field, EnumSet<EqualsOption.Option> options ) throws IllegalArgumentException,
-				IllegalAccessException, InvocationTargetException, InstantiationException {
-			
-			//Class<?> type = getter.getReturnType();
-			
-			Object tarVal = field.get( target );
-			Object srcVal = field.get( source );
-			
-			tarVal = applyOptions( tarVal, options );
-			srcVal = applyOptions( srcVal, options );
-			
-			// Do nothing if values are same
-			if( tarVal == srcVal ) return;
-			
-			// Set null to null
-			// From now srcVal cannot be null;
-			if( srcVal == null ){
-				field.set( target, (Object)null );
-				return;
-			}
-			
-			// Do nothing if values equal
-			if( srcVal.equals( tarVal ) ) return;
-			
-			// Cascade synchronise synchronisable values
-			if( srcVal instanceof Synchronizable ){
-				
-				// This is ugly but i don't know better.
-				@SuppressWarnings( { "rawtypes", "unchecked", "unused" } )
-				Synchronizable t2 = Equals.synchronize(
-						(Synchronizable)tarVal, (Synchronizable)srcVal, sm );
-				
-				// This may be setting value to itself or setting a null to a new value
-				field.set( target, tarVal );
-				
-			} else {
-				
-				E.rr( "A" );
-				
-				if( tarVal == null && (
-						srcVal instanceof Set
-						|| srcVal instanceof List
-						|| srcVal instanceof Map
-				) ){
-					
-					// Note that we *can't* handle unmodifiable sets
-					// But they are of no great use to this anyway.
-					
-					tarVal = sm.emptyInstanceOf( name, srcVal );
-					field.set( target, sm.copyOf( name, tarVal ) );
-						
-				}
-				
-				// Set --------------------
-				if( srcVal instanceof Set ){
-					
-					E.rr( "B" );
-				
-					if( tarVal == null )
-						throw new IllegalArgumentException( "'tarVal' is missing" );
-					
-					@SuppressWarnings( { "unchecked" } )
-					Set<Object>
-							srcSet = (Set<Object>)srcVal,
-							tarSet = (Set<Object>)tarVal;
-					
-					// Delete from old what's not in new
-					tarSet.retainAll( srcSet );
-					
-					// Keep the old ones and add only the new ones.
-					for( Object o : srcSet ){
-						if( ! tarSet.contains( o ) ){
-							tarSet.add( sm.copyOf( name, o ) );
-						}
-					}
-					
-				// List --------------------
-				} else if( srcVal instanceof List ){
-					
-					E.rr( "C" );
-					
-					if( tarVal == null )
-						throw new IllegalArgumentException( "'tarVal' is missing" );
-					
-					@SuppressWarnings( { "unchecked" } )
-					List<Object>
-							srcList = (List<Object>)srcVal,
-							tarList = (List<Object>)tarVal;
-					
-					for( Iterator<Object> it = tarList.iterator(); it.hasNext(); ){
-						Object o = it.next();
-						if( ! srcList.contains( o ) ){
-							E.rr( "REM ", o );
-							it.remove();
-						}
-					}
-					for( Object o : srcList ){
-						if( ! tarList.contains( o ) ){
-							E.rr( "ADD ", o );
-							tarList.add( sm.copyOf( name, o ) );
-						}
-					}
-					Collections.sort( tarList, new List2ListSorter( srcList ) );
-					
-				// Map --------------------
-				} else if( srcVal instanceof Map ){
-					
-					if( tarVal == null )
-						throw new IllegalArgumentException( "'tarVal' is missing" );
-					
-					@SuppressWarnings( { "unchecked" } )
-					Map<Object,Object>
-							srcMap = (Map<Object,Object>)srcVal,
-							tarMap = (Map<Object,Object>)tarVal;
-					
-					// Remove vanished keys
-					List<Object> removeMe = new LinkedList<Object>();
-					for( Object key : tarMap.keySet() ){
-						if( ! srcMap.containsKey( key ) )
-							removeMe.add( key );
-					}
-					for( Object key : removeMe ){
-						tarMap.remove( key );
-					}
-					
-					// Copy all and new keys
-					for( Object key : srcMap.keySet() ){
-						
-						Object srcValue = srcMap.get( key );
-						Object tarValue = tarMap.get( key );
-							
-						if( tarValue == null || !tarValue.equals( srcValue ) ){
-							
-							Object x = sm.copyOf( name, srcValue );
-							
-							tarMap.put( key, x );
-						}
-					}
-				
-				} else {
-				
-					field.set( target, sm.copyOf( name, srcVal ) );
-				}
-			}
-			
-		}
-
 	}
 			
 	/*
