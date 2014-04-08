@@ -53,12 +53,12 @@ public class CryptoHashCodeBuilder extends AbstractStrongHashCodeBuilder<byte[]>
 	@Override
 	public byte[] combineHash( byte[] hash1, byte[] hash2 ) {
 		Assert.equal( hash1.length, "hash lenght", hash2.length );
-		//E.rr( Base64.encodeBase64String( hash1 ).trim() + " + " + Base64.encodeBase64String( hash2 ).trim() );
+		
 		byte[] result = new byte[ hash1.length ];
 		for( int i=0; i < hash1.length; i++ ){
 			result[ i ] = (byte)( ( (hash1[i]&0xff) + (hash2[i]&0xff) )&0xff );
 		}
-		//E.rr( Base64.encodeBase64String( result ).trim() );
+		
 		return result;
 	}
 
