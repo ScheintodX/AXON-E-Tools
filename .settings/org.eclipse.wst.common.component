@@ -2,5 +2,6 @@
     <wb-module deploy-name="Tools">
         <wb-resource deploy-path="/" source-path="/src/test/java"/>
         <wb-resource deploy-path="/" source-path="/src/code/java"/>
+        <wb-resource deploy-path="/" source-path="/src/main/java"/>
     </wb-module>
 </project-modules>
