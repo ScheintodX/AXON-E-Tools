@@ -3,7 +3,6 @@ package de.axone.equals;
 import static org.testng.Assert.*;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,6 +18,7 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.testng.annotations.Test;
 
+import de.axone.equals.Equals.DefaultSynchroMapper;
 import de.axone.equals.Equals.Synchronizable;
 import de.axone.equals.EqualsClass.Select;
 import de.axone.equals.EqualsClass.WorkOn;
@@ -462,7 +462,7 @@ public class EqualsTest {
 		
 	}
 	
-	static class TestSynchroMapper implements SynchroMapper {
+	static class TestSynchroMapper extends DefaultSynchroMapper {
 		
 		Set<String> fields = new TreeSet<>();
 
@@ -474,7 +474,8 @@ public class EqualsTest {
 			if( object instanceof String ){
 				return ((String)object) + "X";
 			}
-			return object;
+			
+			return super.copyOf( name, object );
 		}
 
 		@Override
@@ -483,19 +484,9 @@ public class EqualsTest {
 			
 			fields.add( name );
 			
-			return object.getClass().newInstance();
+			return super.emptyInstanceOf( name, object );
 		}
 
-		@Override
-		public <T> T find( String name, Collection<T> collection, T src ) {
-			
-			for( T t : collection ){
-				if( t.equals( src ) ) return t;
-			}
-			
-			return null;
-		}
-		
 	}
 	
 	@SuppressWarnings( "unused" )
@@ -565,13 +556,21 @@ public class EqualsTest {
 		
 		@EqualsField( include=false )
 		public double getIgnore1(){ return ignore; };
-		private double getignore2(){ return ignore; };
+		public void setIgnore1( double ignore ){ this.ignore = ignore; };
+		
+		private double getIgnore2(){ return ignore; };
+		public void setIgnore2( double ignore ){ this.ignore = ignore; };
+		
 		public double getIgnore3( int x ){ return ignore; }
+		public void setIgnore3( double ignore ){ this.ignore = ignore; };
 		
 		@Id
 		public double getIgnore4(){ return ignore; };
+		public void setIgnore4( double ignore ){ this.ignore = ignore; };
+		
 		@Transient
 		public double getIgnore5(){ return ignore; };
+		public void setIgnore5( double ignore ){ this.ignore = ignore; };
 		
 		@Override
 		public boolean equals( Object other ){

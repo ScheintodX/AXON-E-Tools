@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import de.axone.equals.EqualsClass.Select;
 import de.axone.exception.Assert;
-import de.axone.tools.E;
 
 /**
  * This a Helper class for implementing the equals and the hashcode
@@ -146,7 +145,7 @@ public class Equals {
 	}
 	
 	/**
-	 * Synchronise 'target' so that it will equals source.
+	 * Synchronise 'destination' so that it will equals source.
 	 * 
 	 * Formally: <tt>synchronize( o1, o2 ) => equals( o1, o2 ) == true</tt>
 	 * 
@@ -162,26 +161,26 @@ public class Equals {
 	 * @throws NoSuchMethodException if there is a mismatch between setter and getter
 	 * 
 	 * @param <T>
-	 * @param target
+	 * @param destination
 	 * @param source
 	 * @param synchroMapper to do coping or <tt>null</tt>
-	 * @return the target (not a copy)
+	 * @return the destination (the original, not a copy!)
 	 */
 	public static <T extends Synchronizable<T>> T synchronize(
-			T target, T source, SynchroMapper synchroMapper ) {
+			T destination, T source, SynchroMapper synchroMapper ) {
 		
 		Assert.notNull( source, "source" );
 		
-		if( target == null ) target = source.emptyInstance();
+		if( destination == null ) destination = source.emptyInstance();
 		
 		// No synchronisation for equal objects
-		if( target == source || target.equals( source ) ) return target;
+		if( destination == source || destination.equals( source ) ) return destination;
 		
-		SyncroWrapper<T> wrapper = new SyncroWrapper<T>( target, source, synchroMapper );
+		SyncroWrapper<T> wrapper = new SyncroWrapper<T>( destination, source, synchroMapper );
 		
-		process( wrapper, target, source );
+		process( wrapper, destination, source );
 		
-		return target;
+		return destination;
 	}
 	
 	private static <T> EnumSet<EqualsOption.Option> globalOptions( Class<?> clz ){
@@ -196,12 +195,12 @@ public class Equals {
 		
 	}
 	
-	private static <T> void process( Wrapper<T> wrapper, T target, T source ) {
+	private static <T> void process( Wrapper<T> wrapper, T destination, T source ) {
 		
 		Class<?> sourceClz = source.getClass();
-		if( target != null ){
-			Class<?> targetClz = target.getClass();
-			Assert.equal( targetClz, "target and source class", sourceClz );
+		if( destination != null ){
+			Class<?> destinationClz = destination.getClass();
+			Assert.equal( destinationClz, "desstination and source class", sourceClz );
 			Assert.isTrue( wrapper instanceof CopyWrapper, "Must use an CopyWrapper" );
 		}
 		
@@ -247,7 +246,7 @@ public class Equals {
 			
 			if( accessor.isGetable() ){
 				
-				if( target != null && !accessor.isSetable() ){
+				if( destination != null && !accessor.isSetable() ){
 					log.warn( "Skipping missing setter for: {}", accessor.getName() );
 					continue;
 				}
@@ -561,7 +560,9 @@ public class Equals {
 
 		@Override
 		public Object copyOf( String name, Object object ) {
-			//E.rr( "copyOf: " + name );
+			
+			log.debug( "copyOf: {}", name );
+			
 			return object;
 		}
 
@@ -569,7 +570,7 @@ public class Equals {
 		public Object emptyInstanceOf( String name, Object object )
 				throws InstantiationException, IllegalAccessException {
 			
-			//E.rr( "emptyInstanceOf: " + name );
+			log.debug( "emptyInstanceOf: {}", name );
 			
 			if( object == null ) return null;
 			
@@ -578,13 +579,32 @@ public class Equals {
 		}
 
 		@Override
-		public <T> T find( String name, Collection<T> collection, T src ) {
+		public Object find( String name, Collection<?> collection, Object src ) {
 			
-			for( T t : collection ){
-				if( t.equals( src ) ) return t;
+			Object result = null;
+			
+			for( Object t : collection ){
+				if( t.equals( src ) ){
+					result = t;
+					break;
+				}
 			}
 			
-			return null;
+			log.trace( "find: {} {} -> {}", new Object[]{ name, src, result } );
+			
+			return result;
+		}
+
+		@SuppressWarnings( { "rawtypes", "unchecked" } )
+		@Override
+		public void synchronize( String name, Object dst, Object src ) {
+			
+			if( dst instanceof Synchronizable ){
+				Equals.synchronize(
+						(Synchronizable)dst, (Synchronizable)src, this );
+			} else {
+				throw new IllegalArgumentException( "Not Synchronizable" );
+			}
 		}
 	}
 	
@@ -594,12 +614,12 @@ public class Equals {
 	 */
 	private static final class SyncroWrapper<T extends Synchronizable<T>> implements CopyWrapper<T> {
 		
-		final T target;
+		final T destination;
 		final T source;
 		final SynchroMapper sm;
 		
-		SyncroWrapper( T target, T source, SynchroMapper mapper ){
-			this.target = target;
+		SyncroWrapper( T destination, T source, SynchroMapper mapper ){
+			this.destination = destination;
 			this.source = source;
 			this.sm = mapper != null ? mapper : DEFAULT_SYNCHRO_MAPPER;
 		}
@@ -608,45 +628,41 @@ public class Equals {
 		public void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options ) throws IllegalArgumentException,
 				IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException {
 		
-			Object tarVal = accessor.get( target );
+			Object dstVal = accessor.get( destination );
 			Object srcVal = accessor.get( source );
 			
-			String tarClz = tarVal != null ? tarVal.getClass().getSimpleName() : "/NULL/";
-			E.rr( accessor.getName(), "("+tarClz+")", tarVal, "<--", srcVal );
+			String dstClz = dstVal != null ? dstVal.getClass().getSimpleName() : "/NULL/";
 			
-			//E.rr( accessor.getName(), tarVal, srcVal );
+			log.debug( "{}, {} <-- {}", new Object[]{ accessor.getName(), "("+dstClz+")", dstVal, srcVal } );
 			
-			tarVal = applyOptions( tarVal, options );
+			dstVal = applyOptions( dstVal, options );
 			srcVal = applyOptions( srcVal, options );
 			
 			// Do nothing if values are same
-			if( tarVal == srcVal ) return;
+			if( dstVal == srcVal ) return;
 			
 			// Set null to null
 			// From now srcVal cannot be null;
 			if( srcVal == null ){
-				accessor.set( target, (Object)null );
+				accessor.set( destination, (Object)null );
 				return;
 			}
 			
 			// Do nothing if values equal
-			if( srcVal.equals( tarVal ) ) return;
+			if( srcVal.equals( dstVal ) ) return;
 			
 			// Cascade synchronise synchronisable values
 			if( srcVal instanceof Synchronizable ){
 				
-				// This is ugly but i don't know better.
-				@SuppressWarnings( { "rawtypes", "unchecked", "unused" } )
-				Synchronizable t2 = Equals.synchronize(
-						(Synchronizable)tarVal, (Synchronizable)srcVal, sm );
+				sm.synchronize( accessor.getName(), dstVal, srcVal );
 				
 				// This may be setting value to itself or setting a null to a new value
-				accessor.set( target, tarVal );
+				accessor.set( destination, dstVal );
 				
 			} else {
 				
 				// First create Set / List / Map if none there
-				if( tarVal == null && (
+				if( dstVal == null && (
 						srcVal instanceof Set
 						|| srcVal instanceof List
 						|| srcVal instanceof Map
@@ -655,111 +671,100 @@ public class Equals {
 					// Note that we *can't* handle unmodifiable sets
 					// But they are of no great use to this anyway.
 					
-					tarVal = sm.emptyInstanceOf( accessor.getName(), srcVal );
-					accessor.set( target, sm.copyOf( accessor.getName(), tarVal ) );
+					dstVal = sm.emptyInstanceOf( accessor.getName(), srcVal );
+					accessor.set( destination, sm.copyOf( accessor.getName(), dstVal ) );
 						
 				}
 				
-				// Set --------------------
-				if( srcVal instanceof Set ){
-					
-					if( tarVal == null )
-						throw new IllegalArgumentException( "'tarVal' is missing" );
-					
-					@SuppressWarnings( { "unchecked" } )
-					Set<Object> srcSet = (Set<Object>)srcVal;
-					@SuppressWarnings( { "unchecked" } )
-					Set<Object> tarSet = (Set<Object>)tarVal;
-					
-					// Delete from old what's not in new
-					tarSet.retainAll( srcSet );
-					
-					// Keep the old ones and add only the new ones.
-					for( Object o : srcSet ){
-						if( ! tarSet.contains( o ) ){
-							tarSet.add( sm.copyOf( accessor.getName(), o ) );
-						}
-					}
-					
+				
 				// List --------------------
-				} else if( srcVal instanceof List ){
+				if( srcVal instanceof Collection ){
 					
-					if( tarVal == null )
-						throw new IllegalArgumentException( "'tarVal' is missing" );
+					if( dstVal == null )
+						throw new IllegalArgumentException( "'dstVal' is missing" );
 					
 					@SuppressWarnings( { "unchecked" } )
-					List<Object>
-							srcList = (List<Object>)srcVal,
-							tarList = (List<Object>)tarVal;
+					Collection<Object>
+							src = (Collection<Object>)srcVal,
+							dst = (Collection<Object>)dstVal;
 					
-					for( Iterator<Object> it = tarList.iterator(); it.hasNext(); ){
+					for( Iterator<Object> it = dst.iterator(); it.hasNext(); ){
 						Object t = it.next();
-						Object s = sm.find( accessor.getName(), srcList, t );
+						Object s = sm.find( accessor.getName(), src, t );
 						if( s == null ){
 							it.remove();
 						}
-						
-						/*
-						if( ! srcList.contains( o ) ){
-							it.remove();
-						}
-						*/
 					}
-					for( Object s : srcList ){
-						Object t = sm.find( accessor.getName(), tarList, s );
-						if( t == null ){
-							tarList.add( sm.copyOf( accessor.getName(), s ) );
-						} else {
-							if( t instanceof Synchronizable ){
-								Equals.synchronize( (Synchronizable)t, (Synchronizable)s, sm );
+					for( Iterator<Object> it = src.iterator(); it.hasNext(); ){
+						Object s = it.next();
+						Object d = sm.find( accessor.getName(), dst, s );
+						if( d != null ){
+							if( d instanceof Synchronizable ){
+								sm.synchronize( accessor.getName(), d, s );
+							} else {
+								dst.remove( d );
+								dst.add( sm.copyOf( accessor.getName(), s ) );
 							}
+						} else {
+							dst.add( sm.copyOf( accessor.getName(), s ) );
 						}
-						/*
-						if( ! tarList.contains( o ) ){
-							tarList.add( sm.copyOf( accessor.getName(), o ) );
-						}
-						*/
 					}
-					Collections.sort( tarList, new List2ListSorter( srcList ) );
+					
+					if( dst instanceof List ){
+						@SuppressWarnings( "unchecked" )
+						List<T> srcList = (List<T>)src,
+						        dstList = (List<T>)dst;
+						Collections.sort( dstList, new List2ListSorter( srcList ) );
+					}
 					
 				// Map --------------------
 				} else if( srcVal instanceof Map ){
 					
-					if( tarVal == null )
-						throw new IllegalArgumentException( "'tarVal' is missing" );
+					if( dstVal == null )
+						throw new IllegalArgumentException( "'dstVal' is missing" );
 					
-					@SuppressWarnings( { "unchecked" } )
+					@SuppressWarnings( "unchecked" )
 					Map<Object,Object>
 							srcMap = (Map<Object,Object>)srcVal,
-							tarMap = (Map<Object,Object>)tarVal;
+							dstMap = (Map<Object,Object>)dstVal;
 					
 					// Remove vanished keys
 					List<Object> removeMe = new LinkedList<Object>();
-					for( Object key : tarMap.keySet() ){
+					for( Object key : dstMap.keySet() ){
 						if( ! srcMap.containsKey( key ) )
 							removeMe.add( key );
 					}
 					for( Object key : removeMe ){
-						tarMap.remove( key );
+						dstMap.remove( key );
 					}
 					
 					// Copy all and new keys
 					for( Object key : srcMap.keySet() ){
 						
 						Object srcValue = srcMap.get( key );
-						Object tarValue = tarMap.get( key );
+						Object dstValue = dstMap.get( key );
 							
-						if( tarValue == null || !tarValue.equals( srcValue ) ){
+						if( dstValue != null ){
 							
+							if( !dstValue.equals( srcValue ) ){
+							
+								if( dstValue instanceof Synchronizable ){
+									sm.synchronize( accessor.getName(), dstValue, srcValue );
+								} else {
+									Object x = sm.copyOf( accessor.getName(), srcValue );
+									dstMap.put( key, x );
+								}
+							}
+						} else {
 							Object x = sm.copyOf( accessor.getName(), srcValue );
-							
-							tarMap.put( key, x );
+							dstMap.put( key, x );
 						}
+								
 					}
 				
 				} else {
 				
-					accessor.set( target, sm.copyOf( accessor.getName(), srcVal ) );
+					accessor.set( destination, sm.copyOf( accessor.getName(), srcVal ) );
 				}
 			}
 			

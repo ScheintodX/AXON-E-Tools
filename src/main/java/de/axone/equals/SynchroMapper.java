@@ -6,8 +6,10 @@ public interface SynchroMapper {
 	
 	public Object copyOf( String name, Object object );
 	
+	public void synchronize( String name, Object dst, Object src );
+	
 	public Object emptyInstanceOf( String name, Object object ) throws InstantiationException, IllegalAccessException;
 	
-	public <T> T find( String name, Collection<T> collection, T src );
+	public Object find( String name, Collection<?> collection, Object src );
 	
 }
