@@ -2,20 +2,15 @@ package de.axone.tools;
 
 import java.io.PrintStream;
 
+import de.axone.exception.Ex;
+
 public abstract class E {
 	
 	protected static void printPos( PrintStream out, int depth ){
 		
-		depth++;
+		String clazz = Ex.me( depth+1 );
 		
-		Exception e = new Exception();
-		StackTraceElement[] elm = e.getStackTrace();
-		
-		String clazz = F.simplifyClassName( elm[depth].getClassName() );
-		clazz = F.removeNestedClasses( clazz );
-		int line = elm[depth].getLineNumber();
-		
-		out.printf( ">>> (%s.java:%d) ", clazz, line );
+		out.printf( ">>> (%s) ", clazz );
 	}
 	
 	protected static void echo( PrintStream out, int depth, boolean lino, boolean nl, Object ... os ){
@@ -82,6 +77,9 @@ public abstract class E {
 		echo( System.out, 2, true, true, Text.poster( border, text ) );
 	}
 	
+	/**
+	 * Output file and line number and some text to STDERR
+	 */
 	public static void rr(){
 		echo( System.err, true, true, "" );
 	}
@@ -158,6 +156,9 @@ public abstract class E {
 		log( System.err, false, false, format, args );
 	}
 	
+	/**
+	 * Output file and line number and some text to STDOUT
+	 */
 	public static void cho(){
 		
 		echo( System.out, true, true, "" );
@@ -196,7 +197,8 @@ public abstract class E {
 	}
 	
 	/* === EXIT =========================================================== */
-	public static void xit( String message, int code ){
+	protected static final int EXIT_UP = 3;
+	protected static void exit( String message, int code ){
 		
 		StringBuilder text = new StringBuilder();
 		
@@ -208,28 +210,76 @@ public abstract class E {
 		
 		if( code == 0 ){
 			text.append( "OK" );
-    		echo( System.out, 3, true, true, text.toString() );
+    		echo( System.out, EXIT_UP, true, true, text.toString() );
 		} else {
 			text.append( code );
-    		echo( System.err, 3, true, true, text.toString() );
+    		echo( System.err, EXIT_UP, true, true, text.toString() );
 		}
 		System.exit( code );
 	}
 	
+	/**
+	 * Exit system with a message
+	 */
 	public static void xit(){
-		xit( 0 );
+		exit( null, -1 );
 	}
 	
 	public static void xit( String message ){
-		xit( message, -1 );
+		exit( message, -1 );
 	}
 	
 	public static void xit( int code ){
-		xit( null, code );
+		exit( null, code );
+	}
+	
+	public static void xit( String message, int code ){
+		exit( message, code );
 	}
 	
 	public static void xit( Throwable t ){
-		xit( t.getMessage() );
+		exit( t.getMessage(), -1 );
+	}
+	
+	/* === EX =========================================================== */
+	
+	protected static final int EX_DEFAULT_DEPTH = 3;
+	protected static final int EX_UP = 3;
+	protected static final String EX_MARK = "MARK";
+	
+	/**
+	 * Print a mark and a simplified stacktrace
+	 */
+	public static void x(){
+		
+		ex( System.err, EX_DEFAULT_DEPTH, EX_MARK );
+	}
+	public static void x( String message ){
+		ex( System.err, EX_DEFAULT_DEPTH, message );
+	}
+	public static void x( int depth ){
+		ex( System.err, depth, EX_MARK );
+	}
+	public static void x( int depth, String message ){
+		ex( System.err, depth, message );
+	}
+	/* for testing */
+	static void _x( int depth, String message ){
+		ex( System.out, depth, message );
+	}
+	protected static void ex( PrintStream out, int depth, String message ){
+		
+		StringBuilder result = new StringBuilder( depth*16 );
+		
+		result.append( "[" ).append( message ).append( "]" );
+		
+		for( int i=EX_UP; i<depth+EX_UP; i++ ){
+			
+			result.append( " < " )
+				.append( '(' ).append( Ex.me( i ) ).append( ')' );
+			
+		}
+		echo( out, EX_UP, true, true, result.toString() );
 	}
 	
 }

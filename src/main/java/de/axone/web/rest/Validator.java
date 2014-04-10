@@ -8,6 +8,8 @@ import java.util.TreeSet;
 
 import javax.persistence.EntityManager;
 
+import de.axone.tools.E;
+
 public abstract class Validator<T> {
 	
 	/**
@@ -19,22 +21,26 @@ public abstract class Validator<T> {
 	 * @param object
 	 * @return List of errors. Empty list if no errors.
 	 */
-	public List<FieldError> validate( EntityManager em, T object ){
+	public FieldErrorList validate( EntityManager em, T object ){
 		
 		FieldErrorList result = new FieldErrorList();
 		
 		try {
+			E.rr( "A" );
 			doValidate( result, em, object );
+			E.rr( "B" );
 		} catch( ValidatorException e ){
 			result.add( new FieldErrorWrapper( e ) );
-		} catch( Exception e ){
+			E.rr( "C" );
+		} catch( Throwable e ){
+			E.rr( "D" );
 			result.add( new FieldErrorImpl( "UNKNOWN", e.getMessage() ) );
 		}
 		
 		return result;
 	}
 	
-	public static <O> List<FieldError> validate( EntityManager em,
+	public static <O> FieldErrorList validate( EntityManager em,
 			Validator<O> validator, O object ) {
 		
 		return validator.validate( em, object );
@@ -157,5 +163,16 @@ public abstract class Validator<T> {
 		public void add( String field, String message ){
 			add( new FieldErrorImpl( field, message ) );
 		}
+
+		@Override
+		public boolean add( FieldError e ) {
+			if( e == null ) return false;
+			return super.add( e );
+		}
+		
+		public boolean hasError(){
+			return size() > 0;
+		}
+		
 	}
 }

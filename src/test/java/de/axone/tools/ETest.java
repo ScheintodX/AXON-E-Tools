@@ -38,15 +38,16 @@ public class ETest {
 		
 	}
 	
-	StringOutputStream s = new StringOutputStream();
-	PrintStream save=null, out = new PrintStream( s );
+	private StringOutputStream s = new StringOutputStream();
+	private PrintStream saveOut = null,
+	                     tmpOut = new PrintStream( s );
 	
 	public void testE() throws Exception {
 		
 		try {
 			
-			save = System.out;
-			System.setOut( out );
+			saveOut = System.out;
+			System.setOut( tmpOut );
 			
 			String string="text";
 			
@@ -142,13 +143,22 @@ public class ETest {
 			
 			E.cho( bslM );	assertOut( s, "{'1'=>('100', '101', '102'), '2'=>('200', '201', '202', (-null-))}" );
 			
+			// Keep line number stable or this will fail
+			a(); assertOut( s, "[test] < (ETest.java:159) < (ETest.java:158) < (ETest.java:147)" );
+			
 		} finally {
-			if( save != null ) try {
-				System.setOut( save );
+			if( saveOut != null ) try {
+				System.setOut( saveOut );
 			} catch( Throwable t ){
 				t.printStackTrace(); //<-- goes to err
 			}
 		}
+	}
+	
+	private void a(){ b(); }
+	private void b(){ c(); }
+	private void c(){
+		E._x( 3, "test" );
 	}
 	
 	private static final Pattern CLASS_PREFIX =

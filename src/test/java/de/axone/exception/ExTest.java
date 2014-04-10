@@ -6,6 +6,15 @@ import org.testng.annotations.Test;
 
 @Test( groups="tools.ex" )
 public class ExTest {
+	
+	public void testExMe(){
+		
+		// Keep position in source file intact for these to work
+		assertEquals( Ex.me(), "ExTest.java:13" );
+		assertEquals( Ex.me( 0 ), "ExTest.java:14" );
+		assertEquals( Ex.me( new Throwable(), 0 ), "ExTest.java:15" );
+		
+	}
 
 	@Test( enabled=false ) // Not enabled as long as it kills some debugging.
 	public void testExUp(){
