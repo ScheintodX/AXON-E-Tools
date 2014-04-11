@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import de.axone.equals.EqualsClass.Select;
 import de.axone.exception.Assert;
+import de.axone.tools.E;
 
 /**
  * This a Helper class for implementing the equals and the hashcode
@@ -599,10 +600,11 @@ public class Equals {
 		@Override
 		public void synchronize( String name, Object dst, Object src ) {
 			
-			if( dst instanceof Synchronizable ){
+			if( src instanceof Synchronizable ){
 				Equals.synchronize(
 						(Synchronizable)dst, (Synchronizable)src, this );
 			} else {
+				E.rr( dst );
 				throw new IllegalArgumentException( "Not Synchronizable" );
 			}
 		}
@@ -653,6 +655,8 @@ public class Equals {
 			
 			// Cascade synchronise synchronisable values
 			if( srcVal instanceof Synchronizable ){
+				
+				if( dstVal == null ) dstVal = sm.emptyInstanceOf( accessor.getName(), srcVal );
 				
 				sm.synchronize( accessor.getName(), dstVal, srcVal );
 				

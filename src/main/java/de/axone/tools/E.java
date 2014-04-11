@@ -243,8 +243,8 @@ public abstract class E {
 	
 	/* === EX =========================================================== */
 	
-	protected static final int EX_DEFAULT_DEPTH = 3;
-	protected static final int EX_UP = 3;
+	protected static final int EX_DEFAULT_DEPTH = 5;
+	protected static final int EX_UP = 4;
 	protected static final String EX_MARK = "MARK";
 	
 	/**
@@ -252,34 +252,36 @@ public abstract class E {
 	 */
 	public static void x(){
 		
-		ex( System.err, EX_DEFAULT_DEPTH, EX_MARK );
+		ex( System.err, new Throwable(), EX_UP, EX_DEFAULT_DEPTH, EX_MARK );
 	}
 	public static void x( String message ){
-		ex( System.err, EX_DEFAULT_DEPTH, message );
+		ex( System.err, new Throwable(), EX_UP, EX_DEFAULT_DEPTH, message );
 	}
 	public static void x( int depth ){
-		ex( System.err, depth, EX_MARK );
+		ex( System.err, new Throwable(), EX_UP, depth, EX_MARK );
 	}
 	public static void x( int depth, String message ){
-		ex( System.err, depth, message );
+		ex( System.err, new Throwable(), EX_UP, depth, message );
 	}
 	/* for testing */
 	static void _x( int depth, String message ){
-		ex( System.out, depth, message );
+		ex( System.out, new Throwable(), EX_UP, depth, message );
 	}
-	protected static void ex( PrintStream out, int depth, String message ){
+	protected static void ex( PrintStream out, Throwable t, int start, int depth, String message ){
 		
 		StringBuilder result = new StringBuilder( depth*16 );
 		
 		result.append( "[" ).append( message ).append( "]" );
 		
-		for( int i=EX_UP; i<depth+EX_UP; i++ ){
-			
-			result.append( " < " )
-				.append( '(' ).append( Ex.me( i ) ).append( ')' );
-			
-		}
-		echo( out, EX_UP, true, true, result.toString() );
+		result.append( Ex.me( t, start, depth ) );
+		
+		echo( out, start-1, true, true, result.toString() );
+	}
+	public static void x( int depth, Throwable t ){
+		ex( System.err, t, EX_UP-1, depth, t.getMessage() );
+	}
+	public static void x( Throwable t ){
+		ex( System.err, t, EX_UP-1, EX_DEFAULT_DEPTH, t.getMessage() );
 	}
 	
 }

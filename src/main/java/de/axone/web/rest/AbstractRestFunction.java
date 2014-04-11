@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import de.axone.tools.E;
 import de.axone.web.SuperURL;
 import de.axone.web.rest.RestFunctionServletRequestImpl.Method;
 
@@ -72,8 +71,6 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 		T jsonData;
 		
 		String data = req.getParameter( "data" );
-		
-		E.rr( data );
 		
 		// Only for debugging
 		/*

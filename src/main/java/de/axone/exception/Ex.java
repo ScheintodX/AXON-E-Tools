@@ -44,6 +44,20 @@ public abstract class Ex {
 		return clazz + ".java:" + line;
 	}
 	
+	public static String me( Throwable e, int start, int depth ){
+		
+		StringBuilder result = new StringBuilder();
+		
+		for( int i=start; i<depth+start; i++ ){
+			
+			result.append( " < " )
+				.append( '(' ).append( Ex.me( i ) ).append( ')' );
+			
+		}
+		
+		return result.toString();
+	}
+	
 	/* === HELPER === */
 
 	private static final Pattern NESTED_CLASS = Pattern.compile( "\\$[\\w_]+" );
