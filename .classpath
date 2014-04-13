@@ -25,6 +25,6 @@
 	<classpathentry kind="lib" path="lib/testRuntime/jcl-over-slf4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/testRuntime/logback-classic-1.0.11.jar"/>
 	<classpathentry kind="lib" path="lib/testRuntime/logback-core-1.0.11.jar"/>
-	<classpathentry kind="lib" path="lib/testCompile/testng-6.1.jar"/>
+	<classpathentry kind="lib" path="lib/compile/testng-6.1.jar"/>
 	<classpathentry kind="output" path="build.eclipse"/>
 </classpath>
