@@ -8,10 +8,40 @@ repositories {
 }
 
 dependencies {
+/*
 	compile files( fileTree( dir: 'lib/compile', includes: ['*.jar'] ) )
-	compile files( fileTree( dir: 'lib/compileDepends', includes: ['*.jar'] ) )
+	:ompile files( fileTree( dir: 'lib/compileDepends', includes: ['*.jar'] ) )
 	testCompile files( fileTree( dir: 'lib/testCompile', includes: ['*.jar'] ) )
 	testRuntime files( fileTree( dir: 'lib/testRuntime', includes: ['*.jar'] ) )
+*/
+
+	// mime4j
+	compile 'commons-codec:commons-codec:1.4'
+	compile 'commons-lang:commons-lang:2.6'
+
+	compile 'org.hibernate.common:hibernate-commons-annotations:4.0.2.Final'
+	compile 'org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final'
+
+	//compile 'commons-collections:commons-collections:3.1'
+
+	compile 'net.sf.ehcache:ehcache-core:2.5.2'
+	compile 'org.apache.httpcomponents:httpclient:4.0.1'
+	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.0'
+
+	compile 'org.slf4j:slf4j-api:1.6.1'
+
+	compile 'javax.servlet:javax.servlet-api:3.0.1'
+
+	compile 'org.testng:testng:6.8+'
+
+	// Is used by test.Assert
+
+	// =======================================
+
+	testRuntime 'ch.qos.logback:logback-classic:1.1.2'
+	testRuntime 'ch.qos.logback:logback-core:1.1.2'
+	testRuntime 'org.slf4j:jcl-over-slf4j:1.6.1'
+	testRuntime 'org.slf4j:log4j-over-slf4j:1.6.1'
 }
 
 test {
