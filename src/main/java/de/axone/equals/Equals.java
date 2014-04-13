@@ -714,10 +714,11 @@ public class Equals {
 						}
 					}
 					
-					if( dst instanceof List ){
+					if( dst instanceof List && src instanceof List ){
 						@SuppressWarnings( "unchecked" )
-						List<T> srcList = (List<T>)src,
-						        dstList = (List<T>)dst;
+						// Must be srcVal/dstVal instead of src/dst because javac complains if run from ant
+						List<T> srcList = (List<T>)srcVal,
+						        dstList = (List<T>)dstVal;
 						Collections.sort( dstList, new List2ListSorter( srcList ) );
 					}
 					
