@@ -1,3 +1,2 @@
-test-output
-bin
-build
+/build.eclipse
+/test-output
