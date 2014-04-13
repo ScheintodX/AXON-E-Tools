@@ -1,0 +1,21 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+version = '1.0.0'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile files( fileTree( dir: 'lib/compile', includes: ['*.jar'] ) )
+	compile files( fileTree( dir: 'lib/compileDepends', includes: ['*.jar'] ) )
+	testCompile files( fileTree( dir: 'lib/testCompile', includes: ['*.jar'] ) )
+	testRuntime files( fileTree( dir: 'lib/testRuntime', includes: ['*.jar'] ) )
+}
+
+test {
+	useTestNG(){
+		suites file('src/test/java/de/axone/tools/CompleteRun.xml')
+	}
+}

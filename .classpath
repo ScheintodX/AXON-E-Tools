@@ -2,101 +2,29 @@
 <classpath>
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry exported="true" kind="lib" path="lib/apache-mime4j-0.6.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/commons-codec-1.4.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.6.jar" sourcepath="/home/flo/java/commons/commons-lang-2.6/commons-lang-2.6-sources.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/httpclient-4.0.1.jar" sourcepath="/home/flo/java/httpcomponents-client-4.0.1">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/httpcore-4.0.1.jar" sourcepath="/home/flo/java/httpcomponents-core-4.0.1">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/httpmime-4.0.1.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-logging-api-1.1.3.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="lib/testng-6.1.jar" sourcepath="/home/flo/java/testng-6.0.1/src">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/ehcache-core-2.5.2.jar" sourcepath="/home/flo/java/ehcache-2.5.2/src">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0.23">
-		<attributes>
-			<attribute name="owner.project.facets" value="jst.utility;#system#"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-annotations-2.2.0.jar" sourcepath="/home/flo/java/jackson">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-core-2.2.0.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-databind-2.2.0.jar" sourcepath="/home/flo/java/jackson">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/hibernate-jpa-2.0-api-1.0.1.Final.jar" sourcepath="/home/flo/java/hibernate-source">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.6.1.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jcl-over-slf4j-1.6.1.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/logback-classic-1.0.11.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/logback-core-1.0.11.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/apache-mime4j-0.6.jar"/>
+	<classpathentry kind="lib" path="lib/compile/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/compile/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="lib/compile/commons-logging-api-1.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/compile/ehcache-core-2.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/compile/hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
+	<classpathentry kind="lib" path="lib/compile/httpclient-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/compile/httpcore-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/compile/httpmime-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/compile/jackson-annotations-2.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/compile/jackson-core-2.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/compile/jackson-databind-2.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/compile/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/compileDepends/javax.servlet-api-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/testRuntime/jcl-over-slf4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/testRuntime/logback-classic-1.0.11.jar"/>
+	<classpathentry kind="lib" path="lib/testRuntime/logback-core-1.0.11.jar"/>
+	<classpathentry kind="lib" path="lib/testCompile/testng-6.1.jar"/>
 	<classpathentry kind="output" path="build.eclipse"/>
 </classpath>
