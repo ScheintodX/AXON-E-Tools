@@ -11,7 +11,6 @@
 	<classpathentry kind="lib" path="lib/compile/apache-mime4j-0.6.jar"/>
 	<classpathentry kind="lib" path="lib/compile/commons-codec-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/compile/commons-lang-2.6.jar"/>
-	<classpathentry kind="lib" path="lib/compile/commons-logging-api-1.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/compile/ehcache-core-2.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/compile/hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
 	<classpathentry kind="lib" path="lib/compile/httpclient-4.0.1.jar"/>
