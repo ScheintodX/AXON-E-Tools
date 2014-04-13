@@ -16,6 +16,6 @@ dependencies {
 
 test {
 	useTestNG(){
-		suites file('src/test/java/de/axone/tools/CompleteRun.xml')
+		suites file('src/test/CompleteRun.xml')
 	}
 }
