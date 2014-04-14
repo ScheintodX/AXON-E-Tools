@@ -7,6 +7,46 @@ repositories {
 	mavenCentral()
 }
 
+eclipse {
+	classpath {
+		defaultOutputDir = file('build.eclipse')
+		file {
+			whenMerged { classpath -> 
+				classpath.entries.findAll { entry -> entry.kind == 'lib' }*.exported = true
+			}
+			withXml { cp ->
+				def node = cp.asNode()
+				node.children().each { child ->
+
+					if( child.@kind == 'lib' ) {
+						def attribs = child.appendNode 'attributes'
+						def attrib = attribs.appendNode 'attribute';
+						attrib.@name = "org.eclipse.jst.component.nondependency"
+						attrib.@value = ""
+					}
+					if( child.@kind == "con" && child.@path.contains( 'Tomcat' ) ) {
+						def attrib = child.appendNode( 'attributes' ).appendNode( 'attribute' )
+						attrib.@name="owner.project.facets"
+						attrib.@value="jst.utility"
+					}
+				}
+				node.appendNode( 'xml', 'is what i love' )
+			}
+		}
+		containers "org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0.23",
+				"org.eclipse.jst.j2ee.internal.module.container" 
+	}
+	project {
+		natures = [ 'org.eclipse.jem.workbench.JavaEMFNature',
+				'org.eclipse.wst.common.modulecore.ModuleCoreNature',
+				'org.eclipse.jdt.core.javanature',
+				'org.eclipse.wst.common.project.facet.core.nature' ]
+		buildCommand 'org.eclipse.jdt.core.javabuilder'
+		buildCommand 'org.eclipse.wst.common.project.facet.core.builder'
+		buildCommand 'org.eclipse.wst.validation.validationbuilder'
+	}
+}
+
 dependencies {
 
 	compile 'commons-codec:commons-codec:1.4'
