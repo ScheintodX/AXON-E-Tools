@@ -8,23 +8,95 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/compile/apache-mime4j-0.6.jar"/>
-	<classpathentry kind="lib" path="lib/compile/commons-codec-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/compile/commons-lang-2.6.jar"/>
-	<classpathentry kind="lib" path="lib/compile/commons-logging-api-1.1.3.jar"/>
-	<classpathentry kind="lib" path="lib/compile/ehcache-core-2.5.2.jar"/>
-	<classpathentry kind="lib" path="lib/compile/hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
-	<classpathentry kind="lib" path="lib/compile/httpclient-4.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/compile/httpcore-4.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/compile/httpmime-4.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/compile/jackson-annotations-2.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/compile/jackson-core-2.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/compile/jackson-databind-2.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/compile/slf4j-api-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/compileDepends/javax.servlet-api-3.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/testRuntime/jcl-over-slf4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/testRuntime/logback-classic-1.0.11.jar"/>
-	<classpathentry kind="lib" path="lib/testRuntime/logback-core-1.0.11.jar"/>
-	<classpathentry kind="lib" path="lib/compile/testng-6.1.jar"/>
+	<classpathentry kind="lib" path="lib/compile/apache-mime4j-0.6.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/commons-codec-1.4.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/commons-lang-2.6.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/commons-logging-api-1.1.3.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/ehcache-core-2.5.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/hibernate-jpa-2.0-api-1.0.1.Final.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/httpclient-4.0.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/httpcore-4.0.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/httpmime-4.0.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/jackson-annotations-2.2.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/jackson-core-2.2.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/jackson-databind-2.2.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/slf4j-api-1.6.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compileDepends/javax.servlet-api-3.0.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/testRuntime/jcl-over-slf4j-1.6.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/testRuntime/logback-classic-1.0.11.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/testRuntime/logback-core-1.0.11.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/testng-6.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="build.eclipse"/>
 </classpath>
