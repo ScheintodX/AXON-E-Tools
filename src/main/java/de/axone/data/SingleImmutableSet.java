@@ -1,10 +1,13 @@
 package de.axone.data;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-public final class SingleImmutableSet<T> implements Set<T> {
+public final class SingleImmutableSet<T> implements Set<T>, Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private final T value;
 	
