@@ -12,7 +12,7 @@ public class CryptoHashCodeBuilder extends AbstractStrongHashCodeBuilder<byte[]>
 	private static final byte NULL_VALUE = 0;
 	private static final int EMPTY_VALUE = Integer.MAX_VALUE-1; // "Some" rare(?) value
 	
-	public static final byte[] EMPTY_HASH;
+	private static final byte[] EMPTY_HASH;
 	static{
 		try {
 			EMPTY_HASH = MessageDigest.getInstance( ALGO ).digest();
@@ -64,7 +64,7 @@ public class CryptoHashCodeBuilder extends AbstractStrongHashCodeBuilder<byte[]>
 
 	@Override
 	public byte[] empty() {
-		return EMPTY_HASH;
+		return EMPTY_HASH.clone();
 	}
 
 	@Override

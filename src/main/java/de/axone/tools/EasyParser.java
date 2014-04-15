@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.TreeSet;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 
 public abstract class EasyParser {
 
@@ -26,6 +28,7 @@ public abstract class EasyParser {
 		return contains( NOSET, yesOrNo );
 	}
 
+	@SuppressFBWarnings( value="NP_BOOLEAN_RETURN_NULL" )
 	public static Boolean yesOrNoOrNull( String yesOrNo ){
 		if( isYes( yesOrNo ) ) return true;
 		if( isNo( yesOrNo ) ) return false;

@@ -10,6 +10,8 @@ import net.sf.ehcache.CacheManager;
 
 import org.testng.annotations.Test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 @Test( groups="tools.cache.ehcache" )
 public class CacheEHCacheTest {
 	
@@ -110,6 +112,7 @@ public class CacheEHCacheTest {
 		}
 		
 		@Override
+		@SuppressFBWarnings("EQ_UNUSUAL")
 		public boolean equals( Object other ){ return equals; }
 		
 		@Override

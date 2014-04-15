@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public abstract class OA {
 	
 	// == String =====
@@ -56,7 +58,7 @@ public abstract class OA {
 		Object v = get( value, name );
 		if( v == null ) return null;
 		if( ! ( v instanceof Integer ) )
-			throw new IllegalArgumentException( name + " is not a String" );
+			throw new IllegalArgumentException( name + " is not an Integer" );
 		else
 			return (Integer) v;
 	}
@@ -82,7 +84,7 @@ public abstract class OA {
 		Object v = get( value, name );
 		if( v == null ) return null;
 		if( ! ( v instanceof Long ) )
-			throw new IllegalArgumentException( name + " is not a String" );
+			throw new IllegalArgumentException( name + " is not a Long" );
 		else
 			return (Long) v;
 	}
@@ -108,7 +110,7 @@ public abstract class OA {
 		Object v = get( value, name );
 		if( v == null ) return null;
 		if( ! ( v instanceof Double ) )
-			throw new IllegalArgumentException( name + " is not a String" );
+			throw new IllegalArgumentException( name + " is not a Double" );
 		else
 			return (Double) v;
 	}
@@ -130,11 +132,12 @@ public abstract class OA {
 	}
 	
 	// == Boolean =====
+	@SuppressFBWarnings( value="NP_BOOLEAN_RETURN_NULL", justification="This is how this api works" )
 	public static Boolean getBoolean( Object value, String name ){
 		Object v = get( value, name );
 		if( v == null ) return null;
 		if( ! ( v instanceof Boolean ) )
-			throw new IllegalArgumentException( name + " is not a String" );
+			throw new IllegalArgumentException( name + " is not a Boolean" );
 		else
 			return (Boolean) v;
 	}
@@ -158,8 +161,8 @@ public abstract class OA {
 	public static BigDecimal getBigDecimal( Object value, String name ){
 		Object v = get( value, name );
 		if( v == null ) return null;
-		if( ! ( v instanceof Boolean ) )
-			throw new IllegalArgumentException( name + " is not a String" );
+		if( ! ( v instanceof BigDecimal ) )
+			throw new IllegalArgumentException( name + " is not a BigDecimal" );
 		else
 			return (BigDecimal) v;
 	}
@@ -208,7 +211,7 @@ public abstract class OA {
 		Object v = get( value, name );
 		if( v == null ) return null;
 		if( ! ( v instanceof List ) )
-			throw new IllegalArgumentException( name + " is not a String" );
+			throw new IllegalArgumentException( name + " is not a List" );
 		else
 			return (List<?>) v;
 	}
@@ -234,7 +237,7 @@ public abstract class OA {
 		Object v = get( value, name );
 		if( v == null ) return null;
 		if( ! ( v instanceof Map ) )
-			throw new IllegalArgumentException( name + " is not a String" );
+			throw new IllegalArgumentException( name + " is not a Map" );
 		else
 			return (Map<String,?>) v;
 	}

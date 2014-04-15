@@ -3,6 +3,8 @@ package de.axone.tools;
 import java.math.BigDecimal;
 import java.util.NoSuchElementException;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public abstract class SA {
 	
 	// == String =====
@@ -94,6 +96,7 @@ public abstract class SA {
 	}
 	
 	// == Boolean =====
+	@SuppressFBWarnings( value="NP_BOOLEAN_RETURN_NULL", justification="Api" )
 	public static Boolean getBoolean( String value, String name ){
 		String v = get( value, name );
 		if( v == null ) return null;

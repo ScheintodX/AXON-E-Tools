@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * A replacement and facade for <tt>Properties</tt>
  *
@@ -353,6 +355,7 @@ public class SuperProperties {
 		return result;
 	}
 
+	@SuppressFBWarnings( value="NP_BOOLEAN_RETURN_NULL", justification="Api" )
 	public Boolean getBoolean( String key ){
 
 		String value = getProperty( key );

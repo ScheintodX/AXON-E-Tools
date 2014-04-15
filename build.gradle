@@ -59,6 +59,8 @@ dependencies {
 		transitive = false
 	}
 
+	compile 'com.google.code.findbugs:annotations:2.0.3'
+
 	// =======================================
 
 	testRuntime 'org.testng:testng:6.8+'

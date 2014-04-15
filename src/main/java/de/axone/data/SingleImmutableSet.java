@@ -3,6 +3,7 @@ package de.axone.data;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 public final class SingleImmutableSet<T> implements Set<T>, Serializable {
@@ -98,7 +99,7 @@ public final class SingleImmutableSet<T> implements Set<T>, Serializable {
 
 		@Override
 		public T next() {
-			if( ! hasNext ) return null;
+			if( ! hasNext ) throw new NoSuchElementException();
 			hasNext = false;
 			return value;
 		}
