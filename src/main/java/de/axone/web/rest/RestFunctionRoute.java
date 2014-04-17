@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.axone.tools.Str;
-import de.axone.web.rest.RestFunctionServletRequestImpl.Method;
+import de.axone.web.Method;
 
 public interface RestFunctionRoute {
 

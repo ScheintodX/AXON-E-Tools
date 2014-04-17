@@ -5,8 +5,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import de.axone.web.Method;
 import de.axone.web.SuperURL;
-import de.axone.web.rest.RestFunctionServletRequestImpl.Method;
 
 public interface RestFunction<DATA, REQUEST extends RestRequest> {
 

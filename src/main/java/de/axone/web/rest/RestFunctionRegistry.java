@@ -13,8 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.axone.exception.IllegalNamedArgumentException;
+import de.axone.web.Method;
 import de.axone.web.SuperURL;
-import de.axone.web.rest.RestFunctionServletRequestImpl.Method;
 
 public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 

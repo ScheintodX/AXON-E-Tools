@@ -526,6 +526,12 @@ public final class SuperURL {
 			if( path != null && path.size() > 0 ) path.removeFirst();
 			return this;
 		}
+		public Path removeFirst( int amount ){
+			for( ;amount>0; amount-- ){
+				removeFirst();
+			}
+			return this;
+		}
 		public Path append( Path path ){
 			for( String part : path.path ){
 				addLast( part );
