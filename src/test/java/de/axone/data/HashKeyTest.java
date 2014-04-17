@@ -4,9 +4,13 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 @Test( groups="tools.hashkey" )
 public class HashKeyTest {
 
+	@SuppressFBWarnings( value="ES_COMPARING_STRINGS_WITH_EQ",
+			justification="We exactly want to test if this is another object" )
 	public void testHashKey(){
 		
 		// First test normal java functions just to be sure.

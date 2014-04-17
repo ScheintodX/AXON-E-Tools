@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -459,7 +460,9 @@ public class PictureBuilder {
 		}
 	}
 
-	private static class JpegSorter implements Comparator<File> {
+	private static class JpegSorter implements Comparator<File>, Serializable {
+		
+		private static final long serialVersionUID = 1L;
 
 		private String mainFileName;
 

@@ -10,6 +10,7 @@ package de.axone.external;
  * site.  Following license notice is subject to change based on the licensing
  * policy of siphash24.c.
  */
+@Deprecated
 public class SipHashInline {
 
     public static long hash24(long k0, long k1, byte[] data) {
@@ -24,14 +25,14 @@ public class SipHashInline {
         // processing 8 bytes blocks in data
         while (i < last) {
             // pack a block to long, as LE 8 bytes
-            m = data[i++]       |
-                (long) data[i++] <<  8 |
-                (long) data[i++] << 16 |
-                (long) data[i++] << 24 |
-                (long) data[i++] << 32 |
-                (long) data[i++] << 40 |
-                (long) data[i++] << 48 |
-                (long) data[i++] << 56 ;
+            m = (long) (data[i++]&0xff) <<  0 |
+                (long) (data[i++]&0xff) <<  8 |
+                (long) (data[i++]&0xff) << 16 |
+                (long) (data[i++]&0xff) << 24 |
+                (long) (data[i++]&0xff) << 32 |
+                (long) (data[i++]&0xff) << 40 |
+                (long) (data[i++]&0xff) << 48 |
+                (long) (data[i++]&0xff) << 56 ;
             // MSGROUND {
                 v3 ^= m;
 
@@ -103,7 +104,7 @@ public class SipHashInline {
         // packing the last block to long, as LE 0-7 bytes + the length in the top byte
         m = 0;
         for (i = data.length - 1; i >= last; --i) {
-            m <<= 8; m |= data[i];
+            m <<= 8; m |= ((long)(data[i]&0xff)<<0);
         }
         m |= (long) data.length << 56;
         // MSGROUND {

@@ -7,17 +7,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import de.axone.web.Method;
+
 public class RestFunctionServletRequestImpl extends HttpServletRequestWrapper implements RestRequest {
 
-	public static enum Method {
-		GET, POST, PUT, DELETE;
-		
-		public static Method forString( String action ){
-			if( action == null ) return null;
-			return Method.valueOf( action.toUpperCase() );
-		}
-	}
-	
 	public RestFunctionServletRequestImpl( HttpServletRequest request ) {
 		super( request );
 	}
@@ -27,7 +20,7 @@ public class RestFunctionServletRequestImpl extends HttpServletRequestWrapper im
 	 */
 	@Override
 	public Method getRestMethod(){
-		return Method.valueOf( getMethod() );
+		return Method.from( this );
 	}
 	
 	private ObjectMapper mapper;

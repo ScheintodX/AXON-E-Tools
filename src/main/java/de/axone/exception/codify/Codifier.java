@@ -21,6 +21,7 @@ import de.axone.tools.S;
 import de.axone.tools.Str;
 import de.axone.tools.Str.MapJoiner;
 import de.axone.web.SuperURL;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 // TODO: Registrieren von Packages. Oder macht man das besser online? Oder beides?
 // Vermutlich beides, da man lokal so auch eine Unterscheidung der eigenen Packages
@@ -44,6 +45,8 @@ public abstract class Codifier {
 		report( throwable, Mapper.treeMap( "context", context.toString() ) );
 	}
 	
+	@SuppressFBWarnings( value="RV_DONT_JUST_NULL_CHECK_READLINE",
+			justification="See comment below." )
 	public static void report( Throwable throwable, Map<String,String> parametersAdd ) throws IOException {
 		
 		if( throwable instanceof Codified ){

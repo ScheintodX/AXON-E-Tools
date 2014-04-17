@@ -5,6 +5,7 @@ import static org.testng.Assert.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.testng.annotations.Test;
 
@@ -23,7 +24,11 @@ public class SingleImmutableSetTest {
 		assertTrue( it.hasNext() );
 		assertEquals( it.next(), "foo" );
 		assertFalse( it.hasNext() );
-		assertEquals( it.next(), null );
+		try {
+			it.next();
+			fail( "Should have thrown exception" );
+		} catch( NoSuchElementException e ){
+		}
 				
 		int c=0;
 		for( String s : s1 ){

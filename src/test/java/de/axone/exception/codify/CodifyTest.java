@@ -25,7 +25,9 @@ public class CodifyTest {
 		String code = ce.code();
 		
 		// This needs to stay stable
-		assertEquals( code, "df3f0659/4605efe4/00000014/132835a5/7d28c319" );		
+		//assertEquals( code, "df3f0659/4605efe4/00000014/132835a5/7d28c319" );		
+		// So. Changing siphash implementation to a not buggy one we have this:
+		assertEquals( code, "3379449a/78971ad5/00000014/f496acbc/8fbad4cc" );
 		
 	}
 	

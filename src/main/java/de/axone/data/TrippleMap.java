@@ -59,6 +59,13 @@ public class TrippleMap<A,B,C,V> extends MapProxy<Tripple<A,B,C>,V>{
 				result.put( new Pair<A,B>( t.getA(), t.getB() ), get( t ) );
 			}
 		}
+		/* More efficient
+		for( Map.Entry<Tripple<A,B,C>, V> entry : this.entrySet() ){
+			if( entry.getKey().getC().equals( c ) ){
+				result.put( new Pair<A,B>( entry.getKey().getA(), entry.getKey().getB() ), entry.getValue() );
+			}
+		}
+		*/
 		return result;
 	}
 

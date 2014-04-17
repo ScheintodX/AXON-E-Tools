@@ -14,6 +14,7 @@ import org.testng.annotations.Test;
 
 import de.axone.tools.E;
 import de.axone.tools.Mapper;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @Test( groups="tools.equals" )
 public class StrongHashCodeBuilderTest {
@@ -32,6 +33,8 @@ public class StrongHashCodeBuilderTest {
 		testCollectionHashes( new CryptoHashCodeBuilder() );
 	}
 
+	@SuppressFBWarnings( value="ES_COMPARING_STRINGS_WITH_EQ",
+			justification="We exactly want to test if this is another object" )
 	private static <T> void testStringHashes( AbstractStrongHashCodeBuilder<T> builder ) throws Exception {
 		
 		StrongHashCodeBuilder<T> j = builder.builder();
