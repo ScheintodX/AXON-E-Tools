@@ -10,7 +10,7 @@
 <configuration>
 	<appender name="ConsoleOut" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>%-5p: %c{1} %m%n - %l %n</pattern>
+			<pattern>%-5p: %c{1} %m%n</pattern>
 		</encoder>
 	</appender>
 	<logger name="de.axone" level="INFO"/>
