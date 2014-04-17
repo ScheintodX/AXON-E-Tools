@@ -39,13 +39,6 @@ eclipse {
 	}
 }
 
-task setup {
-	dependsOn 'cleanEclipse'
-	dependsOn 'cleanEclipseWtp'
-	dependsOn 'eclipse'
-	dependsOn 'eclipseWtp'
-}
-
 dependencies {
 
 	compile 'commons-codec:commons-codec:1.4'
@@ -58,7 +51,7 @@ dependencies {
 	compile 'org.apache.httpcomponents:httpclient:4.0.1'
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.0'
 
-	compile 'org.slf4j:slf4j-api:1.6.1'
+	compile 'org.slf4j:slf4j-api:1.7+'
 
 	compile 'javax.servlet:javax.servlet-api:3.0.1'
 
@@ -75,10 +68,11 @@ dependencies {
 	// =======================================
 
 	testRuntime 'org.testng:testng:6.8+'
-	testRuntime 'ch.qos.logback:logback-classic:1.1.2'
-	testRuntime 'ch.qos.logback:logback-core:1.1.2'
-	testRuntime 'org.slf4j:jcl-over-slf4j:1.6.1'
-	testRuntime 'org.slf4j:log4j-over-slf4j:1.6.1'
+
+	testRuntime 'ch.qos.logback:logback-classic:1.1+'
+	testRuntime 'ch.qos.logback:logback-core:1.1+'
+	testRuntime 'org.slf4j:jcl-over-slf4j:1.7+'
+	testRuntime 'org.slf4j:log4j-over-slf4j:1.7+'
 }
 
 test {
