@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
 
-import de.axone.web.rest.Validator.FieldError;
+import de.axone.web.rest.Validator2.Validator2Result;
 
 public class ResultWriter {
 	
@@ -20,23 +20,29 @@ public class ResultWriter {
 	public static void writeValue( ObjectMapper mapper, PrintWriter out, Object data )
 			throws JsonGenerationException, JsonMappingException, IOException{
 		
-		writeValue( mapper, out, data, null, null );
+		writeValue( mapper, out, data, (Validator2Result)null, null );
 	}
 	
 	public static void writeValue( ObjectMapper mapper, PrintWriter out, Object data, Map<String,Object> overwrite )
 			throws JsonGenerationException, JsonMappingException, IOException{
 		
-		writeValue( mapper, out, data, null, overwrite );
+		writeValue( mapper, out, data,(Validator2Result)null, overwrite );
 	}
 	
 	public static void writeValue( ObjectMapper mapper, PrintWriter out,
-			Object data, List<FieldError> errors )
+			Object data, List<?> errors )
 			throws JsonGenerationException, JsonMappingException, IOException{
 		writeValue( mapper, out, data, errors, null );
 	}
 	
 	public static void writeValue( ObjectMapper mapper, PrintWriter out,
-			Object data, List<FieldError> errors, Map<String,Object> overwrite )
+			Object data, Validator2Result errors )
+			throws JsonGenerationException, JsonMappingException, IOException{
+		writeValue( mapper, out, data, errors, null );
+	}
+	
+	public static void writeValue( ObjectMapper mapper, PrintWriter out,
+			Object data, List<?> errors, Map<String,Object> overwrite )
 			throws JsonGenerationException, JsonMappingException, IOException{
 		
 		if( errors != null && errors.size() > 0 || overwrite != null && overwrite.size() > 0 ){
@@ -54,6 +60,34 @@ public class ResultWriter {
 			}
 			
 			map.put( ERROR_FIELD, errors );
+			
+			mapper.writeValue( out, map );
+		} else {
+			mapper.writeValue( out, data );
+		}
+	}
+	
+	public static void writeValue( ObjectMapper mapper, PrintWriter out,
+			Object data, Validator2Result errors, Map<String,Object> overwrite )
+			throws JsonGenerationException, JsonMappingException, IOException{
+		
+		if( errors != null && errors.hasError() || overwrite != null && overwrite.size() > 0 ){
+			
+			// First create a Map, then append __error__, then make json
+			MapType mapType = mapper.getTypeFactory()
+					.constructMapType( LinkedHashMap.class, String.class, Object.class );
+			
+			LinkedHashMap<String,Object> map = mapper.convertValue( data, mapType );
+			
+			if( overwrite != null ){
+				for( String key : overwrite.keySet() ){
+					map.put( key, overwrite.get( key ) );
+				}
+			}
+			
+			if( errors != null ){
+				errors.mergeInto( map );
+			}
 			
 			mapper.writeValue( out, map );
 		} else {

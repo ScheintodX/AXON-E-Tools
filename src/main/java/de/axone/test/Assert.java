@@ -3,6 +3,7 @@ import static org.testng.Assert.*;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
 	
 public abstract class Assert {
@@ -66,7 +67,16 @@ public abstract class Assert {
 		assertNotNull( actual );
 		assertContains( Arrays.asList( actual ), expected );
 	}
-	
+	public static <T> void assertContainsKey( Map<T,?> actual, T expected ){
+		assertNotNull( actual );
+		if( ! actual.containsKey( expected ) )
+			fail( "Not contained key: " + expected );
+	}
+	public static <T> void assertContainsValue( Map<T,?> actual, T expected ){
+		assertNotNull( actual );
+		if( ! actual.containsValue( expected ) )
+			fail( "Not contained value: " + expected );
+	}
 	public static <T> void assertContainsAll( Collection<T> actual, Collection<T> expected ){
 		assertNotNull( actual );
 		for( T t : expected ){

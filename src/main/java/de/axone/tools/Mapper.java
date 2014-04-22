@@ -20,27 +20,43 @@ public abstract class Mapper {
 	// Maps for Lists
 	@SafeVarargs
 	public static <T> HashMap<T,T> hashMap( T ... values ){
-		return map( new HashMap<T,T>(), values );
+		return map( new HashMap<T,T>(), false, values );
 	}
 		
 	@SafeVarargs
 	public static <T> TreeMap<T,T> treeMap( T ... values ){
-		return map( new TreeMap<T,T>(), values );
+		return map( new TreeMap<T,T>(), false, values );
 	}
 	
 	@SafeVarargs
 	public static <T> LinkedHashMap<T,T> linkedHashMap( T ... values ){
-		return map( new LinkedHashMap<T,T>(), values );
+		return map( new LinkedHashMap<T,T>(), false, values );
 	}
 		
 	@SafeVarargs
-	public static <T,M extends Map<T,T>> M map( M result, T ... values ){
+	public static <T> HashMap<T,T> hashMapIgnoreEmptyValues( T ... values ){
+		return map( new HashMap<T,T>(), true, values );
+	}
+		
+	@SafeVarargs
+	public static <T> TreeMap<T,T> treeMapIgnoreEmptyValues( T ... values ){
+		return map( new TreeMap<T,T>(), true, values );
+	}
+	
+	@SafeVarargs
+	public static <T> LinkedHashMap<T,T> linkedHashMapIgnoreEmptyValues( T ... values ){
+		return map( new LinkedHashMap<T,T>(), true, values );
+	}
+		
+	@SafeVarargs
+	public static <T,M extends Map<T,T>> M map( M result, boolean ignoreEmptyValues,  T ... values ){
 
 		if( (values.length % 2) != 0 )
 			throw new IllegalArgumentException( "Only even argument count allowed" );
 
 		for( int i = 0; i < values.length; i+= 2 ){
-			result.put( values[ i ], values[ i+1 ] );
+			if( ignoreEmptyValues || values[ i+1 ] != null )
+				result.put( values[ i ], values[ i+1 ] );
 		}
 		return result;
 	}
