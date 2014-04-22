@@ -10,6 +10,14 @@ public enum Method {
 		return name().equalsIgnoreCase( request.getMethod() );
 	}
 	
+	public boolean is( String name ){
+		return name().equalsIgnoreCase( name );
+	}
+	
+	public static Method from( String name ){
+		return valueOf( name.toUpperCase() );
+	}
+	
 	public static Method from( HttpServletRequest request ){
 		return valueOf( request.getMethod().toUpperCase() );
 	}
