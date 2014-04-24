@@ -7,6 +7,7 @@ import java.util.TreeSet;
 
 import de.axone.web.rest.Validator2.Validator2Result;
 import de.axone.web.rest.Validator2.Validator2Result.Severity;
+import de.axone.web.rest.Validator2.ValidatorException;
 
 public class Validator2Assert {
 
@@ -50,6 +51,14 @@ public class Validator2Assert {
 			error( result, field , "IS_EMPTY" );
 	}
 	
+	public static void assertNotEmpty(
+			String field, String value ){
+		
+		if( value == null || value.trim().length() == 0 )
+			except( field , "IS_EMPTY" );
+	}
+	
+	
 	public static void assertNotEmpty( Validator2Result result,
 			String field, Collection<?> value ){
 		
@@ -81,19 +90,25 @@ public class Validator2Assert {
 		result.error( field, message );
 	}
 	public static void error( Validator2Result result, String field, String message, String info ){
-		result.result( Severity.error, field, message, info );
+		result.result( Severity.ERROR, field, message, info );
 	}
 	public static void info( Validator2Result result, String field, String message ){
 		result.info( field, message );
 	}
 	public static void info( Validator2Result result, String field, String message, String info ){
-		result.result( Severity.info, field, message, info );
+		result.result( Severity.INFO, field, message, info );
 	}
 	public static void warn( Validator2Result result, String field, String message ){
 		result.warn( field, message );
 	}
 	public static void warn( Validator2Result result, String field, String message, String info ){
-		result.result( Severity.warn, field, message, info );
+		result.result( Severity.WARN, field, message, info );
 	}
 	
+	public static void except( String field, String message ){
+		throw new ValidatorException( field, message );
+	}
+	public static void except( String field ){
+		throw new ValidatorException( field, "ILLEGAL_ARGUMENT" );
+	}
 }

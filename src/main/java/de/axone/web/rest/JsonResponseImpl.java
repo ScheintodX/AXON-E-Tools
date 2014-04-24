@@ -45,8 +45,13 @@ public class JsonResponseImpl implements JsonResponse {
 	
 	public static JsonResponse ERROR( Throwable t ){
 		
+		return ERROR( 500, t );
+	}
+	
+	public static JsonResponse ERROR( int code, Throwable t ){
+		
 		JsonResponseImpl result = new JsonResponseImpl.ERROR();
-		result.error = new ErrorImpl( 500, t );
+		result.error = new ErrorImpl( code, t );
 		return result;
 	}
 	

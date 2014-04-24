@@ -119,7 +119,6 @@ public abstract class Col {
 	 */
 	public static <V,C extends Collection<V>> C processUnchecked( C src, Processor<V> conv ){
 		try {
-			E.rr( src );
 			return process( src, conv );
 		} catch( InstantiationException e ) {
 			throw new Error( "Instantiation error while converting", e );

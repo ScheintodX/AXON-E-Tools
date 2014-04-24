@@ -15,18 +15,19 @@ import de.axone.web.rest.Validator2.Validator2Result;
 
 public class ResultWriter {
 	
-	private static final String ERROR_FIELD = "__error__";
+	private static final String ERROR_FIELD = "__all_errors__";
+	private static final String HAS_ERROR_FIELD = "__has_error__";
 
 	public static void writeValue( ObjectMapper mapper, PrintWriter out, Object data )
 			throws JsonGenerationException, JsonMappingException, IOException{
 		
-		writeValue( mapper, out, data, (Validator2Result)null, null );
+		writeValue( mapper, out, data, null, (Validator2Result)null, null );
 	}
 	
 	public static void writeValue( ObjectMapper mapper, PrintWriter out, Object data, Map<String,Object> overwrite )
 			throws JsonGenerationException, JsonMappingException, IOException{
 		
-		writeValue( mapper, out, data,(Validator2Result)null, overwrite );
+		writeValue( mapper, out, data, null, (Validator2Result)null, overwrite );
 	}
 	
 	public static void writeValue( ObjectMapper mapper, PrintWriter out,
@@ -36,9 +37,9 @@ public class ResultWriter {
 	}
 	
 	public static void writeValue( ObjectMapper mapper, PrintWriter out,
-			Object data, Validator2Result errors )
+			Object data, String prefix, Validator2Result errors )
 			throws JsonGenerationException, JsonMappingException, IOException{
-		writeValue( mapper, out, data, errors, null );
+		writeValue( mapper, out, data, prefix, errors, null );
 	}
 	
 	public static void writeValue( ObjectMapper mapper, PrintWriter out,
@@ -60,6 +61,7 @@ public class ResultWriter {
 			}
 			
 			map.put( ERROR_FIELD, errors );
+			map.put( HAS_ERROR_FIELD, true );
 			
 			mapper.writeValue( out, map );
 		} else {
@@ -68,7 +70,7 @@ public class ResultWriter {
 	}
 	
 	public static void writeValue( ObjectMapper mapper, PrintWriter out,
-			Object data, Validator2Result errors, Map<String,Object> overwrite )
+			Object data, String prefix, Validator2Result errors, Map<String,Object> overwrite )
 			throws JsonGenerationException, JsonMappingException, IOException{
 		
 		if( errors != null && errors.hasError() || overwrite != null && overwrite.size() > 0 ){
@@ -85,8 +87,11 @@ public class ResultWriter {
 				}
 			}
 			
-			if( errors != null ){
+			if( errors != null && errors.hasError() ){
 				errors.mergeInto( map );
+				
+				map.put( ERROR_FIELD, errors.asList( prefix ) );
+				map.put( HAS_ERROR_FIELD, true );
 			}
 			
 			mapper.writeValue( out, map );

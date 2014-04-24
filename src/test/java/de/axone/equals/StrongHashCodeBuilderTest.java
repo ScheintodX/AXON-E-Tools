@@ -12,7 +12,6 @@ import java.util.Set;
 
 import org.testng.annotations.Test;
 
-import de.axone.tools.E;
 import de.axone.tools.Mapper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -151,11 +150,11 @@ public class StrongHashCodeBuilderTest {
 		if( equals ){
 			assertEquals( h1, h2 );
 		} else {
-			if( h1.equals( h2 ) ) E.rr( h1 );
+			//if( h1.equals( h2 ) ) E.rr( h1 );
 			assertFalse( h1.equals( h2 ) );
 		}
 		if( !ok ){
-			E.rr( h1 + " / " + h2 );
+			//E.rr( h1 + " / " + h2 );
 			assertTrue( false );
 		}
 	}

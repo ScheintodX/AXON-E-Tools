@@ -2,6 +2,7 @@ package de.axone.web.rest;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import de.axone.exception.Assert;
 import de.axone.tools.Mapper;
 import de.axone.web.rest.Validator2.Validator2Result.Severity;
 
@@ -33,12 +35,16 @@ public abstract class Validator2<T> {
 		return result;
 	}
 	public void validate( Validator2Result result, EntityManager em, T object ){
-		doValidate( result, em, object );
+		try {
+			doValidate( result, em, object );
+		} catch( ValidatorException e ){
+			result.error( e );
+		}
 	}
 	
 	public void cascade( Validator2Result result, EntityManager em, T object ){
 		result = result.descent( key );
-		doValidate( result, em, object );
+		validate( result, em, object );
 	}
 	
 	public void iterate( Validator2Result result, EntityManager em, Iterable<T> objects ){
@@ -58,11 +64,19 @@ public abstract class Validator2<T> {
 	
 	public interface Validator2Result {
 		
-		public enum Severity { error, warn, info; }
+		public enum Severity {
+			FATAL, ERROR, WARN, INFO;
+			public boolean is( Severity min ){
+				return min.ordinal() >= ordinal();
+			}
+		}
 		
 		public void result( Severity severity, String field, String code );
 		public void result( Severity severity, String field, String code, String info );
+		public void fatal( String field, String code );
+		public void fatal( ValidatorException e );
 		public void error( String field, String code );
+		public void error( ValidatorException e );
 		public void warn( String field, String code );
 		public void info( String field, String code );
 		
@@ -74,14 +88,17 @@ public abstract class Validator2<T> {
 		
 		public void mergeInto( Map<String,Object> data );
 		public void writeInto( String prefix, List<Map<String,String>> list );
+		public List<Map<String,String>> asList( String prefix );
 		
 		public boolean hasError();
+		public boolean isFatal();
 	}
 	
 	public interface Validator2ResultList {
 		
 		public Validator2Result descent( int index );
 		public boolean hasError();
+		public boolean isFatal();
 		public void mergeInto( Iterable<Map<String,Object>> it );
 		public void writeInto( String prefix, List<Map<String,String>> list );
 	}
@@ -148,18 +165,33 @@ public abstract class Validator2<T> {
 		private String currentInfo;
 		
 		@Override
+		public void fatal( String field, String code ) {
+			result( Severity.FATAL, field, code );
+		}
+
+		@Override
+		public void fatal( ValidatorException e ) {
+			result( Severity.FATAL, e.getField(), e.getMessage() );
+		}
+
+		@Override
 		public void error( String field, String code ) {
-			result( Severity.error, field, code );
+			result( Severity.ERROR, field, code );
+		}
+
+		@Override
+		public void error( ValidatorException e ) {
+			result( Severity.ERROR, e.getField(), e.getMessage() );
 		}
 
 		@Override
 		public void warn( String field, String code ) {
-			result( Severity.warn, field, code );
+			result( Severity.WARN, field, code );
 		}
 
 		@Override
 		public void info( String field, String code ) {
-			result( Severity.info, field, code );
+			result( Severity.INFO, field, code );
 		}
 		
 		@Override
@@ -168,6 +200,7 @@ public abstract class Validator2<T> {
 		}
 		@Override
 		public void result( Severity severity, String field, String code, String info ) {
+			Assert.notNull( field, "field" );
 			result( new Validator2ErrorImpl( severity, field, code, info ) );
 		}
 		
@@ -270,12 +303,26 @@ public abstract class Validator2<T> {
 		public boolean hasError() {
 			if( size() == 0 ) return false;
 			for( Object value : values() ){
-				if( value instanceof Validator2Error ) return true;
+				if( value instanceof Validator2Error &&
+						((Validator2Error)value).getSeverity().is( Severity.ERROR ) ) return true;
 				if( value instanceof Validator2ResultList )
 					if( ((Validator2ResultList)value).hasError() ) return true;
 			}
 			return false;
 		}
+		
+		@Override
+		public boolean isFatal() {
+			if( size() == 0 ) return false;
+			for( Object value : values() ){
+				if( value instanceof Validator2Error &&
+						((Validator2Error)value).getSeverity().is( Severity.FATAL ) ) return true;
+				if( value instanceof Validator2ResultList )
+					if( ((Validator2ResultList)value).isFatal() ) return true;
+			}
+			return false;
+		}
+
 
 		@Override
 		public void writeInto( String prefix, List<Map<String, String>> list ) {
@@ -291,7 +338,7 @@ public abstract class Validator2<T> {
 							"severity", "" + error.getSeverity(),
 							"field", prefix + error.getField(),
 							"info", error.getInfo(),
-							"message", error.getSeverity() + "." + error.getCode()
+							"code", "ERROR." + error.getCode()
 					) );
 					
 				} else if( value instanceof Validator2Result ){
@@ -302,6 +349,13 @@ public abstract class Validator2<T> {
 				}
 			}
 			
+		}
+
+		@Override
+		public List<Map<String, String>> asList( String prefix ) {
+			List<Map<String,String>> result = new LinkedList<>();
+			writeInto( prefix, result );
+			return result;
 		}
 		
 	}
@@ -330,6 +384,14 @@ public abstract class Validator2<T> {
 		}
 
 		@Override
+		public boolean isFatal() {
+			for( Validator2Result result : this.values() ){
+				if( result.isFatal() ) return true;
+			}
+			return false;
+		}
+
+		@Override
 		public void mergeInto( Iterable<Map<String,Object>> it ){
 			int i=0;
 			for( Map<String,Object> o : it ){
@@ -351,6 +413,29 @@ public abstract class Validator2<T> {
 			}
 			
 		}
+	}
+	
+	public static class ValidatorException
+	extends IllegalArgumentException
+	implements FieldException {
+		
+		private final String field;
+		
+		public ValidatorException( String field, String message ) {
+			super( message );
+			this.field = field;
+		}
+
+		public ValidatorException( String field, Throwable cause ) {
+			super( cause );
+			this.field = field;
+		}
+
+		@Override
+		public String getField() {
+			return field;
+		}
+		
 	}
 	
 }

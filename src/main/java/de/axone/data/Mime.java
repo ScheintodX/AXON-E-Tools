@@ -11,8 +11,6 @@ import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import de.axone.tools.E;
-
 
 public class Mime {
 	
@@ -56,7 +54,6 @@ public class Mime {
 				MimeTypeImpl mime = new MimeTypeImpl( types[0], types[1], exts );
 				
 				for( String ext : mime.getExtensions() ){
-					E.rr( ext, mime );
 					extendedTypesForExtension.put( ext, mime );
 				}
 			}

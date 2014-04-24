@@ -6,7 +6,6 @@ import de.axone.funky.shell.FunctionDescriptionBuilder_Shell;
 import de.axone.funky.shell.Shell;
 import de.axone.funky.types.ArgumentTypes;
 import de.axone.funky.types.ArgumentValidators;
-import de.axone.tools.E;
 
 
 @Test( groups="tools.funky" )
@@ -49,6 +48,6 @@ public class Funky {
 		;
 		
 		
-		E.rr( set );
+		//E.rr( set );
 	}
 }

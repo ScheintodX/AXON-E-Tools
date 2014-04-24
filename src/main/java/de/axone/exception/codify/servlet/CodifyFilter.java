@@ -11,7 +11,6 @@ import javax.servlet.ServletResponse;
 import de.axone.exception.codify.CodifiedError;
 import de.axone.exception.codify.CodifiedRuntimeException;
 import de.axone.exception.codify.Codifier;
-import de.axone.tools.E;
 
 
 public class CodifyFilter implements javax.servlet.Filter {
@@ -19,7 +18,6 @@ public class CodifyFilter implements javax.servlet.Filter {
 	@Override
 	public void init( FilterConfig config ) throws ServletException {
 		System.out.println( "Starting codify filter" );
-		E.rr( config.getInitParameter( "paralell" ) );
 	}
 	@Override
 	public void destroy() {

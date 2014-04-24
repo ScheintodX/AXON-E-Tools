@@ -81,7 +81,7 @@ public class Validator2Test {
 		assertFalse( simListItem.containsKey( Validator2.ERROR_KEY ) );
 		simListItem = simList.get( 1 );
 		assertTrue( simListItem.containsKey( Validator2.ERROR_KEY ) );
-		assertError( simListItem.get( Validator2.ERROR_KEY ), "in-list1", Severity.info, "info", null );
+		assertError( simListItem.get( Validator2.ERROR_KEY ), "in-list1", Severity.INFO, "info", null );
 		
 		List<Map<String,String>> asList = new LinkedList<>();
 		

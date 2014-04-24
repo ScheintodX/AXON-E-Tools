@@ -100,12 +100,14 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 		
 		if( e instanceof RestFunctionException ){
 			status = ((RestFunctionException) e).code();
+		} else if( e instanceof LoginException ){
+			status = 403;
 		} else if( e instanceof IllegalNamedArgumentException ){
 			status = 420; // Policy Not Fulfilled
 		} else {
 			status = 500;
 		}
-			
+		
 		if( !resp.isCommitted() ){
 			resp.setStatus( status );
 		}
@@ -115,7 +117,7 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 		if( e instanceof IllegalNamedArgumentException ){
 			response = JsonResponseImpl.INVALID( (IllegalNamedArgumentException) e );
 		} else {
-			response = JsonResponseImpl.ERROR( e );
+			response = JsonResponseImpl.ERROR( status, e );
 		}
 		
 		req.mapper().writeValue( out, response );
