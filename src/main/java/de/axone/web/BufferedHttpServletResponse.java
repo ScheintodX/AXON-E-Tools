@@ -196,7 +196,7 @@ public class BufferedHttpServletResponse implements HttpServletResponse {
 		throw new UnsupportedOperationException();
 	}
 	
-	public StringBuffer getBuffer(){
+	public synchronized StringBuffer getBuffer(){
 		return out.getBuffer();
 	}
 	public ByteArrayOutputStream getByteArray(){

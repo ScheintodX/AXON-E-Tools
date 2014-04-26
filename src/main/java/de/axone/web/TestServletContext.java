@@ -369,7 +369,7 @@ public class TestServletContext implements ServletContext {
 		throw new UnsupportedOperationException();
 	}
 	
-	private class DynamicDummy implements Dynamic {
+	private static class DynamicDummy implements Dynamic {
 		
 		@SuppressWarnings( "unused" )
 		private final String servletName, className;

@@ -14,10 +14,20 @@ import de.axone.funky.types.ArgumentValidator_OneOf;
  * 
  * <pre>
  * ls [--all] [--color=none|some|full] dir
+ * ls [-a] [-c none|some|full] dir
+ * ls [-a|--all] [-c|--color=none|some|full] dir
  * all: Display hidden files e.g. those starting with dots
  * color: Color scheme to use
  * dir: directory to look in
  * </pre>
+ * 
+ * Call of shell functions:
+ * 
+ * ls -a -c full /etc
+ * or:
+ * ls --all --color=full /etc
+ * but although:
+ * ls /etc --all -c full
  * 
  * @author flo
  */
@@ -49,29 +59,46 @@ public abstract class FunctionDescriptionBuilder_Shell {
 			optional = true;
 		}
 		
-		String name;
-		String option = null;
+		NameValue nv = parseArg( arg );
+		
+		ArgumentImpl<String,ArgumentType<String>> result = new ArgumentImpl<>(
+				ArgumentTypes.STRING, nv.name, null, null, null, optional, nv.positional );
+		
+		if( nv.value != null ){
+			result.validate( new ArgumentValidator_OneOf( nv.value.split( "\\s*\\|\\s*" ) ) );
+		}
+		
+		return result;
+	}
+	
+	static class NameValue {
+		String name, value;
+		boolean positional;
+	}
+	
+	static NameValue parseArg( String arg ){
+		
+		NameValue result = new NameValue();
+		
 		if( arg.contains( "=" ) ){
 			
 			String [] split = arg.split( "=", 2 );
-			name = split[ 0 ];
-			option = split[ 1 ];
+			result.name = split[ 0 ];
+			result.value = split[ 1 ];
 		} else {
-			name = arg;
+			result.name = arg;
 		}
 		
-		boolean positional = true;
-		if( name.startsWith( "--" ) ){
-			name = name.substring( 2 );
-			positional = false;
+		if( result.name.startsWith( "--" ) ){
+			result.name = result.name.substring( 2 );
+			result.positional = false;
+			
+		} else if( result.name.startsWith( "-" ) ){
+			result.name = result.name.substring( 1 );
+			result.positional = false;
+		} else {
+			result.positional = true;
 		}
-		
-		ArgumentImpl<String,ArgumentType<String>> result = new ArgumentImpl<>( ArgumentTypes.STRING, name, null, null, null, optional, positional );
-		
-		if( option != null ){
-			result.validate( new ArgumentValidator_OneOf( option.split( "\\s*\\|\\s*" ) ) );
-		}
-		
 		return result;
 	}
 }

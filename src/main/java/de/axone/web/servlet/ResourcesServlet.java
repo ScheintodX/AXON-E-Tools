@@ -390,7 +390,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 				e.printStackTrace( o2 );
 			} catch( IllegalStateException ise ){
 				ServletOutputStream sout = resp.getOutputStream();
-				e.printStackTrace( new PrintStream( sout ) );
+				e.printStackTrace( new PrintStream( sout, true, "utf-8" ) );
 			}
 			
 			resp.sendError( HttpServletResponse.SC_NOT_FOUND,

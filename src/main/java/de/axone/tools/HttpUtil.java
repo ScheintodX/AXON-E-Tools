@@ -113,9 +113,10 @@ public class HttpUtil {
 			
 			HttpEntity entity = response.getEntity();
 			
-			InputStream in = entity.getContent();
-			byte [] content = Slurper.slurp( in );
-			uResponse.content = content;
+			try( InputStream in = entity.getContent() ){
+				byte [] content = Slurper.slurp( in );
+				uResponse.content = content;
+			}
 			
 		}
 		return uResponse;

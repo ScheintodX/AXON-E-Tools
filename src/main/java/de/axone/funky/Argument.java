@@ -67,6 +67,13 @@ public interface Argument<C,T extends ArgumentType<C>> {
 	public boolean positional();
 	
 	/**
+	 * Returns the default value for optional arguments
+	 * 
+	 * @return
+	 */
+	public C defaultValue();
+	
+	/**
 	 * Return list of validators
 	 * 
 	 * @return

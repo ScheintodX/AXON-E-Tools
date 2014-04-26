@@ -1,11 +1,14 @@
 package de.axone.funky;
 
+import java.util.Map;
+
 import org.testng.annotations.Test;
 
 import de.axone.funky.shell.FunctionDescriptionBuilder_Shell;
 import de.axone.funky.shell.Shell;
 import de.axone.funky.types.ArgumentTypes;
 import de.axone.funky.types.ArgumentValidators;
+import de.axone.tools.E;
 
 
 @Test( groups="tools.funky" )
@@ -38,8 +41,8 @@ public class Funky {
 		//E.rr( description );
 		shell.man( ls2 );
 		
-		//Map<String,Object> values = shell.parser().parse( ls, "ls --all --color=none /home/flo" );
-		//E.rr( values );
+		Map<String,Object> values = shell.parser().parse( ls, "ls --all --color=none /home/flo" );
+		E.rr( values );
 		
 		FunctionSet set = new FunctionSetImpl( "git" )
 				.description( FunctionDescriptionBuilder_Shell.build( "git status" ) )
@@ -48,6 +51,6 @@ public class Funky {
 		;
 		
 		
-		//E.rr( set );
+		E.rr( set );
 	}
 }

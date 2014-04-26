@@ -22,6 +22,8 @@ public class ArgumentImpl<C,T extends ArgumentType<C>> implements Argument<C,T> 
 	private List<ArgumentValidator<C>>
 			validators = new LinkedList<>();
 	
+	private C defaultValue;
+	
 	public ArgumentImpl( T type, String name, String shortName, String description, String longDescription, boolean optional, boolean positional ) {
 		this.type = type;
 		this.name = name;
@@ -91,6 +93,15 @@ public class ArgumentImpl<C,T extends ArgumentType<C>> implements Argument<C,T> 
 	}
 	public ArgumentImpl<C,T> longDescription( String longDescription ){
 		this.longDescription = longDescription;
+		return this;
+	}
+	
+	@Override
+	public C defaultValue() {
+		return defaultValue;
+	}
+	public ArgumentImpl<C,T> defaultValue( C defaultValue ){
+		this.defaultValue = defaultValue;
 		return this;
 	}
 	

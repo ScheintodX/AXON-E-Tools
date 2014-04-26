@@ -51,8 +51,9 @@ public class Shell {
 				result = shell.interactive( System.in );
 			} else if( args.length == 2 && args[ 0 ].equals( RUN ) ){
 				File f = new File( args[ 1 ] );
-				FileInputStream fIn = new FileInputStream( f );
-				result = shell.interactive( fIn );
+				try( FileInputStream fIn = new FileInputStream( f ) ){
+					result = shell.interactive( fIn );
+				}
 			} else {
 				result = shell.run( args );
 			}
