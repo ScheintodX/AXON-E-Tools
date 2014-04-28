@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
 
-import de.axone.web.rest.Validator2.Validator2Result;
+import de.axone.web.rest.Validator.ValidatorResult;
 
 public class ResultWriter {
 	
@@ -21,13 +21,13 @@ public class ResultWriter {
 	public static void writeValue( ObjectMapper mapper, PrintWriter out, Object data )
 			throws JsonGenerationException, JsonMappingException, IOException{
 		
-		writeValue( mapper, out, data, null, (Validator2Result)null, null );
+		writeValue( mapper, out, data, null, (ValidatorResult)null, null );
 	}
 	
 	public static void writeValue( ObjectMapper mapper, PrintWriter out, Object data, Map<String,Object> overwrite )
 			throws JsonGenerationException, JsonMappingException, IOException{
 		
-		writeValue( mapper, out, data, null, (Validator2Result)null, overwrite );
+		writeValue( mapper, out, data, null, (ValidatorResult)null, overwrite );
 	}
 	
 	public static void writeValue( ObjectMapper mapper, PrintWriter out,
@@ -37,7 +37,7 @@ public class ResultWriter {
 	}
 	
 	public static void writeValue( ObjectMapper mapper, PrintWriter out,
-			Object data, String prefix, Validator2Result errors )
+			Object data, String prefix, ValidatorResult errors )
 			throws JsonGenerationException, JsonMappingException, IOException{
 		writeValue( mapper, out, data, prefix, errors, null );
 	}
@@ -70,7 +70,7 @@ public class ResultWriter {
 	}
 	
 	public static void writeValue( ObjectMapper mapper, PrintWriter out,
-			Object data, String prefix, Validator2Result errors, Map<String,Object> overwrite )
+			Object data, String prefix, ValidatorResult errors, Map<String,Object> overwrite )
 			throws JsonGenerationException, JsonMappingException, IOException{
 		
 		if( errors != null && errors.hasError() || overwrite != null && overwrite.size() > 0 ){

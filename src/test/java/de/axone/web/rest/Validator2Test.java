@@ -15,11 +15,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.axone.tools.E;
-import de.axone.web.rest.Validator2.Validator2Error;
-import de.axone.web.rest.Validator2.Validator2Result;
-import de.axone.web.rest.Validator2.Validator2Result.Severity;
-import de.axone.web.rest.Validator2.Validator2ResultImpl;
-import de.axone.web.rest.Validator2.Validator2ResultList;
+import de.axone.web.rest.Validator.ValidatorError;
+import de.axone.web.rest.Validator.ValidatorResult;
+import de.axone.web.rest.Validator.ValidatorResult.Severity;
+import de.axone.web.rest.Validator.ValidatorResultImpl;
+import de.axone.web.rest.Validator.ValidatorResultList;
 
 @Test( groups = "tools.rest" )
 public class Validator2Test {
@@ -27,21 +27,21 @@ public class Validator2Test {
 	@SuppressWarnings( "unchecked" )
 	public void testValidatorResult() throws JsonProcessingException {
 		
-		Validator2ResultImpl res = new Validator2ResultImpl();
+		ValidatorResultImpl res = new ValidatorResultImpl();
 		
 		res.error( "field", "error-code" );
 		
 		res.setInfo( "info" );
 		res.warn( "field2", "warn-code" );
 		
-		Validator2Result sub = res.descent( "sub" );
+		ValidatorResult sub = res.descent( "sub" );
 		
 		sub.info( "sub-field", "info-code" );
 		
-		Validator2ResultList list = res.descentList( "list" );
-		Validator2Result sub1 = list.descent( 1 );
+		ValidatorResultList list = res.descentList( "list" );
+		ValidatorResult sub1 = list.descent( 1 );
 		sub1.info( "in-list1", "info" );
-		Validator2Result sub2 = list.descent( 2 );
+		ValidatorResult sub2 = list.descent( 2 );
 		sub2.info( "in-list2", "info" );
 		sub2.error( "in-list2-2", "error" );
 		
@@ -63,14 +63,14 @@ public class Validator2Test {
 		E.rr( mapper.writeValueAsString( sim ) );
 		
 		assertEquals( sim.get( "field" ), "blah" );
-		Map<String,Object> errors = (Map<String,Object>) sim.get( Validator2.ERROR_KEY );
+		Map<String,Object> errors = (Map<String,Object>) sim.get( Validator.ERROR_KEY );
 		assertNotNull( errors );
 		assertTrue( errors.containsKey( "field" ) );
 		assertTrue( errors.containsKey( "field2" ) );
 		
 		Map<String,Object> simSub = (Map<String,Object>) sim.get( "sub" );
 		assertNotNull( simSub );
-		errors = (Map<String,Object>) simSub.get( Validator2.ERROR_KEY );
+		errors = (Map<String,Object>) simSub.get( Validator.ERROR_KEY );
 		assertNotNull( errors );
 		assertTrue( errors.containsKey( "sub-field" ) );
 		
@@ -78,10 +78,10 @@ public class Validator2Test {
 		assertNotNull( simList );
 		assertEquals( simList.size(), 2 );
 		Map<String,Object> simListItem = simList.get( 0 );
-		assertFalse( simListItem.containsKey( Validator2.ERROR_KEY ) );
+		assertFalse( simListItem.containsKey( Validator.ERROR_KEY ) );
 		simListItem = simList.get( 1 );
-		assertTrue( simListItem.containsKey( Validator2.ERROR_KEY ) );
-		assertError( simListItem.get( Validator2.ERROR_KEY ), "in-list1", Severity.INFO, "info", null );
+		assertTrue( simListItem.containsKey( Validator.ERROR_KEY ) );
+		assertError( simListItem.get( Validator.ERROR_KEY ), "in-list1", Severity.INFO, "info", null );
 		
 		List<Map<String,String>> asList = new LinkedList<>();
 		
@@ -94,11 +94,11 @@ public class Validator2Test {
 		
 		assertIsInstance( o, Map.class );
 		@SuppressWarnings( "unchecked" )
-		Map<String,Validator2Error> err = (Map<String,Validator2Error>)o;
+		Map<String,ValidatorError> err = (Map<String,ValidatorError>)o;
 		
 		assertContainsKey( err, field );
 		
-		Validator2Error vErr = err.get( field );
+		ValidatorError vErr = err.get( field );
 		
 		assertEquals( vErr.getSeverity(), severity );
 		assertEquals( vErr.getCode(), code );
