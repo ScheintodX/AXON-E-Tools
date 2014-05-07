@@ -6,64 +6,39 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import de.axone.web.Method;
+import de.axone.web.SuperURL;
 
-public interface CrudFunction<OBJECT, DATA, REQUEST extends RestRequest> {
+public interface CrudFunction<ID, DATA, REQUEST extends RestRequest>
+extends RestFunctionGroup<DATA, REQUEST> {
 	
-	
+	@Override
 	public String name();
 	
+	public ID parseId( DATA data, Method method, String id, Map<String,String> parameters, REQUEST req ) throws Exception;
 	
-	public void doCreate( DATA data, Method method,
+	public void doCreate( DATA data, Method method, Map<String,String> parameters,
 			PrintWriter out, REQUEST req, HttpServletResponse resp) throws Exception;
 	
-	public void doRead( DATA data, Method method, long id,
+	public void doRead( DATA data, Method method, ID id, Map<String,String> parameters,
 			PrintWriter out, REQUEST req, HttpServletResponse resp) throws Exception;
 	
-	public void doUpdate( DATA data, Method method, Long id,
+	public void doUpdate( DATA data, Method method, ID id, Map<String,String> parameters,
 			PrintWriter out, REQUEST req, HttpServletResponse resp) throws Exception;
 	
-	public void doDelete( DATA data, Method method, long id,
+	public void doDelete( DATA data, Method method, ID id, Map<String,String> parameters,
 			PrintWriter out, REQUEST req, HttpServletResponse resp) throws Exception;
 	
 	
 	public void doList( DATA data, Method method, Map<String,String> parameters,
 			PrintWriter out, REQUEST req, HttpServletResponse resp) throws Exception;
 	
+	public void doConfig( DATA data, Method method, Map<String,String> parameters,
+			PrintWriter out, REQUEST req, HttpServletResponse resp) throws Exception;
 	
-	/*
-	public interface ObjectResult<O> {
-		public O getItem();
-		public ValidatorResult getErrors();
-	}
-	public static class ObjectResultImpl<O> implements ObjectResult<O> {
-		private final O item;
-		private final ValidatorResult errors;
-		public ObjectResultImpl( O item, ValidatorResult errors ){
-			this.item = item;
-			this.errors = errors;
-		}
-		@Override
-		public O getItem() { return item; }
-		@Override
-		public ValidatorResult getErrors() { return errors; }
-	}
 	
-	public interface ListResult<O> {
-		public List<O> getList();
-		public int getSize();
-	}
-	public static class ListResultImpl<O> implements ListResult<O> {
-		private List<O> list;
-		private int size;
-		public ListResultImpl( List<O> list, int size ){
-			this.list = list;
-			this.size = size;
-		}
-		@Override
-		public List<O> getList() { return list; }
-		@Override
-		public int getSize() { return size; }
-	}
-	*/
+	public void doOther( DATA data, Method method, Map<String, String> parameters,
+			SuperURL url, PrintWriter out, REQUEST req, HttpServletResponse resp ) throws Exception;
+	
+	public void registerMe( RestFunctionRegistry<DATA,REQUEST> reg );
 	
 }

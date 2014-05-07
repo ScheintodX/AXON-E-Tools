@@ -39,7 +39,7 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 		
 		if( url.getPath() == null || url.getPath().length() < stepBack ) {
 
-			renderHelp( req, resp );
+			renderHelp( req, resp, null, false );
 			
 		} else {
 
@@ -71,7 +71,7 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 			if( f == null ) {
 				
 				log.warn( "No function: " + req.getRequestURI() );
-				renderHelp( req, resp );
+				renderHelp( req, resp, null, false );
 			} else {
 				
 				log.info( "Client requested {}", f.name() );
@@ -125,7 +125,7 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 		log.error( "Exception while running '" + f.name() + "'", e );
 	}
 	
-	private void renderHelp( RestRequest req, HttpServletResponse resp )
+	private void renderHelp( RestRequest req, HttpServletResponse resp, String message, boolean detailed )
 	throws Exception {
 
 		resp.setContentType( "text/html" );
@@ -139,16 +139,29 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 		out.println( "<script src=\"/static/admin/js/ajax_help.js?yui=false\"></script>" );
 		out.println( "</head><body>\n" );
 		
+		if( message != null ){
+			out.write( "<h1>" + message + "</h1>" );
+		}
+			
 		for( RestFunction<DATA, REQUEST> function : functions ){
 
-			function.renderHelp( out, null, false );
+			RestFunctionDescription description = function.description();
+			
+			if( detailed ){
+				String template = description.getTemplate();
+				if( template != null ){
+					
+					out.write( template );
+				}
+			}
+			out.write( description.toHtml() );
+			
 		}
 		
 		out.println( "\n</body></html>" );
 	}
 
 	public void register( RestFunction<DATA, REQUEST> function ) {
-
 		register( new RestFunctionRoute.Simple( "/" + function.name() ), function );
 	}
 	
@@ -166,7 +179,7 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 	
 	public void register( RestFunctionRoute route, RestFunction<DATA, REQUEST> function ){
 		
-		function.setRoute( route );
+		function.description().setRoute( route );
 		
 		routes.add( route );
 		functions.add( function );

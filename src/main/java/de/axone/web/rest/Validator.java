@@ -37,6 +37,7 @@ public abstract class Validator<T> {
 		validate( result, em, object );
 		return result;
 	}
+	
 	public void validate( ValidatorResult result, EntityManager em, T object ){
 		try {
 			doValidate( result, em, object );
@@ -481,16 +482,16 @@ public abstract class Validator<T> {
 	}
 	
 	public static void assertNotEmpty( ValidatorResult result,
-			String field, String value ){
+			String field, Object value ){
 		
-		if( value == null || value.trim().length() == 0 )
+		if( value == null || value.toString().trim().length() == 0 )
 			error( result, field , "IS_EMPTY" );
 	}
 	
 	public static void assertNotEmpty(
-			String field, String value ){
+			String field, Object value ){
 		
-		if( value == null || value.trim().length() == 0 )
+		if( value == null || value.toString().trim().length() == 0 )
 			except( field , "IS_EMPTY" );
 	}
 	

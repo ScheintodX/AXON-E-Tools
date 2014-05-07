@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import de.axone.tools.E;
+import de.axone.tools.Slurper;
 import de.axone.web.Method;
 import de.axone.web.SuperURL;
 
@@ -13,12 +15,10 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 	implements RestFunction<DATA,REQUEST> {
 
 	private final String name;
-	private final RestFunctionDescription description;
 	
-	public AbstractRestFunction( String name, RestFunctionDescription description ){
+	public AbstractRestFunction( String name ){
 	
 		this.name = name;
-		this.description = description;
 	}
 	
 	@Override
@@ -26,33 +26,9 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 		return name;
 	}
 	
-	public RestFunctionDescription description(){
-		return description;
-	}
+	@Override
+	public abstract RestFunctionDescription description();
 	
-	@Override
-	public void setRoute( RestFunctionRoute route ){
-		description.setRoute( route );
-	}
-
-	@Override
-	public void renderHelp( PrintWriter out, String message, boolean detailed )
-			throws Exception {
-
-		if( message != null ){
-			out.write( "<h1>" + message + "</h1>" );
-		}
-		
-		if( detailed ){
-			String template = description().getTemplate();
-			if( template != null ){
-				
-				out.write( template );
-			}
-		}
-		out.write( description().toHtml() );
-		
-	}
 
 	protected String readParamAsString( REQUEST req, String name, boolean required ) throws RestFunctionException {
 
@@ -73,7 +49,7 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 		String data = req.getParameter( "data" );
 		
 		// Only for debugging
-		/*
+		
 		if( data == null ){
 			
 			try {
@@ -84,7 +60,6 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 		}
 		E.rr( type.getSimpleName() );
 		E.rr( data );
-		*/
 		
 		try {
 			if( data != null ){

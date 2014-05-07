@@ -8,6 +8,7 @@ import de.axone.exception.IllegalNamedArgumentException;
 public class JsonResponseImpl implements JsonResponse {
 	
 	public static class OK extends JsonResponseImpl {
+		
 		public OK(){
 			super( Status.OK );
 		}

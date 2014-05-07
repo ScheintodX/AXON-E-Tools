@@ -98,9 +98,7 @@ public interface RestFunctionRoute {
 					
 					result.put( name, value );
 				}
-				
 				return result;
-				
 			} else {
 				return null;
 			}
