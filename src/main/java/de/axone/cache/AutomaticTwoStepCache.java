@@ -30,20 +30,4 @@ public class AutomaticTwoStepCache<K,I,V> {
 		return result;
 	}
 	
-	/*
-	public List<V> get( Collection<K> keys, DataAccessor<K,List<I>> intermediateAccessor, DataAccessor<I,V> valueAccessor ){
-		
-		Map<K,List<I>> intermediates = intermediatesForKey.get( keys, intermediateAccessor );
-		
-		Set<I> joined = new HashSet<>();
-		
-		for( List<I> single : intermediates.values() ){
-			joined.addAll( single );
-		}
-		
-		Map<I,V> values = valuesForIntermediate.get( joined, valueAccessor );
-		
-		return values.values();
-	}
-	*/
 }

@@ -246,11 +246,6 @@ public class Equals {
 			
 			if( accessor.isGetable() ){
 				
-				if( destination != null && !accessor.isSetable() ){
-					log.warn( "Skipping missing setter for: {}", accessor.getName() );
-					continue;
-				}
-				
 				// Field's annotation
 				EqualsField equalsFieldA = accessor.getAnnotation( EqualsField.class );
 				
@@ -280,6 +275,11 @@ public class Equals {
 					
 					try {
 						
+						if( destination != null && !accessor.isSetable() ){
+							log.warn( "Skipping missing setter for: {}/{}", sourceClz.getSimpleName(), accessor.getName() );
+							continue;
+						}
+				
 						wrapper.invoke( accessor, localOptions );
 						
 					} catch( Exception e ) {

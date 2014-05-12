@@ -51,7 +51,7 @@ import de.axone.tools.Str;
  */
 public final class SuperURL {
 	
-	public static final Logger log =
+	private static final Logger log =
 			LoggerFactory.getLogger( SuperURL.class );
 	
 	private String scheme;
@@ -78,7 +78,7 @@ public final class SuperURL {
 	
 	public SuperURL( String parse, boolean noHost ) throws URISyntaxException{
 		
-		this( new URI( fixForChrome( parse ) ), noHost );
+		this( new URI( applyFixes( parse ) ), noHost );
 	}
 	
 	public SuperURL( URI uri ){
@@ -106,7 +106,7 @@ public final class SuperURL {
 			
 			if( urlSB != null ){
 				
-				String urlStr = fixForChrome( urlSB.toString() );
+				String urlStr = applyFixes( urlSB.toString() );
 				
 				uri = new URI( urlStr );
 			} else {
@@ -948,10 +948,22 @@ public final class SuperURL {
 		}
 	}
 	
+	private static String applyFixes( String old ){
+		log.trace( "Parse: {}", old );
+		old = fixForChrome( old );
+		old = fixForNGinx( old );
+		log.trace( "To: {}", old );
+		return old;
+	}
+	
 	private static String fixForChrome( String old ){
-		
 		if( ! ( old.contains( "[" ) || old.contains( "]" ) ) ) return old;
 		return old.replace( "[", "%5B" ).replace( "]", "%5D" );
+	}
+	
+	private static String fixForNGinx( String old ){
+		if( ! old.contains( "\"" ) ) return old;
+		return old.replace( "\"", "%22" );
 	}
 	
 	public URL toURL() throws MalformedURLException{

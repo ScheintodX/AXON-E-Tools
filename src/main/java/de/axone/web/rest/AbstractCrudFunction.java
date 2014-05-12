@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import de.axone.tools.E;
 import de.axone.web.Method;
 import de.axone.web.SuperURL;
 
@@ -86,11 +85,7 @@ implements CrudFunction<ID, DATA,REQUEST> {
 		
 		String idStr = parameters.get( P_ID );
 		
-		E.rr( idStr, url );
-		
 		ACTION action = ACTION( data, method, idStr, parameters, url, out, req, resp );
-		
-		E.rr( action );
 		
 		doAction( data, method, action, idStr, parameters, url, out, req, resp );
 		
