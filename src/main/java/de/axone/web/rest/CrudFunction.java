@@ -39,6 +39,9 @@ extends RestFunctionGroup<DATA, REQUEST> {
 	public void doOther( DATA data, Method method, Map<String, String> parameters,
 			SuperURL url, PrintWriter out, REQUEST req, HttpServletResponse resp ) throws Exception;
 	
+	public void doHelp( DATA data, Method method, Map<String, String> parameters,
+			SuperURL url, PrintWriter out, REQUEST req, HttpServletResponse resp ) throws Exception;
+	
 	public void registerMe( RestFunctionRegistry<DATA,REQUEST> reg );
 	
 }

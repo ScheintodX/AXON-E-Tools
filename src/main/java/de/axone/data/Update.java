@@ -81,8 +81,14 @@ public abstract class Update {
 		dst.addAll( add );
 	}
 	
-	// Should use Equals
 	@Deprecated
+	/**
+	 * 
+	 * @author flo
+	 *
+	 * @param <T>
+	 * @deprecated Use Equals instead
+	 */
 	public interface Updater<T> {
 		
 		public T find( Collection<T> col, T member );

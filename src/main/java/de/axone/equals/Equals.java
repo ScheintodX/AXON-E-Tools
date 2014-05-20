@@ -163,15 +163,21 @@ public class Equals {
 	 * @param <T>
 	 * @param destination
 	 * @param source
-	 * @param synchroMapper to do coping or <tt>null</tt>
+	 * @param synchroMapper to do coping or <tt>null</tt> to use DefaultSynchroMapper
 	 * @return the destination (the original, not a copy!)
 	 */
+	@SuppressWarnings( "unchecked" )
 	public static <T extends Synchronizable<T>> T synchronize(
 			T destination, T source, SynchroMapper synchroMapper ) {
 		
 		Assert.notNull( source, "source" );
 		
-		if( destination == null ) destination = source.emptyInstance();
+		if( synchroMapper == null )
+			synchroMapper = DEFAULT_SYNCHRO_MAPPER;
+		
+		if( destination == null ){
+			destination = (T)synchroMapper.emptyInstanceOf( null, source );
+		}
 		
 		// No synchronisation for equal objects
 		if( destination == source || destination.equals( source ) ) return destination;
@@ -558,6 +564,10 @@ public class Equals {
 	
 	public static class DefaultSynchroMapper implements SynchroMapper {
 
+		/**
+		 * Default implementation of copyOf does not create a copy but
+		 * returns a reference to same object.
+		 */
 		@Override
 		public Object copyOf( String name, Object object ) {
 			
@@ -567,15 +577,18 @@ public class Equals {
 		}
 
 		@Override
-		public Object emptyInstanceOf( String name, Object object )
-				throws InstantiationException, IllegalAccessException {
+		public Object emptyInstanceOf( String name, Object object ) {
 			
 			log.debug( "emptyInstanceOf: {}", name );
 			
 			if( object == null ) return null;
 			
 			Class<?> clz = object.getClass();
-			return clz.newInstance();
+			try {
+				return clz.newInstance();
+			} catch( ReflectiveOperationException e ) {
+				throw new RuntimeException( e );
+			}
 		}
 
 		@Override
@@ -600,10 +613,13 @@ public class Equals {
 		public void synchronize( String name, Object dst, Object src ) {
 			
 			if( src instanceof Synchronizable ){
+				/*
 				Equals.synchronize(
 						(Synchronizable)dst, (Synchronizable)src, this );
+				*/
+				((Synchronizable)dst).synchronizeFrom( src );
 			} else {
-				throw new IllegalArgumentException( "Not Synchronizable" );
+				throw new IllegalArgumentException( name + " not Synchronizable" );
 			}
 		}
 	}
@@ -621,7 +637,7 @@ public class Equals {
 		SyncroWrapper( T destination, T source, SynchroMapper mapper ){
 			this.destination = destination;
 			this.source = source;
-			this.sm = mapper != null ? mapper : DEFAULT_SYNCHRO_MAPPER;
+			this.sm = mapper;
 		}
 		
 		@Override
@@ -814,7 +830,7 @@ public class Equals {
 	
 	public interface Synchronizable<T> {
 		public void synchronizeFrom( T other );
-		public T emptyInstance();
+		//public T emptyInstance();
 	}
 	
 	/*

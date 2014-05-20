@@ -61,6 +61,8 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 		E.rr( type.getSimpleName() );
 		E.rr( data );
 		
+		// / debuggin
+		
 		try {
 			if( data != null ){
 				jsonData = req.mapper().readValue( data, type );

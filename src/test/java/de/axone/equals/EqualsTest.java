@@ -479,8 +479,7 @@ public class EqualsTest {
 		}
 
 		@Override
-		public Object emptyInstanceOf( String name, Object object )
-				throws InstantiationException, IllegalAccessException {
+		public Object emptyInstanceOf( String name, Object object ) {
 			
 			fields.add( name );
 			
@@ -597,11 +596,6 @@ public class EqualsTest {
 					+ ", ignore=" + ignore + "]";
 		}
 
-		@Override
-		public O emptyInstance() {
-			return new O();
-		}
-
 	}
 	
 	@EqualsClass( workOn = WorkOn.FIELDS )
@@ -677,11 +671,6 @@ public class EqualsTest {
 			Equals.synchronize( this, other, null );
 		}
 		
-		@Override
-		public o emptyInstance() {
-			return new o();
-		}
-
 		@Override
 		public String toString() {
 			return "o [i=" + i + ", " + ( s != null ? "s=" + s + ", " : "" )

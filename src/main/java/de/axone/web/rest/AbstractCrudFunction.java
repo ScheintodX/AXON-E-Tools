@@ -14,9 +14,10 @@ implements CrudFunction<ID, DATA,REQUEST> {
 	
 	private static final String A_CONFIG = "__CONFIG__";
 	private static final String A_NEW = "new";
+	private static final String A_HELP = "help";
 	protected static final String P_ID = "id";
 	
-	public enum ACTION{ CREATE, READ, UPDATE, DELETE, LIST, OTHER, CONFIG };
+	public enum ACTION{ CREATE, READ, UPDATE, DELETE, LIST, OTHER, CONFIG, HELP };
 	
 	private final RestFunctionDescription description;
 	
@@ -112,6 +113,8 @@ implements CrudFunction<ID, DATA,REQUEST> {
 			case GET:
 				if( A_NEW.equals( url.getPath().getLast() ) ){
 					action = ACTION.CREATE;
+				} else if( A_HELP.equals( url.getPath().getLast() ) ){
+					action = ACTION.HELP;
 				} else if( A_CONFIG.equals( url.getPath().getLast() ) ){
 					action = ACTION.CONFIG;
 				} else if( url.getPath().length() == 1 && idStr != null ){
@@ -159,6 +162,8 @@ implements CrudFunction<ID, DATA,REQUEST> {
 				doConfig( data, method, parameters, out, req, resp ); break;
 			case OTHER:
 				doOther( data, method, parameters, url, out, req, resp ); break;
+			case HELP:
+				doHelp( data, method, parameters, url, out, req, resp ); break;
 			default:
 				throw new IllegalArgumentException( "Unknown action: " + action );
 		}
@@ -180,6 +185,17 @@ implements CrudFunction<ID, DATA,REQUEST> {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public void doHelp( DATA data, Method method,
+			Map<String, String> parameters, SuperURL url, PrintWriter out, REQUEST req,
+			HttpServletResponse resp ) throws Exception {
+		
+		resp.setContentType( "text/html" );
+		
+		out.println( description().toHtml( true ) );
+	}
+
+	
 	
 	protected interface M<DATA,REQUEST> {
 		public void run(  DATA data, Method method,

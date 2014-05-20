@@ -154,7 +154,8 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 					out.write( template );
 				}
 			}
-			out.write( description.toHtml() );
+			
+			out.write( description.toHtml( detailed ) );
 			
 		}
 		

@@ -32,7 +32,9 @@ public class HibernateSynchroMapper extends DefaultSynchroMapper {
 
 	@Override
 	@SuppressWarnings( "rawtypes" )
-	public Object emptyInstanceOf( String name, Object object ) throws InstantiationException, IllegalAccessException {
+	public Object emptyInstanceOf( String name, Object object ) {
+		
+		if( object == null ) return null;
 		
 		if( object instanceof List ){
 			//E.rr( object.getClass() );
@@ -58,8 +60,7 @@ public class HibernateSynchroMapper extends DefaultSynchroMapper {
 				return new HashMap();
 			}
 		} else {
-			Class<?> clz = object.getClass();
-			return clz.newInstance();
+			return super.emptyInstanceOf( name, object );
 		}
 		
 	}

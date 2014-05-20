@@ -53,7 +53,7 @@ public class RestFunctionDescription {
 	}
 
 
-	public String toHtml() {
+	public String toHtml( boolean detailed ) {
 
 		StringBuilder result = new StringBuilder();
 
@@ -229,8 +229,12 @@ public class RestFunctionDescription {
 		protected String explain;
 	
 		public AbstractExample( String method, String path ){
+			this( method, path, null );
+		}
+		public AbstractExample( String method, String path, String explain ){
 			this.method = method;
 			this.path = path;
+			this.explain = explain;
 		}
 		
 		@Override
