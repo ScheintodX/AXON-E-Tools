@@ -22,8 +22,9 @@ public interface SynchroMapper {
 	 * @param name
 	 * @param destination
 	 * @param source
+	 * @return The destination value. Can be another then the provided
 	 */
-	public void synchronize( String name, Object destination, Object source );
+	public Object synchronize( String name, Object destination, Object source );
 	
 	
 	/**
@@ -69,8 +70,6 @@ public interface SynchroMapper {
 			
 			Equals.log.debug( "emptyInstanceOf: {}", name );
 			
-			if( object == null ) return null;
-			
 			Class<?> clz = object.getClass();
 			try {
 				return clz.newInstance();
@@ -107,11 +106,13 @@ public interface SynchroMapper {
 		 * This synchromapper is passed
 		 */
 		@Override
-		public void synchronize( String name, Object destination, Object source ){
+		public Object synchronize( String name, Object destination, Object source ){
 			
 			Equals.log.debug( "synchronize: {}", name );
 			
 			Equals.synchronize( destination, source, this );
+			
+			return destination;
 		}
 
 	}

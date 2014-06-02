@@ -660,7 +660,7 @@ public class Equals {
 				
 				if( dstVal == null ) dstVal = sm.emptyInstanceOf( name, srcVal );
 				
-				sm.synchronize( name, dstVal, srcVal );
+				dstVal = sm.synchronize( name, dstVal, srcVal );
 				
 				return dstVal;
 				

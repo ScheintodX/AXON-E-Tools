@@ -34,8 +34,6 @@ public class HibernateSynchroMapper extends DefaultSynchroMapper {
 	@SuppressWarnings( "rawtypes" )
 	public Object emptyInstanceOf( String name, Object object ) {
 		
-		if( object == null ) return null;
-		
 		if( object instanceof List ){
 			
 			if( object instanceof ArrayList ){
