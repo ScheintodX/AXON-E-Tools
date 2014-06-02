@@ -6,8 +6,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import de.axone.tools.E;
-import de.axone.tools.Slurper;
 import de.axone.web.Method;
 import de.axone.web.SuperURL;
 
@@ -49,7 +47,7 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 		String data = req.getParameter( "data" );
 		
 		// Only for debugging
-		
+		/*
 		if( data == null ){
 			
 			try {
@@ -60,6 +58,7 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 		}
 		E.rr( type.getSimpleName() );
 		E.rr( data );
+		*/
 		
 		// / debuggin
 		

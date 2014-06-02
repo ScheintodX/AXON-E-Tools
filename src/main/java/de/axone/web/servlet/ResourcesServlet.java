@@ -45,6 +45,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 	private static final String FS = ";";
 	private static final String PREFIX = "/static";
 	private static final String P_DO_YUI = "yui";
+	private static final String P_NO_CACHE = "nc";
 	private static final float MIN_COMPRESSION = 0.90f;
 	
 	private static final Pattern COLORIZE = Pattern.compile( "(/([cpgji]{1,5})\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)).*" );
@@ -106,6 +107,9 @@ public abstract class ResourcesServlet extends HttpServlet {
 			
 			String pYui = request.getParameter( P_DO_YUI );
 			boolean doYui = !EasyParser.isNo( pYui );
+			
+			String pNc = request.getParameter( P_NO_CACHE );
+			boolean doNotCache = pNc != null;
 
 			HttpDataHolder httpData = null;
 			
@@ -114,7 +118,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 				String urlKey = uri + (doYui?"!":"");
 				
 				// Is there sth. in the buffer?
-				if( buffer.containsKey( urlKey ) ) {
+				if( !doNotCache && buffer.containsKey( urlKey ) ) {
 
 					httpData = (HttpDataHolder) buffer.get( urlKey );
 				}
@@ -298,14 +302,21 @@ public abstract class ResourcesServlet extends HttpServlet {
 					byte [] dataAsArray = allData.array();
 					
 					httpData = new HttpDataHolder( dataAsArray, watcherList );
-					buffer.put( urlKey, httpData );
+					// Store doNotCache only if there is already an entry for that
+					// (in order to avoid wrong buffer entries)
+					if( !doNotCache || buffer.containsKey( urlKey )){
+						buffer.put( urlKey, httpData );
+					}
 				}
 			}
 
+			// Regested E-Tag
 			String requestETag = request.getHeader( "If-None-Match" );
 			
+			// E-Tag generated from hashing the data
 			String myETag = httpData.getETag();
 
+			// If matches send 304 (not modified) and no data
 			if( requestETag != null && requestETag.equals( myETag ) ){
 
 				// Don't send anything if request matches response
@@ -332,7 +343,11 @@ public abstract class ResourcesServlet extends HttpServlet {
 			}
 
 			// Cache settings
-			if( cachetime >= 0 ){
+			if( doNotCache ){
+				response.setHeader( "Cache-Control", "no-cache, no-store, must-revalidate" );
+				response.setHeader( "Expires", "0" );
+				
+			} else if( cachetime >= 0 ){
     			response.setHeader( "Cache-Control", "max-age="+cachetime );
 			}
 

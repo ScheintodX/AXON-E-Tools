@@ -35,7 +35,7 @@ import de.axone.exception.Assert;
  * method. Additionally it provides a synchronize method to 'clone'
  * one instance into another.
  * 
- * The realtion of these three methods is:
+ * The relation of these three methods is:
  * <pre>
  * Object o1 = makeObject( "some initializer" );
  * Object o2 = makeObject( "another initializer" );
@@ -56,6 +56,11 @@ import de.axone.exception.Assert;
  * <tt>@@EqualsField( include=true )</tt>
  * 
  * @author flo
+ * 
+ * TODO: "Synchronizable" ist eigentlich vollkommen überflüssig.
+ * Die Annotations sollte das alleine hinkriegen. Ausserdem ist immer
+ * noch nicht klar, was nun genau das Interface oder die Annotation auslösen.
+ * Generell ist das hier noch alles zu chaotisch/unübersichtlich
  *
  */
 public class Equals {
@@ -151,7 +156,9 @@ public class Equals {
 	 * 
 	 * This is done 'in place'. No copy of 'target' is created
 	 * However if 'target' is null a new instance will be created using
-	 * the sources 'newInstance' method;
+	 * the the default constructor.
+	 * 
+	 * If custom behaviour is needed a custom SynchroMapper can be provided.
 	 * 
 	 * Do this with the the fewest possible (hopefully) amount of fields
 	 * 
