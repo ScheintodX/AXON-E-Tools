@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.TYPE )
-public @interface EqualsOption {
+public @interface EqualsOptions {
 	public enum Option { EMPTY_IS_NULL; }
-	public Option[] options();
+	public Option[] value();
 }

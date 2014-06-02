@@ -18,10 +18,9 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.testng.annotations.Test;
 
-import de.axone.equals.Equals.DefaultSynchroMapper;
-import de.axone.equals.Equals.Synchronizable;
 import de.axone.equals.EqualsClass.Select;
 import de.axone.equals.EqualsClass.WorkOn;
+import de.axone.equals.SynchroMapper.DefaultSynchroMapper;
 import de.axone.tools.Sets;
 
 @Test( groups="tools.equals" )
@@ -371,7 +370,7 @@ public class EqualsTest {
 		
 		O o_ = new O();
 		
-		assertEquals( sm.fields, Sets.treeSetOf( "b", "bd", "int", "list", "map", "set", "string", "x", "b") );
+		assertEquals( sm.fields, Sets.treeSetOf( "b", "bd", "int", "list", "map", "set", "string", "x", "v", "b") );
 		
 		sm = new TestSynchroMapper();
 		
@@ -399,7 +398,7 @@ public class EqualsTest {
 		assertFalse( o_.getMap().equals( oo.o1.getMap() ) );
 		assertEquals( o_.getMap().get( "s" ), "s1X" );
 		
-		assertEquals( sm.fields, Sets.treeSetOf( "b", "bd", "int", "list", "map", "set", "string", "x", "b") );
+		assertEquals( sm.fields, Sets.treeSetOf( "b", "bd", "int", "list", "map", "set", "string", "v", "x", "b") );
 		
 	}
 	
@@ -490,7 +489,7 @@ public class EqualsTest {
 	
 	@SuppressWarnings( "unused" )
 	@EqualsClass( workOn = WorkOn.METHODS )
-	private static class O implements Synchronizable<O>, StrongHash {
+	private static class O implements StrongHash {
 		
 		private int i;
 		private String s;
@@ -585,11 +584,6 @@ public class EqualsTest {
 		}
 
 		@Override
-		public void synchronizeFrom( O other ) {
-			Equals.synchronize( this, other, null );
-		}
-		
-		@Override
 		public String toString() {
 			return "O [i=" + i + ", s=" + s + ", x=" + x + ", b=" + b + ", bd="
 					+ bd + ", set=" + set + ", list=" + list + ", map=" + map
@@ -599,7 +593,7 @@ public class EqualsTest {
 	}
 	
 	@EqualsClass( workOn = WorkOn.FIELDS )
-	private static class o implements Synchronizable<o>, StrongHash {
+	private static class o implements StrongHash {
 		
 		public int i;
 		public String s;
@@ -667,11 +661,6 @@ public class EqualsTest {
 		}
 
 		@Override
-		public void synchronizeFrom( o other ) {
-			Equals.synchronize( this, other, null );
-		}
-		
-		@Override
 		public String toString() {
 			return "o [i=" + i + ", " + ( s != null ? "s=" + s + ", " : "" )
 					+ ( x != null ? "x=" + x + ", " : "" ) + "b=" + b + ", "
@@ -688,13 +677,16 @@ public class EqualsTest {
 	@EqualsClass( select = Select.DECLARED, workOn = WorkOn.METHODS )
 	private static class X implements StrongHash {
 		
-		private String x;
+		private String v;
 		private double ignore = Math.random();
 		
-		X( String x ){ this.x=x; }
+		X(){}
+		X( String v ){ this(); this.v=v; }
 		
 		@EqualsField( include=true )
-		public String getX(){ return x; }
+		public String getV(){ return v; }
+		@SuppressWarnings( "unused" )
+		public void setV( String v ){ this.v = v; }
 		
 		public double getIgnore(){ return ignore; }
 		
@@ -713,7 +705,7 @@ public class EqualsTest {
 
 		@Override
 		public String toString() {
-			return "X [x=" + getX() + ", ignore=" + getIgnore() + "]";
+			return "X [x=" + getV() + ", ignore=" + getIgnore() + "]";
 		}
 	}
 }

@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.axone.equals.EqualsClass.Select;
+import de.axone.equals.SynchroMapper.DefaultSynchroMapper;
 import de.axone.exception.Assert;
 
 /**
@@ -65,7 +66,10 @@ import de.axone.exception.Assert;
  */
 public class Equals {
 	
-	private static final Logger log = LoggerFactory.getLogger( Equals.class );
+	static final Logger log = LoggerFactory.getLogger( Equals.class );
+	
+	private static final DefaultSynchroMapper DEFAULT_SYNCHRO_MAPPER = new DefaultSynchroMapper();
+	
 	
 	/**
 	 * Generate a java hash code for the given object
@@ -81,12 +85,13 @@ public class Equals {
 		Assert.notNull( object, "object" );
 		
 		HashCodeBuilder builder = new HashCodeBuilder();
-		HashWrapper<T> wrapper = new HashWrapper<T>( builder, object );
+		HashVisitor<T> wrapper = new HashVisitor<T>( builder, object );
 		
 		process( wrapper, null, object );
 		
 		return builder.toHashCode();
 	}
+	
 	
 	/**
 	 * Compares two objects for equality
@@ -106,12 +111,13 @@ public class Equals {
 		if( o1.getClass() != o2.getClass() ) return false;
 		
 		EqualsBuilder builder = new EqualsBuilder();
-		EqualsWrapper<T> wrapper = new EqualsWrapper<T>( builder, o1, o2 );
+		EqualsVisitor<T> wrapper = new EqualsVisitor<T>( builder, o1, o2 );
 		
 		process( wrapper, null, o1 );
 		
 		return builder.isEquals();
 	}
+	
 	
 	/**
 	 * Generate a strong hash code on the given object
@@ -126,6 +132,7 @@ public class Equals {
 	public static <T> String strongHashString( T object ){
 		return Base64.encodeBase64String( strongHash( object ) ).trim();
 	}
+	
 	
 	/**
 	 * Generate a strong hash code on the given object
@@ -142,12 +149,13 @@ public class Equals {
 		Assert.notNull( object, "object" );
 		
 		StrongHashCodeBuilder<byte[]> builder = new CryptoHashCodeBuilder();
-		StrongHashWrapper<byte[],T> wrapper = new StrongHashWrapper<byte[],T>( builder, object );
+		StrongHashVisitor<byte[],T> wrapper = new StrongHashVisitor<byte[],T>( builder, object );
 		
 		process( wrapper, null, object );
 		
 		return builder.toHashCode();
 	}
+	
 	
 	/**
 	 * Synchronise 'destination' so that it will equals source.
@@ -174,13 +182,25 @@ public class Equals {
 	 * @return the destination (the original, not a copy!)
 	 */
 	@SuppressWarnings( "unchecked" )
-	public static <T extends Synchronizable<T>> T synchronize(
+	public static <T> T synchronize(
 			T destination, T source, SynchroMapper synchroMapper ) {
 		
 		Assert.notNull( source, "source" );
 		
-		if( synchroMapper == null )
-			synchroMapper = DEFAULT_SYNCHRO_MAPPER;
+		// Nothing to see here
+		if( destination == null && source == null ) return null;
+		
+		T any = source != null ? source : destination;
+		
+		if( synchroMapper == null ){
+			
+			if( any instanceof Synchronizable ){
+				
+				synchroMapper = ((Synchronizable) any).mapper();
+			} else {
+				synchroMapper = DEFAULT_SYNCHRO_MAPPER;
+			}
+		}
 		
 		if( destination == null ){
 			destination = (T)synchroMapper.emptyInstanceOf( null, source );
@@ -189,39 +209,40 @@ public class Equals {
 		// No synchronisation for equal objects
 		if( destination == source || destination.equals( source ) ) return destination;
 		
-		SyncroWrapper<T> wrapper = new SyncroWrapper<T>( destination, source, synchroMapper );
+		SyncroVisitor<T> wrapper = new SyncroVisitor<T>( destination, source, synchroMapper );
 		
 		process( wrapper, destination, source );
 		
 		return destination;
 	}
 	
-	private static <T> EnumSet<EqualsOption.Option> globalOptions( Class<?> clz ){
+	
+	private static <T> EnumSet<EqualsOptions.Option> globalOptions( Class<?> clz ){
 		
-		EnumSet<EqualsOption.Option> globalOptions = EnumSet.noneOf( EqualsOption.Option.class );
-		EqualsOption equalsOptionA = clz.getAnnotation( EqualsOption.class );
+		EnumSet<EqualsOptions.Option> globalOptions = EnumSet.noneOf( EqualsOptions.Option.class );
+		EqualsOptions equalsOptionA = clz.getAnnotation( EqualsOptions.class );
 		if( equalsOptionA != null ){
-			globalOptions = EnumSet.copyOf( Arrays.asList( equalsOptionA.options()  ) );
+			globalOptions = EnumSet.copyOf( Arrays.asList( equalsOptionA.value()  ) );
 		}
 		
 		return globalOptions;
 		
 	}
 	
-	private static <T> void process( Wrapper<T> wrapper, T destination, T source ) {
+	
+	private static <T> void process( Visitor<T> wrapper, T destination, T source ) {
 		
 		Class<?> sourceClz = source.getClass();
 		if( destination != null ){
 			Class<?> destinationClz = destination.getClass();
 			Assert.equal( destinationClz, "desstination and source class", sourceClz );
-			Assert.isTrue( wrapper instanceof CopyWrapper, "Must use an CopyWrapper" );
 		}
 		
 		// Class's annotation
 		EqualsClass equalsClassA = sourceClz.getAnnotation( EqualsClass.class );
 		Assert.notNull( equalsClassA, "@EqualsClass for " + sourceClz.getSimpleName() );
 		
-		EnumSet<EqualsOption.Option> globalOptions = globalOptions( sourceClz );
+		EnumSet<EqualsOptions.Option> globalOptions = globalOptions( sourceClz );
 		
 		// Build accessor list either of fields or methods
 		List<Accessor> accessors;
@@ -263,10 +284,10 @@ public class Equals {
 				EqualsField equalsFieldA = accessor.getAnnotation( EqualsField.class );
 				
 				// Field's options + global options
-				EqualsOption equalsOptionA = accessor.getAnnotation( EqualsOption.class );
-				EnumSet<EqualsOption.Option> localOptions = EnumSet.copyOf( globalOptions );
+				EqualsOptions equalsOptionA = accessor.getAnnotation( EqualsOptions.class );
+				EnumSet<EqualsOptions.Option> localOptions = EnumSet.copyOf( globalOptions );
 				if( equalsOptionA != null ){
-					localOptions.addAll( Arrays.asList( equalsOptionA.options() ) );
+					localOptions.addAll( Arrays.asList( equalsOptionA.value() ) );
 				}
 				
 				boolean isInclude;
@@ -296,7 +317,7 @@ public class Equals {
 						wrapper.invoke( accessor, localOptions );
 						
 					} catch( Exception e ) {
-						throw new RuntimeException( "Error in " + accessor.getName(), e );
+						throw new RuntimeException( "Error in '" + accessor.getName() + "'", e );
 					}
 					
 				}
@@ -304,28 +325,30 @@ public class Equals {
 		}
 	}
 	
-	private interface Wrapper<T> {
-		public void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options ) throws IllegalArgumentException,
+	
+	private interface Visitor<T> {
+		
+		public void invoke( Accessor accessor, EnumSet<EqualsOptions.Option> options ) throws IllegalArgumentException,
 				IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException;
+		
 	}
 	
-	private interface CopyWrapper<T> extends Wrapper<T> {}
 	
 	/*
 	 * Uses commons EqualsBuilder to process equals
 	 */
-	private static final class EqualsWrapper<T> implements Wrapper<T> {
+	private static final class EqualsVisitor<T> implements Visitor<T> {
 		
 		final EqualsBuilder builder;
 		final T o1, o2;
 		
-		EqualsWrapper( EqualsBuilder builder, T o1, T o2 ){
+		EqualsVisitor( EqualsBuilder builder, T o1, T o2 ){
 			this.builder = builder;
 			this.o1 = o1; this.o2 = o2;
 		}
 
 		@Override
-		public void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options )
+		public void invoke( Accessor accessor, EnumSet<EqualsOptions.Option> options )
 				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 			
 			Object v1 = accessor.get( o1 );
@@ -341,21 +364,22 @@ public class Equals {
 		}
 	}
 	
+	
 	/*
 	 * Uses commons HashCodeBuilder to generate a hash code
 	 */
-	private static final class HashWrapper<T> implements Wrapper<T> {
+	private static final class HashVisitor<T> implements Visitor<T> {
 	
 		final HashCodeBuilder builder;
 		final T o;
 		
-		HashWrapper( HashCodeBuilder builder, T o ){
+		HashVisitor( HashCodeBuilder builder, T o ){
 			this.builder = builder;
 			this.o = o;
 		}
 		
 		@Override
-		public void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options )
+		public void invoke( Accessor accessor, EnumSet<EqualsOptions.Option> options )
 				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 			
 			Object value = accessor.get( o );
@@ -367,21 +391,22 @@ public class Equals {
 		}
 	}
 	
+	
 	/*
 	 * Uses own strong hash code builder
 	 */
-	private static final class StrongHashWrapper<H,T> implements Wrapper<T> {
+	private static final class StrongHashVisitor<H,T> implements Visitor<T> {
 	
 		final StrongHashCodeBuilder<H> builder;
 		final T o;
 		
-		StrongHashWrapper( StrongHashCodeBuilder<H> builder, T o ){
+		StrongHashVisitor( StrongHashCodeBuilder<H> builder, T o ){
 			this.builder = builder;
 			this.o = o;
 		}
 		
 		@Override
-		public void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options )
+		public void invoke( Accessor accessor, EnumSet<EqualsOptions.Option> options )
 				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 			
 			Object value = accessor.get( o );
@@ -393,6 +418,7 @@ public class Equals {
 		}
 	}
 
+	
 	private static final Comparator<Method> METHOD_SORTER  = new Comparator<Method>() {
 
 		@Override
@@ -401,6 +427,7 @@ public class Equals {
 		}
 	};
 	
+	
 	private static final Comparator<Field> FIELD_SORTER  = new Comparator<Field>() {
 
 		@Override
@@ -408,6 +435,7 @@ public class Equals {
 			return o1.getName().compareTo( o2.getName() );
 		}
 	};
+	
 	
 	public static interface Accessor {
 		public boolean isPrivate();
@@ -420,7 +448,9 @@ public class Equals {
 				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
 		public void set( Object o, Object value )
 				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException;
+		public Class<?> getType();
 	}
+	
 	
 	private static class FieldAccessor implements Accessor {
 		
@@ -460,7 +490,13 @@ public class Equals {
 		public void set( Object o, Object value ) throws IllegalArgumentException, IllegalAccessException {
 			field.set( o, value );
 		}
+		
+		@Override
+		public Class<?> getType(){
+			return field.getType();
+		}
 	}
+	
 	
 	private static class MethodAccessor implements Accessor {
 		
@@ -565,98 +601,38 @@ public class Equals {
 			setter().invoke( o, value );
 			
 		}
-	}
-	
-	private static final DefaultSynchroMapper DEFAULT_SYNCHRO_MAPPER = new DefaultSynchroMapper();
-	
-	public static class DefaultSynchroMapper implements SynchroMapper {
-
-		/**
-		 * Default implementation of copyOf does not create a copy but
-		 * returns a reference to same object.
-		 */
+		
 		@Override
-		public Object copyOf( String name, Object object ) {
-			
-			log.debug( "copyOf: {}", name );
-			
-			return object;
-		}
-
-		@Override
-		public Object emptyInstanceOf( String name, Object object ) {
-			
-			log.debug( "emptyInstanceOf: {}", name );
-			
-			if( object == null ) return null;
-			
-			Class<?> clz = object.getClass();
-			try {
-				return clz.newInstance();
-			} catch( ReflectiveOperationException e ) {
-				throw new RuntimeException( e );
-			}
-		}
-
-		@Override
-		public Object find( String name, Collection<?> collection, Object src ) {
-			
-			Object result = null;
-			
-			for( Object t : collection ){
-				if( t.equals( src ) ){
-					result = t;
-					break;
-				}
-			}
-			
-			log.trace( "find: {} {} -> {}", new Object[]{ name, src, result } );
-			
-			return result;
-		}
-
-		@SuppressWarnings( { "rawtypes", "unchecked" } )
-		@Override
-		public void synchronize( String name, Object dst, Object src ) {
-			
-			if( src instanceof Synchronizable ){
-				/*
-				Equals.synchronize(
-						(Synchronizable)dst, (Synchronizable)src, this );
-				*/
-				((Synchronizable)dst).synchronizeFrom( src );
-			} else {
-				throw new IllegalArgumentException( name + " not Synchronizable" );
-			}
+		public Class<?> getType(){
+			return getter.getReturnType();
 		}
 	}
+	
 	
 	/*
 	 * directly sync on object into another
 	 * uses SynchroMapper to do customisation
 	 */
-	private static final class SyncroWrapper<T extends Synchronizable<T>> implements CopyWrapper<T> {
+	private static final class SyncroVisitor<T> implements Visitor<T> {
 		
 		final T destination;
 		final T source;
 		final SynchroMapper sm;
 		
-		SyncroWrapper( T destination, T source, SynchroMapper mapper ){
+		SyncroVisitor( T destination, T source, SynchroMapper mapper ){
 			this.destination = destination;
 			this.source = source;
 			this.sm = mapper;
 		}
 		
 		@Override
-		public void invoke( Accessor accessor, EnumSet<EqualsOption.Option> options ) throws IllegalArgumentException,
+		public void invoke( Accessor accessor, EnumSet<EqualsOptions.Option> options ) throws IllegalArgumentException,
 				IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException {
 		
 			Object dstVal = accessor.get( destination );
 			Object srcVal = accessor.get( source );
 			
-			String dstClz = dstVal != null ? dstVal.getClass().getSimpleName() : "/NULL/";
-			
-			log.debug( "{}, {} <-- {}", new Object[]{ accessor.getName(), "("+dstClz+")", dstVal, srcVal } );
+			log.debug( "{}, {} <-- {}", new Object[]{ accessor.getName(), "("+accessor.getType().getSimpleName()+")", dstVal, srcVal } );
 			
 			dstVal = applyOptions( dstVal, options );
 			srcVal = applyOptions( srcVal, options );
@@ -675,15 +651,20 @@ public class Equals {
 			if( srcVal.equals( dstVal ) ) return;
 			
 			// Cascade synchronise synchronisable values
-			if( srcVal instanceof Synchronizable ){
+			if( isEqualsAnnotated( srcVal ) ){
 				
 				if( dstVal == null ) dstVal = sm.emptyInstanceOf( accessor.getName(), srcVal );
 				
+				// Recurse
+				// TODO: Da sollte ein eigener SM gesetzt werden können.
+				// Evtl. Synchronizable wiederbeleben mit synchroMapper() : SynchroMapper
 				sm.synchronize( accessor.getName(), dstVal, srcVal );
+				
 				
 				// This may be setting value to itself or setting a null to a new value
 				accessor.set( destination, dstVal );
 				
+			// "Normal values"
 			} else {
 				
 				// First create Set / List / Map if none there
@@ -697,16 +678,16 @@ public class Equals {
 					// But they are of no great use to this anyway.
 					
 					dstVal = sm.emptyInstanceOf( accessor.getName(), srcVal );
-					accessor.set( destination, sm.copyOf( accessor.getName(), dstVal ) );
+					accessor.set( destination, dstVal );
 						
 				}
 				
 				
-				// List --------------------
+				// Collections: Try to create a copy which satifies equal --------------------
 				if( srcVal instanceof Collection ){
 					
 					if( dstVal == null )
-						throw new IllegalArgumentException( "'dstVal' is missing" );
+						throw new IllegalArgumentException( "'dstVal' is missing but should have been created beforehand. Perhaps unsupported Set" );
 					
 					@SuppressWarnings( { "unchecked" } )
 					Collection<Object>
@@ -724,7 +705,8 @@ public class Equals {
 						Object s = it.next();
 						Object d = sm.find( accessor.getName(), dst, s );
 						if( d != null ){
-							if( d instanceof Synchronizable ){
+							if( isEqualsAnnotated( d ) ){
+								//sm.synchronize( accessor.getName(), d, s );
 								sm.synchronize( accessor.getName(), d, s );
 							} else {
 								dst.remove( d );
@@ -772,22 +754,42 @@ public class Equals {
 							
 						if( dstValue != null ){
 							
-							if( !dstValue.equals( srcValue ) ){
+							if( ! dstValue.equals( srcValue ) ){
 							
-								if( dstValue instanceof Synchronizable ){
+								if( srcValue == null ){
+									if( srcMap.containsKey( key ) ){
+										dstMap.put( key, null );
+									} else {
+										dstMap.remove( key );
+									}
+									
+								} else if( isEqualsAnnotated( dstValue ) ){
+									
 									sm.synchronize( accessor.getName(), dstValue, srcValue );
 								} else {
+									
 									Object x = sm.copyOf( accessor.getName(), srcValue );
 									dstMap.put( key, x );
 								}
 							}
 						} else {
-							Object x = sm.copyOf( accessor.getName(), srcValue );
-							dstMap.put( key, x );
+							
+							if( srcValue == null ){
+								
+								if( srcMap.containsKey( key ) ){
+									dstMap.put( key, null );
+								} else if( dstMap.containsKey( key ) ){
+									dstMap.remove( key );
+								}
+							} else {
+								Object x = sm.copyOf( accessor.getName(), srcValue );
+								dstMap.put( key, x );
+							}
 						}
 								
 					}
 				
+				// Simple Value
 				} else {
 				
 					accessor.set( destination, sm.copyOf( accessor.getName(), srcVal ) );
@@ -797,18 +799,30 @@ public class Equals {
 		}
 		
 	}
+	
+	
+	private static final boolean isEqualsAnnotated( Object o ){
+		
+		if( o == null ) return false;
+		
+		return o.getClass().getAnnotation( EqualsClass.class ) != null;
+	}
 			
+	
 	/*
 	 * make common adjustments to get this at least less insane
 	 */
 	private static final Object reasonable( Object o ){
+		
 		if( o != null ) {
+			
 			// Special treatment for currency which has no hashcode method
 			// This leads to a somewhat changed behaviour since this is stable
 			// over program runs and calling hashcode isn't.
 			if( o instanceof Currency ){
 				o = ( ((Currency)o).getCurrencyCode() );
 			}
+			
 			// Enums have not stable hash code either
 			// but a stable string representation
 			if( o instanceof Enum<?> ) o = ((Enum<?>)o).name();
@@ -816,12 +830,13 @@ public class Equals {
 		return o;
 	}
 	
+	
 	/*
 	 * change value according to options
 	 */
-	private static final Object applyOptions( Object o, EnumSet<EqualsOption.Option> options ){
+	private static final Object applyOptions( Object o, EnumSet<EqualsOptions.Option> options ){
 		
-		if( options.contains( EqualsOption.Option.EMPTY_IS_NULL ) ){
+		if( options.contains( EqualsOptions.Option.EMPTY_IS_NULL ) ){
 			if( o != null ){
 				if( o instanceof Collection ){
 					if( ((Collection<?>)o).size() == 0 ) return null;
@@ -835,10 +850,6 @@ public class Equals {
 		return o;
 	}
 	
-	public interface Synchronizable<T> {
-		public void synchronizeFrom( T other );
-		//public T emptyInstance();
-	}
 	
 	/*
 	 * Sort one list so that it has the same object order as the other list

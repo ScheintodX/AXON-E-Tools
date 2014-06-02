@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import de.axone.equals.Equals.DefaultSynchroMapper;
+import de.axone.equals.SynchroMapper.DefaultSynchroMapper;
 
 /**
  * This synchromapper is used to handle hibernate runtime replaced lists/sets/maps
@@ -37,14 +37,14 @@ public class HibernateSynchroMapper extends DefaultSynchroMapper {
 		if( object == null ) return null;
 		
 		if( object instanceof List ){
-			//E.rr( object.getClass() );
+			
 			if( object instanceof ArrayList ){
 				return new ArrayList();
 			} else {
 				return new LinkedList();
 			}
 		} else if( object instanceof Set ){
-			//E.rr( object.getClass() );
+			
 			if( object instanceof TreeSet ){
 				return new TreeSet();
 			} else {
@@ -52,7 +52,7 @@ public class HibernateSynchroMapper extends DefaultSynchroMapper {
 				return new HashSet();
 			}
 		} else if( object instanceof Map ){
-			//E.rr( object.getClass() );
+			
 			if( object instanceof TreeMap ){
 				return new TreeMap();
 			} else {
@@ -60,8 +60,10 @@ public class HibernateSynchroMapper extends DefaultSynchroMapper {
 				return new HashMap();
 			}
 		} else {
+			
 			return super.emptyInstanceOf( name, object );
 		}
 		
 	}
+	
 }

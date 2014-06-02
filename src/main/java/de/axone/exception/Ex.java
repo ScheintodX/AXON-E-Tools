@@ -36,6 +36,7 @@ public abstract class Ex {
 	public static String me( Throwable e, int depth ){
 		
 		StackTraceElement[] elm = e.getStackTrace();
+		if( depth >= elm.length ) depth = elm.length-1;
 		
 		String clazz = simplifyClassName( elm[depth].getClassName() );
 		clazz = removeNestedClasses( clazz );
