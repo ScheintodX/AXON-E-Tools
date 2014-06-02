@@ -134,9 +134,6 @@ public class EqualsTest {
 		O s1 = new O( 1, "s1", new X( "x1" ), true, "2.0" );
 		O x1 = new O();
 		
-		//E.rr( s1 );
-		//E.rr( x1 );
-		
 		assertNotEquals( x1, s1 );
 		
 		Equals.synchronize( x1, s1, null );
@@ -144,10 +141,6 @@ public class EqualsTest {
 		
 		// Must still differ
 		assertNotEquals( x1.ignore, s1.ignore );
-		
-		//E.rr( s1 );
-		//E.rr( x1 );
-		
 	}
 	
 	

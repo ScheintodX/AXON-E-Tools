@@ -13,10 +13,8 @@ import java.util.Comparator;
 import java.util.Currency;
 import java.util.EnumSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.Id;
 import javax.persistence.Transient;
@@ -631,169 +629,125 @@ public class Equals {
 		
 			Object dstVal = accessor.get( destination );
 			Object srcVal = accessor.get( source );
+			String name = accessor.getName();
+			Class<?> type = accessor.getType();
 			
-			log.debug( "{}, {} <-- {}", new Object[]{ accessor.getName(), "("+accessor.getType().getSimpleName()+")", dstVal, srcVal } );
+			log.debug( "{}, {} <-- {}", new Object[]{ name, "("+type.getSimpleName()+")", dstVal, srcVal } );
 			
 			dstVal = applyOptions( dstVal, options );
 			srcVal = applyOptions( srcVal, options );
 			
+			Object synced = sync( sm, name, dstVal, srcVal );
+			
 			// Do nothing if values are same
-			if( dstVal == srcVal ) return;
+			if( synced == dstVal ) return;
 			
-			// Set null to null
-			// From now srcVal cannot be null;
-			if( srcVal == null ){
-				accessor.set( destination, (Object)null );
-				return;
-			}
+			// This may be setting value to itself or setting a null to a new value
+			accessor.set( destination, synced );
 			
-			// Do nothing if values equal
-			if( srcVal.equals( dstVal ) ) return;
+		}
+		
+		private static Object sync( SynchroMapper sm, String name, Object dstVal, Object srcVal ){
 			
-			// Cascade synchronise synchronisable values
+			// this my lead to set( null )
+			if( srcVal == null ) return null;
+			
+			// Do nothing if values equal. This prevents setting.
+			if( srcVal.equals( dstVal ) ) return dstVal;
+			
+			// Cascade synchronise values
 			if( isEqualsAnnotated( srcVal ) ){
 				
-				if( dstVal == null ) dstVal = sm.emptyInstanceOf( accessor.getName(), srcVal );
+				if( dstVal == null ) dstVal = sm.emptyInstanceOf( name, srcVal );
 				
-				// Recurse
-				// TODO: Da sollte ein eigener SM gesetzt werden können.
-				// Evtl. Synchronizable wiederbeleben mit synchroMapper() : SynchroMapper
-				sm.synchronize( accessor.getName(), dstVal, srcVal );
+				sm.synchronize( name, dstVal, srcVal );
 				
-				
-				// This may be setting value to itself or setting a null to a new value
-				accessor.set( destination, dstVal );
+				return dstVal;
 				
 			// "Normal values"
+			} else if( srcVal instanceof Collection ){
+					
+				if( dstVal == null )
+					dstVal = sm.emptyInstanceOf( name, srcVal );
+				
+				if( dstVal == null )
+					throw new IllegalArgumentException( "'dstVal' is missing but should have been created beforehand. Perhaps unsupported Set" );
+				
+				@SuppressWarnings( { "unchecked" } )
+				Collection<Object>
+						src = (Collection<Object>)srcVal,
+						dst = (Collection<Object>)dstVal;
+				
+				for( Iterator<Object> it = dst.iterator(); it.hasNext(); ){
+					
+					Object t = it.next();
+					Object s = sm.find( name, src, t );
+					
+					if( s == null ){
+						it.remove();
+					}
+				}
+				
+				for( Iterator<Object> it = src.iterator(); it.hasNext(); ){
+					
+					Object s = it.next();
+					Object d = sm.find( name, dst, s );
+					
+					Object synced = sync( sm, name, d, s );
+					
+					if( synced != d ) dst.add( synced );
+				}
+				
+				// Sort to original order if List
+				if( src instanceof List ){
+					List<?> srcList = (List<?>)srcVal,
+					        dstList = (List<?>)dstVal;
+					Collections.sort( dstList, new List2ListSorter( srcList ) );
+				}
+				
+				return dstVal;
+					
+			// Map --------------------
+			} else if( srcVal instanceof Map ){
+					
+				if( dstVal == null )
+					dstVal = sm.emptyInstanceOf( name, srcVal );
+				
+				@SuppressWarnings( "unchecked" )
+				Map<Object,Object>
+						srcMap = (Map<Object,Object>)srcVal,
+						dstMap = (Map<Object,Object>)dstVal;
+				
+				// Remove vanished keys
+				for( Iterator<?> it = dstMap.keySet().iterator(); it.hasNext(); ){
+					
+					Object key = it.next();
+					
+					if( ! srcMap.containsKey( key ) ){
+						it.remove();
+					}
+				}
+				
+				// Copy all and new keys
+				for( Object key : srcMap.keySet() ){
+					
+					Object srcValue = srcMap.get( key );
+					Object dstValue = dstMap.get( key );
+					
+					Object synced = sync( sm, name, dstValue, srcValue );
+					
+					if( synced != dstValue ){
+						dstMap.put( key, synced );
+					}
+						
+				}
+				
+				return dstMap;
+			
+			// Simple Value
 			} else {
-				
-				// First create Set / List / Map if none there
-				if( dstVal == null && (
-						srcVal instanceof Set
-						|| srcVal instanceof List
-						|| srcVal instanceof Map
-				) ){
-					
-					// Note that we *can't* handle unmodifiable sets
-					// But they are of no great use to this anyway.
-					
-					dstVal = sm.emptyInstanceOf( accessor.getName(), srcVal );
-					accessor.set( destination, dstVal );
-						
-				}
-				
-				
-				// Collections: Try to create a copy which satifies equal --------------------
-				if( srcVal instanceof Collection ){
-					
-					if( dstVal == null )
-						throw new IllegalArgumentException( "'dstVal' is missing but should have been created beforehand. Perhaps unsupported Set" );
-					
-					@SuppressWarnings( { "unchecked" } )
-					Collection<Object>
-							src = (Collection<Object>)srcVal,
-							dst = (Collection<Object>)dstVal;
-					
-					for( Iterator<Object> it = dst.iterator(); it.hasNext(); ){
-						Object t = it.next();
-						Object s = sm.find( accessor.getName(), src, t );
-						if( s == null ){
-							it.remove();
-						}
-					}
-					for( Iterator<Object> it = src.iterator(); it.hasNext(); ){
-						Object s = it.next();
-						Object d = sm.find( accessor.getName(), dst, s );
-						if( d != null ){
-							if( isEqualsAnnotated( d ) ){
-								//sm.synchronize( accessor.getName(), d, s );
-								sm.synchronize( accessor.getName(), d, s );
-							} else {
-								dst.remove( d );
-								dst.add( sm.copyOf( accessor.getName(), s ) );
-							}
-						} else {
-							dst.add( sm.copyOf( accessor.getName(), s ) );
-						}
-					}
-					
-					if( dst instanceof List && src instanceof List ){
-						@SuppressWarnings( "unchecked" )
-						// Must be srcVal/dstVal instead of src/dst because javac complains if run from ant
-						List<T> srcList = (List<T>)srcVal,
-						        dstList = (List<T>)dstVal;
-						Collections.sort( dstList, new List2ListSorter( srcList ) );
-					}
-					
-				// Map --------------------
-				} else if( srcVal instanceof Map ){
-					
-					if( dstVal == null )
-						throw new IllegalArgumentException( "'dstVal' is missing" );
-					
-					@SuppressWarnings( "unchecked" )
-					Map<Object,Object>
-							srcMap = (Map<Object,Object>)srcVal,
-							dstMap = (Map<Object,Object>)dstVal;
-					
-					// Remove vanished keys
-					List<Object> removeMe = new LinkedList<Object>();
-					for( Object key : dstMap.keySet() ){
-						if( ! srcMap.containsKey( key ) )
-							removeMe.add( key );
-					}
-					for( Object key : removeMe ){
-						dstMap.remove( key );
-					}
-					
-					// Copy all and new keys
-					for( Object key : srcMap.keySet() ){
-						
-						Object srcValue = srcMap.get( key );
-						Object dstValue = dstMap.get( key );
-							
-						if( dstValue != null ){
-							
-							if( ! dstValue.equals( srcValue ) ){
-							
-								if( srcValue == null ){
-									if( srcMap.containsKey( key ) ){
-										dstMap.put( key, null );
-									} else {
-										dstMap.remove( key );
-									}
-									
-								} else if( isEqualsAnnotated( dstValue ) ){
-									
-									sm.synchronize( accessor.getName(), dstValue, srcValue );
-								} else {
-									
-									Object x = sm.copyOf( accessor.getName(), srcValue );
-									dstMap.put( key, x );
-								}
-							}
-						} else {
-							
-							if( srcValue == null ){
-								
-								if( srcMap.containsKey( key ) ){
-									dstMap.put( key, null );
-								} else if( dstMap.containsKey( key ) ){
-									dstMap.remove( key );
-								}
-							} else {
-								Object x = sm.copyOf( accessor.getName(), srcValue );
-								dstMap.put( key, x );
-							}
-						}
-								
-					}
-				
-				// Simple Value
-				} else {
-				
-					accessor.set( destination, sm.copyOf( accessor.getName(), srcVal ) );
-				}
+			
+				return sm.copyOf( name, srcVal );
 			}
 			
 		}
