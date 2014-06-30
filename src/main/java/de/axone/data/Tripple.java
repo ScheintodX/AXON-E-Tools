@@ -84,7 +84,7 @@ public class Tripple<A, B, C> implements Comparable<Tripple<A, B, C>>{
 		return compare( this.c, o.c );
 	}
 	
-	private static int compare( Object a, Object b ){
+	private static <T> int compare( T a, T b ){
 		
 		if( a==null ){
 			if( b==null ) return EQUALS;
@@ -95,8 +95,9 @@ public class Tripple<A, B, C> implements Comparable<Tripple<A, B, C>>{
 				if( !( a instanceof Comparable ) )
 					throw new IllegalArgumentException( a.getClass().getSimpleName() + " must implement Comparable to work" );
 				
-				@SuppressWarnings( { "rawtypes", "unchecked" } )
-				int result = ((Comparable)a).compareTo( b );
+				// To remove these we could restict A, B, C to extends Comparable
+				@SuppressWarnings( { "unchecked" } )
+				int result = ((Comparable<T>)a).compareTo( b );
 				return result;
 			}
 		}

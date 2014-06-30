@@ -60,10 +60,10 @@ public abstract class ResourcesServlet extends HttpServlet {
 		return "";
 	}
 	
-	protected String filter( String uri ){
+	protected String filter( HttpServletRequest req, HttpServletResponse resp, String uri ) {
 		
 		if( uri.endsWith( "favicon.ico" ) ){
-			return favicon( uri );
+			return favicon( req, resp, uri );
 		}
 		
 		String prefix = uriPrefix();
@@ -76,7 +76,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 		return uri; // Do nothing per default
 	}
 	
-	protected String favicon( String uri ){
+	protected String favicon( HttpServletRequest req, HttpServletResponse resp,  String uri ) {
 		return uri; // Do nothing per default
 	}
 	
@@ -92,17 +92,14 @@ public abstract class ResourcesServlet extends HttpServlet {
 		
 		try {
 			// Get settings
-    		//File basedir = EMogul.rt().settingBackend().getFile( "static.basedir" );
 			File basedir = basedir();
-    		//long cachetime = EMogul.rt().settingBackend().getAsLong( "static.cachetime", 86400 );
 			long cachetime = cachetime();
 
     		// Get requested resources
-			String uri = filter( request.getRequestURI() );
+			String uri = filter( request, response, request.getRequestURI() );
 			
 			protect( request, uri );
 
-			//Cache<String,Object> buffer = EMogul.rt().getResourceBuffer();
 			Cache<String,Object> buffer = buffer();
 			
 			String pYui = request.getParameter( P_DO_YUI );
@@ -227,11 +224,10 @@ public abstract class ResourcesServlet extends HttpServlet {
 						int filesize = (int) filesizeL;
 	
 						// Read via nio
-						FileInputStream fin = null;
-						FileChannel in = null;
-						try {
-	    					fin = new FileInputStream( file );
-	    					in = fin.getChannel();
+						try (
+							FileInputStream fin = new FileInputStream( file );
+							FileChannel in = fin.getChannel();
+						) {
 	
 	    					response.setContentLength( filesize );
 	
@@ -282,9 +278,6 @@ public abstract class ResourcesServlet extends HttpServlet {
 	    					datas.add( plainData );
 	    					watcherList.add( watcher );
 	
-						} finally {
-	    					if( in != null ) in.close();
-	    					if( fin != null ) fin.close();
 						}
 						
 					}
@@ -369,17 +362,19 @@ public abstract class ResourcesServlet extends HttpServlet {
 				byte [] data = httpData.getGziped();
     			response.setContentLength( data.length );
 
-    			ServletOutputStream outs = response.getOutputStream();
-    			outs.write( data );
-    			outs.flush();
+    			try( ServletOutputStream outs = response.getOutputStream(); ){
+	    			outs.write( data );
+	    			outs.flush();
+    			}
 
 			} else {
 
     			response.setContentLength( httpData.getData().length );
 
-    			ServletOutputStream outs = response.getOutputStream();
-    			outs.write( httpData.getData() );
-    			outs.flush();
+    			try( ServletOutputStream outs = response.getOutputStream(); ){
+	    			outs.write( httpData.getData() );
+	    			outs.flush();
+    			}
 
 			}
 			
@@ -400,16 +395,16 @@ public abstract class ResourcesServlet extends HttpServlet {
 	throws Exception {
 		
 		try {
-			try {
-				PrintWriter o2 = resp.getWriter();
+			resp.sendError( HttpServletResponse.SC_NOT_FOUND, e.getMessage() );
+			
+			try ( PrintWriter o2 = resp.getWriter(); ){
 				e.printStackTrace( o2 );
 			} catch( IllegalStateException ise ){
 				ServletOutputStream sout = resp.getOutputStream();
-				e.printStackTrace( new PrintStream( sout, true, "utf-8" ) );
+				try ( PrintStream otherOut = new PrintStream( sout, true, "utf-8" ); ){
+					e.printStackTrace( otherOut );
+				}
 			}
-			
-			resp.sendError( HttpServletResponse.SC_NOT_FOUND,
-					e.getMessage() );
 			
 		} catch( IOException e1 ) {
 			e1.printStackTrace();

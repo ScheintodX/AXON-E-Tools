@@ -1,35 +1,15 @@
 package de.axone.data;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class TrippleMap<A,B,C,V> extends MapProxy<Tripple<A,B,C>,V>{
-	
-	private final Mapping mapping;
 	
 	public TrippleMap(){
 		this( Mapping.hash );
 	}
 	
-	@SuppressWarnings( "unchecked" )
 	public TrippleMap( Mapping mapping ){
-		super( (Map<Tripple<A, B, C>, V>) genMap( mapping ) );
-		this.mapping = mapping;
-	}
-	
-	private static Map<?,?> genMap( Mapping mapping ){
-		
-		Map<?,?> result;
-		
-		switch( mapping ){
-		case hash: result = new HashMap<>(); break;
-		case tree: result = new TreeMap<>(); break;
-		default:
-			throw new IllegalArgumentException( "Unsupported mapping: " + mapping );
-		}
-		
-		return result;
+		super( mapping );
 	}
 	
 	public void put( A a, B b, C c, V v ){
@@ -91,7 +71,7 @@ public class TrippleMap<A,B,C,V> extends MapProxy<Tripple<A,B,C>,V>{
 	
 	public Map<A,V> getA( B b, C c ){
 		@SuppressWarnings( "unchecked" )
-		Map<A,V> result = (Map<A,V>) genMap( mapping );
+		Map<A,V> result = (Map<A,V>) genMap();
 		for( Tripple<A,B,C> t : this.keySet() ){
 			if( t.getB().equals( b ) && t.getC().equals( c ) ){
 				result.put( t.getA(), get( t ) );
@@ -102,7 +82,7 @@ public class TrippleMap<A,B,C,V> extends MapProxy<Tripple<A,B,C>,V>{
 
 	public Map<B,V> getB( A a, C c ){
 		@SuppressWarnings( "unchecked" )
-		Map<B,V> result = (Map<B,V>) genMap( mapping );
+		Map<B,V> result = (Map<B,V>) genMap();
 		for( Tripple<A,B,C> t : this.keySet() ){
 			if( t.getA().equals( a ) && t.getC().equals( c ) ){
 				result.put( t.getB(), get( t ) );
@@ -113,7 +93,7 @@ public class TrippleMap<A,B,C,V> extends MapProxy<Tripple<A,B,C>,V>{
 
 	public Map<C,V> getC( A a, B b ){
 		@SuppressWarnings( "unchecked" )
-		Map<C,V> result = (Map<C,V>) genMap( mapping );
+		Map<C,V> result = (Map<C,V>) genMap();
 		for( Tripple<A,B,C> t : this.keySet() ){
 			if( t.getA().equals( a ) && t.getB().equals( b ) ){
 				result.put( t.getC(), get( t ) );

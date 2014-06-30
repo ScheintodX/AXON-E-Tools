@@ -43,17 +43,17 @@ public class Str {
 		return joinIgnoreEmptyB( joinWith, objects ).toString();
 	}
 	@SafeVarargs
-	public static <T> String join( Joiner<T> joiner, T ... objects ){
+	public static <T, U extends T> String join( Joiner<T> joiner, U ... objects ){
 		return joinB( joiner, Arrays.asList( objects ) ).toString();
 	}
-	public static <T> String join( Joiner<T> joiner, Iterable<T> objects ){
+	public static <T, U extends T> String join( Joiner<T> joiner, Iterable<U> objects ){
 		return joinB( joiner, objects ).toString();
 	}
 	@SafeVarargs
-	public static <T> String joinIgnoreEmpty( Joiner<T> joiner, T ... objects ){
+	public static <T, U extends T> String joinIgnoreEmpty( Joiner<T> joiner, U ... objects ){
 		return joinIgnoreEmptyB( joiner, Arrays.asList( objects ) ).toString();
 	}
-	public static <T> String joinIgnoreEmpty( Joiner<T> joiner, Iterable<T> objects ){
+	public static <T, U extends T> String joinIgnoreEmpty( Joiner<T> joiner, Iterable<U> objects ){
 		return joinIgnoreEmptyB( joiner, objects ).toString();
 	}
 	
@@ -61,16 +61,16 @@ public class Str {
 	public static <T> StringBuilder joinB( String joinWith, Iterable<T> objects ){
 		return joinBB( new StringBuilder(), joinWith, false, objects );
 	}
-	public static <T> StringBuilder joinB( Joiner<T> joiner, Iterable<T> objects ){
+	public static <T, U extends T> StringBuilder joinB( Joiner<T> joiner, Iterable<U> objects ){
 		return joinBB( new StringBuilder(), joiner, false, objects );
 	}
 	public static <M,N> StringBuilder joinB( MapJoiner<M,N> joiner, Map<M,N> objects ){
 		return joinBB( new StringBuilder(), joiner, false, objects );
 	}
-	public static <T> StringBuilder joinIgnoreEmptyB( String joinWith, Iterable<T> objects ){
+	public static <T, U extends T> StringBuilder joinIgnoreEmptyB( String joinWith, Iterable<U> objects ){
 		return joinBB( new StringBuilder(), joinWith, true, objects );
 	}
-	public static <T> StringBuilder joinIgnoreEmptyB( Joiner<T> joiner, Iterable<T> objects ){
+	public static <T, U extends T> StringBuilder joinIgnoreEmptyB( Joiner<T> joiner, Iterable<U> objects ){
 		return joinBB( new StringBuilder(), joiner, true, objects );
 	}
 	public static <M,N> StringBuilder joinIgnoreEmptyB( MapJoiner<M,N> joiner, Map<M,N> objects ){
@@ -78,15 +78,15 @@ public class Str {
 	}
 	
 	// joinBB
-	public static <T> StringBuilder joinBB( StringBuilder result, String joinWith, boolean ignoreEmpty, Iterable<T> objects ){
+	public static <T, U extends T> StringBuilder joinBB( StringBuilder result, String joinWith, boolean ignoreEmpty, Iterable<U> objects ){
 		return joinBB( result, new SimpleJoiner<T>( joinWith ), ignoreEmpty, objects );
 	}
-	public static <T> StringBuilder joinBB( StringBuilder result, Joiner<T> joiner, boolean ignoreEmpty, Iterable<T> objects ){
+	public static <T, U extends T> StringBuilder joinBB( StringBuilder result, Joiner<T> joiner, boolean ignoreEmpty, Iterable<U> objects ){
 
 		int index=0;
 		if( objects != null ) for( T object : objects ){
 			
-			if( object == null && ignoreEmpty ) continue;
+			if( ignoreEmpty && ( object == null || "".equals( object ) ) ) continue;
 
 			if( index > 0 ) result.append( joiner.getSeparator() );
 

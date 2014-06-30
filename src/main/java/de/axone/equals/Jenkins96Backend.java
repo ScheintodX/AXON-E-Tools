@@ -144,6 +144,7 @@ public class Jenkins96Backend {
 			a = add(a, leftShift(byteToLong(buffer[pos + 1]), 8));
 		case 1:
 			a = add(a, byteToLong(buffer[pos + 0]));
+		default:
 			// case 0: nothing left to add
 		}
 		hashMix();

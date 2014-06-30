@@ -111,18 +111,20 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 		if( !resp.isCommitted() ){
 			resp.setStatus( status );
 		}
-		PrintWriter out = resp.getWriter();
 		
-		JsonResponse response;
-		if( e instanceof IllegalNamedArgumentException ){
-			response = JsonResponseImpl.INVALID( (IllegalNamedArgumentException) e );
-		} else {
-			response = JsonResponseImpl.ERROR( status, e );
+		try( PrintWriter out = resp.getWriter(); ){
+		
+			JsonResponse response;
+			if( e instanceof IllegalNamedArgumentException ){
+				response = JsonResponseImpl.INVALID( (IllegalNamedArgumentException) e );
+			} else {
+				response = JsonResponseImpl.ERROR( status, e );
+			}
+			
+			req.mapper().writeValue( out, response );
+			
+			log.error( "Exception while running '" + f.name() + "'", e );
 		}
-		
-		req.mapper().writeValue( out, response );
-		
-		log.error( "Exception while running '" + f.name() + "'", e );
 	}
 	
 	private void renderHelp( RestRequest req, HttpServletResponse resp, String message, boolean detailed )
@@ -131,35 +133,36 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 		resp.setContentType( "text/html" );
 		resp.setCharacterEncoding( "utf-8" );
 
-		PrintWriter out = resp.getWriter();
+		try( PrintWriter out = resp.getWriter(); ){
 					
-		out.println( "<!DOCTYPE html>" );
-		out.println( "<html><head><title>Functions</title>" );
-		out.println( "<script src=\"//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js\"></script>" );
-		out.println( "<script src=\"/static/admin/js/ajax_help.js?yui=false\"></script>" );
-		out.println( "</head><body>\n" );
-		
-		if( message != null ){
-			out.write( "<h1>" + message + "</h1>" );
-		}
+			out.println( "<!DOCTYPE html>" );
+			out.println( "<html><head><title>Functions</title>" );
+			out.println( "<script src=\"//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js\"></script>" );
+			out.println( "<script src=\"/static/admin/js/ajax_help.js?yui=false\"></script>" );
+			out.println( "</head><body>\n" );
 			
-		for( RestFunction<DATA, REQUEST> function : functions ){
-
-			RestFunctionDescription description = function.description();
-			
-			if( detailed ){
-				String template = description.getTemplate();
-				if( template != null ){
-					
-					out.write( template );
+			if( message != null ){
+				out.write( "<h1>" + message + "</h1>" );
+			}
+				
+			for( RestFunction<DATA, REQUEST> function : functions ){
+	
+				RestFunctionDescription description = function.description();
+				
+				if( detailed ){
+					String template = description.getTemplate();
+					if( template != null ){
+						
+						out.write( template );
+					}
 				}
+				
+				out.write( description.toHtml( detailed ) );
+				
 			}
 			
-			out.write( description.toHtml( detailed ) );
-			
+			out.println( "\n</body></html>" );
 		}
-		
-		out.println( "\n</body></html>" );
 	}
 
 	public void register( RestFunction<DATA, REQUEST> function ) {

@@ -101,45 +101,48 @@ public class SlurperTest {
 	
 	public void testSlurpByteBuffer() throws Exception {
 		
-		TestChannel in = new TestChannel( 10 );
-		
 		ByteBuffer bOut;
+			
+		try( TestChannel in = new TestChannel( 10 ); ){
 		
-		bOut = Slurper.slurp( in );
-		assertBuffer( bOut, 10, 10, 0 );
+			bOut = Slurper.slurp( in );
+			assertBuffer( bOut, 10, 10, 0 );
+			
+			in.reset();
+			bOut = Slurper.slurp( in, 9 );
+			assertBuffer( bOut, 10, 10, 0 );
+			
+			in.reset();
+			bOut = Slurper.slurp( in, 10 );
+			assertBuffer( bOut, 10, 10, 0 );
+			
+			in.reset();
+			bOut = Slurper.slurp( in, 11 );
+			assertBuffer( bOut, 10, 10, 0 );
+			
+			in.reset();
+			bOut = Slurper.slurp( in, 100 );
+			assertBuffer( bOut, 10, 10, 0 );
+			
+			in.reset();
+			bOut = Slurper.slurp( in, 1 );
+			assertBuffer( bOut, 10, 10, 0 );
+			
+			in.reset();
+			bOut = Slurper.slurp( in, 1, 1 );
+			assertBuffer( bOut, 10, 10, 0 );
+			
+			in.reset();
+			bOut = Slurper.slurp( in, 0, 0 );
+			assertBuffer( bOut, 10, 10, 0 );
+		}
 		
-		in.reset();
-		bOut = Slurper.slurp( in, 9 );
-		assertBuffer( bOut, 10, 10, 0 );
+		try( TestChannel in = new TestChannel( 0 ); ){
 		
-		in.reset();
-		bOut = Slurper.slurp( in, 10 );
-		assertBuffer( bOut, 10, 10, 0 );
+			bOut = Slurper.slurp( in );
+			assertBuffer( bOut, 0, 0, 0 );
+		}
 		
-		in.reset();
-		bOut = Slurper.slurp( in, 11 );
-		assertBuffer( bOut, 10, 10, 0 );
-		
-		in.reset();
-		bOut = Slurper.slurp( in, 100 );
-		assertBuffer( bOut, 10, 10, 0 );
-		
-		in.reset();
-		bOut = Slurper.slurp( in, 1 );
-		assertBuffer( bOut, 10, 10, 0 );
-		
-		in.reset();
-		bOut = Slurper.slurp( in, 1, 1 );
-		assertBuffer( bOut, 10, 10, 0 );
-		
-		in.reset();
-		bOut = Slurper.slurp( in, 0, 0 );
-		assertBuffer( bOut, 10, 10, 0 );
-		
-		in = new TestChannel( 0 );
-		
-		bOut = Slurper.slurp( in );
-		assertBuffer( bOut, 0, 0, 0 );
 	}
 
 }

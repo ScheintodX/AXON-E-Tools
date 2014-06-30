@@ -1,36 +1,16 @@
 package de.axone.data;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 
 public class PairMap<L,R,V> extends MapProxy<Pair<L,R>,V>{
-	
-	private final Mapping mapping;
 	
 	public PairMap(){
 		this( Mapping.hash );
 	}
 	
-	@SuppressWarnings( "unchecked" )
 	public PairMap( Mapping mapping ){
-		super( (Map<Pair<L,R>, V>) genMap( mapping ) );
-		this.mapping = mapping;
-	}
-	
-	private static Map<?,?> genMap( Mapping mapping ){
-		
-		Map<?,?> result;
-		
-		switch( mapping ){
-		case hash: result = new HashMap<>(); break;
-		case tree: result = new TreeMap<>(); break;
-		default:
-			throw new IllegalArgumentException( "Unsupported mapping: " + mapping );
-		}
-		
-		return result;
+		super( mapping );
 	}
 	
 	public void put( L l, R r, V v ){
@@ -58,7 +38,7 @@ public class PairMap<L,R,V> extends MapProxy<Pair<L,R>,V>{
 	}
 	public Map<R,V> getRight( L l ){
 		@SuppressWarnings( "unchecked" )
-		Map<R,V> result = (Map<R,V>) genMap( mapping );
+		Map<R,V> result = (Map<R,V>) genMap();
 		for( Pair<L,R> t : this.keySet() ){
 			if( t.getLeft().equals( l ) ){
 				result.put( t.getRight(), get( t ) );
@@ -72,7 +52,7 @@ public class PairMap<L,R,V> extends MapProxy<Pair<L,R>,V>{
 	}
 	public Map<L,V> getLeft( R r ){
 		@SuppressWarnings( "unchecked" )
-		Map<L,V> result = (Map<L,V>) genMap( mapping );
+		Map<L,V> result = (Map<L,V>) genMap();
 		for( Pair<L,R> t : this.keySet() ){
 			if( t.getRight().equals( r ) ){
 				result.put( t.getLeft(), get( t ) );

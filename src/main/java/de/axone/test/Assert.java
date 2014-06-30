@@ -1,11 +1,12 @@
 package de.axone.test;
-import static org.testng.Assert.*;
+import static de.axone.test.TestNGStub.*;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
 	
+// TODO: Mit FEST brauchen wir das eigentlich überhaupt nicht mehr.
 public abstract class Assert {
 
 	public static void assertIsInstance( Object object, Class<?> clazz ){
@@ -26,6 +27,19 @@ public abstract class Assert {
 	}
 	public static void assertEmpty( Object [] arr ){
 		assertEquals( arr.length, 0 );
+	}
+	
+	public static void assertNotEmpty( CharSequence string ){
+		assertNotEquals( string, "" );
+	}
+	public static void assertNotEmpty( CharSequence string, String message ){
+		assertNotEquals( string, "", message );
+	}
+	public static void assertNotEmpty( Collection<?> collection ){
+		assertNotEquals( collection.size(), 0 );
+	}
+	public static void assertNotEmpty( Object [] arr ){
+		assertNotEquals( arr.length, 0 );
 	}
 	
 	/*
@@ -119,5 +133,13 @@ public abstract class Assert {
 		assertEquals( actual.size(), expected.size(), "length" );
 		assertContainsAll( actual, expected );
 		assertContainsAll( expected, actual );
+	}
+	
+	public static void assertEqualsIgnoreCase( CharSequence actual, CharSequence expexted ){
+		
+		String actualS = (""+actual).toLowerCase(),
+		       expectedS = (""+expexted).toLowerCase();
+		
+		assertEquals( actualS, expectedS, "should equal ignoring case" );
 	}
 }

@@ -65,7 +65,7 @@ public abstract class Validator<T> {
 	}
 	
 	protected void doValidate(  ValidatorResult result, EntityManager em, T object ){
-		
+		// Override me
 	}
 	
 	public interface ValidatorResult {

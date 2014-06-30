@@ -23,7 +23,8 @@ public class AttributeEncoder implements Encoder{
 		while( matcher.find() ){
 			
 			int index = matcher.start();
-			switch( value.charAt( index ) ){
+			char c = value.charAt( index );
+			switch( c ){
 			case '&':
 				matcher.appendReplacement( result, "&amp;" );
 				break;
@@ -39,6 +40,8 @@ public class AttributeEncoder implements Encoder{
 			case '\'':
 				matcher.appendReplacement( result, "&apos;" );
 				break;
+			default:
+				throw new IllegalArgumentException( ""+c );
 			}
 		}
 		matcher.appendTail( result );

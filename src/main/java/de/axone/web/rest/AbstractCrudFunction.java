@@ -220,13 +220,11 @@ implements CrudFunction<ID, DATA,REQUEST> {
 
 		@Override
 		public String name() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public RestFunctionDescription description() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 		

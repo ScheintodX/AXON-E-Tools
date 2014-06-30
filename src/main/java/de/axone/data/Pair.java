@@ -13,22 +13,26 @@ public class Pair<L, R> implements Comparable<Pair<L,R>> {
         return left;
     }
  
-    public Pair(final L left, final R right) {
+    public Pair( final L left, final R right ) {
         this.left = left;
         this.right = right;
     }
     
-    public static <A, B> Pair<A, B> create(A left, B right) {
+    public static <A, B> Pair<A, B> of(A left, B right) {
         return new Pair<A, B>(left, right);
     }
-  
+    
+    private int hashCode = -1;
+    
     @Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ( ( left == null ) ? 0 : left.hashCode() );
-		result = prime * result + ( ( right == null ) ? 0 : right.hashCode() );
-		return result;
+    	if( hashCode == -1 ){
+			final int prime = 31;
+			hashCode = 1;
+			hashCode = prime * hashCode + ( ( left == null ) ? 0 : left.hashCode() );
+			hashCode = prime * hashCode + ( ( right == null ) ? 0 : right.hashCode() );
+    	}
+		return hashCode;
 	}
 
 	@Override
@@ -55,13 +59,11 @@ public class Pair<L, R> implements Comparable<Pair<L,R>> {
     	return left.toString() + "<->" + right.toString();
     }
 	
-	private static final int BEFORE = -1, EQUALS = 0, AFTER = 1;
-
 	@Override
 	public int compareTo( Pair<L, R> o ) {
 		
 		int i;
-		if( o == this ) return EQUALS;
+		if( o == this ) return 0;
 		
 		i = compare( this.left, o.left );
 		if( i != 0 ) return i;
@@ -69,23 +71,22 @@ public class Pair<L, R> implements Comparable<Pair<L,R>> {
 		return compare( this.right, o.right );
 	}
 	
-	private static int compare( Object a, Object b ){
+	private static <T> int compare( T a, T b ){
 		
 		if( a==null ){
-			if( b==null ) return EQUALS;
-			else return BEFORE;
+			if( b==null ) return 0;
+			else return -1;
 		} else {
-			if( b==null ) return AFTER;
+			if( b==null ) return 1;
 			else {
 				if( !( a instanceof Comparable ) )
 					throw new IllegalArgumentException( a.getClass().getSimpleName() + " must implement Comparable to work" );
 				
-				@SuppressWarnings( { "rawtypes", "unchecked" } )
-				int result = ((Comparable)a).compareTo( b );
+				@SuppressWarnings( "unchecked" )
+				int result = ((Comparable<T>)a).compareTo( b );
 				return result;
 			}
 		}
 	}
 	
 }
-

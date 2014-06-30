@@ -52,6 +52,8 @@ public class ExTest {
 			case 0: except( backtrace ); break;
 			case 1: except1( backtrace ); break;
 			case 2: except2( backtrace ); break;
+			default:
+				throw new IllegalArgumentException( ""+depth );
 			}
 		} catch( ClassCastException e ){
 			assertEquals( e.getStackTrace()[pos].getMethodName(), methodName );

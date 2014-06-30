@@ -28,7 +28,8 @@ public class XmlEncoder implements Encoder {
 		while( matcher.find() ){
 			
 			int index = matcher.start();
-			switch( value.charAt( index ) ){
+			char c = value.charAt( index );
+			switch( c ){
 			case '<':
 				matcher.appendReplacement( result, "&lt;" );
 				break;
@@ -38,6 +39,8 @@ public class XmlEncoder implements Encoder {
 			case '&':
 				matcher.appendReplacement( result, "&amp;" );
 				break;
+			default:
+				throw new IllegalArgumentException( "" + c + " (at index: " + index + ")" );
 			}
 		}
 		matcher.appendTail( result );

@@ -48,6 +48,8 @@ public class Timing {
 		start( TOTAL );
 	}
 	
+	// TODO: Da was rein mit AutoCloseable waere nett!
+	// Z.B. handler = start(...) ... handler.close
 	public synchronized void start( Object name ){
 		
 		if( logger != null && logger.isDebugEnabled() ){

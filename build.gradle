@@ -39,13 +39,20 @@ eclipse {
 	}
 }
 
+task setup {
+	dependsOn ':cleanEclipse'
+	dependsOn ':cleanEclipseWtp'
+	dependsOn ':eclipse'
+	dependsOn ':eclipseWtp'
+}
+
 dependencies {
 
 	compile 'commons-codec:commons-codec:1.4'
 	compile 'commons-lang:commons-lang:2.6'
 
 	compile 'org.hibernate.common:hibernate-commons-annotations:4.0+'
-	compile 'org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final'
+	compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
 
 	compile 'net.sf.ehcache:ehcache-core:2.5.2'
 	compile 'org.apache.httpcomponents:httpclient:4.0.1'
@@ -56,10 +63,6 @@ dependencies {
 	compile 'javax.servlet:javax.servlet-api:3.0.1'
 
 	compile( 'com.yahoo.platform.yui:yuicompressor:2.4.7' ){
-		transitive = false
-	}
-
-	compile ('org.testng:testng:6.8+') {
 		transitive = false
 	}
 
