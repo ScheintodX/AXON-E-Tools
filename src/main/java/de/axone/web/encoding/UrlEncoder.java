@@ -7,4 +7,15 @@ public class UrlEncoder extends AttributeEncoder {
 		return instance;
 	}
 	private UrlEncoder(){}
+	
+	public static String ENCODE( String value ) {
+		String encoded = AttributeEncoder.ENCODE( value );
+		encoded = encoded.replace( "%", "%25" );
+		return encoded;
+	}
+	
+	@Override
+	public String encode( String value ) {
+		return ENCODE( value );
+	}
 }

@@ -16,7 +16,26 @@ import de.axone.data.Pair;
 import de.axone.exception.Assert;
 
 public abstract class Mapper {
+	
+	public static class MapperEntry<X,Y> {
+		private final X x;
+		private final Y y;
+		public MapperEntry( X x, Y y ) {
+			this.x = x; this.y = y;
+		}
+	}
+	public static <X,Y> MapperEntry<X,Y> E( X x, Y y ){
+		return new MapperEntry<X,Y>( x, y );
+	}
 
+	@SafeVarargs
+	public static <X,Y> HashMap<X,Y> hashMap( MapperEntry<X,Y> ... values ){
+		return map( new HashMap<X,Y>(), false, values );
+	}
+	@SafeVarargs
+	public static <X,Y> TreeMap<X,Y> treeMap( MapperEntry<X,Y> ... values ){
+		return map( new TreeMap<X,Y>(), false, values );
+	}
 	// Maps for Lists
 	@SafeVarargs
 	public static <T> HashMap<T,T> hashMap( T ... values ){
@@ -57,6 +76,15 @@ public abstract class Mapper {
 		for( int i = 0; i < values.length; i+= 2 ){
 			if( ignoreEmptyValues || values[ i+1 ] != null )
 				result.put( values[ i ], values[ i+1 ] );
+		}
+		return result;
+	}
+	
+	@SafeVarargs
+	public static <X,Y,M extends Map<X,Y>> M map( M result, boolean ignoreEmptyValues,  MapperEntry<X,Y> ... values ){
+
+		for( MapperEntry<X,Y> e : values ){
+			result.put( e.x, e.y );
 		}
 		return result;
 	}

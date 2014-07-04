@@ -135,11 +135,22 @@ public abstract class Assert {
 		assertContainsAll( expected, actual );
 	}
 	
+	public static void assertEqualsIgnoreCaseAndWhitespace( CharSequence actual, CharSequence expexted ){
+		
+		String actualS = (""+actual).toLowerCase(),
+		       expectedS = (""+expexted).toLowerCase();
+		
+		actualS = actualS.replaceAll( "\\s+", " " );
+		expectedS = expectedS.replaceAll( "\\s+", " " );
+		
+		assertEquals( actualS, expectedS, "should equal (ignoring case and whitespace)" );
+	}
+		
 	public static void assertEqualsIgnoreCase( CharSequence actual, CharSequence expexted ){
 		
 		String actualS = (""+actual).toLowerCase(),
 		       expectedS = (""+expexted).toLowerCase();
 		
-		assertEquals( actualS, expectedS, "should equal ignoring case" );
+		assertEquals( actualS, expectedS, "should equal (ignoring case)" );
 	}
 }

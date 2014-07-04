@@ -2,12 +2,49 @@ package de.axone.web;
 
 import static org.testng.Assert.*;
 
+import java.util.List;
+
 import org.testng.annotations.Test;
 
+import de.axone.web.SuperURL.Host;
 import de.axone.web.SuperURL.Path;
+import de.axone.web.SuperURL.Query.QueryPart;
 
 @Test( groups="web.superurl" )
 public class SuperURLTest {
+	
+	public void testEquals() throws Exception {
+		
+		SuperURL url = new SuperURL( "http://www.axon-e.de:8080/foo/bar/?par=val" );
+		
+		SuperURL url2 = new SuperURL();
+		url2.setScheme( "http" );
+		url2.setHost( new Host( "www.axon-e.de" ) );
+		url2.setPort( 8080 );
+		url2.setPath( new Path( "/foo/bar/" ) );
+		url2.setQuery( new SuperURL.Query( "par=val" ) );
+		
+		assertEquals( url.getScheme(), url2.getScheme() );
+		assertEquals( url.getHost(), url2.getHost() );
+		assertEquals( url.getPort(), url2.getPort() );
+		assertEquals( url.getPath(), url2.getPath() );
+		List<QueryPart> path = url.getQuery().getPath(),
+		                path2 = url2.getQuery().getPath();
+		assertEquals( path.size(), path2.size() );
+		QueryPart p1 = path.get( 0 ),
+		          p2 = path2.get( 0 );
+		assertEquals( p1.getKey(), p2.getKey() );
+		assertEquals( p1.getValue(), p2.getValue() );
+		assertEquals( p1, p2 );
+		assertEquals( path, path2 );
+		assertEquals( url.getQuery(), url2.getQuery() );
+		
+		assertEquals( url.toString( false ), url2.toString( false ) );
+		assertEquals( url.toString( true ), url2.toString( true ) );
+		
+		assertEquals( url, url2 );
+		
+	}
 
 	public void testHost() throws Exception {
 		
@@ -219,7 +256,7 @@ public class SuperURLTest {
     	
     	SuperURL complete = new SuperURL( uriString );
     	
-    	assertEquals( complete.toString(), uriString );
+    	assertEquals( complete.toString( false ), uriString );
     	
     	assertEquals( complete.getScheme(), "https" );
     	assertEquals( complete.getUserInfo().toString(), "myuser:mypass" );
@@ -261,8 +298,8 @@ public class SuperURLTest {
     	url.appendPath( path );
     	urlSlash.appendPath( path );
     	
-    	assertEquals( url.toString(), refUrl );
-    	assertEquals( urlSlash.toString(), refUrl );
+    	assertEquals( url.toString( false ), refUrl );
+    	assertEquals( urlSlash.toString( false ), refUrl );
     }
     
     @Test( dependsOnMethods = "testPathOperations" )
@@ -280,8 +317,8 @@ public class SuperURLTest {
     	url.appendPath( path );
     	urlSlash.appendPath( path );
     	
-    	assertEquals( url.toString(), refUrl );
-    	assertEquals( urlSlash.toString(), refUrl );
+    	assertEquals( url.toString( false ), refUrl );
+    	assertEquals( urlSlash.toString( false ), refUrl );
     	
     	url = new SuperURL( urlS );
     	urlSlash = new SuperURL( urlSlashS );
@@ -289,20 +326,28 @@ public class SuperURLTest {
     	url.appendPath( path + "/" );
     	urlSlash.appendPath( path + "/" );
     	
-    	assertEquals( url.toString(), refUrl + "/" );
-    	assertEquals( urlSlash.toString(), refUrl + "/" );
+    	assertEquals( url.toString( false ), refUrl + "/" );
+    	assertEquals( urlSlash.toString( false ), refUrl + "/" );
     }
     
-    public void testKnownProblems() throws Exception {
+    public void testKnownProblemsWithSquareBracketsInPath() throws Exception {
     	
     	String urlS = "http://headshop-de.localhost:8080" +
     			"/tree/3015/5mm-Glas" +
     			"/article/00393/Weedstar-Mad-Professor-(3.Semester)-40cm-hoch.xhtml[/url]";
     	SuperURL url = new SuperURL( urlS );
-    	assertEquals( url.toString(), urlS );
+    	assertEquals( url.toString( false ), urlS );
     	assertEquals( url.toString( true ),"http://headshop-de.localhost:8080" +
     			"/tree/3015/5mm-Glas" +
     			"/article/00393/Weedstar-Mad-Professor-%283.Semester%29-40cm-hoch.xhtml%5B/url%5D" );
+    }
+    
+    public void percentInPathShallBeEncoded() throws Exception {
+    	
+    	SuperURL url = new SuperURL( "http://www.axon-e.de" );
+    	url.getPath().addFirst( "I'm 100% yours" );
+    	assertEquals( url.toString( false ), "http://www.axon-e.de/I'm 100% yours" );
+    	assertEquals( url.toString( true ), "http://www.axon-e.de/I%27m+100%25+yours" );
     }
     
     public void testEncoding() throws Exception {

@@ -10,6 +10,9 @@ public abstract class Assert {
 	public static void notNull( Object o, String name ){
 		if( o == null ) throw Ex.up( new ArgumentNullException( name ) );
 	}
+	public static void isNull( Object o, String name ){
+		if( o != null ) throw Ex.up( new ArgumentNullException( name ) );
+	}
 	// gt 0
 	public static void gt0( Number number, String name ){
 		if( number == null ) return;

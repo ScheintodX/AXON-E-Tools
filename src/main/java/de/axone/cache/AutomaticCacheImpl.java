@@ -125,7 +125,8 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 	@Override
 	public V get( K key, DataAccessor<K,V> accessor ) {
 
-		assert key != null && accessor != null;
+		assert key != null;
+		assert accessor != null;
 
 		// First try to get from cache
 		V result = null;
@@ -257,8 +258,4 @@ public class AutomaticCacheImpl<K,V> implements AutomaticCache<K, V>{
 
 	}
 	
-	public interface CacheKey<X> extends Serializable {
-		public String asString();
-	}
-
 }
