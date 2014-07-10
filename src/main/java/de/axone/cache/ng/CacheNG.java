@@ -1,0 +1,288 @@
+package de.axone.cache.ng;
+
+
+
+/**
+ * Mögliche Cache-Arten nach Key
+ * 
+ * TID
+ *   -> TreeItem
+ *   -> L:AID : Articles
+ *   -> L:AID : TopSeller
+ * [ -> L:Comments z.B. neueste ]
+ * [ -> L:Tags ] <-Articles
+ * [ -> M:Parameters ] <-Articles
+ *   -> L:PID : Pages
+ * 
+ * Top (tranlates to List<TID>)
+ *   s. o. ausser TreeItems, Pages
+ * 
+ * AID
+ *   -> Article
+ *   -> L:Comments / Rating
+ *   -> Bestand
+ *   -> XREF: XSell: L:Articles
+ * 
+ * Article beinhaltet schon: (deswegen nicht f. AID)
+ *   -> L:Para
+ *   -> L:Tags
+ * 
+ * Sonstiges:
+ *   
+ * Query:
+ * * para.name
+ * * tag
+ * * DESC.x
+ * * TID
+ * * Top
+ *     -> alle L:Article
+ * caching verm. nur auf root-query ebene.
+ * Die subqueries können aber wieder auf gecachte backends
+ * zugreifen wenn nötig.
+ * Die *ganz große* Frage hier ist, wie invalidieren.
+ * Was wir da brauchen ist invalidation propagation upward
+ * Das geht vermutlich sowieso nicht. Besser: Timeout
+ * für die Cache-Entries. Der sollte aber "freundlich"#
+ * sein und das cache-invalidate möglichst über einen 
+ * Zeitrum verteilen.
+ * 
+ * D.h.
+ * ROOT
+ *   AND
+ *     TID=123
+ *     PARA.name=blah
+ *     tag=bier
+ * 
+ * invalidate( tid=123 )-> invalidate( root )
+ * genau wie
+ * invalidate( para.name=blah )->invalidate( root )
+ * invalidate( tag=bier )->invalidate( root )
+ * 
+ * XRef
+ *		ART_XSELL, ART_TOP,
+ *		TREE_VIEWS, ART_VIEWS,
+ *		TREE_SEARCH, ART_SEARCH,
+ *		ART_USER, TREE_USER
+ * 
+ * Templates:
+ *   File -> Pair<FileWatcher,DataHolder>
+ *   URL -> Pair<HttpWatcher,DataHolder>
+ *   .
+ *   @see WebTemplateFactory
+ * 
+ * 
+ * MISSING:
+ * 
+ *  * country.csv
+ *  V.A. Template caching.
+ *  Das geht auch nur, wenn da eine "dynamische" invalidation-Chain aufgebaut werden kann,
+ *  d.h. änderungne am template-inhalt den template-cache invalidieren
+ *  
+ *  
+ *  
+ *  
+ *  IDEE:
+ *  
+ *  InvalidationListener wird mit dem cachen des ergebnisses
+ *  registriert und bei invalidation ereigenissen informiert.
+ *  
+ *  also
+ *  WebTemplate -> register( Article:123 )
+ *              -> register( 
+ *              
+ *              
+ *  CacheDataHolder {
+ *  
+ *  	data : WebTemplate
+ *      inval : Article:123 : count_4711
+ *      inval : Comment:123 : count_0815
+ *  }
+ *  
+ *  notify evtl. über einen invalidation-counter im object und im gecachten der dann überprüft wird.
+ *  
+ * More:
+ *   * include Passive kann teil des Keys sein.
+ *  
+ *  
+ *  
+ * Cache-Names
+ * -------------------------------------------------------------------------------
+ * TID->TreeItem
+ * TID->L:AID
+ * TID->L:AID(Topseller)
+ * TID->L:Comments
+ * TID->L:Comments(Newest)
+ * TID->L:Tags
+ * TID->M:Parameters (???)
+ * TID->L:PID
+ *  
+ * AID->Article
+ * AID->L:Comments
+ * 
+ * 
+ * 
+ * 
+ * @author flo
+ * 
+ */
+public interface CacheNG {
+	
+	// TODO: Evtl CacheKey enum damit jeder sicher die richtigen Caches bekommt
+
+	public interface Backend {
+	
+		/**
+		 * Returns a cache client instance bound to a client and a realm
+		 * 
+		 * @param client
+		 * @param realm
+		 * @return
+		 */
+		public <K,O> Client<K,O> cache( Realm realm );
+		
+		/**
+		 * Binds the given Accessor instance to an clident and a realm
+		 * 
+		 * @param client
+		 * @param realm
+		 * @param accessor
+		 * @return
+		 */
+		public <K,O> AutomaticClient<K,O> automatic( Realm realm, Accessor<K,O> accessor );
+	}
+	
+	//TODO: Evtl. DataHolder o.ä. um mit einem CacheQuery z.B. nach TID
+	//  gleich noch die restlichen einträge (topselller etc.) zu kommen. Die werden nämlich i.d.R
+	//  sowieso gebraucht.
+	
+	// Keep it simple for starters
+	
+	/**
+	 * Interface for a Cache client. A.k.a. an Cache.
+	 * 
+	 * Note that multiple clients can operate on the same backend cache.
+	 * TODO: Ist das so?
+	 * 
+	 * @author flo
+	 *
+	 * @param <K> Cache key
+	 * @param <O> Cached Object
+	 */
+	public interface Client<K,O> {
+		
+		/**
+		 * Get the chache entry identified by key
+		 * 
+		 * @param key
+		 * @return the cached object or null if not found
+		 */
+		public O get( K key );
+		
+		/**
+		 * Tells if the object identified by key exists
+		 * 
+		 * @param key
+		 * @return
+		 */
+		public boolean has( K key );
+		
+		/**
+		 * Remove the entry identified by key
+		 * 
+		 * @param key
+		 */
+		public void remove( K key );
+		
+		/**
+		 * Put the given object in the cache
+		 * 
+		 * @param key
+		 * @param object
+		 */
+		public void put( K key, O object );
+	}
+	
+	public interface Realm {
+		
+		public String realm();
+	}
+	
+	/**
+	 * Cache client which automatically fetches it's content
+	 * 
+	 * @author flo
+	 *
+	 * @param <K> Cache key
+	 * @param <O> Cached Object
+	 */
+	public interface AutomaticClient<K,O>
+			extends CacheEventListener<K>, CacheEventProvider<K> {
+		
+		public O fetch( K key );
+		
+		public boolean isCached( K key );
+		
+		public void invalidate( K key );
+		
+		public void invalidateAllWithin( int milliSeconds );
+	}
+	
+	public interface Accessor<K,O> {
+		
+		public O get( K key );
+	}
+	
+	public interface BackendAccessor<K,MV,O> {
+		
+		public O pull( MV holder, K key );
+		public void push( MV holder, K key, O value );
+	}
+	
+	public interface InvalidationManager<K,O> {
+		
+		public boolean isValid( K key, O value );
+	}
+	
+	public static class PassThroughBackendAccessor<K,O> implements BackendAccessor<K,O,O> {
+
+		@Override
+		public O pull( O holder, K key ) {
+			return holder;
+		}
+
+		@Override
+		public void push( O holder, K key, O value ) {}
+	}
+	
+	public interface CacheEventProvider<K> {
+		
+		public void registerListener( CacheEventListener<K> listener );
+		
+		void notifyListeners( K key );
+	}
+	
+	public interface CacheEventListener<K> {
+		
+		public void invalidateEvent( K key );
+	}
+	
+	
+	public abstract class CacheBridge<S,T> implements CacheEventListener<S> {
+		
+		private final CacheEventListener<T> target;
+		
+		public CacheBridge( CacheEventListener<T> target ){
+			this.target = target;
+		}
+
+		@Override
+		public void invalidateEvent( S key ) {
+			target.invalidateEvent( translate( key ) );
+		}
+		
+		protected abstract T translate( S key );
+		
+	}
+	
+	
+}

@@ -60,7 +60,17 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-all/1.9.5/b8086d4e4daa361fc746abea62f77a2ae55d3ed9/mockito-all-1.9.5-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-all/1.9.5/79a8984096fc6591c1e3690e07d41be506356fa5/mockito-all-1.9.5.jar" exported="true">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.assertj/assertj-core/1.6.1/631f89e7050cf8ac2ba25d68f0434b80731bf2f2/assertj-core-1.6.1-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.assertj/assertj-core/1.6.1/5db13d0ae30dca5157f0dea60f78640cf039cafe/assertj-core-1.6.1.jar" exported="true">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.googlecode.catch-exception/catch-exception/1.2.0/c51ccdb4523d1b62f9d18e24e88e7b7e888295f4/catch-exception-1.2.0-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.googlecode.catch-exception/catch-exception/1.2.0/f2d1a395d91b4c024b9cc6a0946cfb10199df0a0/catch-exception-1.2.0.jar" exported="true">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
@@ -116,6 +126,21 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.2.0/1c6f1d114a4677448b07083d9c7714aab5ef330b/jackson-core-2.2.0-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.2.0/45b1e51668ad002d47a0e88dfab6a0b4416246eb/jackson-core-2.2.0.jar" exported="true">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.1/2ccf1154d1a8936042a8a742dc3e611d02ac7213/hamcrest-core-1.1-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.1/860340562250678d1a344907ac75754e259cdb14/hamcrest-core-1.1.jar" exported="true">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.objenesis/objenesis/1.0/b10c90e57b7bb985a7b6a704769428fe5c2a732c/objenesis-1.0-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.objenesis/objenesis/1.0/9b473564e792c2bdf1449da1f0b1b5bff9805704/objenesis-1.0.jar" exported="true">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/1.9.5/46f703fb4266140c544d48a189cb25947eb6333e/mockito-core-1.9.5-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/1.9.5/c3264abeea62c4d2f367e21484fbb40c7e256393/mockito-core-1.9.5.jar" exported="true">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>

@@ -1,0 +1,17 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+
+<suite name="CacheNG" verbose="2" parallel="methods" thread-count="4">
+		
+	<test name="CacheNG">
+		<groups>
+			<run>
+				<include name=".*"/>
+			</run>
+		</groups>
+		
+        <packages>
+            <package name="de.axone.cache.ng.*"/>
+        </packages>
+	</test>
+	
+</suite>
