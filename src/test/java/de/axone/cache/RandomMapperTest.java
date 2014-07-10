@@ -76,4 +76,16 @@ public class RandomMapperTest {
 		
 	}
 	
+	public void checkThatWeAreUsingTheSameMethodAsRandom(){
+		
+		for( int i=0; i<RUNS; i++ ){
+			
+			// Distribute test values deterministically
+			int j = RandomMapper.integer( i );
+			
+			assertEquals( RandomMapper.integer( j ), RandomMapper.integerUsingRandom( j ) );
+		}
+		
+	}
+	
 }
