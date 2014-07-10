@@ -1,6 +1,6 @@
 package de.axone.web.rest;
 
-import static de.axone.test.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
 import java.util.HashMap;
@@ -10,11 +10,9 @@ import java.util.Map;
 
 import org.testng.annotations.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import de.axone.tools.E;
 import de.axone.web.rest.Validator.ValidatorError;
 import de.axone.web.rest.Validator.ValidatorResult;
 import de.axone.web.rest.Validator.ValidatorResult.Severity;
@@ -25,7 +23,7 @@ import de.axone.web.rest.Validator.ValidatorResultList;
 public class Validator2Test {
 
 	@SuppressWarnings( "unchecked" )
-	public void testValidatorResult() throws JsonProcessingException {
+	public void testValidatorResult() {
 		
 		ValidatorResultImpl res = new ValidatorResultImpl();
 		
@@ -45,8 +43,6 @@ public class Validator2Test {
 		sub2.info( "in-list2", "info" );
 		sub2.error( "in-list2-2", "error" );
 		
-		E.rr( res.toString() );
-		
 		Map<String,Object> sim = new HashMap<String,Object>();
 		sim.put( "field", "blah" );
 		sim.put( "sub", new HashMap<String,Object>() );
@@ -60,7 +56,7 @@ public class Validator2Test {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.enable( SerializationFeature.INDENT_OUTPUT );
 		
-		E.rr( mapper.writeValueAsString( sim ) );
+		//E.rr( mapper.writeValueAsString( sim ) );
 		
 		assertEquals( sim.get( "field" ), "blah" );
 		Map<String,Object> errors = (Map<String,Object>) sim.get( Validator.ERROR_KEY );
@@ -86,17 +82,16 @@ public class Validator2Test {
 		List<Map<String,String>> asList = new LinkedList<>();
 		
 		res.writeInto( "", asList );
-		
-		E.rr( asList );
 	}
 	
 	private static void assertError( Object o, String field, Severity severity, String code, String info ){
 		
-		assertIsInstance( o, Map.class );
+		assertThat( o ).isInstanceOf( Map.class );
+		
 		@SuppressWarnings( "unchecked" )
 		Map<String,ValidatorError> err = (Map<String,ValidatorError>)o;
 		
-		assertContainsKey( err, field );
+		assertThat( err ).containsKey( field );
 		
 		ValidatorError vErr = err.get( field );
 		

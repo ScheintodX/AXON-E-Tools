@@ -55,12 +55,17 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.testng/testng/6.8.8/2e40f493e5db82f4586d24034b4dd931d0b7f9dc/testng-6.8.8-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.testng/testng/6.8.8/c4fb20cf89d278d71667d7273fa6e6cff8b97ca9/testng-6.8.8.jar" exported="true">
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/annotations/2.0.3/936f4430478909ed7b138d42f9ad73c919a87b26/annotations-2.0.3-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/annotations/2.0.3/191383fa0deb88f393558eec231b206edc23aba0/annotations-2.0.3.jar" exported="true">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/annotations/2.0.3/936f4430478909ed7b138d42f9ad73c919a87b26/annotations-2.0.3-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/annotations/2.0.3/191383fa0deb88f393558eec231b206edc23aba0/annotations-2.0.3.jar" exported="true">
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.assertj/assertj-core/1.6.1/631f89e7050cf8ac2ba25d68f0434b80731bf2f2/assertj-core-1.6.1-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.assertj/assertj-core/1.6.1/5db13d0ae30dca5157f0dea60f78640cf039cafe/assertj-core-1.6.1.jar" exported="true">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.testng/testng/6.8.8/2e40f493e5db82f4586d24034b4dd931d0b7f9dc/testng-6.8.8-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.testng/testng/6.8.8/c4fb20cf89d278d71667d7273fa6e6cff8b97ca9/testng-6.8.8.jar" exported="true">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>

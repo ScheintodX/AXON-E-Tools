@@ -1,17 +1,18 @@
 package de.axone.equals;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.ByteArrayOutputStream;
 
 public class Jenkins96HashCodeBuilder extends AbstractStrongHashCodeBuilder<Integer> {
 	
 	private static final byte NULL_VALUE = 0;
 	private static final int EMPTY_VALUE = Integer.MAX_VALUE-1; // "Some" rare(?) value
 	
-	public static final int EMPTY_HASH = (int)((new Jenkins96Backend()).hash( new Byte[]{} ));
+	public static final int EMPTY_HASH = (int)((new Jenkins96Backend()).hash( new byte[]{} ));
 	private Jenkins96Backend backend = new Jenkins96Backend();
 	
-	private final List<Byte> bytes = new ArrayList<Byte>();
+	//private final List<Byte> bytes = new ArrayList<Byte>();
+	//private final ByteBuffer bytes = new ByteBuffer();
+	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 	
 	private final boolean treatEmptyAsNull;
 	
@@ -27,7 +28,7 @@ public class Jenkins96HashCodeBuilder extends AbstractStrongHashCodeBuilder<Inte
 		if( bytes == null ) return appendNull();
 		if( bytes.length == 0 ) return appendEmpty();
 		for( byte b : bytes ){
-			this.bytes.add( b );
+			this.bytes.write( b );
 		}
 		return this;
 	}
@@ -65,7 +66,7 @@ public class Jenkins96HashCodeBuilder extends AbstractStrongHashCodeBuilder<Inte
 	@Override
 	public Integer toHashCode() {
 		
-		Byte[] bytes = this.bytes.toArray( new Byte[ this.bytes.size() ] );
+		byte[] bytes = this.bytes.toByteArray();
 		
 		return (int)backend.hash( bytes );
 	}

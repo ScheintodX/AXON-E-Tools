@@ -10,6 +10,8 @@ package de.axone.equals;
  * is acceptable.  Do NOT use for cryptographic purposes.
  *
  * Java port by Gray Watson http://256.com/gray/
+ * 
+ * Flo: inserted 'state' to make it threadsafe
  */
 public class Jenkins96Backend {
 	
@@ -17,9 +19,9 @@ public class Jenkins96Backend {
 	private static final long MAX_VALUE = 0xFFFFFFFFL; 
 	
 	// internal variables used in the various calculations
-	long a;
-	long b;
-	long c;
+	private static final class state {
+		long a, b, c;
+	}
 	
 	/**
 	 * Convert a byte into a long value without making it negative.
@@ -63,7 +65,7 @@ public class Jenkins96Backend {
 	/**
 	 * Convert 4 bytes from the buffer at offset into a long value.
 	 */
-	private long fourByteToLong(Byte[] bytes, int offset) {
+	private long fourByteToLong(byte[] bytes, int offset) {
 		return (byteToLong(bytes[offset + 0])
 				+ (byteToLong(bytes[offset + 1]) << 8)
 				+ (byteToLong(bytes[offset + 2]) << 16)
@@ -73,7 +75,8 @@ public class Jenkins96Backend {
 	/**
 	 * Mix up the values in the hash function.
 	 */
-	private void hashMix() {
+	private void hashMix( state s ) {
+		long a=s.a, b=s.b, c=s.c;
 	   a = subtract(a, b); a = subtract(a, c); a = xor(a, c >> 13);
 	   b = subtract(b, c); b = subtract(b, a); b = xor(b, leftShift(a, 8));
 	   c = subtract(c, a); c = subtract(c, b); c = xor(c, (b >> 13));
@@ -83,6 +86,7 @@ public class Jenkins96Backend {
 	   a = subtract(a, b); a = subtract(a, c); a = xor(a, (c >> 3));
 	   b = subtract(b, c); b = subtract(b, a); b = xor(b, leftShift(a, 10));
 	   c = subtract(c, a); c = subtract(c, b); c = xor(c, (b >> 15));
+	   s.a=a; s.b=b; s.c=c;
 	 }
 
 	/**
@@ -96,60 +100,62 @@ public class Jenkins96Backend {
 	 * @return Hash value for the buffer.
 	 */
 	@SuppressWarnings( "fallthrough" )
-	public long hash(Byte[] buffer, long initialValue) {
+	public long hash(byte[] buffer, long initialValue) {
 		int len, pos;
+		
+		state s = new state();
 		
 		// set up the internal state
 		// the golden ratio; an arbitrary value
-		a = 0x09e3779b9L;
+		s.a = 0x09e3779b9L;
 		// the golden ratio; an arbitrary value
-		b = 0x09e3779b9L;
+		s.b = 0x09e3779b9L;
         // the previous hash value
-		c = initialValue;
+		s.c = initialValue;
 		
 		// handle most of the key
 		pos = 0;
 		for (len = buffer.length; len >=12; len -= 12) {
-			a = add(a, fourByteToLong(buffer, pos));
-			b = add(b, fourByteToLong(buffer, pos + 4));
-			c = add(c, fourByteToLong(buffer, pos + 8));
-			hashMix();
+			s.a = add(s.a, fourByteToLong(buffer, pos));
+			s.b = add(s.b, fourByteToLong(buffer, pos + 4));
+			s.c = add(s.c, fourByteToLong(buffer, pos + 8));
+			hashMix( s );
 			pos += 12;
 		}
 		
-		c += buffer.length;
+		s.c += buffer.length;
 		
 		// all the case statements fall through to the next on purpose
 		switch(len) {
 		case 11:
-			c = add(c, leftShift(byteToLong(buffer[pos + 10]), 24));
+			s.c = add(s.c, leftShift(byteToLong(buffer[pos + 10]), 24));
 		case 10:
-			c = add(c, leftShift(byteToLong(buffer[pos + 9]), 16));
+			s.c = add(s.c, leftShift(byteToLong(buffer[pos + 9]), 16));
 		case 9:
-			c = add(c, leftShift(byteToLong(buffer[pos + 8]), 8));
+			s.c = add(s.c, leftShift(byteToLong(buffer[pos + 8]), 8));
 			// the first byte of c is reserved for the length
 		case 8:
-			b = add(b, leftShift(byteToLong(buffer[pos + 7]), 24));
+			s.b = add(s.b, leftShift(byteToLong(buffer[pos + 7]), 24));
 		case 7:
-			b = add(b, leftShift(byteToLong(buffer[pos + 6]), 16));
+			s.b = add(s.b, leftShift(byteToLong(buffer[pos + 6]), 16));
 		case 6:
-			b = add(b, leftShift(byteToLong(buffer[pos + 5]), 8));
+			s.b = add(s.b, leftShift(byteToLong(buffer[pos + 5]), 8));
 		case 5:
-			b = add(b, byteToLong(buffer[pos + 4]));
+			s.b = add(s.b, byteToLong(buffer[pos + 4]));
 		case 4:
-			a = add(a, leftShift(byteToLong(buffer[pos + 3]), 24));
+			s.a = add(s.a, leftShift(byteToLong(buffer[pos + 3]), 24));
 		case 3:
-			a = add(a, leftShift(byteToLong(buffer[pos + 2]), 16));
+			s.a = add(s.a, leftShift(byteToLong(buffer[pos + 2]), 16));
 		case 2:
-			a = add(a, leftShift(byteToLong(buffer[pos + 1]), 8));
+			s.a = add(s.a, leftShift(byteToLong(buffer[pos + 1]), 8));
 		case 1:
-			a = add(a, byteToLong(buffer[pos + 0]));
+			s.a = add(s.a, byteToLong(buffer[pos + 0]));
 		default:
 			// case 0: nothing left to add
 		}
-		hashMix();
+		hashMix( s );
 		
-		return c;
+		return s.c;
 	}
 	
 	/**
@@ -157,7 +163,10 @@ public class Jenkins96Backend {
 	 * @param buffer Byte array that we are hashing on.
 	 * @return Hash value for the buffer.
 	 */
-	public long hash(Byte[] buffer) {
+	public long hash(byte[] buffer) {
 		return hash(buffer, 0);
+	}
+	public long hash(String string ){
+		return hash( string.getBytes(), 0 );
 	}
 }

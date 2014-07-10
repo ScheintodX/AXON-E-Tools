@@ -1,7 +1,7 @@
 package de.axone.tools;
 
 
-import static de.axone.test.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
@@ -14,7 +14,7 @@ public class ClassConfiguratorTest {
 	public void testSimpleCreation() throws Exception {
 		
 		Object instance = ClassConfigurator.create( TESTCLASS );
-		assertIsInstance( instance, ClassConfiguratorTest_TestClass.class );
+		assertThat( instance ).isInstanceOf( ClassConfiguratorTest_TestClass.class );
 	}
 	
 	public void testParameter() throws Exception {
@@ -22,7 +22,7 @@ public class ClassConfiguratorTest {
 		String clazz = TESTCLASS + "	( x =	'5', yyy= '6'	, z12345EneMene='Muh/Mäh&123\\' ) ";
 		
 		Object instance = ClassConfigurator.create( clazz );
-		assertIsInstance( instance, ClassConfiguratorTest_TestClass.class );
+		assertThat( instance ).isInstanceOf( ClassConfiguratorTest_TestClass.class );
 		
 		ClassConfiguratorTest_TestClass t = (ClassConfiguratorTest_TestClass)instance;
 		
@@ -36,13 +36,13 @@ public class ClassConfiguratorTest {
 		String clazz = TESTCLASS + "( yyy='', z12345EneMene='' )";
 		
 		Object instance = ClassConfigurator.create( clazz );
-		assertIsInstance( instance, ClassConfiguratorTest_TestClass.class );
+		assertThat( instance ).isInstanceOf( ClassConfiguratorTest_TestClass.class );
 		
 		ClassConfiguratorTest_TestClass t = (ClassConfiguratorTest_TestClass)instance;
 		
 		assertNull( t.x );
-		assertEmpty( t.yyy );
-		assertEmpty( t.z12345EneMene );
+		assertEquals( t.yyy, "" );
+		assertEquals( t.z12345EneMene, "" );
 	}
 
 	public void testConstructor() throws Exception {
@@ -54,7 +54,7 @@ public class ClassConfiguratorTest {
 		
 		Object instance = ClassConfigurator.create( clazz, cClasses, cParas );
 		
-		assertIsInstance( instance, ClassConfiguratorTest_TestClass.class );
+		assertThat( instance ).isInstanceOf( ClassConfiguratorTest_TestClass.class );
 		
 		ClassConfiguratorTest_TestClass t = (ClassConfiguratorTest_TestClass)instance;
 		assertEquals( t.i, Integer.valueOf( 5 ) );

@@ -71,11 +71,13 @@ dependencies {
 	// =======================================
 
 	testRuntime 'org.testng:testng:6.8+'
+	testCompile 'org.assertj:assertj-core:1.6+'
 
 	testRuntime 'ch.qos.logback:logback-classic:1.1+'
 	testRuntime 'ch.qos.logback:logback-core:1.1+'
 	testRuntime 'org.slf4j:jcl-over-slf4j:1.7+'
 	testRuntime 'org.slf4j:log4j-over-slf4j:1.7+'
+
 }
 
 test {
