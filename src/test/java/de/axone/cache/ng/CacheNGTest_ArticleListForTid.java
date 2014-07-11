@@ -27,7 +27,7 @@ public class CacheNGTest_ArticleListForTid {
 		}
 	
 		@Override
-		public List<TArticle> get( Tid tid ) {
+		public List<TArticle> fetch( Tid tid ) {
 			return data.get( tid );
 		}
 		
@@ -66,11 +66,11 @@ public class CacheNGTest_ArticleListForTid {
 		TestAccessor_ArticleForTid accessor = new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> auto =
-				backend.automatic( RN.TID_LARTICLE.realm(), accessor );
+				backend.automatic( RN.TID_LARTICLE.realm() );
 		
 		assertThat( auto ).hasNotCached( T123 );
 		
-		List<TArticle> arts = auto.fetch( T123 );
+		List<TArticle> arts = auto.fetch( T123, accessor );
 		assertThat( auto ).hasCached( T123 );
 		
 		assertThat( arts ).are( havingTid( T123 ) );

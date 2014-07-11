@@ -1,10 +1,11 @@
-package de.axone.cache;
+package de.axone.cache.ng;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
+import de.axone.cache.ng.RandomMapper;
 import de.axone.tools.E;
 
 @Test( groups="cache.tools" )

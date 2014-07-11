@@ -87,7 +87,7 @@ public class CacheNGTest_Implementations {
 		
 		TestAccessor_ArticleForIdentifier acc = new TestAccessor_ArticleForIdentifier();
 		
-		TArticle tart = acc.get( A12345 );
+		TArticle tart = acc.fetch( A12345 );
 		assertThat( tart )
 				.is( havingIdentifier( aid( "12345" ) ) )
 				.is( havingTid( T123 ) )
@@ -146,7 +146,7 @@ public class CacheNGTest_Implementations {
 		
 		TestAccessor_ArticleForIdentifier acc = new TestAccessor_ArticleForIdentifier();
 		
-		TArticle tart = acc.get( A_FAIL );
+		TArticle tart = acc.fetch( A_FAIL );
 		
 		assertNull( tart );
 	}
@@ -157,17 +157,17 @@ public class CacheNGTest_Implementations {
 		
 		TArticle tart = TArticle.build( A12345 );
 		
-		assertThat( client ).doesNotContain( aid( "12345" ) );
+		assertThat( client ).hasNotCached( aid( "12345" ) );
 		client.put( tart.getIdentifier(), tart );
-		assertThat( client ).contains( aid( "12345" ) );
+		assertThat( client ).hasCached( aid( "12345" ) );
 		
-		TArticle restored = client.get( aid( "12345" ) );
+		TArticle restored = client.fetch( aid( "12345" ) );
 		
 		assertThat( restored ).isEqualTo( tart );
-		client.remove( aid( "12345" ) );
-		assertThat( client ).doesNotContain( aid( "12345" ) );
+		client.invalidate( aid( "12345" ) );
+		assertThat( client ).hasNotCached( aid( "12345" ) );
 		
-		TArticle removed = client.get( aid( "12345" ) );
+		TArticle removed = client.fetch( aid( "12345" ) );
 		
 		assertNull( removed );
 	}
@@ -175,14 +175,16 @@ public class CacheNGTest_Implementations {
 	public void buildByTestAutoCache() {
 		
 		TestAutomaticClient<Aid, TArticle> auto =
-				new TestAutomaticClient<>( new TestAccessor_ArticleForIdentifier() );
+				new TestAutomaticClient<>();
+				
+		TestAccessor_ArticleForIdentifier accessor = new TestAccessor_ArticleForIdentifier();
 		
 		assertThat( auto ).hasNotCached( A12345 )
-				.lookingInBackend().doesNotContain( A12345 );
+				.lookingInBackend().hasNotCached( A12345 );
 			
-		TArticle art = auto.fetch( A12345 );
+		TArticle art = auto.fetch( A12345, accessor );
 		assertThat( auto ).hasCached( A12345 )
-				.lookingInBackend().contains( A12345 );
+				.lookingInBackend().hasCached( A12345 );
 		
 		assertThat( art ).is( havingIdentifier( aid( "12345" ) ) )
 				.is( havingTid( T123 ) )
@@ -190,13 +192,13 @@ public class CacheNGTest_Implementations {
 				;
 		
 		assertThat( auto ).hasNotCached( A_FAIL )
-				.lookingInBackend().doesNotContain( A_FAIL );
+				.lookingInBackend().hasNotCached( A_FAIL );
 		
-		TArticle failed = auto.fetch( A_FAIL );
+		TArticle failed = auto.fetch( A_FAIL, accessor );
 		assertThat( failed ).isNull();
 		
 		assertThat( auto ).hasCached( A_FAIL )
-				.lookingInBackend().contains( A_FAIL );
+				.lookingInBackend().hasCached( A_FAIL );
 	}
 	
 	public void buildByListAccessor(){
@@ -210,51 +212,48 @@ public class CacheNGTest_Implementations {
 		
 		CacheNGTest_ArticleListForTid.TestAccessor_ArticleForTid acc = new CacheNGTest_ArticleListForTid.TestAccessor_ArticleForTid( data );
 		
-		assertThat( acc.get( T123 ) ).hasSize( 1 ).isNotNull();
-		assertThat( acc.get( T234 ) ).hasSize( 2 ).isNotNull();
-		assertThat( acc.get( T345 ) ).hasSize( 1 ).isNotNull();
+		assertThat( acc.fetch( T123 ) ).hasSize( 1 ).isNotNull();
+		assertThat( acc.fetch( T234 ) ).hasSize( 2 ).isNotNull();
+		assertThat( acc.fetch( T345 ) ).hasSize( 1 ).isNotNull();
 		
 		TestAutomaticClient<Tid, List<TArticle>> auto =
-				new TestAutomaticClient<>( acc );
+				new TestAutomaticClient<>();
 		
 		assertThat( auto ).hasNotCached( T123 )
-				.lookingInBackend().doesNotContain( T123 );
+				.lookingInBackend().hasNotCached( T123 );
 		
-		List<TArticle> forList123 = auto.fetch( T123 );
-		assertThat( forList123 )
+		assertThat( auto.fetch( T123, acc ) )
 				.contains( a12345 )
 				.hasSize( 1 )
 				;
 		
 		assertThat( auto ).hasCached( T123 )
-				.lookingInBackend().contains( T123 );
+				.lookingInBackend().hasCached( T123 );
 		
 		
 		assertThat( auto ).hasNotCached( T234 )
-				.lookingInBackend().doesNotContain( T234 );
+				.lookingInBackend().hasNotCached( T234 );
 		
-		List<TArticle> forList234 = auto.fetch( T234 );
-		assertThat( forList234 )
+		assertThat( auto.fetch( T234, acc ) )
 				.contains( a12345 )
 				.contains( a12346 )
 				.hasSize( 2 )
 				;
 		
 		assertThat( auto ).hasCached( T234 )
-				.lookingInBackend().contains( T234 );
+				.lookingInBackend().hasCached( T234 );
 		
 		
 		assertThat( auto ).hasNotCached( T345 )
-				.lookingInBackend().doesNotContain( T345 );
+				.lookingInBackend().hasNotCached( T345 );
 		
-		List<TArticle> forList345 = auto.fetch( T345 );
-		assertThat( forList345 )
+		assertThat( auto.fetch( T345, acc ) )
 				.contains( a12346 )
 				.hasSize( 1 )
 				;
 		
 		assertThat( auto ).hasCached( T345 )
-				.lookingInBackend().contains( T345 );
+				.lookingInBackend().hasCached( T345 );
 		
 	}
 	

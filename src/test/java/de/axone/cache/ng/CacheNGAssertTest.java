@@ -20,9 +20,9 @@ public class CacheNGAssertTest {
 		
 		TestClient<Aid,TArticle> client = new TestClient<>();
 		
-		assertThat( client ).doesNotContain( aid( "12345" ) );
+		assertThat( client ).hasNotCached( aid( "12345" ) );
 		try {
-			assertThat( client ).contains( aid( "12345" ) );
+			assertThat( client ).hasCached( aid( "12345" ) );
 			Assert.fail( "Should have failed" );
 		} catch( Error e ){
 			assertThat( e ).isInstanceOf( AssertionError.class )
@@ -31,14 +31,14 @@ public class CacheNGAssertTest {
 		
 		client.put( TART12345.getIdentifier(), TART12345 );
 		
-		assertThat( client ).contains( aid( "12345" ) )
-				.doesNotContain( aid( "12346" ) );
+		assertThat( client ).hasCached( aid( "12345" ) )
+				.hasNotCached( aid( "12346" ) );
 		
 		client.put( TART12346.getIdentifier(), TART12346 );
 		
-		assertThat( client ).contains( aid( "12345" ) );
-		assertTrue( client.has( aid( "12345" ) ) ); // Yes. Direct access here for the test.
-		assertThat( client ).contains( aid( "12346" ) );
+		assertThat( client ).hasCached( aid( "12345" ) );
+		assertTrue( client.isCached( aid( "12345" ) ) ); // Yes. Direct access here for the test.
+		assertThat( client ).hasCached( aid( "12346" ) );
 	}
 	
 }

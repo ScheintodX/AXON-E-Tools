@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNG.AutomaticClient;
 import de.axone.cache.ng.CacheNGImplementations.RN;
 import de.axone.cache.ng.CacheNGImplementations.TArticle;
 import de.axone.cache.ng.CacheNGImplementations.TestCacheBackend;
@@ -70,18 +69,18 @@ public class CacheNGTest_CombinedSearchQueries {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				backend.automatic( RN.TID_LARTICLE.realm(), forTid );
+				backend.automatic( RN.TID_LARTICLE.realm() );
 		
 		TestAccessor_ArticleForQuery forQuery =
-				new TestAccessor_ArticleForQuery( autoForTid );
+				new TestAccessor_ArticleForQuery( autoForTid, forTid );
 		
 		CacheNG.AutomaticClient<TestSearchQuery, List<TArticle>> autoForQuery =
-				backend.automatic( RN.SQTID_LARTICLE.realm(), forQuery );
+				backend.automatic( RN.SQTID_LARTICLE.realm() );
 		
 		autoForTid.registerListener( new TidToQueryBridge( autoForQuery ) );
 		
 		assertFalse( autoForQuery.isCached( qq1234 ) );
-		List<TArticle> arts = autoForQuery.fetch( qq1234 );
+		List<TArticle> arts = autoForQuery.fetch( qq1234, forQuery );
 		assertThat( arts )
 				.areExactly( 1, havingIdentifier( aid( "12345" ) ) )
 				.areExactly( 1, havingIdentifier( aid( "12346" ) ) )
@@ -99,13 +98,14 @@ public class CacheNGTest_CombinedSearchQueries {
 		}
 		
 		@Override
-		public List<TArticle> execute( AutomaticClient<Tid, List<TArticle>> data ) {
+		public List<TArticle> execute( CacheNG.AutomaticClient<Tid, List<TArticle>> data,
+				CacheNG.Accessor<Tid, List<TArticle>> accessor ) {
 			
 			Set<TArticle> result = new LinkedHashSet<TArticle>();
 					
 			for( TestSearchQuery sub : subQueries ){
 				
-				result.addAll( sub.execute( data ) );
+				result.addAll( sub.execute( data, accessor ) );
 			}
 					
 			return new ArrayList<>( result );

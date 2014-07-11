@@ -50,13 +50,13 @@ public class CacheNGTest_ArticleListForTop {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				backend.automatic( RN.TID_LARTICLE.realm(), accessorForTid );
+				backend.automatic( RN.TID_LARTICLE.realm() );
 		
 		TestAccessor_ArticleForTop accessorForTop =
-				new TestAccessor_ArticleForTop( autoForTid, tidForTop );
+				new TestAccessor_ArticleForTop( autoForTid, accessorForTid, tidForTop );
 		
 		CacheNG.AutomaticClient<Top, List<TArticle>> autoForTop =
-				backend.automatic( RN.TOP_LARTICLE.realm(), accessorForTop );
+				backend.automatic( RN.TOP_LARTICLE.realm() );
 		
 		((CacheEventProvider<Tid>)autoForTid).registerListener( new TidToTopBridge( autoForTop, tidForTop ) );
 		
@@ -65,7 +65,7 @@ public class CacheNGTest_ArticleListForTop {
 				.hasNotCached( T001 )
 				.hasNotCached( T002 );
 		
-		List<TArticle> arts = autoForTop.fetch( T001 );
+		List<TArticle> arts = autoForTop.fetch( T001, accessorForTop );
 		assertThat( autoForTop )
 				.hasCached( T001 )
 				.hasNotCached( T002 );
@@ -74,7 +74,7 @@ public class CacheNGTest_ArticleListForTop {
 				.are( havingTid( T123 ) )      // T001 is top of T123
 				.areNot( havingTid( T999 ) );  // But not stored in article
 		
-		arts = autoForTop.fetch( T002 );         
+		arts = autoForTop.fetch( T002, accessorForTop );
 		assertThat( arts ).hasSize( 2 )
 				.are( havingTid( T345 ) )      // T002 is top of T345 and T456
 				.areAtLeast( 1, havingTid( T234 ) )
@@ -141,21 +141,25 @@ public class CacheNGTest_ArticleListForTop {
 			implements CacheNG.Accessor<Top, List<TArticle>> {
 
 		private final CacheNG.AutomaticClient<Tid, List<TArticle>> forTid;
+		private final CacheNG.Accessor<Tid,List<TArticle>> accessor;
 		private final TidForTop tft;
 		
-		public TestAccessor_ArticleForTop( CacheNG.AutomaticClient<Tid, List<TArticle>> forTid, TidForTop tft) {
+		public TestAccessor_ArticleForTop(
+				CacheNG.AutomaticClient<Tid, List<TArticle>> forTid,
+				CacheNG.Accessor<Tid,List<TArticle>> accessor, TidForTop tft) {
 			this.forTid = forTid;
+			this.accessor = accessor;
 			this.tft = tft;
 		}
 
 		@Override
-		public List<TArticle> get( Top top ) {
+		public List<TArticle> fetch( Top top ) {
 			
 			List<Tid> path = tft.tidForTop( top );
 			List<TArticle> result = Collections.emptyList();
 			
 			for( Tid tid : path ){
-				result = union( result, forTid.fetch( tid ) );
+				result = union( result, forTid.fetch( tid, accessor ) );
 			}
 			
 			return result;
@@ -175,7 +179,7 @@ public class CacheNGTest_ArticleListForTop {
 		}
 
 		@Override
-		protected Top translate( Tid tid ) {
+		protected Top bridge( Tid tid ) {
 			return tft.topForTid( tid );
 		}
 

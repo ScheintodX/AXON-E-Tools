@@ -7,35 +7,40 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
+import de.axone.cache.ng.CacheNGImplementations.Aid;
+import de.axone.cache.ng.CacheNGImplementations.TArticle;
+import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
+import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
+
 @Test( groups="helper.testng" )
 public class CacheNGTest_AccessorUsage {
 
 	public void accessorIsOnlyUsedWhenNeeded(){
 		
-		CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier accessor = spy( new CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier() );
+		TestAutomaticClient<Aid, TArticle> auto = new TestAutomaticClient<>();
 		
-		CacheNGImplementations.TestAutomaticClient<CacheNGImplementations.Aid, CacheNGImplementations.TArticle> auto = new CacheNGImplementations.TestAutomaticClient<>( accessor );
+		TestAccessor_ArticleForIdentifier acc = spy( new TestAccessor_ArticleForIdentifier() );
 		
-		verify( accessor, never() ).get( A12345 );
+		verify( acc, never() ).fetch( A12345 );
 		
 		CacheNGImplementations.TArticle art;
-		art = auto.fetch( A12345 );
+		art = auto.fetch( A12345, acc );
 		assertNotNull( art );
 		
 		// Now we hat one call to accessor
-		verify( accessor, times( 1 ) ).get( A12345 );
+		verify( acc, times( 1 ) ).fetch( A12345 );
 		
-		art = auto.fetch( A12345 );
+		art = auto.fetch( A12345, acc );
 		assertNotNull( art );
 		
 		// this one was cached so no call
-		verify( accessor, times( 1 ) ).get( A12345 );
+		verify( acc, times( 1 ) ).fetch( A12345 );
 		
 		auto.invalidate( A12345 );
-		art = auto.fetch( A12345 );
+		art = auto.fetch( A12345, acc );
 		
 		// Now we had to get it again, make it two calls
-		verify( accessor, times( 2 ) ).get( A12345 );
+		verify( acc, times( 2 ) ).fetch( A12345 );
 	}
 	
 }

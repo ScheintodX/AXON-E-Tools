@@ -6,6 +6,7 @@ import org.assertj.core.api.Condition;
 import org.assertj.core.description.Description;
 import org.assertj.core.description.TextDescription;
 
+import de.axone.cache.ng.CacheNG.Accessor;
 import de.axone.cache.ng.CacheNGImplementations.Aid;
 import de.axone.cache.ng.CacheNGImplementations.TArticle;
 import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
@@ -36,24 +37,24 @@ public abstract class CacheNGAssert {
 			super( actual, CacheAssert.class );
 		}
 		
-		public CacheAssert<K,O> contains( K key ){
+		public CacheAssert<K,O> hasCached( K key ){
 			
-			if( ! actual.has( key ) )
+			if( ! actual.isCached( key ) )
 					failWithMessage( "Is not cached but should be: " + key );
 			
 			return myself;
 		}
 		
-		public CacheAssert<K,O> doesNotContain( K key ){
+		public CacheAssert<K,O> hasNotCached( K key ){
 			
-			if( actual.has( key ) )
+			if( actual.isCached( key ) )
 					failWithMessage( "Is cached but shouldn't be: " + key );
 			
 			return myself;
 		}
 		
 		public CacheObjectAssert<K,O,CacheAssert<K,O>> get( K key ){
-			return new CacheObjectAssert<>( this, actual.get( key ) );
+			return new CacheObjectAssert<>( this, actual.fetch( key ) );
 		}
 	}
 	
@@ -87,9 +88,9 @@ public abstract class CacheNGAssert {
 			return myself;
 		}
 		
-		public CacheObjectAssert<K,O,AutoCacheAssert<K,O>> fetch( K key ){
+		public CacheObjectAssert<K,O,AutoCacheAssert<K,O>> fetch( K key, Accessor<K,O> accessor ){
 			
-			return new CacheObjectAssert<>( this, actual.fetch( key ) );
+			return new CacheObjectAssert<>( this, actual.fetch( key, accessor ) );
 		}
 		
 		public CacheAssert<K,TimedCacheEntry<O>> lookingInBackend(){

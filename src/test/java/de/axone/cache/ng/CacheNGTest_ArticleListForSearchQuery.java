@@ -70,29 +70,29 @@ public class CacheNGTest_ArticleListForSearchQuery {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				backend.automatic( RN.TID_LARTICLE.unique(), forTid );
+				backend.automatic( RN.TID_LARTICLE.unique() );
 		
 		TestAccessor_ArticleForQuery forQuery =
-				new TestAccessor_ArticleForQuery( autoForTid );
+				new TestAccessor_ArticleForQuery( autoForTid, forTid );
 		
-		CacheNG.AutomaticClient<TestSearchQuery, List<TArticle>> auto =
-				backend.automatic( RN.SQTID_LARTICLE.unique(), forQuery );
+		CacheNG.AutomaticClient<TestSearchQuery, List<TArticle>> autoForQuery =
+				backend.automatic( RN.SQTID_LARTICLE.unique() );
 		
 		TestSearchQuery_Tid q = new TestSearchQuery_Tid( T123 );
 		
-		assertThat( auto ).hasNotCached( q );
+		assertThat( autoForQuery ).hasNotCached( q );
 		
-		List<TArticle> arts = auto.fetch( q );
-		assertThat( auto ).hasCached( q );
+		List<TArticle> arts = autoForQuery.fetch( q, forQuery );
+		assertThat( autoForQuery ).hasCached( q );
 		
 		assertThat( arts ).are( havingTid( T123 ) );
 		
 		// On import of articles: diff oldtids/newtids
 		// Invalidation is done only on the article's tids
-		auto.invalidate( q );
+		autoForQuery.invalidate( q );
 		
 		// Invalidation must propagate to top
-		assertThat( auto ).hasNotCached( q );
+		assertThat( autoForQuery ).hasNotCached( q );
 	}
 	
 	public void invalidateSearchQueryByInvalidatingTid(){
@@ -101,13 +101,13 @@ public class CacheNGTest_ArticleListForSearchQuery {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				backend.automatic( RN.TID_LARTICLE.unique(), forTid );
+				backend.automatic( RN.TID_LARTICLE.unique() );
 		
 		TestAccessor_ArticleForQuery forQuery =
-				new TestAccessor_ArticleForQuery( autoForTid );
+				new TestAccessor_ArticleForQuery( autoForTid, forTid );
 		
 		CacheNG.AutomaticClient<TestSearchQuery, List<TArticle>> autoForQuery =
-				backend.automatic( RN.SQTID_LARTICLE.unique(), forQuery );
+				backend.automatic( RN.SQTID_LARTICLE.unique() );
 		
 		autoForTid.registerListener( new TidToQueryBridge( autoForQuery ) );
 		
@@ -116,11 +116,11 @@ public class CacheNGTest_ArticleListForSearchQuery {
 		
 		assertThat( autoForQuery ).hasNotCached( q1 );
 		
-		List<TArticle> arts = autoForQuery.fetch( q1 );
+		List<TArticle> arts = autoForQuery.fetch( q1, forQuery );
 		assertThat( arts ).are( havingTid( T123 ) );
 		assertThat( autoForQuery ).hasCached( q1 );
 		
-		arts = autoForQuery.fetch( q2 );
+		arts = autoForQuery.fetch( q2, forQuery );
 		assertThat( arts ).are( havingTid( T234 ) );
 		assertThat( autoForQuery ).hasCached( q2 );
 		
@@ -140,7 +140,9 @@ public class CacheNGTest_ArticleListForSearchQuery {
 	
 	interface TestSearchQuery {
 		
-		public List<TArticle> execute( CacheNG.AutomaticClient<Tid,List<TArticle>> data );
+		public List<TArticle> execute(
+				CacheNG.AutomaticClient<Tid,List<TArticle>> data,
+				CacheNG.Accessor<Tid,List<TArticle>> accessor );
 	}
 	
 	static class TestSearchQuery_Tid implements TestSearchQuery {
@@ -152,9 +154,11 @@ public class CacheNGTest_ArticleListForSearchQuery {
 		}
 
 		@Override
-		public List<TArticle> execute( CacheNG.AutomaticClient<Tid,List<TArticle>> data ){
+		public List<TArticle> execute(
+				CacheNG.AutomaticClient<Tid,List<TArticle>> data,
+				CacheNG.Accessor<Tid,List<TArticle>> accessor ){
 			
-			return data.fetch( tid );
+			return data.fetch( tid, accessor );
 		}
 
 		@Override
@@ -183,7 +187,7 @@ public class CacheNGTest_ArticleListForSearchQuery {
 		}
 
 		@Override
-		protected TestSearchQuery_Tid translate( Tid tid ) {
+		protected TestSearchQuery_Tid bridge( Tid tid ) {
 			return new TestSearchQuery_Tid( tid );
 		}
 		
@@ -194,16 +198,19 @@ public class CacheNGTest_ArticleListForSearchQuery {
 			implements CacheNG.Accessor<TestSearchQuery, List<TArticle>>{
 		
 		private final CacheNG.AutomaticClient<Tid,List<TArticle>> data;
+		private final CacheNG.Accessor<Tid,List<TArticle>> accessor;
 
-		public TestAccessor_ArticleForQuery( CacheNG.AutomaticClient<Tid,List<TArticle>> data ) {
+		public TestAccessor_ArticleForQuery( CacheNG.AutomaticClient<Tid,List<TArticle>> data,
+				CacheNG.Accessor<Tid,List<TArticle>> accessor ) {
 			
 			this.data = data;
+			this.accessor = accessor;
 		}
 
 		@Override
-		public List<TArticle> get( TestSearchQuery identifier ) {
+		public List<TArticle> fetch( TestSearchQuery identifier ) {
 			
-			return identifier.execute( data );
+			return identifier.execute( data, accessor );
 			
 		}
 		

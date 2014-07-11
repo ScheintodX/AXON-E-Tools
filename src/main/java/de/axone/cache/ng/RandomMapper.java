@@ -1,4 +1,4 @@
-package de.axone.cache;
+package de.axone.cache.ng;
 
 import java.util.Random;
 

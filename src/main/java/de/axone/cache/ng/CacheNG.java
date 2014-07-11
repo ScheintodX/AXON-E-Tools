@@ -1,7 +1,5 @@
 package de.axone.cache.ng;
 
-
-
 /**
  * Mögliche Cache-Arten nach Key
  * 
@@ -127,8 +125,6 @@ package de.axone.cache.ng;
  */
 public interface CacheNG {
 	
-	// TODO: Evtl CacheKey enum damit jeder sicher die richtigen Caches bekommt
-
 	public interface Backend {
 	
 		/**
@@ -148,12 +144,24 @@ public interface CacheNG {
 		 * @param accessor
 		 * @return
 		 */
-		public <K,O> AutomaticClient<K,O> automatic( Realm realm, Accessor<K,O> accessor );
+		public <K,O> AutomaticClient<K,O> automatic( Realm realm );
+		
 	}
 	
-	//TODO: Evtl. DataHolder o.ä. um mit einem CacheQuery z.B. nach TID
-	//  gleich noch die restlichen einträge (topselller etc.) zu kommen. Die werden nämlich i.d.R
-	//  sowieso gebraucht.
+	/**
+	 * Identifies a realm for the backend
+	 * 
+	 * @author flo
+	 */
+	public interface Realm {
+		
+		public String realm();
+	}
+	
+	
+	// TODO: Evtl. DataHolder o.ä. um mit einem CacheQuery z.B. nach TID
+	// gleich noch die restlichen einträge (topselller etc.) zu kommen. Die werden nämlich i.d.R
+	// sowieso gebraucht.
 	
 	// Keep it simple for starters
 	
@@ -176,7 +184,7 @@ public interface CacheNG {
 		 * @param key
 		 * @return the cached object or null if not found
 		 */
-		public O get( K key );
+		public O fetch( K key );
 		
 		/**
 		 * Tells if the object identified by key exists
@@ -184,14 +192,14 @@ public interface CacheNG {
 		 * @param key
 		 * @return
 		 */
-		public boolean has( K key );
+		public boolean isCached( K key );
 		
 		/**
 		 * Remove the entry identified by key
 		 * 
 		 * @param key
 		 */
-		public void remove( K key );
+		public void invalidate( K key );
 		
 		/**
 		 * Put the given object in the cache
@@ -200,11 +208,7 @@ public interface CacheNG {
 		 * @param object
 		 */
 		public void put( K key, O object );
-	}
-	
-	public interface Realm {
 		
-		public String realm();
 	}
 	
 	/**
@@ -215,45 +219,122 @@ public interface CacheNG {
 	 * @param <K> Cache key
 	 * @param <O> Cached Object
 	 */
-	public interface AutomaticClient<K,O>
-			extends CacheEventListener<K>, CacheEventProvider<K> {
+	public interface AutomaticClient<K,O> extends 
+			CacheEventListener<K>, CacheEventProvider<K> {
 		
-		public O fetch( K key );
+		/**
+		 * Get one entry from cache. If the entry is not cached try
+		 * to get it using the Accessor
+		 * 
+		 * @param key
+		 * @return
+		 */
+		public O fetch( K key, Accessor<K,O> accessor );
 		
+		/**
+		 * Returns true if this entry is already stored.
+		 * 
+		 * Dues not try to fetch from Accessor
+		 * 
+		 * @param key
+		 * @return
+		 */
 		public boolean isCached( K key );
 		
+		/**
+		 * Remove this entry from the cache.
+		 * 
+		 * @param key
+		 */
 		public void invalidate( K key );
 		
+		/**
+		 * Removes all entries from the cache within a given timespan
+		 * 
+		 * This method can be used to avoid heavy backend load if all
+		 * entries where removed at once.
+		 * 
+		 * @param milliSeconds
+		 */
 		public void invalidateAllWithin( int milliSeconds );
 	}
 	
+	/**
+	 * Accesses the Backend and get one value
+	 * 
+	 * @author flo
+	 *
+	 * @param <K> Key-Type
+	 * @param <O> Value-Type
+	 */
 	public interface Accessor<K,O> {
 		
-		public O get( K key );
+		public O fetch( K key );
 	}
 	
-	public interface BackendAccessor<K,MV,O> {
-		
-		public O pull( MV holder, K key );
-		public void push( MV holder, K key, O value );
+	/**
+	 * 
+	 * @author flo
+	 *
+	 * @param <K> Key-Type
+	 * @param <MV> MultiValue store type
+	 * @param <O> Value type
+	 */
+	public interface BackendAccessor<K,O> extends Client<K,O> {
+		// NOP
 	}
 	
+	/**
+	 * Manages cache invalidation.
+	 * 
+	 * @author flo
+	 *
+	 * @param <K> Key-type
+	 * @param <O> Value-type
+	 */
 	public interface InvalidationManager<K,O> {
 		
 		public boolean isValid( K key, O value );
 	}
 	
-	public static class PassThroughBackendAccessor<K,O> implements BackendAccessor<K,O,O> {
+	public static class PassThroughBackendAccessor<K,O> implements BackendAccessor<K,O> {
+		
+		private final Client<K,O> backend;
 
-		@Override
-		public O pull( O holder, K key ) {
-			return holder;
+		public PassThroughBackendAccessor( Client<K, O> backend ) {
+			this.backend = backend;
 		}
 
 		@Override
-		public void push( O holder, K key, O value ) {}
+		public O fetch( K key ) {
+			return backend.fetch( key );
+		}
+
+		@Override
+		public boolean isCached( K key ) {
+			return backend.isCached( key );
+		}
+
+		@Override
+		public void invalidate( K key ) {
+			invalidate( key );
+			
+		}
+
+		@Override
+		public void put( K key, O object ) {
+			backend.put( key, object );
+		}
+
 	}
 	
+	/**
+	 * Passes cache invalidation events to listeners
+	 * 
+	 * @author flo
+	 *
+	 * @param <K>
+	 */
 	public interface CacheEventProvider<K> {
 		
 		public void registerListener( CacheEventListener<K> listener );
@@ -261,12 +342,27 @@ public interface CacheNG {
 		void notifyListeners( K key );
 	}
 	
+	/**
+	 * receives cache invalidation events
+	 * 
+	 * @author flo
+	 *
+	 * @param <K>
+	 */
 	public interface CacheEventListener<K> {
 		
 		public void invalidateEvent( K key );
 	}
 	
 	
+	/**
+	 * Connects two caches and translates invalidation events
+	 * 
+	 * @author flo
+	 *
+	 * @param <S> Source-type
+	 * @param <T> Target-type
+	 */
 	public abstract class CacheBridge<S,T> implements CacheEventListener<S> {
 		
 		private final CacheEventListener<T> target;
@@ -276,13 +372,23 @@ public interface CacheNG {
 		}
 
 		@Override
-		public void invalidateEvent( S key ) {
-			target.invalidateEvent( translate( key ) );
+		public void invalidateEvent( S sourceKey ) {
+			
+			T targetKey = bridge( sourceKey );
+			
+			target.invalidateEvent( targetKey );
 		}
 		
-		protected abstract T translate( S key );
+		/**
+		 * Convert source key to target key
+		 * 
+		 * Override this
+		 * 
+		 * @param key
+		 * @return
+		 */
+		protected abstract T bridge( S key );
 		
 	}
-	
 	
 }

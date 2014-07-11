@@ -7,7 +7,9 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
+import de.axone.cache.ng.CacheNGImplementations.Aid;
 import de.axone.cache.ng.CacheNGImplementations.RN;
+import de.axone.cache.ng.CacheNGImplementations.TArticle;
 import de.axone.tools.E;
 
 @Test( groups="helper.testng" )
@@ -18,7 +20,7 @@ public class CacheNGTest_ArticleForId {
 					CacheNG.CacheEventListener<CacheNGImplementations.Aid>{
 	
 		@Override
-		public CacheNGImplementations.TArticle get( CacheNGImplementations.Aid identifier ) {
+		public CacheNGImplementations.TArticle fetch( CacheNGImplementations.Aid identifier ) {
 			
 			if( identifier.name().startsWith( "-" ) ) return null;
 			else return CacheNGImplementations.TArticle.build( identifier );
@@ -35,14 +37,14 @@ public class CacheNGTest_ArticleForId {
 	
 	public void cacheArticlesForIds(){
 		
-		CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier accessor = new CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier();
+		TestAccessor_ArticleForIdentifier accessor = new TestAccessor_ArticleForIdentifier();
 		
-		CacheNG.AutomaticClient<CacheNGImplementations.Aid,CacheNGImplementations.TArticle> auto =
-				backend.automatic( RN.AID_ARTICLE.realm(), accessor );
+		CacheNG.AutomaticClient<Aid,TArticle> auto =
+				backend.automatic( RN.AID_ARTICLE.realm() );
 		
 		assertFalse( auto.isCached( A12345 ) );
 		
-		CacheNGImplementations.TArticle art = auto.fetch( A12345 );
+		CacheNGImplementations.TArticle art = auto.fetch( A12345, accessor );
 		assertThat( art ).isNotNull();
 		assertThat( auto ).hasCached( A12345 );
 		

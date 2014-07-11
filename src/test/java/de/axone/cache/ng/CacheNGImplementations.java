@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import de.axone.cache.RandomMapper;
-import de.axone.cache.ng.CacheNG.Accessor;
 import de.axone.cache.ng.CacheNG.AutomaticClient;
 import de.axone.cache.ng.CacheNG.CacheEventListener;
 import de.axone.cache.ng.CacheNG.CacheEventProvider;
@@ -36,7 +34,7 @@ public class CacheNGImplementations {
 		RN( String realm ){
 			this.realm = realm;
 		}
-
+	
 		public CacheNG.Realm realm() {
 			return new TestRealm( realm );
 		}
@@ -50,8 +48,8 @@ public class CacheNGImplementations {
 		}
 		
 	}
-	
-	
+
+
 	static class TestRealm implements CacheNG.Realm {
 		
 		private final String client;
@@ -73,7 +71,7 @@ public class CacheNGImplementations {
 			this( name );
 			this.timeout = timeout;
 		}
-
+	
 		@Override
 		public String realm() {
 			String result = client + "/" + name;
@@ -84,16 +82,98 @@ public class CacheNGImplementations {
 		
 	}
 
+	static final class TestCacheBackend implements CacheNG.Backend {
+		
+		private Map<String,Client<?,?>> clients = new HashMap<>();
+		private Map<String,AutomaticClient<?,?>> autoClients = new HashMap<>();
 	
+		@Override
+		public <K,O> Client<K,O> cache( Realm realm ) {
+			
+			String key = realm.realm();
+			
+			if( ! clients.containsKey( key ) ){
+				
+				clients.put( key, new TestClient<K,O>() );
+			}
+			
+			@SuppressWarnings( "unchecked" )
+			Client<K,O> result = (Client<K,O>) clients.get( key );
+			
+			return result;
+		}
+	
+		@Override
+		public <K,O> AutomaticClient<K,O> automatic( Realm realm ) {
+			
+			String key = realm.realm();
+			
+			if( ! autoClients.containsKey( key ) ){
+				
+				TestAutomaticClient<K,O> result;
+			
+				if( key.indexOf( '[' ) > 0 ){
+					
+					String [] parts = key.split( "\\[" );
+					long timeout = Long.parseLong( parts[ 1 ] );
+					
+					result = new TestAutomaticClient<K,O>( timeout );
+				} else {
+					result = new TestAutomaticClient<K,O>();
+				}
+				
+				autoClients.put( key, result );
+			}
+			
+			@SuppressWarnings( "unchecked" )
+			AutomaticClient<K,O> result = (AutomaticClient<K,O>) autoClients.get( key );
+			
+			return result;
+		}
+
+		/*
+		@Override
+		public <K, MV, O> AutomaticClient<K, O> automatic(
+				Client<K, TimedCacheEntry<MV>> backend, Accessor<K, O> accessor ) {
+			
+			return new TestAutomaticClient<K,O>( backend, accessor );
+		}
+		*/
+	
+	}
+
+	static class TestClient<K,O> implements CacheNG.Client<K,O> {
+		
+		private HashMap<K,O> map = new HashMap<>();
+	
+		@Override
+		public boolean isCached( K key ) {
+			return map.containsKey( key );
+		}
+	
+		@Override
+		public O fetch( K key ) {
+			return map.get( key );
+		}
+		
+		@Override
+		public void invalidate( K key ){
+			map.remove( key );
+		}
+		
+		@Override
+		public void put( K key, O value ){
+			map.put( key, value );
+		}
+	}
+
 	static class TestAutomaticClient<K,O>
 			implements CacheNG.AutomaticClient<K,O>,
 					CacheEventProvider<K>, CacheEventListener<K> {
 		
-		private final TestClient<K,TimedCacheEntry<O>> backend;
+		private final Client<K,TimedCacheEntry<O>> backend;
 		
 		private static final TimedCacheEntry<?> NORESULT = new TimedCacheEntry<>( null );
-		
-		private final CacheNG.Accessor<K,O> acc;
 		
 		private long maxLifeTime = -1;
 		
@@ -101,18 +181,15 @@ public class CacheNGImplementations {
 		
 		private List<CacheEventListener<K>> listeners = null;
 		
-		TestAutomaticClient( CacheNG.Accessor<K,O> acc ){
-			this.acc = acc;
+		TestAutomaticClient() {
 			this.backend = new TestClient<K,TimedCacheEntry<O>>();
 		}
 		
-		TestAutomaticClient( TestClient<K,TimedCacheEntry<O>> backend, CacheNG.Accessor<K,O> acc ){
-			this.acc = acc;
+		TestAutomaticClient( Client<K,TimedCacheEntry<O>> backend ){
 			this.backend = backend;
 		}
 		
-		TestAutomaticClient( CacheNG.Accessor<K,O> acc, long maxLifeTime ){
-			this.acc = acc;
+		TestAutomaticClient( long maxLifeTime ){
 			this.maxLifeTime = maxLifeTime;
 			this.backend = new TestClient<K,TimedCacheEntry<O>>();
 		}
@@ -141,9 +218,9 @@ public class CacheNGImplementations {
 		
 		@SuppressWarnings( "unchecked" )
 		@Override
-		public O fetch( K key ) {
+		public O fetch( K key, CacheNG.Accessor<K,O> accessor ) {
 			
-			TimedCacheEntry<O> entry = backend.get( key );
+			TimedCacheEntry<O> entry = backend.fetch( key );
 			O result;
 			
 			// Refresh if timed out
@@ -151,7 +228,7 @@ public class CacheNGImplementations {
 				
 			if( entry == null ){
 				
-				result = acc.get( key );
+				result = accessor.fetch( key );
 				
 				if( result == null ){
 					entry = (TimedCacheEntry<O>)NORESULT;
@@ -171,7 +248,7 @@ public class CacheNGImplementations {
 		@Override
 		public boolean isCached( K key ) {
 			
-			TimedCacheEntry<O> entry = backend.get( key );
+			TimedCacheEntry<O> entry = backend.fetch( key );
 			
 			if( entry == null ) return false;
 			
@@ -217,12 +294,23 @@ public class CacheNGImplementations {
 		@Override
 		public void invalidateEvent( K key ) {
 			
-			backend.remove( key );
+			backend.invalidate( key );
 		}
 		
 	}
 
 	
+	
+	static class TimedCacheEntry<O> {
+		
+		final O data;
+		final long creation;
+		
+		TimedCacheEntry( O data ){
+			this.data = data;
+			this.creation = System.currentTimeMillis();
+		}
+	}
 	
 	static class TimoutInvalidationManager<K,O>
 			implements CacheNG.InvalidationManager<K, TimedCacheEntry<O>> {
@@ -260,101 +348,6 @@ public class CacheNGImplementations {
 		
 	}
 
-	
-	
-	static class TimedCacheEntry<O> {
-		
-		final O data;
-		final long creation;
-		
-		TimedCacheEntry( O data ){
-			this.data = data;
-			this.creation = System.currentTimeMillis();
-		}
-	}
-
-	
-	
-	static class TestClient<K,O> implements CacheNG.Client<K,O> {
-		
-		private HashMap<K,O> map = new HashMap<>();
-	
-		@Override
-		public boolean has( K key ) {
-			return map.containsKey( key );
-		}
-	
-		@Override
-		public O get( K key ) {
-			return map.get( key );
-		}
-		
-		@Override
-		public void remove( K key ){
-			map.remove( key );
-		}
-		
-		@Override
-		public void put( K key, O value ){
-			map.put( key, value );
-		}
-	}
-
-	
-	
-	static final class TestCacheBackend implements CacheNG.Backend {
-		
-		private Map<String,Client<?,?>> clients = new HashMap<>();
-		private Map<String,AutomaticClient<?,?>> autoClients = new HashMap<>();
-	
-		@Override
-		public <K,O> Client<K,O> cache( Realm realm ) {
-			
-			String key = realm.realm();
-			
-			if( ! clients.containsKey( key ) ){
-				
-				clients.put( key, new TestClient<K,O>() );
-			}
-			
-			@SuppressWarnings( "unchecked" )
-			Client<K,O> result = (Client<K,O>) clients.get( key );
-			
-			return result;
-		}
-	
-		@Override
-		public <K,O> AutomaticClient<K,O> automatic( Realm realm, Accessor<K, O> accessor ) {
-			
-			String key = realm.realm();
-			
-			if( ! autoClients.containsKey( key ) ){
-				
-				TestAutomaticClient<K,O> result;
-			
-				if( key.indexOf( '[' ) > 0 ){
-					
-					String [] parts = key.split( "\\[" );
-					long timeout = Long.parseLong( parts[ 1 ] );
-					
-					result = new TestAutomaticClient<K,O>( accessor, timeout );
-				} else {
-					result = new TestAutomaticClient<K,O>( accessor );
-				}
-				
-				autoClients.put( key, result );
-			}
-			
-			@SuppressWarnings( "unchecked" )
-			AutomaticClient<K,O> result = (AutomaticClient<K,O>) autoClients.get( key );
-			
-			return result;
-		}
-		
-	}
-
-	
-	
 	static final class TArticle {
 		
 		private final Aid identifier;

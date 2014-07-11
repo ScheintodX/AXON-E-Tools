@@ -26,17 +26,15 @@ public class CacheNGTest_TimeoutAll {
 				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				backend.automatic( RN.AID_ARTICLE.unique(), accessor );
+				backend.automatic( RN.AID_ARTICLE.unique() );
 		
 		assertThat( auto ).hasNotCached( A12345 )
 				.hasNotCached( A12346 );
 		
-		TArticle art = auto.fetch( A12345 );
-		assertThat( art ).isNotNull();
+		assertThat( auto.fetch( A12345, accessor ) ).isNotNull();
 		assertThat( auto ).hasCached( A12345 );
 		
-		art = auto.fetch( A12346 );
-		assertThat( art ).isNotNull();
+		assertThat( auto.fetch( A12346, accessor ) ).isNotNull();
 		assertThat( auto )
 				.hasCached( A12345 )
 				.hasCached( A12346 );
@@ -57,12 +55,12 @@ public class CacheNGTest_TimeoutAll {
 				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				backend.automatic( RN.AID_ARTICLE.unique(), accessor );
+				backend.automatic( RN.AID_ARTICLE.unique() );
 		
 		assertFalse( auto.isCached( A12345 ) );
 		assertFalse( auto.isCached( A12346 ) );
 		
-		TArticle art = auto.fetch( A12345 );
+		TArticle art = auto.fetch( A12345, accessor );
 		assertThat( art ).isNotNull();
 		assertTrue( auto.isCached( A12345 ) );
 		
@@ -70,7 +68,7 @@ public class CacheNGTest_TimeoutAll {
 		
 		synchronized( this ){ wait( 100 ); }
 		
-		art = auto.fetch( A12346 );
+		art = auto.fetch( A12346, accessor );
 		assertThat( art ).isNotNull();
 		assertTrue( auto.isCached( A12346 ) );
 		
@@ -88,11 +86,11 @@ public class CacheNGTest_TimeoutAll {
 				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				backend.automatic( RN.AID_ARTICLE.unique(), accessor );
+				backend.automatic( RN.AID_ARTICLE.unique() );
 		
 		// Mimic real range article identifiers
 		for( int i=0; i<X; i++ ){
-			auto.fetch( aid( i+":123" ) );
+			auto.fetch( aid( i+":123" ), accessor );
 			assertThat( auto ).hasCached( aid( i+":123" ) );
 		}
 		
