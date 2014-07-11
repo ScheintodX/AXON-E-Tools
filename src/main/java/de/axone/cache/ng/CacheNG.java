@@ -157,7 +157,7 @@ public interface CacheNG {
 	 * @param <K> Cache key
 	 * @param <O> Cached Object
 	 */
-	public interface Client<K,O> {
+	public interface Cache<K,O> {
 		
 		/**
 		 * Get the chache entry identified by key
@@ -245,7 +245,7 @@ public interface CacheNG {
 		 * @param <K>
 		 * @param <V>
 		 */
-		public interface Direct<K,V> extends Client<K,V> {
+		public interface Direct<K,V> extends Cache<K,V> {
 			
 			/**
 			 * @see java.util.Map#keySet()
@@ -411,7 +411,7 @@ public interface CacheNG {
 	 * @param <MV> MultiValue store type
 	 * @param <O> Value type
 	 */
-	public interface BackendAccessor<K,O> extends Client<K,O> {
+	public interface BackendAccessor<K,O> extends Cache<K,O> {
 		// NOP
 	}
 	
@@ -425,7 +425,7 @@ public interface CacheNG {
 	 */
 	public interface InvalidationManager<K,O> {
 		
-		public boolean isValid( K key, Client.Entry<O> value );
+		public boolean isValid( K key, Cache.Entry<O> value );
 	}
 	
 	/**

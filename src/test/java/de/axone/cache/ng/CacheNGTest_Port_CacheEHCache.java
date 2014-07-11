@@ -18,7 +18,7 @@ public class CacheNGTest_Port_CacheEHCache {
 	
 	public void testEHCache() throws Exception {
 		
-		ClientEHCache<String,TestValue> cache = ClientEHCache.instance(
+		CacheEHCache<String,TestValue> cache = CacheEHCache.instance(
 				new File( "/tmp/ehcache" ), "testcache", 10 );
 		
 		String TESTKEY = "testkey";
@@ -60,7 +60,7 @@ public class CacheNGTest_Port_CacheEHCache {
 		
 		// A simple wrapper around EHCache which does the configuration
 		// and provides a map like interface
-		CacheNG.Client<TestKey,String> cache = ClientEHCache.instance(
+		CacheNG.Cache<TestKey,String> cache = CacheEHCache.instance(
 				new File( "/tmp/ehcache" ), "testcache", 10 );
 		
 		// May contain content from last run

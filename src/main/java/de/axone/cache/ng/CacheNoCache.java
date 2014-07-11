@@ -14,7 +14,7 @@ import java.util.Set;
  * @param <K>
  * @param <V>
  */
-public class ClientNoCache<K,V> implements CacheNG.Client.Direct<K,V> {
+public class CacheNoCache<K,V> implements CacheNG.Cache.Direct<K,V> {
 
 	@Override
 	public Set<K> keySet() {
@@ -58,7 +58,7 @@ public class ClientNoCache<K,V> implements CacheNG.Client.Direct<K,V> {
 	}
 
 	@Override
-	public CacheNG.Client.Entry<V> fetchEntry( K key ) {
+	public CacheNG.Cache.Entry<V> fetchEntry( K key ) {
 		return null;
 	}
 

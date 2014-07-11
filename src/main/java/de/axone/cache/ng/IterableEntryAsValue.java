@@ -3,7 +3,7 @@ package de.axone.cache.ng;
 import java.util.Collection;
 import java.util.Iterator;
 
-import de.axone.cache.ng.CacheNG.Client.Entry;
+import de.axone.cache.ng.CacheNG.Cache.Entry;
 
 public class IterableEntryAsValue<V> implements Iterable<V> {
 	

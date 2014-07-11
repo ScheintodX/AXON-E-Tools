@@ -27,7 +27,7 @@ public class CacheNGTest_Port_Client {
 	// TODO: There is room here for parallel tests.
 	public void testHashCache(){
 		
-		CacheNG.Client<String,TestEntry> cache = new ClientHashMap<String,TestEntry>( new TestRealm( "HashTest" ));
+		CacheNG.Cache<String,TestEntry> cache = new CacheHashMap<String,TestEntry>( new TestRealm( "HashTest" ));
 		
 		assertPutGet( cache, A, a );
 		assertPutGet( cache, B, b );
@@ -42,7 +42,7 @@ public class CacheNGTest_Port_Client {
 	
 	public void testLRUCache(){
 		
-		CacheNG.Client<String,TestEntry> cache = new ClientLRUMap<String,TestEntry>( new TestRealm( "LRUCache" ), 2);
+		CacheNG.Cache<String,TestEntry> cache = new CacheLRUMap<String,TestEntry>( new TestRealm( "LRUCache" ), 2);
 		
 		assertPutGet( cache, A, a );
 		assertPutGet( cache, B, b );
@@ -63,8 +63,8 @@ public class CacheNGTest_Port_Client {
 	
 	public void testNoCache(){
 		
-		CacheNG.Client<String,TestEntry> cache
-				= new ClientNoCache<String,TestEntry>();
+		CacheNG.Cache<String,TestEntry> cache
+				= new CacheNoCache<String,TestEntry>();
 		
 		cache.put( A, a );
 		cache.put( B, b );
@@ -78,7 +78,7 @@ public class CacheNGTest_Port_Client {
 		assertEquals( cache.info(), "no caching" );
 	}
 	
-	private void assertPutGet( CacheNG.Client<String,TestEntry> cache, String key, TestEntry value ){
+	private void assertPutGet( CacheNG.Cache<String,TestEntry> cache, String key, TestEntry value ){
 		
 		cache.put( key, value );
 		

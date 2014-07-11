@@ -6,21 +6,21 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
 import de.axone.cache.Watcher;
-import de.axone.cache.ng.CacheNG.Client;
+import de.axone.cache.ng.CacheNG.Cache;
 
-public class ClientEHCache<K,O>
-		extends AbstractEntryClient<K,O>
-		implements CacheNG.Client<K,O>, CacheNG.Client.Watched {
+public class CacheEHCache<K,O>
+		extends AbstractEntryCache<K,O>
+		implements CacheNG.Cache<K,O>, CacheNG.Cache.Watched {
 	
 	private final net.sf.ehcache.Cache backend;
 	
-	public ClientEHCache( net.sf.ehcache.Cache ehCache ){
+	public CacheEHCache( net.sf.ehcache.Cache ehCache ){
 		this.backend = ehCache;
 	}
 	
 	private Watcher watcher = new Watcher();
 	
-	public static <I,J> ClientEHCache<I,J>  instance( File tmpDir, String name, long size ){
+	public static <I,J> CacheEHCache<I,J>  instance( File tmpDir, String name, long size ){
 		
 		CacheConfiguration config = new CacheConfiguration();
 		config.setName( name );
@@ -32,7 +32,7 @@ public class ClientEHCache<K,O>
 		net.sf.ehcache.Cache newCache = new net.sf.ehcache.Cache( config );
 		manager.addCacheIfAbsent( newCache );
 		
-		return new ClientEHCache<I,J>( newCache );
+		return new CacheEHCache<I,J>( newCache );
 	}
 	public static void shutdown(){
 		CacheManager.getInstance().shutdown();
@@ -45,7 +45,7 @@ public class ClientEHCache<K,O>
 	}
 
 	@Override
-	public Client.Entry<O> fetchEntry( K key ) {
+	public Cache.Entry<O> fetchEntry( K key ) {
 		
 		Element element = backend.get( key );
 		

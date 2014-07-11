@@ -6,7 +6,7 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNG.Client;
+import de.axone.cache.ng.CacheNG.Cache;
 import de.axone.cache.ng.CacheNGTestHelpers.TestRealm;
 
 @Test( groups="helper.cacheng" )
@@ -18,8 +18,8 @@ public class CacheNGTest_MultiValue {
 	
 	public void accessMultiValuesViaOneBackendCache() {
 		
-		CacheNG.Client<String, MultiValueData> backendMulti =
-				new ClientHashMap<>( new TestRealm( "S->MV" ) );
+		CacheNG.Cache<String, MultiValueData> backendMulti =
+				new CacheHashMap<>( new TestRealm( "S->MV" ) );
 		
 		TestStringAccessor strToStrAcc = new TestStringAccessor();
 		
@@ -86,8 +86,8 @@ public class CacheNGTest_MultiValue {
 	
 	public void invalidationDoesTheRightThing() {
 		
-		CacheNG.Client<String, MultiValueData> backendMulti =
-				new ClientHashMap<>( new TestRealm( "S->MV" ) );
+		CacheNG.Cache<String, MultiValueData> backendMulti =
+				new CacheHashMap<>( new TestRealm( "S->MV" ) );
 		
 		TestStringAccessor strToStrAcc = new TestStringAccessor();
 		
@@ -114,35 +114,35 @@ public class CacheNGTest_MultiValue {
 	
 	
 	static class MultiValueData {
-		CacheNG.Client.Entry<String> stringValue;
-		CacheNG.Client.Entry<Integer> integerValue;
+		CacheNG.Cache.Entry<String> stringValue;
+		CacheNG.Cache.Entry<Integer> integerValue;
 	}
 	
 	
 	static abstract class AbstractMultiDataAccessor<MV,O>
-			implements CacheNG.Client<String,O> {
+			implements CacheNG.Cache<String,O> {
 		
-		private final CacheNG.Client<String,MV> wrapped;
+		private final CacheNG.Cache<String,MV> wrapped;
 
-		public AbstractMultiDataAccessor( Client<String, MV> wrapped ) {
+		public AbstractMultiDataAccessor( Cache<String, MV> wrapped ) {
 			this.wrapped = wrapped;
 		}
 		
-		protected abstract CacheNG.Client.Entry<O> getFromMultivalue( MV data );
-		protected abstract void putInMultivalue( MV data, CacheNG.Client.Entry<O> value );
+		protected abstract CacheNG.Cache.Entry<O> getFromMultivalue( MV data );
+		protected abstract void putInMultivalue( MV data, CacheNG.Cache.Entry<O> value );
 		protected abstract MV create();
 
 		@Override
-		public synchronized CacheNG.Client.Entry<O> fetchEntry( String key ) {
+		public synchronized CacheNG.Cache.Entry<O> fetchEntry( String key ) {
 			MV data = wrapped.fetch( key );
 			if( data == null ) return null;
-			CacheNG.Client.Entry<O> result = getFromMultivalue( data );
+			CacheNG.Cache.Entry<O> result = getFromMultivalue( data );
 			return result;
 		}
 		
 		@Override
 		public synchronized O fetch( String key ) {
-			CacheNG.Client.Entry<O> entry = fetchEntry( key );
+			CacheNG.Cache.Entry<O> entry = fetchEntry( key );
 			if( entry == null ) return null;
 			return entry.data();
 		}
@@ -151,7 +151,7 @@ public class CacheNGTest_MultiValue {
 		public synchronized boolean isCached( String key ) {
 			MV data = wrapped.fetch( key );
 			if( data == null ) return false;
-			CacheNG.Client.Entry<O> value = getFromMultivalue( data );
+			CacheNG.Cache.Entry<O> value = getFromMultivalue( data );
 			return value != null;
 		}
 
@@ -200,17 +200,17 @@ public class CacheNGTest_MultiValue {
 	
 	static class MultiStringAccessor extends AbstractMultiDataAccessor<MultiValueData,String> {
 
-		public MultiStringAccessor( Client<String, MultiValueData> wrapped ) {
+		public MultiStringAccessor( Cache<String, MultiValueData> wrapped ) {
 			super( wrapped );
 		}
 
 		@Override
-		protected CacheNG.Client.Entry<String> getFromMultivalue( MultiValueData data ) {
+		protected CacheNG.Cache.Entry<String> getFromMultivalue( MultiValueData data ) {
 			return data.stringValue;
 		}
 
 		@Override
-		protected void putInMultivalue( MultiValueData data, CacheNG.Client.Entry<String> value ) {
+		protected void putInMultivalue( MultiValueData data, CacheNG.Cache.Entry<String> value ) {
 			data.stringValue = value;
 		}
 
@@ -224,17 +224,17 @@ public class CacheNGTest_MultiValue {
 	
 	static class MultiIntegerAccessor extends AbstractMultiDataAccessor<MultiValueData,Integer> {
 
-		public MultiIntegerAccessor( Client<String, MultiValueData> wrapped ) {
+		public MultiIntegerAccessor( Cache<String, MultiValueData> wrapped ) {
 			super( wrapped );
 		}
 
 		@Override
-		protected CacheNG.Client.Entry<Integer> getFromMultivalue( MultiValueData data ) {
+		protected CacheNG.Cache.Entry<Integer> getFromMultivalue( MultiValueData data ) {
 			return data.integerValue;
 		}
 
 		@Override
-		protected void putInMultivalue( MultiValueData data, CacheNG.Client.Entry<Integer> value ) {
+		protected void putInMultivalue( MultiValueData data, CacheNG.Cache.Entry<Integer> value ) {
 			data.integerValue = value;
 		}
 

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import de.axone.cache.ng.CacheNG.Client;
+import de.axone.cache.ng.CacheNG.Cache;
 import de.axone.cache.ng.CacheNG.Realm;
 
 /**
@@ -15,17 +15,17 @@ import de.axone.cache.ng.CacheNG.Realm;
  * @param <K>
  * @param <V>
  */
-public class ClientHashMap<K,V>
-		extends AbstractEntryClient<K,V>
-		implements Client.Direct<K,V> {
+public class CacheHashMap<K,V>
+		extends AbstractEntryCache<K,V>
+		implements Cache.Direct<K,V> {
 	
 	private final Realm name;
-	private final Map<K,Client.Entry<V>> backend;
+	private final Map<K,Cache.Entry<V>> backend;
 	
-	public ClientHashMap( Realm name ){
+	public CacheHashMap( Realm name ){
 		
 		this.name = name;
-		this.backend = Collections.synchronizedMap( new HashMap<K,Client.Entry<V>>() );
+		this.backend = Collections.synchronizedMap( new HashMap<K,Cache.Entry<V>>() );
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class ClientHashMap<K,V>
 	}
 
 	@Override
-	public Client.Entry<V> fetchEntry( K key ) {
+	public Cache.Entry<V> fetchEntry( K key ) {
 		return backend.get( key );
 	}
 

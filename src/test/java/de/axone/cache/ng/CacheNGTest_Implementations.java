@@ -152,7 +152,7 @@ public class CacheNGTest_Implementations {
 	
 	public void storeAndRestoreFromTestCache() {
 		
-		CacheNG.Client<Aid,TArticle> client = new ClientHashMap<>( RN.AID_ARTICLE.realm() );
+		CacheNG.Cache<Aid,TArticle> client = new CacheHashMap<>( RN.AID_ARTICLE.realm() );
 		
 		TArticle tart = TArticle.build( A12345 );
 		

@@ -2,9 +2,9 @@ package de.axone.cache.ng;
 
 import java.io.Serializable;
 
-import de.axone.cache.ng.CacheNG.Client;
+import de.axone.cache.ng.CacheNG.Cache;
 
-public class DefaultEntry<O> implements Client.Entry<O>, Serializable {
+public class DefaultEntry<O> implements Cache.Entry<O>, Serializable {
 			
 	private static final long serialVersionUID = 1L;
 	

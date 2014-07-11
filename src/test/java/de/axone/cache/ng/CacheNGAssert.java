@@ -7,7 +7,7 @@ import org.assertj.core.description.Description;
 import org.assertj.core.description.TextDescription;
 
 import de.axone.cache.ng.CacheNG.Accessor;
-import de.axone.cache.ng.CacheNG.Client;
+import de.axone.cache.ng.CacheNG.Cache;
 import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
 import de.axone.cache.ng.CacheNGTestHelpers.Tid;
@@ -32,9 +32,9 @@ public abstract class CacheNGAssert {
 	
 	
 	public static class CacheAssert<K,O>
-			extends AbstractAssert<CacheAssert<K,O>, CacheNG.Client<K,O>> {
+			extends AbstractAssert<CacheAssert<K,O>, CacheNG.Cache<K,O>> {
 
-		protected CacheAssert( CacheNG.Client<K,O> actual ) {
+		protected CacheAssert( CacheNG.Cache<K,O> actual ) {
 			super( actual, CacheAssert.class );
 		}
 		
@@ -80,7 +80,7 @@ public abstract class CacheNGAssert {
 	}
 	
 	
-	public static <K,O> CacheAssert<K,O> assertThat( CacheNG.Client<K,O> cache ){
+	public static <K,O> CacheAssert<K,O> assertThat( CacheNG.Cache<K,O> cache ){
 		
 		return new CacheAssert<K,O>( cache );
 	}
@@ -156,14 +156,14 @@ public abstract class CacheNGAssert {
 	}
 	
 	
-	static final class HavingCached<K> extends Condition<CacheNG.Client<K,?>> {
+	static final class HavingCached<K> extends Condition<CacheNG.Cache<K,?>> {
 		
 		private final K key;
 		
 		public HavingCached( K key ){ this.key = key; }
 
 		@Override
-		public boolean matches( Client<K,?> client ) {
+		public boolean matches( Cache<K,?> client ) {
 			return client.isCached( key );
 		}
 	}

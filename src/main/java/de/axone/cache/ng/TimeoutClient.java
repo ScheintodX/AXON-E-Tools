@@ -1,19 +1,19 @@
 package de.axone.cache.ng;
 
 
-public class TimeoutClient<K,O> extends ClientWrapper<K,O>{
+public class TimeoutClient<K,O> extends CacheWrapper<K,O>{
 
 	private final long maxLifeTime;
 	
-	TimeoutClient( CacheNG.Client<K,O> backend, long maxLifeTime ){
+	TimeoutClient( CacheNG.Cache<K,O> backend, long maxLifeTime ){
 		super( backend );
 		this.maxLifeTime = maxLifeTime;
 	}
 
 	@Override
-	public CacheNG.Client.Entry<O> fetchEntry( K key ) {
+	public CacheNG.Cache.Entry<O> fetchEntry( K key ) {
 		
-		CacheNG.Client.Entry<O> entry = wrapped.fetchEntry( key );
+		CacheNG.Cache.Entry<O> entry = wrapped.fetchEntry( key );
 		if( entry == null ) return null;
 		if( ! isAlive( key, entry ) ){
 			invalidate( key );
@@ -24,19 +24,19 @@ public class TimeoutClient<K,O> extends ClientWrapper<K,O>{
 	
 	@Override
 	public O fetch( K key ) {
-		CacheNG.Client.Entry<O> entry = fetchEntry( key );
+		CacheNG.Cache.Entry<O> entry = fetchEntry( key );
 		if( entry == null ) return null;
 		return entry.data();
 	}
 
 	@Override
 	public boolean isCached( K key ) {
-		CacheNG.Client.Entry<O> entry = wrapped.fetchEntry( key );
+		CacheNG.Cache.Entry<O> entry = wrapped.fetchEntry( key );
 		if( entry == null ) return false;
 		return isAlive( key, entry );
 	}
 	
-	protected boolean isAlive( K key, CacheNG.Client.Entry<O> entry ){
+	protected boolean isAlive( K key, CacheNG.Cache.Entry<O> entry ){
 		
 		if( maxLifeTime >= 0 ){
 			

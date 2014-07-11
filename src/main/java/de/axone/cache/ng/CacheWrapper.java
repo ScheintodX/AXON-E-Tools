@@ -1,17 +1,17 @@
 package de.axone.cache.ng;
 
-import de.axone.cache.ng.CacheNG.Client;
+import de.axone.cache.ng.CacheNG.Cache;
 
-public abstract class ClientWrapper<K,O> implements CacheNG.Client<K,O> {
+public abstract class CacheWrapper<K,O> implements CacheNG.Cache<K,O> {
 	
-	protected final CacheNG.Client<K,O> wrapped;
+	protected final CacheNG.Cache<K,O> wrapped;
 
-	public ClientWrapper( Client<K, O> wrapped ) {
+	public CacheWrapper( Cache<K, O> wrapped ) {
 		this.wrapped = wrapped;
 	}
 	
 	@Override
-	public CacheNG.Client.Entry<O> fetchEntry( K key ) {
+	public CacheNG.Cache.Entry<O> fetchEntry( K key ) {
 		return wrapped.fetchEntry( key );
 	}
 
@@ -29,13 +29,6 @@ public abstract class ClientWrapper<K,O> implements CacheNG.Client<K,O> {
 	public void invalidate( K key ) {
 		wrapped.invalidate( key );
 	}
-
-	/*
-	@Override
-	public void putEntry( K key, CacheNG.Client.Entry<O> entry ) {
-		wrapped.putEntry( key, entry );
-	}
-	*/
 
 	@Override
 	public void put( K key, O object ) {

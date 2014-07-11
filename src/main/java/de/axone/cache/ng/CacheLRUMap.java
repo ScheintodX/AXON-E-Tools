@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.axone.cache.Watcher;
-import de.axone.cache.ng.CacheNG.Client;
+import de.axone.cache.ng.CacheNG.Cache;
 import de.axone.cache.ng.CacheNG.Realm;
 import de.axone.data.LRUCache;
 
@@ -16,20 +16,20 @@ import de.axone.data.LRUCache;
  * @param <K>
  * @param <O>
  */
-public class ClientLRUMap<K,O>
-		extends AbstractEntryClient<K,O>
-		implements CacheNG.Client.Direct<K,O>, CacheNG.Client.Watched {
+public class CacheLRUMap<K,O>
+		extends AbstractEntryCache<K,O>
+		implements CacheNG.Cache.Direct<K,O>, CacheNG.Cache.Watched {
 	
 	private final Realm realm;
-	private final LRUCache<K,Client.Entry<O>> unsafeBackend;
-	private final Map<K,Client.Entry<O>> backend;
+	private final LRUCache<K,Cache.Entry<O>> unsafeBackend;
+	private final Map<K,Cache.Entry<O>> backend;
 	
 	private Watcher watcher = new Watcher();
 
-	public ClientLRUMap( Realm realm, int maxCapacity ) {
+	public CacheLRUMap( Realm realm, int maxCapacity ) {
 		this.realm = realm;
-		this.unsafeBackend = new LRUCache<K,Client.Entry<O>>( maxCapacity );
-		this.backend = Collections.<K,Client.Entry<O>>synchronizedMap( unsafeBackend );
+		this.unsafeBackend = new LRUCache<K,Cache.Entry<O>>( maxCapacity );
+		this.backend = Collections.<K,Cache.Entry<O>>synchronizedMap( unsafeBackend );
 	}
 
 	@Override
@@ -58,9 +58,9 @@ public class ClientLRUMap<K,O>
 	}
 	
 	@Override
-	public Client.Entry<O> fetchEntry( K key ){
+	public Cache.Entry<O> fetchEntry( K key ){
 		
-		Client.Entry<O> result = backend.get( key );
+		Cache.Entry<O> result = backend.get( key );
 		
 		if( result != null ) watcher.hit();
 		else watcher.miss();

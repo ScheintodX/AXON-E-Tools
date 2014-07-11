@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import de.axone.cache.ng.CacheNG.Accessor;
-import de.axone.cache.ng.CacheNG.Client;
+import de.axone.cache.ng.CacheNG.Cache;
 import de.axone.cache.ng.CacheNG.InvalidationManager;
 
 
@@ -36,7 +36,7 @@ public class AutomaticClientImpl<K,V>
 		extends AbstractCacheEventProvider<K,V>
 		implements CacheNG.AutomaticClient<K,V> {
 
-	final CacheNG.Client<K,V> backend;
+	final CacheNG.Cache<K,V> backend;
 	
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -46,10 +46,10 @@ public class AutomaticClientImpl<K,V>
 	
 	// Simplification for testing
 	AutomaticClientImpl( CacheNG.Realm realm ){
-		backend = new ClientHashMap<>( realm );
+		backend = new CacheHashMap<>( realm );
 	}
 
-	public AutomaticClientImpl( CacheNG.Client<K,V> backend ){
+	public AutomaticClientImpl( CacheNG.Cache<K,V> backend ){
 		
 		assert backend != null;
 		
@@ -63,12 +63,12 @@ public class AutomaticClientImpl<K,V>
 		if( ! backend.isCached( key ) ) return false;
 		
 		// Fetch for further checks
-		Client.Entry<V> entry = backend.fetchEntry( key );
+		Cache.Entry<V> entry = backend.fetchEntry( key );
 		
 		return entry != null && isAlive( key, entry );
 	}
 	
-	private boolean isAlive( K key, CacheNG.Client.Entry<V> entry ){
+	private boolean isAlive( K key, CacheNG.Cache.Entry<V> entry ){
 		
 		if( invalidationManager != null ){
 			
@@ -91,7 +91,7 @@ public class AutomaticClientImpl<K,V>
 			lock.readLock().lock();
     		for( K key : keys ){
     			
-    			Client.Entry<V> found = backend.fetchEntry( key );
+    			Cache.Entry<V> found = backend.fetchEntry( key );
     			
 				if( found != null && ! isAlive( key, found ) ){
 					invalidate( key );
@@ -148,7 +148,7 @@ public class AutomaticClientImpl<K,V>
 		assert accessor != null;
 
 		// First try to get from cache
-		Client.Entry<V> entry = null;
+		Cache.Entry<V> entry = null;
 		try{
 			lock.readLock().lock();
 			entry = backend.fetchEntry( key );
@@ -270,7 +270,7 @@ public class AutomaticClientImpl<K,V>
 		}
 	
 		@Override
-		public boolean isValid( K key, CacheNG.Client.Entry<O> value ) {
+		public boolean isValid( K key, CacheNG.Cache.Entry<O> value ) {
 			
 			// Entry is newer than starting of timeout.
 			// This happend regularily if the entry is re-fetched after invalidation
