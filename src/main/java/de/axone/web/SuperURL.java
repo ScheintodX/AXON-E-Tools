@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.axone.exception.Assert;
-import de.axone.tools.E;
 import de.axone.tools.Str;
 
 
@@ -407,62 +406,44 @@ public final class SuperURL {
 		if( obj == null ) return false;
 		if( !( obj instanceof SuperURL ) ) return false;
 		
-		E.x();
 		SuperURL other = (SuperURL) obj;
 		
-		E.x();
 		if( fragment == null ) {
 			if( other.fragment != null ) return false;
 		} else if( !fragment.equals( other.fragment ) ) return false;
 		
-		E.x();
 		if( host == null ) {
 			if( other.host != null ) return false;
 		} else if( !host.equals( other.host ) ) return false;
 		
-		E.x();
 		if( includeFragment != other.includeFragment ) return false;
-		E.x();
 		if( includeHost != other.includeHost ) return false;
-		E.x();
 		if( includePath != other.includePath ) return false;
-		E.x();
 		if( includePort != other.includePort ) return false;
-		E.x();
 		if( includeQuery != other.includeQuery ) return false;
-		E.x();
 		if( includeScheme != other.includeScheme ) return false;
-		E.x();
 		if( includeUserInfo != other.includeUserInfo ) return false;
-		E.x();
-		
-		E.rr( path, other.path, path.equals( other.path ) );
 		
 		if( path == null ) {
 			if( other.path != null ) return false;
 		} else if( !path.equals( other.path ) ) return false;
 		
-		E.x();
 		if( port == null ) {
 			if( other.port != null ) return false;
 		} else if( !port.equals( other.port ) ) return false;
 		
-		E.x();
 		if( query == null ) {
 			if( other.query != null ) return false;
 		} else if( !query.equals( other.query ) ) return false;
 		
-		E.x();
 		if( scheme == null ) {
 			if( other.scheme != null ) return false;
 		} else if( !scheme.equals( other.scheme ) ) return false;
 		
-		E.x();
 		if( userInfo == null ) {
 			if( other.userInfo != null ) return false;
 		} else if( !userInfo.equals( other.userInfo ) ) return false;
 		
-		E.x();
 		return true;
 	}
 

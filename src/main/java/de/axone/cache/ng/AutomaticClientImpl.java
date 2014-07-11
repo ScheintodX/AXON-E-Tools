@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import de.axone.cache.ng.CacheNG.Accessor;
 import de.axone.cache.ng.CacheNG.Client;
@@ -41,8 +39,6 @@ public class AutomaticClientImpl<K,V>
 	final CacheNG.Client<K,V> backend;
 	
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-	private WriteLock writeLock = lock.writeLock();
-	private ReadLock readLock = lock.readLock();
 
 	private InvalidationManager<K,V> invalidationManager;
 	
@@ -69,13 +65,10 @@ public class AutomaticClientImpl<K,V>
 		// Fetch for further checks
 		Client.Entry<V> entry = backend.fetchEntry( key );
 		
-		return isAlive( key, entry );
+		return entry != null && isAlive( key, entry );
 	}
 	
 	private boolean isAlive( K key, CacheNG.Client.Entry<V> entry ){
-		
-		// May happen multithreaded
-		if( entry == null ) return false;
 		
 		if( invalidationManager != null ){
 			
@@ -95,15 +88,15 @@ public class AutomaticClientImpl<K,V>
 		Set<K> missed = null;
 
 		try{
-			readLock.lock();
+			lock.readLock().lock();
     		for( K key : keys ){
     			
-    			// Note that apparently no cast is done implicitly here.
-    			// Java treats V as Object.
-    			// Otherwise a ClassCastException would be thrown in case of NullEntry
     			Client.Entry<V> found = backend.fetchEntry( key );
     			
-				if( ! isAlive( key, found ) ) found = null;
+				if( found != null && ! isAlive( key, found ) ){
+					invalidate( key );
+					found = null;
+				}
 
     			if( found == null ){
     				
@@ -116,7 +109,7 @@ public class AutomaticClientImpl<K,V>
     			}
     		}
 		} finally {
-			readLock.unlock();
+			lock.readLock().unlock();
 		}
 
 		if( missed != null ){
@@ -124,7 +117,7 @@ public class AutomaticClientImpl<K,V>
 			Map<K,V> fetched = accessor.fetch( missed );
 
 			try {
-				writeLock.lock();
+				lock.writeLock().lock();
 
 				for( K key : missed ){
 					
@@ -140,7 +133,7 @@ public class AutomaticClientImpl<K,V>
 				}
 
 			} finally {
-				writeLock.unlock();
+				lock.writeLock().unlock();
 			}
 		}
 		
@@ -157,11 +150,14 @@ public class AutomaticClientImpl<K,V>
 		// First try to get from cache
 		Client.Entry<V> entry = null;
 		try{
-			readLock.lock();
+			lock.readLock().lock();
 			entry = backend.fetchEntry( key );
-		} finally { readLock.unlock(); }
+		} finally { lock.readLock().unlock(); }
 		
-		if( ! isAlive( key, entry ) ) entry = null;
+		if( entry != null && ! isAlive( key, entry ) ) {
+			invalidate( key );
+			entry = null;
+		}
 			
 		V result;
 		if( entry != null ){
@@ -179,13 +175,13 @@ public class AutomaticClientImpl<K,V>
 			result = accessor.fetch( key );
 
 			try {
-				writeLock.lock();
+				lock.writeLock().lock();
 				
 				backend.put( key, result );
 				
 			} finally {
 
-				writeLock.unlock();
+				lock.writeLock().unlock();
 			}
 		}
 
@@ -194,21 +190,21 @@ public class AutomaticClientImpl<K,V>
 	
 	@Override
 	public int size(){
-		readLock.lock();
 		try {
+			lock.readLock().lock();
 			return backend.size();
 		} finally {
-			readLock.unlock();
+			lock.readLock().unlock();
 		}
 	}
 	
 	@Override
 	public int capacity() {
-		readLock.lock();
 		try {
+			lock.readLock().lock();
 			return backend.capacity();
 		} finally {
-			readLock.unlock();
+			lock.readLock().unlock();
 		}
 	}
 
@@ -227,10 +223,10 @@ public class AutomaticClientImpl<K,V>
 		assert key != null;
 		
 		try {
-			writeLock.lock();
+			lock.writeLock().lock();
 			backend.invalidate( key );
 		} finally {
-			writeLock.unlock();
+			lock.writeLock().unlock();
 		}
 	}
 	
@@ -242,10 +238,10 @@ public class AutomaticClientImpl<K,V>
 
 		// Clear cache
 		try {
-			writeLock.lock();
+			lock.writeLock().lock();
     		backend.invalidateAll();
 		} finally {
-			writeLock.unlock();
+			lock.writeLock().unlock();
 		}
 	}
 
