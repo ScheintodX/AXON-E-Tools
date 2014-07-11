@@ -196,7 +196,7 @@ public interface CacheNG {
 		 * @param key
 		 * @param object
 		 */
-		public void putEntry( K key, Entry<O> entry );
+		//public void putEntry( K key, Entry<O> entry );
 		
 		/**
 		 * Put the given entry in the cache
@@ -285,6 +285,16 @@ public interface CacheNG {
 			public long creation();
 		}
 	
+		/**
+		 * Can be implemented optionally and provides additional runtime information
+		 * for this cache
+		 * 
+		 * @author flo
+		 */
+		public interface Watched {
+			
+			public double ratio();
+		}
 	}
 	
 	/**

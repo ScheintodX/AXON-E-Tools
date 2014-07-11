@@ -15,6 +15,10 @@ public class DefaultEntry<O> implements Client.Entry<O>, Serializable {
 		this.creation = System.currentTimeMillis();
 		this.data = data;
 	}
+	public DefaultEntry( O data, long creation ){
+		this.creation = creation;
+		this.data = data;
+	}
 	
 	@Override
 	public O data() { return data;

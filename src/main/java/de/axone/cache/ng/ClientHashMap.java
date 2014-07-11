@@ -1,9 +1,7 @@
 package de.axone.cache.ng;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,7 +15,9 @@ import de.axone.cache.ng.CacheNG.Realm;
  * @param <K>
  * @param <V>
  */
-public class ClientHashMap<K,V> implements Client.Direct<K,V> {
+public class ClientHashMap<K,V>
+		extends AbstractEntryClient<K,V>
+		implements Client.Direct<K,V> {
 	
 	private final Realm name;
 	private final Map<K,Client.Entry<V>> backend;
@@ -39,20 +39,8 @@ public class ClientHashMap<K,V> implements Client.Direct<K,V> {
 	}
 
 	@Override
-	public void put( K key, V value ) {
-		putEntry( key, new DefaultEntry<>( value ) );
-	}
-
-	@Override
-	public void putEntry( K key, Client.Entry<V> entry ) {
-		backend.put( key, entry );
-	}
-
-	@Override
-	public V fetch( K key ) {
-		Client.Entry<V> entry = fetchEntry( key );
-		if( entry == null ) return null;
-		return entry.data();
+	public void put( K key, V entry ) {
+		backend.put( key, new DefaultEntry<>( entry ) );
 	}
 
 	@Override
@@ -87,44 +75,7 @@ public class ClientHashMap<K,V> implements Client.Direct<K,V> {
 
 	@Override
 	public Iterable<V> values() {
-		return new IterableValues<>( backend.values() );
-	}
-	
-	private static class IterableValues<V> implements Iterable<V> {
-		
-		private final Collection<Entry<V>> values;
-
-		public IterableValues( Collection<Entry<V>> values ) {
-			this.values = values;
-		}
-
-		@Override
-		public Iterator<V> iterator() {
-			return new ValueIterator();
-		}
-		
-		private class ValueIterator implements Iterator<V> {
-			
-			Iterator<Entry<V>> entryIterator = values.iterator();
-
-			@Override
-			public boolean hasNext() {
-				return entryIterator.hasNext();
-			}
-
-			@Override
-			public V next() {
-				return entryIterator.next().data();
-			}
-
-			@Override
-			public void remove() {
-				entryIterator.remove();
-			}
-			
-			
-		}
-		
+		return new IterableEntryAsValue<>( backend.values() );
 	}
 	
 }

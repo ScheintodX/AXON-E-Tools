@@ -1,5 +1,6 @@
-package de.axone.cache;
+package de.axone.cache.ng;
 
+import static de.axone.cache.ng.CacheNGAssert.*;
 import static org.testng.Assert.*;
 
 import java.io.File;
@@ -13,34 +14,42 @@ import org.testng.annotations.Test;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @Test( groups="tools.cache.ehcache" )
-public class CacheEHCacheTest {
+public class CacheNGTest_Port_CacheEHCache {
 	
 	public void testEHCache() throws Exception {
 		
-		CacheEHCache<String,TestValue> cache = CacheEHCache.instance(
-				new File( "/tmp/ehcache" ), "testcache1", 10 );
+		ClientEHCache<String,TestValue> cache = ClientEHCache.instance(
+				new File( "/tmp/ehcache" ), "testcache", 10 );
 		
 		String TESTKEY = "testkey";
 		TestValue TESTVALUE = new TestValue( true );
 
 		cache.put( TESTKEY, TESTVALUE );
 		
-		assertTrue( cache.containsKey( TESTKEY ) );
-		assertEquals( cache.get( TESTKEY ), TESTVALUE );
-		assertEquals( cache.size(), 1 );
+		assertThat( cache )
+				.hasCapacity( -1 )
+				.has( cached( TESTKEY ) )
+				.hasSize( 1 )
+				.fetch( TESTKEY ).isEqualTo( TESTVALUE )
+				;
 		//assertEquals( cache.capacity(), Integer.MAX_VALUE );
 		
-		cache.remove( TESTKEY );
+		cache.invalidate( TESTKEY );
 		
-		assertFalse( cache.containsKey( TESTKEY ) );
-		assertEquals( cache.size(), 0 );
-		assertEquals( cache.get( TESTKEY ), null );
+		assertThat( cache )
+				.doesNotHave( cached( TESTKEY ) )
+				.hasSize( 0 )
+				.fetch( TESTKEY ).isNull()
+				;
 		
 		cache.put( TESTKEY, TESTVALUE );
-		cache.clear();
-		assertFalse( cache.containsKey( TESTKEY ) );
+		cache.invalidateAll();
+		assertThat( cache )
+				.doesNotHave( cached( TESTKEY ) )
+				.hasSize( 0 )
+				.fetch( TESTKEY ).isNull()
+				;
 		assertEquals( cache.size(), 0 );
-		assertEquals( cache.get( TESTKEY ), null );
 		
 		cache.put( TESTKEY, TESTVALUE );
 		
@@ -51,44 +60,53 @@ public class CacheEHCacheTest {
 		
 		// A simple wrapper around EHCache which does the configuration
 		// and provides a map like interface
-		CacheEHCache<TestKey,String> cache = CacheEHCache.instance(
-				new File( "/tmp/ehcache" ), "testcache2", 10 );
+		CacheNG.Client<TestKey,String> cache = ClientEHCache.instance(
+				new File( "/tmp/ehcache" ), "testcache", 10 );
 		
 		// May contain content from last run
-		cache.clear();
+		cache.invalidateAll();
 		
 		// equals and hash matches
 		TestKey k11 = new TestKey( true, 1 );
 		
 		cache.put( k11, "Test11" );
 		
-		assertEquals( cache.size(), 1 );
-		assertTrue( cache.containsKey( k11 ) );
+		assertThat( cache )
+				.hasSize( 1 )
+				.hasCached( k11 )
+				;
 		
-		cache.remove( k11 );
-		assertEquals( cache.size(), 0 );
+		cache.invalidate( k11 );
+		assertThat( cache )
+				.hasSize( 0 )
+				.hasNotCached( k11 )
+				;
 		
 		// doesn't equal but hash matches
 		TestKey k21 = new TestKey( false, 1 );
 		
 		cache.put( k21, "Test21" );
-		assertEquals( cache.size(), 1 );
-		assertFalse( cache.containsKey( k21 ) );
+		assertThat( cache )
+				.hasSize( 1 )
+				.hasNotCached( k21 )
+				;
 		
 		// This is interesting: Clear needs to find the objects to clear
 		// So we must patch it.
 		k21.equals = true; 
-		cache.clear();
+		cache.invalidateAll();
 		assertEquals( cache.size(), 0 );
 		
 		// equals but hash missmatches
 		TestKey k31 = new TestKey( true, 1 );
 		TestKey k32 = new TestKey( true, 2 );
 		cache.put( k31, "Test21" );
-		assertEquals( cache.size(), 1 );
-		assertTrue( cache.containsKey( k31 ) );
-		assertFalse( cache.containsKey( k32 ) );
-		cache.clear();
+		assertThat( cache )
+				.hasSize( 1 )
+				.hasCached( k31 )
+				.hasNotCached( k32 )
+				;
+		cache.invalidateAll();
 	}
 	
 	private static final class TestValue extends HashMap<String,String>{

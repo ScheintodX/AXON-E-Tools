@@ -7,11 +7,13 @@ import org.assertj.core.description.Description;
 import org.assertj.core.description.TextDescription;
 
 import de.axone.cache.ng.CacheNG.Accessor;
+import de.axone.cache.ng.CacheNG.Client;
 import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
 import de.axone.cache.ng.CacheNGTestHelpers.Tid;
 
 public abstract class CacheNGAssert {
+	
 	
 	public static class CacheObjectAssert<K,O,P>
 			extends AbstractAssert<CacheObjectAssert<K,O,P>, O> {
@@ -27,6 +29,7 @@ public abstract class CacheNGAssert {
 			return parent;
 		}
 	}
+	
 	
 	public static class CacheAssert<K,O>
 			extends AbstractAssert<CacheAssert<K,O>, CacheNG.Client<K,O>> {
@@ -51,10 +54,31 @@ public abstract class CacheNGAssert {
 			return myself;
 		}
 		
-		public CacheObjectAssert<K,O,CacheAssert<K,O>> get( K key ){
+		public CacheAssert<K,O> hasSize( int size ){
+			
+			int actualSize = actual.size();
+			
+			if( actualSize != size )
+					failWithMessage( "Should have size: " + size + " but has: " + actualSize );
+			
+			return myself;
+		}
+		
+		public CacheAssert<K,O> hasCapacity( int capacity ){
+			
+			int actualCapacity = actual.capacity();
+			
+			if( actualCapacity != capacity )
+					failWithMessage( "Should have capacity: " + capacity + " but has: " + actualCapacity );
+			
+			return myself;
+		}
+		
+		public CacheObjectAssert<K,O,CacheAssert<K,O>> fetch( K key ){
 			return new CacheObjectAssert<>( this, actual.fetch( key ) );
 		}
 	}
+	
 	
 	public static <K,O> CacheAssert<K,O> assertThat( CacheNG.Client<K,O> cache ){
 		
@@ -99,6 +123,7 @@ public abstract class CacheNGAssert {
 		}
 	}
 	
+	
 	static final class HavingTid extends Condition<TArticle> {
 		
 		private final Tid tid;
@@ -111,6 +136,7 @@ public abstract class CacheNGAssert {
 		}
 	}
 
+	
 	static final class HavingIdentifier extends Condition<TArticle> {
 		
 		private final Aid aid;
@@ -127,6 +153,39 @@ public abstract class CacheNGAssert {
 			return new TextDescription( "Having Aid", aid.name() );
 		}
 		
+	}
+	
+	
+	static final class HavingCached<K> extends Condition<CacheNG.Client<K,?>> {
+		
+		private final K key;
+		
+		public HavingCached( K key ){ this.key = key; }
+
+		@Override
+		public boolean matches( Client<K,?> client ) {
+			return client.isCached( key );
+		}
+	}
+	
+	public static final <K> HavingCached<K> cached( K key ){
+		return new HavingCached<K>( key );
+	}
+	
+	static final class HavingAutoCached<K> extends Condition<CacheNG.AutomaticClient<K,?>> {
+		
+		private final K key;
+		
+		public HavingAutoCached( K key ){ this.key = key; }
+
+		@Override
+		public boolean matches( CacheNG.AutomaticClient<K,?> autoClient ) {
+			return autoClient.isCached( key );
+		}
+	}
+	
+	public static final <K> HavingAutoCached<K> havingAutoCached( K key ){
+		return new HavingAutoCached<K>( key );
 	}
 
 	static final class HavingSameHashCodeAs extends Condition<Object> {

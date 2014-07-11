@@ -1,6 +1,8 @@
-package de.axone.cache;
+package de.axone.cache.ng;
 
-import static de.axone.cache.CacheTest.*;
+import static de.axone.cache.ng.CacheNGAssert.*;
+import static de.axone.cache.ng.CacheNGTest_Port_Client.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
 import java.security.SecureRandom;
@@ -14,10 +16,12 @@ import java.util.TreeMap;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.CacheTest.TestEntry;
+import de.axone.cache.ng.CacheNG.Accessor;
+import de.axone.cache.ng.CacheNGTestHelpers.TestRealm;
+import de.axone.cache.ng.CacheNGTest_Port_Client.TestEntry;
 
 @Test( groups="tools.autocache" )
-public class AutomaticCacheTest {
+public class CacheNGTest_Port_AutomaticClient {
 	
 	//private static final Object mutex = new Object();
 	
@@ -32,34 +36,38 @@ public class AutomaticCacheTest {
 	private static String [] testEntryKeys = new String[]{ A, B, C, D };
 	private static String [] testEntryKeys2 = new String[]{ X, Y, Z, D };
 
-	private static Cache<String,TestEntry> backend = new CacheLRUMap<String,TestEntry>("AutomaticCacheTest", 4);
+	private static CacheNG.Client<String,TestEntry> backend =
+			new ClientLRUMap<String,TestEntry>( new TestRealm( "AutomaticCacheTest" ), 4);
+	
 	//private static Cache<String,TestEntry> backend = new CacheHashMap<String,TestEntry>();
 	private static TestDataAccessor acc = new TestDataAccessor();
-	private static AutomaticCache<String,TestEntry> auto = new AutomaticCacheImpl<String,TestEntry>( backend );
+	private static CacheNG.AutomaticClient<String,TestEntry> auto =
+			new AutomaticClientImpl<String,TestEntry>( backend );
 	
 	// Second test for multiple frontend on one backend
-	private static AutomaticCache<String,TestEntry> auto2 = new AutomaticCacheImpl<String,TestEntry>( backend );
+	private static CacheNG.AutomaticClient<String,TestEntry> auto2 =
+			new AutomaticClientImpl<String,TestEntry>( backend );
 	
 	//@Test( enabled=false )
 	public void testAutomaticCache(){
 		
 		SecureRandom srand = new SecureRandom();
 		
-		assertEquals( auto.get( A, acc ), a );
-		assertEquals( auto.get( B, acc ), b );
-		assertEquals( auto.get( C, acc ), c );
-		assertEquals( auto.get( A, acc ), a );
-		assertEquals( auto.get( B, acc ), b );
-		assertEquals( auto.get( C, acc ), c );
-		assertEquals( auto.get( A, acc ), a );
-		assertEquals( auto.get( B, acc ), b );
-		assertEquals( auto.get( C, acc ), c );
+		assertEquals( auto.fetch( A, acc ), a );
+		assertEquals( auto.fetch( B, acc ), b );
+		assertEquals( auto.fetch( C, acc ), c );
+		assertEquals( auto.fetch( A, acc ), a );
+		assertEquals( auto.fetch( B, acc ), b );
+		assertEquals( auto.fetch( C, acc ), c );
+		assertEquals( auto.fetch( A, acc ), a );
+		assertEquals( auto.fetch( B, acc ), b );
+		assertEquals( auto.fetch( C, acc ), c );
 		
 		for( int i=0; i<NUM_RUNS; i++ ){
 			int r = srand.nextInt( 4 );
 			String k = testEntryKeys[r];
 			TestEntry e = testEntries[r];
-			assertEquals( auto.get( k, acc ), e );
+			assertThat( auto ).fetch( k, acc ).isEqualTo( e );
 		}
 		
 		/*
@@ -75,21 +83,23 @@ public class AutomaticCacheTest {
 		List<String> keysAsList = new ArrayList<String>( Arrays.asList( testEntryKeys ) );
 		Map<String,TestEntry> result;
 		
-		result = auto.get( keysAsList, acc );
-		assertEquals( result.get( A ), a );
-		assertEquals( result.get( B ), b );
-		assertEquals( result.get( C ), c );
-		assertEquals( result.get( D ), null );
-		assertFalse( result.containsKey( D ) );
+		result = auto.fetch( keysAsList, acc );
+		assertThat( result )
+				.containsEntry( A, a )
+				.containsEntry( B, b )
+				.containsEntry( C, c )
+				.doesNotContainKey( D )
+				;
 		
 		Collections.reverse( keysAsList );
 		
-		result = auto.get( keysAsList, acc );
-		assertEquals( result.get( A ), a );
-		assertEquals( result.get( B ), b );
-		assertEquals( result.get( C ), c );
-		assertEquals( result.get( D ), null );
-		assertFalse( result.containsKey( D ) );
+		result = auto.fetch( keysAsList, acc );
+		assertThat( result )
+				.containsEntry( A, a )
+				.containsEntry( B, b )
+				.containsEntry( C, c )
+				.doesNotContainKey( D )
+				;
 	}
 	
 	//@Test( enabled=false )
@@ -165,12 +175,10 @@ public class AutomaticCacheTest {
 					String k2 = testEntryKeys2[index];
 					TestEntry e = testEntries[index];
 					TestEntry e2 = testEntries2[index];
-					assertEquals( auto.get( k, acc ), e );
-					assertEquals( auto2.get( k2, acc ), e2 );
-					//System.err.printf( "% 4d:% 6d:%s\n", no, i, e );
+					assertThat( auto ).fetch( k, acc ).isEqualTo( e );
+					assertThat( auto2 ).fetch( k2, acc ).isEqualTo( e2 );
 					synchronized( this ){
 						try {
-							//Thread.sleep( 1 );
 							this.wait( 1 );
 						} catch( InterruptedException e1 ) {
 							e1.printStackTrace();
@@ -209,19 +217,19 @@ public class AutomaticCacheTest {
 					
 					Map<String,TestEntry> result, result2;
 					
-					result = auto.get( keysAsList, acc );
-					assertEquals( result.get( A ), a );
-					assertEquals( result.get( B ), b );
-					assertEquals( result.get( C ), c );
-					assertEquals( result.get( D ), null );
-					assertFalse( result.containsKey( D ) );
+					result = auto.fetch( keysAsList, acc );
+					assertThat( result )
+							.containsEntry( A, a )
+							.containsEntry( B, b )
+							.containsEntry( C, c )
+							.doesNotContainKey( D );
 					
-					result2 = auto.get( keysAsList2, acc );
-					assertEquals( result2.get( X ), x );
-					assertEquals( result2.get( Y ), y );
-					assertEquals( result2.get( Z ), z );
-					assertEquals( result2.get( D ), null );
-					assertFalse( result2.containsKey( D ) );
+					result2 = auto.fetch( keysAsList2, acc );
+					assertThat( result2 )
+							.containsEntry( X, x )
+							.containsEntry( Y, y )
+							.containsEntry( Z, z )
+							.doesNotContainKey( D );
 					
 					synchronized( this ){
 						try {
@@ -244,13 +252,13 @@ public class AutomaticCacheTest {
 		}
 	};
 	
-	private static final class TestDataAccessor implements DataAccessor<String,TestEntry> {
+	private static final class TestDataAccessor implements Accessor<String,TestEntry> {
 		
 		private int hitcount;
 		private int acccount;
 
 		@Override
-		public synchronized TestEntry get( String key ) {
+		public synchronized TestEntry fetch( String key ) {
 			hitcount++;
 			acccount++;
 			TestEntry result = null;
@@ -265,10 +273,10 @@ public class AutomaticCacheTest {
 		}
 
 		@Override
-		public synchronized Map<String, TestEntry> get( Collection<String> keys ) {
+		public synchronized Map<String, TestEntry> fetch( Collection<String> keys ) {
 			Map<String, TestEntry> result = new TreeMap<String, TestEntry>();
 			for( String key : keys ){
-				result.put( key, get( key ) );
+				result.put( key, fetch( key ) );
 			}
 			return result;
 		}

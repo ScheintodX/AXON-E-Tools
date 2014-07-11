@@ -30,10 +30,12 @@ public abstract class ClientWrapper<K,O> implements CacheNG.Client<K,O> {
 		wrapped.invalidate( key );
 	}
 
+	/*
 	@Override
 	public void putEntry( K key, CacheNG.Client.Entry<O> entry ) {
 		wrapped.putEntry( key, entry );
 	}
+	*/
 
 	@Override
 	public void put( K key, O object ) {

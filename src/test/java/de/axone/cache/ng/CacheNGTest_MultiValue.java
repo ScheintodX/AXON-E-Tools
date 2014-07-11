@@ -119,7 +119,8 @@ public class CacheNGTest_MultiValue {
 	}
 	
 	
-	static abstract class AbstractMultiDataAccessor<MV,O> implements CacheNG.Client<String,O> {
+	static abstract class AbstractMultiDataAccessor<MV,O>
+			implements CacheNG.Client<String,O> {
 		
 		private final CacheNG.Client<String,MV> wrapped;
 
@@ -127,15 +128,15 @@ public class CacheNGTest_MultiValue {
 			this.wrapped = wrapped;
 		}
 		
-		protected abstract CacheNG.Client.Entry<O> get( MV data );
-		protected abstract void put( MV data, CacheNG.Client.Entry<O> value );
+		protected abstract CacheNG.Client.Entry<O> getFromMultivalue( MV data );
+		protected abstract void putInMultivalue( MV data, CacheNG.Client.Entry<O> value );
 		protected abstract MV create();
 
 		@Override
 		public synchronized CacheNG.Client.Entry<O> fetchEntry( String key ) {
 			MV data = wrapped.fetch( key );
 			if( data == null ) return null;
-			CacheNG.Client.Entry<O> result = get( data );
+			CacheNG.Client.Entry<O> result = getFromMultivalue( data );
 			return result;
 		}
 		
@@ -150,7 +151,7 @@ public class CacheNGTest_MultiValue {
 		public synchronized boolean isCached( String key ) {
 			MV data = wrapped.fetch( key );
 			if( data == null ) return false;
-			CacheNG.Client.Entry<O> value = get( data );
+			CacheNG.Client.Entry<O> value = getFromMultivalue( data );
 			return value != null;
 		}
 
@@ -158,26 +159,21 @@ public class CacheNGTest_MultiValue {
 		public synchronized void invalidate( String key ) {
 			MV data = wrapped.fetch( key );
 			if( data == null ) return;
-			put( data, null );
+			putInMultivalue( data, null );
 			wrapped.put( key, data );
 		}
 
 		@Override
-		public synchronized void putEntry( String key, CacheNG.Client.Entry<O> value ) {
+		public void put( String key, O value ) {
+			
 			MV data = wrapped.fetch( key );
 			if( data == null ){
 				data = create();
 			}
-			put( data, value );
+			putInMultivalue( data, new DefaultEntry<>( value ) );
 			
 			// store again (probably needed for distributed caches)
 			wrapped.put( key, data );
-		}
-		
-		@Override
-		public void put( String key, O value ) {
-			
-			putEntry( key, new DefaultEntry<>( value ) );
 		}
 
 		@Override
@@ -209,12 +205,12 @@ public class CacheNGTest_MultiValue {
 		}
 
 		@Override
-		protected CacheNG.Client.Entry<String> get( MultiValueData data ) {
+		protected CacheNG.Client.Entry<String> getFromMultivalue( MultiValueData data ) {
 			return data.stringValue;
 		}
 
 		@Override
-		protected void put( MultiValueData data, CacheNG.Client.Entry<String> value ) {
+		protected void putInMultivalue( MultiValueData data, CacheNG.Client.Entry<String> value ) {
 			data.stringValue = value;
 		}
 
@@ -233,12 +229,12 @@ public class CacheNGTest_MultiValue {
 		}
 
 		@Override
-		protected CacheNG.Client.Entry<Integer> get( MultiValueData data ) {
+		protected CacheNG.Client.Entry<Integer> getFromMultivalue( MultiValueData data ) {
 			return data.integerValue;
 		}
 
 		@Override
-		protected void put( MultiValueData data, CacheNG.Client.Entry<Integer> value ) {
+		protected void putInMultivalue( MultiValueData data, CacheNG.Client.Entry<Integer> value ) {
 			data.integerValue = value;
 		}
 
