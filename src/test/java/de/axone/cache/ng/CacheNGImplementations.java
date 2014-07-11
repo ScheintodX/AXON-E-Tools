@@ -3,20 +3,18 @@ package de.axone.cache.ng;
 import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import de.axone.cache.ng.CacheNG.AutomaticClient;
 import de.axone.cache.ng.CacheNG.CacheEventListener;
 import de.axone.cache.ng.CacheNG.CacheEventProvider;
 import de.axone.cache.ng.CacheNG.Client;
 import de.axone.cache.ng.CacheNG.InvalidationManager;
-import de.axone.cache.ng.CacheNG.Realm;
 
 public class CacheNGImplementations {
 	
@@ -82,69 +80,9 @@ public class CacheNGImplementations {
 		
 	}
 
-	static final class TestCacheBackend implements CacheNG.Backend {
-		
-		private Map<String,Client<?,?>> clients = new HashMap<>();
-		private Map<String,AutomaticClient<?,?>> autoClients = new HashMap<>();
-	
-		@Override
-		public <K,O> Client<K,O> cache( Realm realm ) {
-			
-			String key = realm.realm();
-			
-			if( ! clients.containsKey( key ) ){
-				
-				clients.put( key, new TestClient<K,O>() );
-			}
-			
-			@SuppressWarnings( "unchecked" )
-			Client<K,O> result = (Client<K,O>) clients.get( key );
-			
-			return result;
-		}
-	
-		@Override
-		public <K,O> AutomaticClient<K,O> automatic( Realm realm ) {
-			
-			String key = realm.realm();
-			
-			if( ! autoClients.containsKey( key ) ){
-				
-				TestAutomaticClient<K,O> result;
-			
-				if( key.indexOf( '[' ) > 0 ){
-					
-					String [] parts = key.split( "\\[" );
-					long timeout = Long.parseLong( parts[ 1 ] );
-					
-					result = new TestAutomaticClient<K,O>( timeout );
-				} else {
-					result = new TestAutomaticClient<K,O>();
-				}
-				
-				autoClients.put( key, result );
-			}
-			
-			@SuppressWarnings( "unchecked" )
-			AutomaticClient<K,O> result = (AutomaticClient<K,O>) autoClients.get( key );
-			
-			return result;
-		}
-
-		/*
-		@Override
-		public <K, MV, O> AutomaticClient<K, O> automatic(
-				Client<K, TimedCacheEntry<MV>> backend, Accessor<K, O> accessor ) {
-			
-			return new TestAutomaticClient<K,O>( backend, accessor );
-		}
-		*/
-	
-	}
-
 	static class TestClient<K,O> implements CacheNG.Client<K,O> {
 		
-		private HashMap<K,O> map = new HashMap<>();
+		private HashMap<K,Entry<O>> map = new HashMap<>();
 	
 		@Override
 		public boolean isCached( K key ) {
@@ -152,49 +90,161 @@ public class CacheNGImplementations {
 		}
 	
 		@Override
-		public O fetch( K key ) {
-			return map.get( key );
-		}
-		
-		@Override
 		public void invalidate( K key ){
 			map.remove( key );
 		}
 		
 		@Override
-		public void put( K key, O value ){
-			map.put( key, value );
+		public CacheNG.Client.Entry<O> fetchEntry( K key ) {
+			return map.get( key );
 		}
+
+		@Override
+		public O fetch( K key ) {
+			CacheNG.Client.Entry<O> entry = fetchEntry( key );
+			if( entry == null ) return null;
+			return entry.data();
+		}
+
+		@Override
+		public void put( K key, O object ) {
+			putEntry( key, new TestEntry<>( object ) );
+		}
+
+		@Override
+		public void putEntry( K key, CacheNG.Client.Entry<O> entry ) {
+			map.put( key, entry );
+		}
+		
+		public static class TestEntry<O> implements CacheNG.Client.Entry<O>, Serializable {
+			
+			private static final long serialVersionUID = 1L;
+			
+			private final long creation;
+			private final O data;
+			public TestEntry( O data ) {
+				this.creation = System.currentTimeMillis();
+				this.data = data;
+			}
+			@Override
+			public O data() { return data;
+			}
+			@Override
+			public long creation() { return creation; }
+			
+			@Override
+			public int hashCode() {
+				if( data == null ) return 0;
+				return data.hashCode();
+			}
+			
+			@Override
+			public boolean equals( Object obj ) {
+				if( this == obj ) return true;
+				if( obj == null ) return false;
+				if( !( obj instanceof TestEntry ) ) return false;
+				
+				TestEntry<?> other = (TestEntry<?>) obj;
+				
+				if( data == null ) {
+					if( other.data != null ) return false;
+				} else if( !data.equals( other.data ) ) return false;
+				
+				return true;
+			}
+			
+		}
+
+	}
+	
+	static class TestTimeoutClient<K,O> implements CacheNG.Client<K,O> {
+		
+		private final long maxLifeTime;
+		
+		private final CacheNG.Client<K,O> backend;
+		
+		TestTimeoutClient( CacheNG.Client<K,O> backend, long maxLifeTime ){
+			this.backend = backend;
+			this.maxLifeTime = maxLifeTime;
+		}
+
+		@Override
+		public CacheNG.Client.Entry<O> fetchEntry( K key ) {
+			CacheNG.Client.Entry<O> entry = backend.fetchEntry( key );
+			if( entry == null ) return null;
+			if( ! isAlive( key, entry ) ) return null;
+			return entry;
+		}
+		
+		@Override
+		public O fetch( K key ) {
+			CacheNG.Client.Entry<O> entry = fetchEntry( key );
+			if( entry == null ) return null;
+			return entry.data();
+		}
+
+		@Override
+		public boolean isCached( K key ) {
+			CacheNG.Client.Entry<O> entry = backend.fetchEntry( key );
+			if( entry == null ) return false;
+			return isAlive( key, entry );
+		}
+		
+		protected boolean isAlive( K key, CacheNG.Client.Entry<O> entry ){
+			
+			if( maxLifeTime >= 0 ){
+				
+				long age = System.currentTimeMillis() - entry.creation();
+					
+				return age < maxLifeTime;
+			}
+			
+			return true;
+		}
+
+		@Override
+		public void invalidate( K key ) {
+			backend.invalidate( key );
+		}
+
+		@Override
+		public void putEntry( K key, CacheNG.Client.Entry<O> object ) {
+			backend.putEntry( key, object );
+		}
+
+		@Override
+		public void put( K key, O entry ) {
+			backend.put( key, entry );
+		}
+
 	}
 
 	static class TestAutomaticClient<K,O>
 			implements CacheNG.AutomaticClient<K,O>,
 					CacheEventProvider<K>, CacheEventListener<K> {
 		
-		private final Client<K,TimedCacheEntry<O>> backend;
+		private final Client<K,O> backend;
 		
-		private static final TimedCacheEntry<?> NORESULT = new TimedCacheEntry<>( null );
+		//@SuppressWarnings( { "rawtypes", "unchecked" } )
+		//private static final CacheNG.Client.Entry NORESULT = new TestEntry( null );
 		
-		private long maxLifeTime = -1;
-		
-		private InvalidationManager<K,TimedCacheEntry<O>> invalidationManager;
+		private InvalidationManager<K,O> invalidationManager;
 		
 		private List<CacheEventListener<K>> listeners = null;
 		
-		TestAutomaticClient() {
-			this.backend = new TestClient<K,TimedCacheEntry<O>>();
-		}
-		
-		TestAutomaticClient( Client<K,TimedCacheEntry<O>> backend ){
+		TestAutomaticClient( Client<K,O> backend ){
 			this.backend = backend;
 		}
 		
-		TestAutomaticClient( long maxLifeTime ){
-			this.maxLifeTime = maxLifeTime;
-			this.backend = new TestClient<K,TimedCacheEntry<O>>();
+		TestAutomaticClient() {
+			this( new TestClient<K,O>() );
 		}
 		
-		CacheNG.Client<K,TimedCacheEntry<O>> backend(){
+		TestAutomaticClient( long maxLifeTime ){
+			this.backend = new TestTimeoutClient<K,O>( new TestClient<K,O>(), maxLifeTime );
+		}
+		
+		CacheNG.Client<K,O> backend(){
 			return backend;
 		}
 		
@@ -216,31 +266,26 @@ public class CacheNGImplementations {
 			}
 		}
 		
-		@SuppressWarnings( "unchecked" )
 		@Override
 		public O fetch( K key, CacheNG.Accessor<K,O> accessor ) {
 			
-			TimedCacheEntry<O> entry = backend.fetch( key );
-			O result;
+			CacheNG.Client.Entry<O> entry = backend.fetchEntry( key );
 			
-			// Refresh if timed out
+			// Clear to refresh if timed out
 			if( ! isAlive( key, entry ) ) entry = null;
+			
+			O result;
 				
-			if( entry == null ){
+			if( entry != null ){
+				
+				result = entry.data();
+				
+			} else {
 				
 				result = accessor.fetch( key );
 				
-				if( result == null ){
-					entry = (TimedCacheEntry<O>)NORESULT;
-				} else {
-					entry = new TimedCacheEntry<O>( result );
-				}
-				backend.put( key, entry );
+				backend.put( key, result );
 			}
-			
-			result = entry.data;
-			
-			if( result == NORESULT ) return null;
 			
 			return result;
 		}
@@ -248,23 +293,16 @@ public class CacheNGImplementations {
 		@Override
 		public boolean isCached( K key ) {
 			
-			TimedCacheEntry<O> entry = backend.fetch( key );
+			CacheNG.Client.Entry<O> entry = backend.fetchEntry( key );
 			
 			if( entry == null ) return false;
 			
 			return isAlive( key, entry );
 		}
 		
-		private boolean isAlive( K key, TimedCacheEntry<O> entry ){
+		private boolean isAlive( K key, CacheNG.Client.Entry<O> entry ){
 			
 			if( entry == null ) return false;
-			
-			if( maxLifeTime >= 0 ){
-				
-				long age = System.currentTimeMillis() - entry.creation;
-					
-				return age < maxLifeTime;
-			}
 			
 			if( invalidationManager != null ){
 				
@@ -299,21 +337,8 @@ public class CacheNGImplementations {
 		
 	}
 
-	
-	
-	static class TimedCacheEntry<O> {
-		
-		final O data;
-		final long creation;
-		
-		TimedCacheEntry( O data ){
-			this.data = data;
-			this.creation = System.currentTimeMillis();
-		}
-	}
-	
 	static class TimoutInvalidationManager<K,O>
-			implements CacheNG.InvalidationManager<K, TimedCacheEntry<O>> {
+			implements CacheNG.InvalidationManager<K, O> {
 		
 		private final long timeoutStart,
 		                   timeoutDuration;
@@ -325,26 +350,30 @@ public class CacheNGImplementations {
 		}
 	
 		@Override
-		public boolean isValid( K key, TimedCacheEntry<O> value ) {
+		public boolean isValid( K key, CacheNG.Client.Entry<O> value ) {
 			
-			if( timeoutStart >= value.creation ){
+			// Entry is newer than starting of timeout.
+			// This happend regularily if the entry is re-fetched after invalidation
+			if( value.creation() > timeoutStart ) return true;
+			
+			
+			long elapsed = System.currentTimeMillis() - timeoutStart;
+			
+			// Invalid immediately if > duration
+			if( elapsed >= timeoutDuration ) return false;
+			
+			long stretch = Integer.MAX_VALUE / timeoutDuration;
+			
+			int random = RandomMapper.positiveInteger( key.hashCode() );
+			
+			if( stretch * elapsed < random ){
 				
-				long elapsed = System.currentTimeMillis() - timeoutStart;
-				
-				// Invalid immediately if > duration
-				if( elapsed >= timeoutDuration ) return false;
-				
-				long stretch = Integer.MAX_VALUE / timeoutDuration;
-				
-				int random = RandomMapper.positiveInteger( key.hashCode() );
-				
-				if( stretch * elapsed < random ){
-					
-					return false;
-				}
+				return false;
 			}
+			
 			return true;
 		}
+
 		
 	}
 

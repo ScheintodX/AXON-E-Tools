@@ -125,29 +125,6 @@ package de.axone.cache.ng;
  */
 public interface CacheNG {
 	
-	public interface Backend {
-	
-		/**
-		 * Returns a cache client instance bound to a client and a realm
-		 * 
-		 * @param client
-		 * @param realm
-		 * @return
-		 */
-		public <K,O> Client<K,O> cache( Realm realm );
-		
-		/**
-		 * Binds the given Accessor instance to an clident and a realm
-		 * 
-		 * @param client
-		 * @param realm
-		 * @param accessor
-		 * @return
-		 */
-		public <K,O> AutomaticClient<K,O> automatic( Realm realm );
-		
-	}
-	
 	/**
 	 * Identifies a realm for the backend
 	 * 
@@ -184,6 +161,14 @@ public interface CacheNG {
 		 * @param key
 		 * @return the cached object or null if not found
 		 */
+		public Entry<O> fetchEntry( K key );
+		
+		/**
+		 * Get the chache object identified by key
+		 * 
+		 * @param key
+		 * @return the cached object or null if not found
+		 */
 		public O fetch( K key );
 		
 		/**
@@ -202,13 +187,45 @@ public interface CacheNG {
 		public void invalidate( K key );
 		
 		/**
-		 * Put the given object in the cache
+		 * Put the given entry in the cache
 		 * 
 		 * @param key
 		 * @param object
 		 */
 		public void put( K key, O object );
 		
+		/**
+		 * Put the given object in the cache
+		 * 
+		 * @param key
+		 * @param object
+		 */
+		public void putEntry( K key, Entry<O> entry );
+		
+		/**
+		 * One cache entry
+		 * 
+		 * @author flo
+		 *
+		 * @param <O>
+		 */
+		public interface Entry<O> {
+			
+			/**
+			 * The entries data
+			 * 
+			 * @return
+			 */
+			public O data();
+			
+			/**
+			 * The entries creation time
+			 * 
+			 * @return
+			 */
+			public long creation();
+		}
+	
 	}
 	
 	/**
@@ -294,38 +311,7 @@ public interface CacheNG {
 	 */
 	public interface InvalidationManager<K,O> {
 		
-		public boolean isValid( K key, O value );
-	}
-	
-	public static class PassThroughBackendAccessor<K,O> implements BackendAccessor<K,O> {
-		
-		private final Client<K,O> backend;
-
-		public PassThroughBackendAccessor( Client<K, O> backend ) {
-			this.backend = backend;
-		}
-
-		@Override
-		public O fetch( K key ) {
-			return backend.fetch( key );
-		}
-
-		@Override
-		public boolean isCached( K key ) {
-			return backend.isCached( key );
-		}
-
-		@Override
-		public void invalidate( K key ) {
-			invalidate( key );
-			
-		}
-
-		@Override
-		public void put( K key, O object ) {
-			backend.put( key, object );
-		}
-
+		public boolean isValid( K key, Client.Entry<O> value );
 	}
 	
 	/**

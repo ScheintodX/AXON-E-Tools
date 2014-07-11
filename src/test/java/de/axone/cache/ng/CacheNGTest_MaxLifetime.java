@@ -8,23 +8,19 @@ import static org.mockito.Mockito.*;
 import org.testng.annotations.Test;
 
 import de.axone.cache.ng.CacheNGImplementations.Aid;
-import de.axone.cache.ng.CacheNGImplementations.RN;
 import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestCacheBackend;
+import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
 import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
 
 @Test( groups="helper.testng" )
 public class CacheNGTest_MaxLifetime {
 
-	private CacheNG.Backend backend = new TestCacheBackend();
-	
 	public void cacheArticlesForIdsAndTimeOut() throws Exception {
 		
 		TestAccessor_ArticleForIdentifier accessor = spy( new TestAccessor_ArticleForIdentifier() );
 		
 		// 100ms timeout
-		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				backend.automatic( RN.AID_ARTICLE.timeout( 100 ) );
+		TestAutomaticClient<Aid,TArticle> auto = new TestAutomaticClient<>( 100 );
 		
 		assertThat( auto ).hasNotCached( A12345 );
 		

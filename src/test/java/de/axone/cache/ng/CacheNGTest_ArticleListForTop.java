@@ -17,9 +17,8 @@ import de.axone.cache.ng.CacheNG.AutomaticClient;
 import de.axone.cache.ng.CacheNG.CacheBridge;
 import de.axone.cache.ng.CacheNG.CacheEventProvider;
 import de.axone.cache.ng.CacheNGImplementations.Identifiable;
-import de.axone.cache.ng.CacheNGImplementations.RN;
 import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestCacheBackend;
+import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
 import de.axone.cache.ng.CacheNGImplementations.Tid;
 import de.axone.cache.ng.CacheNGTest_ArticleListForTid.TestAccessor_ArticleForTid;
 import de.axone.cache.ng.CacheNGTest_ArticleListForTid.TestMapTidToArticle;
@@ -31,8 +30,6 @@ public class CacheNGTest_ArticleListForTop {
 			T001 = top( "001" ),
 			T002 = top( "002" )
 			;
-	
-	private CacheNG.Backend backend = new TestCacheBackend();
 	
 	private static final TestMapTidToArticle data = new TestMapTidToArticle();
 	{
@@ -50,13 +47,13 @@ public class CacheNGTest_ArticleListForTop {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				backend.automatic( RN.TID_LARTICLE.realm() );
+				new TestAutomaticClient<>();
 		
 		TestAccessor_ArticleForTop accessorForTop =
 				new TestAccessor_ArticleForTop( autoForTid, accessorForTid, tidForTop );
 		
 		CacheNG.AutomaticClient<Top, List<TArticle>> autoForTop =
-				backend.automatic( RN.TOP_LARTICLE.realm() );
+				new TestAutomaticClient<>();
 		
 		((CacheEventProvider<Tid>)autoForTid).registerListener( new TidToTopBridge( autoForTop, tidForTop ) );
 		

@@ -9,24 +9,21 @@ import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 import de.axone.cache.ng.CacheNGImplementations.Aid;
-import de.axone.cache.ng.CacheNGImplementations.RN;
 import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestCacheBackend;
+import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
 import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
 import de.axone.tools.E;
 
 @Test( groups="helper.testng" )
 public class CacheNGTest_TimeoutAll {
 
-	private CacheNG.Backend backend = new TestCacheBackend();
-	
 	public void cacheTimesoutEntriesAfterATimeoutPeriod() throws Exception {
 		
 		TestAccessor_ArticleForIdentifier accessor =
 				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				backend.automatic( RN.AID_ARTICLE.unique() );
+				new TestAutomaticClient<>();
 		
 		assertThat( auto ).hasNotCached( A12345 )
 				.hasNotCached( A12346 );
@@ -55,7 +52,7 @@ public class CacheNGTest_TimeoutAll {
 				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				backend.automatic( RN.AID_ARTICLE.unique() );
+				new TestAutomaticClient<>();
 		
 		assertFalse( auto.isCached( A12345 ) );
 		assertFalse( auto.isCached( A12346 ) );
@@ -86,7 +83,7 @@ public class CacheNGTest_TimeoutAll {
 				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				backend.automatic( RN.AID_ARTICLE.unique() );
+				new TestAutomaticClient<>();
 		
 		// Mimic real range article identifiers
 		for( int i=0; i<X; i++ ){

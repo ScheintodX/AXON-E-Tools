@@ -8,9 +8,8 @@ import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 import de.axone.cache.ng.CacheNGImplementations.Aid;
-import de.axone.cache.ng.CacheNGImplementations.RN;
 import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestCacheBackend;
+import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
 import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
 
 
@@ -19,18 +18,16 @@ import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentif
 @Test( groups="helper.cacheng" )
 public class CacheNGTest_Events {
 
-	private CacheNG.Backend backend = new TestCacheBackend();
-	
 	public void listenersReceiveEvents() throws Exception {
 		
 		TestAccessor_ArticleForIdentifier accMaster = spy( new TestAccessor_ArticleForIdentifier() );
 		TestAccessor_ArticleForIdentifier accSlave = spy( new TestAccessor_ArticleForIdentifier() );
 		
 		CacheNG.AutomaticClient<Aid, TArticle> autoMaster =
-				spy( backend.<Aid,TArticle>automatic( RN.TOP_LARTICLE.unique() ) );
+				spy( new TestAutomaticClient<Aid,TArticle>() );
 		
 		CacheNG.AutomaticClient<Aid, TArticle> autoSlave =
-				spy( backend.<Aid,TArticle>automatic( RN.TOP_LARTICLE.unique() ) );
+				spy( new TestAutomaticClient<Aid,TArticle>() );
 		
 		TArticle art;
 		

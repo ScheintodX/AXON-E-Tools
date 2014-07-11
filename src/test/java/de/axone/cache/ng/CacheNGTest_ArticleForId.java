@@ -8,8 +8,8 @@ import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 import de.axone.cache.ng.CacheNGImplementations.Aid;
-import de.axone.cache.ng.CacheNGImplementations.RN;
 import de.axone.cache.ng.CacheNGImplementations.TArticle;
+import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
 import de.axone.tools.E;
 
 @Test( groups="helper.testng" )
@@ -33,14 +33,13 @@ public class CacheNGTest_ArticleForId {
 	
 	}
 
-	private CacheNG.Backend backend = new CacheNGImplementations.TestCacheBackend();
-	
 	public void cacheArticlesForIds(){
 		
-		TestAccessor_ArticleForIdentifier accessor = new TestAccessor_ArticleForIdentifier();
+		TestAccessor_ArticleForIdentifier accessor =
+				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				backend.automatic( RN.AID_ARTICLE.realm() );
+				new TestAutomaticClient<>();
 		
 		assertFalse( auto.isCached( A12345 ) );
 		

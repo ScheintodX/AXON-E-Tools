@@ -14,9 +14,8 @@ import java.util.Set;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNGImplementations.RN;
 import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestCacheBackend;
+import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
 import de.axone.cache.ng.CacheNGImplementations.Tid;
 import de.axone.cache.ng.CacheNGTest_ArticleListForSearchQuery.TestAccessor_ArticleForQuery;
 import de.axone.cache.ng.CacheNGTest_ArticleListForSearchQuery.TestSearchQuery;
@@ -31,8 +30,6 @@ import de.axone.cache.ng.CacheNGTest_ArticleListForTid.TestMapTidToArticle;
 
 @Test( groups="helper.testng" )
 public class CacheNGTest_CombinedSearchQueries {
-	
-	private CacheNG.Backend backend = new TestCacheBackend();
 	
 	TestMapTidToArticle data = new TestMapTidToArticle();
 	{
@@ -69,13 +66,13 @@ public class CacheNGTest_CombinedSearchQueries {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				backend.automatic( RN.TID_LARTICLE.realm() );
+				new TestAutomaticClient<>();
 		
 		TestAccessor_ArticleForQuery forQuery =
 				new TestAccessor_ArticleForQuery( autoForTid, forTid );
 		
 		CacheNG.AutomaticClient<TestSearchQuery, List<TArticle>> autoForQuery =
-				backend.automatic( RN.SQTID_LARTICLE.realm() );
+				new TestAutomaticClient<>();
 		
 		autoForTid.registerListener( new TidToQueryBridge( autoForQuery ) );
 		

@@ -11,7 +11,6 @@ import de.axone.cache.ng.CacheNGImplementations.Aid;
 import de.axone.cache.ng.CacheNGImplementations.TArticle;
 import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
 import de.axone.cache.ng.CacheNGImplementations.Tid;
-import de.axone.cache.ng.CacheNGImplementations.TimedCacheEntry;
 
 public abstract class CacheNGAssert {
 	
@@ -93,7 +92,7 @@ public abstract class CacheNGAssert {
 			return new CacheObjectAssert<>( this, actual.fetch( key, accessor ) );
 		}
 		
-		public CacheAssert<K,TimedCacheEntry<O>> lookingInBackend(){
+		public CacheAssert<K,O> lookingInBackend(){
 			
 			isInstanceOf( TestAutomaticClient.class );
 			

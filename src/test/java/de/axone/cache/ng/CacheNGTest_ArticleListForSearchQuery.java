@@ -13,9 +13,8 @@ import org.testng.annotations.Test;
 
 import de.axone.cache.ng.CacheNG.CacheBridge;
 import de.axone.cache.ng.CacheNG.CacheEventListener;
-import de.axone.cache.ng.CacheNGImplementations.RN;
 import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestCacheBackend;
+import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
 import de.axone.cache.ng.CacheNGImplementations.Tid;
 import de.axone.cache.ng.CacheNGTest_ArticleListForTid.TestAccessor_ArticleForTid;
 import de.axone.cache.ng.CacheNGTest_ArticleListForTid.TestMapTidToArticle;
@@ -23,8 +22,6 @@ import de.axone.cache.ng.CacheNGTest_ArticleListForTid.TestMapTidToArticle;
 @Test( groups="helper.testng" )
 public class CacheNGTest_ArticleListForSearchQuery {
 
-	private CacheNG.Backend backend = new TestCacheBackend();
-	
 	TestMapTidToArticle data = new TestMapTidToArticle();
 	{
 		data.addArticle( TArticle.build( A12345 ) );
@@ -70,13 +67,13 @@ public class CacheNGTest_ArticleListForSearchQuery {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				backend.automatic( RN.TID_LARTICLE.unique() );
+				new TestAutomaticClient<>();
 		
 		TestAccessor_ArticleForQuery forQuery =
 				new TestAccessor_ArticleForQuery( autoForTid, forTid );
 		
 		CacheNG.AutomaticClient<TestSearchQuery, List<TArticle>> autoForQuery =
-				backend.automatic( RN.SQTID_LARTICLE.unique() );
+				new TestAutomaticClient<>();
 		
 		TestSearchQuery_Tid q = new TestSearchQuery_Tid( T123 );
 		
@@ -101,13 +98,13 @@ public class CacheNGTest_ArticleListForSearchQuery {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				backend.automatic( RN.TID_LARTICLE.unique() );
+				new TestAutomaticClient<>();
 		
 		TestAccessor_ArticleForQuery forQuery =
 				new TestAccessor_ArticleForQuery( autoForTid, forTid );
 		
 		CacheNG.AutomaticClient<TestSearchQuery, List<TArticle>> autoForQuery =
-				backend.automatic( RN.SQTID_LARTICLE.unique() );
+				new TestAutomaticClient<>();
 		
 		autoForTid.registerListener( new TidToQueryBridge( autoForQuery ) );
 		
