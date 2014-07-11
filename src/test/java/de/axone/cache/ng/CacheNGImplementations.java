@@ -309,9 +309,7 @@ public class CacheNGImplementations {
 				return invalidationManager.isValid( key, entry );
 			}
 			
-			
 			return true;
-			
 		}
 	
 		@Override

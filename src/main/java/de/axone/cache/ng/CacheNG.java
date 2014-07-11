@@ -187,20 +187,20 @@ public interface CacheNG {
 		public void invalidate( K key );
 		
 		/**
-		 * Put the given entry in the cache
-		 * 
-		 * @param key
-		 * @param object
-		 */
-		public void put( K key, O object );
-		
-		/**
 		 * Put the given object in the cache
 		 * 
 		 * @param key
 		 * @param object
 		 */
 		public void putEntry( K key, Entry<O> entry );
+		
+		/**
+		 * Put the given entry in the cache
+		 * 
+		 * @param key
+		 * @param object
+		 */
+		public void put( K key, O object );
 		
 		/**
 		 * One cache entry

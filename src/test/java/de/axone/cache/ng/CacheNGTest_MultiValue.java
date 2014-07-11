@@ -25,15 +25,13 @@ public class CacheNGTest_MultiValue {
 		
 		TestStringAccessor strToStrAcc = new TestStringAccessor();
 		
-		TestAutomaticClient<String,String> frontendString =
-				new TestAutomaticClient<>(
-						new MultiStringAccessor( backendMulti ) );
+		TestAutomaticClient<String,String> frontendString = new TestAutomaticClient<>(
+				new MultiStringAccessor( backendMulti ) );
 		
 		TestIntegerAccessor strToIntAcc = new TestIntegerAccessor();
 		
-		TestAutomaticClient<String,Integer> frontendInteger =
-				new TestAutomaticClient<>(
-						new MultiIntegerAccessor( backendMulti ) );
+		TestAutomaticClient<String,Integer> frontendInteger = new TestAutomaticClient<>(
+					new MultiIntegerAccessor( backendMulti ) );
 		
 		assertThat( backendMulti ).hasNotCached( TEST123 );
 		assertThat( frontendString ).hasNotCached( TEST123 );
@@ -122,6 +120,7 @@ public class CacheNGTest_MultiValue {
 		CacheNG.Client.Entry<Integer> integerValue;
 	}
 	
+	
 	static abstract class AbstractMultiDataAccessor<MV,O> implements CacheNG.Client<String,O> {
 		
 		private final CacheNG.Client<String,MV> wrapped;
@@ -135,18 +134,18 @@ public class CacheNGTest_MultiValue {
 		protected abstract MV create();
 
 		@Override
-		public synchronized O fetch( String key ) {
-			CacheNG.Client.Entry<O> entry = fetchEntry( key );
-			if( entry == null ) return null;
-			return entry.data();
-		}
-
-		@Override
 		public synchronized CacheNG.Client.Entry<O> fetchEntry( String key ) {
 			MV data = wrapped.fetch( key );
 			if( data == null ) return null;
 			CacheNG.Client.Entry<O> result = get( data );
 			return result;
+		}
+		
+		@Override
+		public synchronized O fetch( String key ) {
+			CacheNG.Client.Entry<O> entry = fetchEntry( key );
+			if( entry == null ) return null;
+			return entry.data();
 		}
 
 		@Override
