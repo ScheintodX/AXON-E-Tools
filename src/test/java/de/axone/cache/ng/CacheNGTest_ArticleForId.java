@@ -1,33 +1,35 @@
 package de.axone.cache.ng;
 
 import static de.axone.cache.ng.CacheNGAssert.*;
+import static de.axone.cache.ng.CacheNGTestHelpers.*;
 import static de.axone.cache.ng.CacheNGTest_Implementations.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNGImplementations.Aid;
-import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
+import de.axone.cache.ng.CacheNGTestHelpers.Aid;
+import de.axone.cache.ng.CacheNGTestHelpers.RN;
+import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
 import de.axone.tools.E;
 
 @Test( groups="helper.testng" )
 public class CacheNGTest_ArticleForId {
 
 	static class TestAccessor_ArticleForIdentifier
-			implements CacheNG.Accessor<CacheNGImplementations.Aid, CacheNGImplementations.TArticle>,
-					CacheNG.CacheEventListener<CacheNGImplementations.Aid>{
+			extends AbstractSingleValueAccessor<Aid,TArticle>
+			implements CacheNG.Accessor<Aid, TArticle>,
+					CacheNG.CacheEventListener<Aid>{
 	
 		@Override
-		public CacheNGImplementations.TArticle fetch( CacheNGImplementations.Aid identifier ) {
+		public TArticle fetch( Aid identifier ) {
 			
 			if( identifier.name().startsWith( "-" ) ) return null;
-			else return CacheNGImplementations.TArticle.build( identifier );
+			else return TArticle.build( identifier );
 		}
 	
 		@Override
-		public void invalidateEvent( CacheNGImplementations.Aid key ) {
+		public void invalidateEvent( Aid key ) {
 			E.rr( "------" + key + "-----------" );
 		}
 	
@@ -39,18 +41,18 @@ public class CacheNGTest_ArticleForId {
 				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				new TestAutomaticClient<>();
+				new AutomaticClientImpl<>( RN.AID_ARTICLE.realm() );
 		
 		assertFalse( auto.isCached( A12345 ) );
 		
-		CacheNGImplementations.TArticle art = auto.fetch( A12345, accessor );
+		TArticle art = auto.fetch( A12345, accessor );
 		assertThat( art ).isNotNull();
 		assertThat( auto ).hasCached( A12345 );
 		
 		assertThat( art )
-				.is( CacheNGAssert.havingIdentifier( CacheNGImplementations.aid( "12345" ) ) )
-				.is( CacheNGAssert.havingTid( T123 ) )
-				.is( CacheNGAssert.havingTid( T234 ) )
+				.is( havingIdentifier( aid( "12345" ) ) )
+				.is( havingTid( T123 ) )
+				.is( havingTid( T234 ) )
 		;
 		
 		auto.invalidate( A12345 );

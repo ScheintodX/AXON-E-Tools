@@ -7,9 +7,9 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNGImplementations.Aid;
-import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
+import de.axone.cache.ng.CacheNGTestHelpers.Aid;
+import de.axone.cache.ng.CacheNGTestHelpers.RN;
+import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
 import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
 
 @Test( groups="helper.testng" )
@@ -17,13 +17,13 @@ public class CacheNGTest_AccessorUsage {
 
 	public void accessorIsOnlyUsedWhenNeeded(){
 		
-		TestAutomaticClient<Aid, TArticle> auto = new TestAutomaticClient<>();
+		CacheNG.AutomaticClient<Aid, TArticle> auto = new AutomaticClientImpl<>( RN.AID_ARTICLE.realm() );
 		
 		TestAccessor_ArticleForIdentifier acc = spy( new TestAccessor_ArticleForIdentifier() );
 		
 		verify( acc, never() ).fetch( A12345 );
 		
-		CacheNGImplementations.TArticle art;
+		CacheNGTestHelpers.TArticle art;
 		art = auto.fetch( A12345, acc );
 		assertNotNull( art );
 		

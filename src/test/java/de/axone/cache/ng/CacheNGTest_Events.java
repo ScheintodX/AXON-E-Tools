@@ -7,9 +7,9 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNGImplementations.Aid;
-import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
+import de.axone.cache.ng.CacheNGTestHelpers.Aid;
+import de.axone.cache.ng.CacheNGTestHelpers.RN;
+import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
 import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
 
 
@@ -24,10 +24,10 @@ public class CacheNGTest_Events {
 		TestAccessor_ArticleForIdentifier accSlave = spy( new TestAccessor_ArticleForIdentifier() );
 		
 		CacheNG.AutomaticClient<Aid, TArticle> autoMaster =
-				spy( new TestAutomaticClient<Aid,TArticle>() );
+				spy( new AutomaticClientImpl<Aid,TArticle>( RN.AID_ARTICLE.unique() ) );
 		
 		CacheNG.AutomaticClient<Aid, TArticle> autoSlave =
-				spy( new TestAutomaticClient<Aid,TArticle>() );
+				spy( new AutomaticClientImpl<Aid,TArticle>( RN.AID_ARTICLE.unique() ) );
 		
 		TArticle art;
 		

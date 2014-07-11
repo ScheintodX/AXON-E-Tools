@@ -1,5 +1,9 @@
 package de.axone.cache.ng;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Mögliche Cache-Arten nach Key
  * 
@@ -203,6 +207,61 @@ public interface CacheNG {
 		public void put( K key, O object );
 		
 		/**
+		 * Clear the complete cache
+		 */
+		public void invalidateAll();
+		
+		/**
+		 * Return the used size of the cache
+		 * 
+		 * @return the size in number of entries
+		 */
+		public int size();
+		
+		/**
+		 * Return the available capacity of the cache
+		 * 
+		 * @return the capacity in number of entries or -1 for infinite
+		 */
+		public int capacity();
+		
+		/**
+		 * Get some meaningful information. 
+		 * 
+		 * (At least the size should be returned)
+		 * 
+		 * @return
+		 */
+		public String info();
+		
+		/**
+		 * Implements more of Map interface for direct access
+		 * 
+		 * This is additional because we cannot expect distributed caches
+		 * to have a keyset fast (if at all) available.
+		 * 
+		 * @author flo
+		 *
+		 * @param <K>
+		 * @param <V>
+		 */
+		public interface Direct<K,V> extends Client<K,V> {
+			
+			/**
+			 * @see java.util.Map#keySet()
+			 * @return A set of all keys
+			 */
+		    Set<K> keySet();
+		    
+		    /**
+			 * @see java.util.Map#values()
+		     * @return A collection of all values
+		     */
+		    Iterable<V> values();
+		}
+		
+		
+		/**
 		 * One cache entry
 		 * 
 		 * @author flo
@@ -248,6 +307,18 @@ public interface CacheNG {
 		 */
 		public O fetch( K key, Accessor<K,O> accessor );
 		
+		
+		/**
+		 * Get a bunch of entries from the cache. If the entries are
+		 * not cached try to fetch them using the Accessor.
+		 * 
+		 * @param keys
+		 * @param accessor
+		 * @return
+		 */
+		public Map<K,O> fetch( Collection<K> keys, Accessor<K,O> accessor );
+		
+		
 		/**
 		 * Returns true if this entry is already stored.
 		 * 
@@ -274,6 +345,23 @@ public interface CacheNG {
 		 * @param milliSeconds
 		 */
 		public void invalidateAllWithin( int milliSeconds );
+		
+		
+		public abstract int size();
+		
+		public abstract int capacity();
+
+		public abstract void invalidateAll();
+
+		public abstract Stats stats();
+		
+		
+		public interface Stats {
+			
+			void hit();
+			void miss();
+		}
+		
 	}
 	
 	/**
@@ -286,7 +374,23 @@ public interface CacheNG {
 	 */
 	public interface Accessor<K,O> {
 		
+		/**
+		 * Fetch a single entry
+		 * 
+		 * @param key
+		 * @return
+		 */
 		public O fetch( K key );
+		
+		/**
+		 * Fetch multiple entries at once.
+		 * 
+		 * Frequently this is more efficient than fetching single values
+		 * 
+		 * @param keys
+		 * @return
+		 */
+		public Map<K,O> fetch( Collection<K> keys );
 	}
 	
 	/**

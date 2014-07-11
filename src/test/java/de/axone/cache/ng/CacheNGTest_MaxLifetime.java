@@ -7,9 +7,9 @@ import static org.mockito.Mockito.*;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNGImplementations.Aid;
-import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
+import de.axone.cache.ng.CacheNGTestHelpers.Aid;
+import de.axone.cache.ng.CacheNGTestHelpers.RN;
+import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
 import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
 
 @Test( groups="helper.testng" )
@@ -19,8 +19,15 @@ public class CacheNGTest_MaxLifetime {
 		
 		TestAccessor_ArticleForIdentifier accessor = spy( new TestAccessor_ArticleForIdentifier() );
 		
+		CacheNG.Client<Aid,TArticle> client = 
+				new ClientHashMap<>( RN.AID_ARTICLE.realm() );
+		
 		// 100ms timeout
-		TestAutomaticClient<Aid,TArticle> auto = new TestAutomaticClient<>( 100 );
+		CacheNG.Client<Aid,TArticle> timeoutClient =
+				new TimeoutClient<>( client, 100 );
+		
+		CacheNG.AutomaticClient<Aid,TArticle> auto =
+				new AutomaticClientImpl<>( timeoutClient );
 		
 		assertThat( auto ).hasNotCached( A12345 );
 		

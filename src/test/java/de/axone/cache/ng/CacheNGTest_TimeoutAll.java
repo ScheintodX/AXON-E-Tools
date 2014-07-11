@@ -1,16 +1,16 @@
 package de.axone.cache.ng;
 
 import static de.axone.cache.ng.CacheNGAssert.*;
-import static de.axone.cache.ng.CacheNGImplementations.*;
+import static de.axone.cache.ng.CacheNGTestHelpers.*;
 import static de.axone.cache.ng.CacheNGTest_Implementations.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNGImplementations.Aid;
-import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
+import de.axone.cache.ng.CacheNGTestHelpers.Aid;
+import de.axone.cache.ng.CacheNGTestHelpers.RN;
+import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
 import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
 import de.axone.tools.E;
 
@@ -23,7 +23,7 @@ public class CacheNGTest_TimeoutAll {
 				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				new TestAutomaticClient<>();
+				new AutomaticClientImpl<>( RN.AID_ARTICLE.realm() );
 		
 		assertThat( auto ).hasNotCached( A12345 )
 				.hasNotCached( A12346 );
@@ -52,7 +52,7 @@ public class CacheNGTest_TimeoutAll {
 				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				new TestAutomaticClient<>();
+				new AutomaticClientImpl<>( RN.AID_ARTICLE.realm() );
 		
 		assertFalse( auto.isCached( A12345 ) );
 		assertFalse( auto.isCached( A12346 ) );
@@ -83,7 +83,7 @@ public class CacheNGTest_TimeoutAll {
 				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				new TestAutomaticClient<>();
+				new AutomaticClientImpl<>( RN.AID_ARTICLE.realm() );
 		
 		// Mimic real range article identifiers
 		for( int i=0; i<X; i++ ){

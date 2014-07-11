@@ -1,7 +1,7 @@
 package de.axone.cache.ng;
 
 import static de.axone.cache.ng.CacheNGAssert.*;
-import static de.axone.cache.ng.CacheNGImplementations.*;
+import static de.axone.cache.ng.CacheNGTestHelpers.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
@@ -10,11 +10,10 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNGImplementations.Aid;
-import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
-import de.axone.cache.ng.CacheNGImplementations.TestClient;
-import de.axone.cache.ng.CacheNGImplementations.Tid;
+import de.axone.cache.ng.CacheNGTestHelpers.Aid;
+import de.axone.cache.ng.CacheNGTestHelpers.RN;
+import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
+import de.axone.cache.ng.CacheNGTestHelpers.Tid;
 import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
 
 
@@ -153,7 +152,7 @@ public class CacheNGTest_Implementations {
 	
 	public void storeAndRestoreFromTestCache() {
 		
-		TestClient<Aid,TArticle> client = new TestClient<>();
+		CacheNG.Client<Aid,TArticle> client = new ClientHashMap<>( RN.AID_ARTICLE.realm() );
 		
 		TArticle tart = TArticle.build( A12345 );
 		
@@ -174,8 +173,8 @@ public class CacheNGTest_Implementations {
 	
 	public void buildByTestAutoCache() {
 		
-		TestAutomaticClient<Aid, TArticle> auto =
-				new TestAutomaticClient<>();
+		CacheNG.AutomaticClient<Aid, TArticle> auto =
+				new AutomaticClientImpl<>( RN.AID_ARTICLE.realm() );
 				
 		TestAccessor_ArticleForIdentifier accessor = new TestAccessor_ArticleForIdentifier();
 		
@@ -216,8 +215,8 @@ public class CacheNGTest_Implementations {
 		assertThat( acc.fetch( T234 ) ).hasSize( 2 ).isNotNull();
 		assertThat( acc.fetch( T345 ) ).hasSize( 1 ).isNotNull();
 		
-		TestAutomaticClient<Tid, List<TArticle>> auto =
-				new TestAutomaticClient<>();
+		CacheNG.AutomaticClient<Tid, List<TArticle>> auto =
+				new AutomaticClientImpl<>( RN.TID_LARTICLE.realm() );
 		
 		assertThat( auto ).hasNotCached( T123 )
 				.lookingInBackend().hasNotCached( T123 );

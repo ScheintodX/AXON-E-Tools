@@ -10,14 +10,16 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
-import de.axone.cache.ng.CacheNGImplementations.Tid;
+import de.axone.cache.ng.CacheNGTestHelpers.RN;
+import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
+import de.axone.cache.ng.CacheNGTestHelpers.Tid;
 
 @Test( groups="helper.testng" )
 public class CacheNGTest_ArticleListForTid {
 
-	static class TestAccessor_ArticleForTid implements CacheNG.Accessor<Tid, List<TArticle>>{
+	static class TestAccessor_ArticleForTid
+			extends AbstractSingleValueAccessor<Tid, List<TArticle>>
+			implements CacheNG.Accessor<Tid, List<TArticle>>{
 		
 		private final TestMapTidToArticle data;
 		
@@ -63,7 +65,7 @@ public class CacheNGTest_ArticleListForTid {
 		TestAccessor_ArticleForTid accessor = new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> auto =
-				new TestAutomaticClient<>();
+				new AutomaticClientImpl<>( RN.TID_LARTICLE.realm() );
 		
 		assertThat( auto ).hasNotCached( T123 );
 		

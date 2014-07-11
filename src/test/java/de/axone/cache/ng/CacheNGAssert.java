@@ -7,10 +7,9 @@ import org.assertj.core.description.Description;
 import org.assertj.core.description.TextDescription;
 
 import de.axone.cache.ng.CacheNG.Accessor;
-import de.axone.cache.ng.CacheNGImplementations.Aid;
-import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
-import de.axone.cache.ng.CacheNGImplementations.Tid;
+import de.axone.cache.ng.CacheNGTestHelpers.Aid;
+import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
+import de.axone.cache.ng.CacheNGTestHelpers.Tid;
 
 public abstract class CacheNGAssert {
 	
@@ -94,9 +93,9 @@ public abstract class CacheNGAssert {
 		
 		public CacheAssert<K,O> lookingInBackend(){
 			
-			isInstanceOf( TestAutomaticClient.class );
+			isInstanceOf( AutomaticClientImpl.class );
 			
-			return new CacheAssert<>( ((TestAutomaticClient<K,O>)actual).backend() );
+			return new CacheAssert<>( ((AutomaticClientImpl<K,O>)actual).backend );
 		}
 	}
 	

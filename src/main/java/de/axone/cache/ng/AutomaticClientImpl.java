@@ -1,6 +1,5 @@
-package de.axone.cache;
+package de.axone.cache.ng;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +9,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
-import de.axone.cache.ng.AbstractCacheEventProvider;
+import de.axone.cache.ng.CacheNG.Accessor;
+import de.axone.cache.ng.CacheNG.Client;
+import de.axone.cache.ng.CacheNG.InvalidationManager;
 
 
 /**
@@ -33,42 +34,60 @@ import de.axone.cache.ng.AbstractCacheEventProvider;
  * @param <K> key
  * @param <V> value
  */
-public class AutomaticCacheImpl<K,V>
+public class AutomaticClientImpl<K,V>
 		extends AbstractCacheEventProvider<K,V>
-		implements AutomaticCache<K, V> {
+		implements CacheNG.AutomaticClient<K,V> {
 
-	private Cache<K,V> backend;
+	final CacheNG.Client<K,V> backend;
 	
-	private static final Object NULL_ENTRY = new NullEntry();
-	// Makes code more easy below
-	// Note that V translates to Object in Java Byte-Code
-	@SuppressWarnings( "unchecked" )
-	private final V NULL = (V) NULL_ENTRY;
-
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private WriteLock writeLock = lock.writeLock();
 	private ReadLock readLock = lock.readLock();
 
-	private Stats stats = new Stats( this );
+	private InvalidationManager<K,V> invalidationManager;
+	
+	private Stats stats = new DefaultStats( this );
+	
+	// Simplification for testing
+	AutomaticClientImpl( CacheNG.Realm realm ){
+		backend = new ClientHashMap<>( realm );
+	}
 
-	public AutomaticCacheImpl( Cache<K,V> backend ){
+	public AutomaticClientImpl( CacheNG.Client<K,V> backend ){
 		
 		assert backend != null;
 		
 		this.backend = backend;
 	}
 	
-	public static <X,Y> AutomaticCache<X,Y> wrap( Cache<X,Y> cache ){
-		return new AutomaticCacheImpl<X,Y>( cache );
+	@Override
+	public boolean isCached( K key ) {
+		
+		// This is quick
+		if( ! backend.isCached( key ) ) return false;
+		
+		// Fetch for further checks
+		Client.Entry<V> entry = backend.fetchEntry( key );
+		
+		return isAlive( key, entry );
 	}
 	
-	@Override
-	public boolean containsKey( K key ) {
-		return backend.containsKey( key );
+	private boolean isAlive( K key, CacheNG.Client.Entry<V> entry ){
+		
+		// May happen multithreaded
+		if( entry == null ) return false;
+		
+		if( invalidationManager != null ){
+			
+			return invalidationManager.isValid( key, entry );
+		}
+		
+		return true;
 	}
+	
 
 	@Override
-	public Map<K,V> get( Collection<K> keys, DataAccessor<K,V> accessor ){
+	public Map<K,V> fetch( Collection<K> keys, Accessor<K,V> accessor ){
 		
 		assert keys != null && accessor != null;
 
@@ -82,7 +101,9 @@ public class AutomaticCacheImpl<K,V>
     			// Note that apparently no cast is done implicitly here.
     			// Java treats V as Object.
     			// Otherwise a ClassCastException would be thrown in case of NullEntry
-    			V found = backend.get( key );
+    			Client.Entry<V> found = backend.fetchEntry( key );
+    			
+				if( ! isAlive( key, found ) ) found = null;
 
     			if( found == null ){
     				
@@ -91,7 +112,7 @@ public class AutomaticCacheImpl<K,V>
     				missed.add( key );
     			} else {
     				stats.hit();
-    				if( !NULL.equals( found ) ) result.put( key, found );
+    				if( found.data() != null ) result.put( key, found.data() );
     			}
     		}
 		} finally {
@@ -100,7 +121,7 @@ public class AutomaticCacheImpl<K,V>
 
 		if( missed != null ){
 
-			Map<K,V> fetched = accessor.get( missed );
+			Map<K,V> fetched = accessor.fetch( missed );
 
 			try {
 				writeLock.lock();
@@ -111,7 +132,7 @@ public class AutomaticCacheImpl<K,V>
 					
 					if( value == null ){
 
-						backend.put( key, NULL );
+						backend.put( key, null );
 					} else {
 						result.put( key, value );
 						backend.put( key, value );
@@ -126,50 +147,46 @@ public class AutomaticCacheImpl<K,V>
 		return result;
 	}
 
+
 	@Override
-	public V get( K key, DataAccessor<K,V> accessor ) {
+	public V fetch( K key, Accessor<K,V> accessor ) {
 
 		assert key != null;
 		assert accessor != null;
 
 		// First try to get from cache
-		V result = null;
+		Client.Entry<V> entry = null;
 		try{
 			readLock.lock();
-			result = backend.get( key );
+			entry = backend.fetchEntry( key );
 		} finally { readLock.unlock(); }
-
-		if( result != null ){
+		
+		if( ! isAlive( key, entry ) ) entry = null;
+			
+		V result;
+		if( entry != null ){
 
 			// If found mark hit
 			stats.hit();
+			
+			result = entry.data();
 			
 		} else {
 			// Else mark miss
 			stats.miss();
 
 			// Use Accessor to fetch
-			result = accessor.get( key );
+			result = accessor.fetch( key );
 
 			try {
 				writeLock.lock();
 				
-				// Store NULL as NullEntry so to tell apart from no result
-    			if( result == null ){
-
-        			backend.put( key, NULL );
-    			} else {
-    				backend.put( key, result );
-    			}
-
+				backend.put( key, result );
+				
 			} finally {
 
 				writeLock.unlock();
 			}
-		}
-
-		if( NULL.equals( result ) ){
-			result = null;
 		}
 
     	return result;
@@ -197,40 +214,36 @@ public class AutomaticCacheImpl<K,V>
 
 	
 	@Override
-	public void put( K key, V value ){
+	public void invalidate( K key ){
 		
-		assert key != null && value != null;
+		notifyListeners( key );
 		
-		try {
-			writeLock.lock();
-			backend.put( key, value );
-		} finally {
-			writeLock.unlock();
-		}
+		invalidateEvent( key );
 	}
-	
+
 	@Override
-	public void remove( K key ){
+	public void invalidateEvent( K key ) {
 		
 		assert key != null;
 		
 		try {
 			writeLock.lock();
-			backend.remove( key );
+			backend.invalidate( key );
 		} finally {
 			writeLock.unlock();
 		}
-			
-		
 	}
 	
 	@Override
-	public void flush() {
+	public void invalidateAll() {
+		
+		// TODO: EVENTS!!!!!
+		// (oder rauswerfen)
 
 		// Clear cache
 		try {
 			writeLock.lock();
-    		backend.clear();
+    		backend.invalidateAll();
 		} finally {
 			writeLock.unlock();
 		}
@@ -241,25 +254,50 @@ public class AutomaticCacheImpl<K,V>
 		return stats;
 	}
 	
-	private static final class NullEntry implements Serializable {
+	@Override
+	public void invalidateAllWithin( int milliSeconds ) {
 		
-		public static final long serialVersionUID = 1L;
-		
-		@Override
-		public String toString(){
-			return "== NULL-ENTRY ==";
-		}
-		
-		@Override
-		public boolean equals( Object obj ) {
-			return obj==null || obj.getClass() == NullEntry.class;
-		}
-
-		@Override
-		public int hashCode() {
-			return 0;
-		}
-
+		invalidationManager = new TimoutInvalidationManager<K,V>(
+				System.currentTimeMillis(), milliSeconds );
 	}
 	
+	static class TimoutInvalidationManager<K,O>
+			implements CacheNG.InvalidationManager<K, O> {
+		
+		private final long timeoutStart,
+		                   timeoutDuration;
+		
+		TimoutInvalidationManager( long timeoutStart, long timeoutDuration ){
+			
+			this.timeoutStart = timeoutStart;
+			this.timeoutDuration = timeoutDuration;
+		}
+	
+		@Override
+		public boolean isValid( K key, CacheNG.Client.Entry<O> value ) {
+			
+			// Entry is newer than starting of timeout.
+			// This happend regularily if the entry is re-fetched after invalidation
+			if( value.creation() > timeoutStart ) return true;
+			
+			
+			long elapsed = System.currentTimeMillis() - timeoutStart;
+			
+			// Invalid immediately if > duration
+			if( elapsed >= timeoutDuration ) return false;
+			
+			long stretch = Integer.MAX_VALUE / timeoutDuration;
+			
+			int random = RandomMapper.positiveInteger( key.hashCode() );
+			
+			if( stretch * elapsed < random ){
+				
+				return false;
+			}
+			
+			return true;
+		}
+		
+	}
+
 }

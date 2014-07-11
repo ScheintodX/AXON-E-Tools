@@ -1,7 +1,7 @@
 package de.axone.cache.ng;
 
 import static de.axone.cache.ng.CacheNGAssert.*;
-import static de.axone.cache.ng.CacheNGImplementations.*;
+import static de.axone.cache.ng.CacheNGTestHelpers.*;
 import static de.axone.cache.ng.CacheNGTest_Implementations.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
@@ -9,16 +9,16 @@ import static org.testng.Assert.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNGImplementations.Aid;
-import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestClient;
+import de.axone.cache.ng.CacheNGTestHelpers.Aid;
+import de.axone.cache.ng.CacheNGTestHelpers.RN;
+import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
 
 @Test(groups="helper.cacheng" )
 public class CacheNGAssertTest {
 
 	public void checkAssertJForCache(){
 		
-		CacheNG.Client<Aid,TArticle> client = new TestClient<>();
+		CacheNG.Client<Aid,TArticle> client = new ClientHashMap<>( RN.AID_ARTICLE.realm() );
 		
 		assertThat( client ).hasNotCached( aid( "12345" ) );
 		try {

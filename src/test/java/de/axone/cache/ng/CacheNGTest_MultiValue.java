@@ -7,9 +7,7 @@ import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 import de.axone.cache.ng.CacheNG.Client;
-import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
-import de.axone.cache.ng.CacheNGImplementations.TestClient;
-import de.axone.cache.ng.CacheNGImplementations.TestClient.TestEntry;
+import de.axone.cache.ng.CacheNGTestHelpers.TestRealm;
 
 @Test( groups="helper.cacheng" )
 public class CacheNGTest_MultiValue {
@@ -21,16 +19,16 @@ public class CacheNGTest_MultiValue {
 	public void accessMultiValuesViaOneBackendCache() {
 		
 		CacheNG.Client<String, MultiValueData> backendMulti =
-				new TestClient<>();
+				new ClientHashMap<>( new TestRealm( "S->MV" ) );
 		
 		TestStringAccessor strToStrAcc = new TestStringAccessor();
 		
-		TestAutomaticClient<String,String> frontendString = new TestAutomaticClient<>(
+		CacheNG.AutomaticClient<String,String> frontendString = new AutomaticClientImpl<>(
 				new MultiStringAccessor( backendMulti ) );
 		
 		TestIntegerAccessor strToIntAcc = new TestIntegerAccessor();
 		
-		TestAutomaticClient<String,Integer> frontendInteger = new TestAutomaticClient<>(
+		CacheNG.AutomaticClient<String,Integer> frontendInteger = new AutomaticClientImpl<>(
 					new MultiIntegerAccessor( backendMulti ) );
 		
 		assertThat( backendMulti ).hasNotCached( TEST123 );
@@ -89,12 +87,12 @@ public class CacheNGTest_MultiValue {
 	public void invalidationDoesTheRightThing() {
 		
 		CacheNG.Client<String, MultiValueData> backendMulti =
-				new TestClient<>();
+				new ClientHashMap<>( new TestRealm( "S->MV" ) );
 		
 		TestStringAccessor strToStrAcc = new TestStringAccessor();
 		
-		TestAutomaticClient<String,String> frontendString =
-				new TestAutomaticClient<String,String>(
+		CacheNG.AutomaticClient<String,String> frontendString =
+				new AutomaticClientImpl<String,String>(
 						new MultiStringAccessor( backendMulti ) );
 		
 		assertThat( frontendString ).hasNotCached( NOT_HERE );
@@ -179,7 +177,27 @@ public class CacheNGTest_MultiValue {
 		@Override
 		public void put( String key, O value ) {
 			
-			putEntry( key, new TestEntry<>( value ) );
+			putEntry( key, new DefaultEntry<>( value ) );
+		}
+
+		@Override
+		public void invalidateAll() {
+			wrapped.invalidateAll();
+		}
+
+		@Override
+		public int size() {
+			return wrapped.size();
+		}
+
+		@Override
+		public int capacity() {
+			return wrapped.capacity();
+		}
+
+		@Override
+		public String info() {
+			return wrapped.info();
 		}
 
 	}
@@ -232,7 +250,10 @@ public class CacheNGTest_MultiValue {
 	}
 	
 	
-	static class TestStringAccessor implements CacheNG.Accessor<String,String> {
+	static class TestStringAccessor
+			extends AbstractSingleValueAccessor<String,String>
+			implements CacheNG.Accessor<String,String> {
+		
 		@Override
 		public String fetch( String key ) {
 			if( key.equals( NOT_HERE ) ) return null;
@@ -240,7 +261,10 @@ public class CacheNGTest_MultiValue {
 		}
 	}
 	
-	static class TestIntegerAccessor implements CacheNG.Accessor<String,Integer> {
+	static class TestIntegerAccessor
+			extends AbstractSingleValueAccessor<String,Integer>
+			implements CacheNG.Accessor<String,Integer> {
+		
 		@Override
 		public Integer fetch( String key ) {
 			if( key.equals( NOT_HERE ) ) return null;

@@ -1,7 +1,7 @@
 package de.axone.cache.ng;
 
 import static de.axone.cache.ng.CacheNGAssert.*;
-import static de.axone.cache.ng.CacheNGImplementations.*;
+import static de.axone.cache.ng.CacheNGTestHelpers.*;
 import static de.axone.cache.ng.CacheNGTest_Implementations.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -16,10 +16,10 @@ import org.testng.annotations.Test;
 import de.axone.cache.ng.CacheNG.AutomaticClient;
 import de.axone.cache.ng.CacheNG.CacheBridge;
 import de.axone.cache.ng.CacheNG.CacheEventProvider;
-import de.axone.cache.ng.CacheNGImplementations.Identifiable;
-import de.axone.cache.ng.CacheNGImplementations.TArticle;
-import de.axone.cache.ng.CacheNGImplementations.TestAutomaticClient;
-import de.axone.cache.ng.CacheNGImplementations.Tid;
+import de.axone.cache.ng.CacheNGTestHelpers.Identifiable;
+import de.axone.cache.ng.CacheNGTestHelpers.RN;
+import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
+import de.axone.cache.ng.CacheNGTestHelpers.Tid;
 import de.axone.cache.ng.CacheNGTest_ArticleListForTid.TestAccessor_ArticleForTid;
 import de.axone.cache.ng.CacheNGTest_ArticleListForTid.TestMapTidToArticle;
 
@@ -47,13 +47,13 @@ public class CacheNGTest_ArticleListForTop {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				new TestAutomaticClient<>();
+				new AutomaticClientImpl<>( RN.TID_LARTICLE.realm() );
 		
 		TestAccessor_ArticleForTop accessorForTop =
 				new TestAccessor_ArticleForTop( autoForTid, accessorForTid, tidForTop );
 		
 		CacheNG.AutomaticClient<Top, List<TArticle>> autoForTop =
-				new TestAutomaticClient<>();
+				new AutomaticClientImpl<>( RN.TOP_LARTICLE.realm() );
 		
 		((CacheEventProvider<Tid>)autoForTid).registerListener( new TidToTopBridge( autoForTop, tidForTop ) );
 		
@@ -135,6 +135,7 @@ public class CacheNGTest_ArticleListForTop {
 	
 	
 	public static class TestAccessor_ArticleForTop
+			extends AbstractSingleValueAccessor<Top, List<TArticle>>
 			implements CacheNG.Accessor<Top, List<TArticle>> {
 
 		private final CacheNG.AutomaticClient<Tid, List<TArticle>> forTid;

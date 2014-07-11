@@ -25,7 +25,7 @@ public interface AutomaticCache<K, V> {
 	
 	public abstract void remove( K key );
 
-	public class Stats {
+	public static class Stats {
 		
 		private AtomicLong accesses = new AtomicLong(), hits = new AtomicLong();
 		private AutomaticCache<?,?> cache;
