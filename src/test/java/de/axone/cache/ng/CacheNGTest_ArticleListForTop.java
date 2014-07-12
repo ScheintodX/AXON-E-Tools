@@ -47,13 +47,13 @@ public class CacheNGTest_ArticleListForTop {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				new AutomaticClientImpl<>( RN.TID_LARTICLE.realm() );
+				new AutomaticClientImpl<>( RN.TID_LARTICLE );
 		
 		TestAccessor_ArticleForTop accessorForTop =
 				new TestAccessor_ArticleForTop( autoForTid, accessorForTid, tidForTop );
 		
 		CacheNG.AutomaticClient<Top, List<TArticle>> autoForTop =
-				new AutomaticClientImpl<>( RN.TOP_LARTICLE.realm() );
+				new AutomaticClientImpl<>( RN.TOP_LARTICLE );
 		
 		((CacheEventProvider<Tid>)autoForTid).registerListener( new TidToTopBridge( autoForTop, tidForTop ) );
 		
@@ -98,12 +98,12 @@ public class CacheNGTest_ArticleListForTop {
 	}
 	
 	
-	private static class Top extends Identifiable {
+	static class Top extends Identifiable {
 		public Top( String identifier ) {
 			super( identifier );
 		}
 	}
-	private static Top top( String identifier ){
+	static Top top( String identifier ){
 		return new Top( identifier );
 	}
 	

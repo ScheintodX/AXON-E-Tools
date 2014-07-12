@@ -37,7 +37,7 @@ public class CacheNGTest_Port_AutomaticClient {
 	private static String [] testEntryKeys2 = new String[]{ X, Y, Z, D };
 
 	private static CacheNG.Cache<String,TestEntry> backend =
-			new CacheLRUMap<String,TestEntry>( new TestRealm( "AutomaticCacheTest" ), 4);
+			new CacheLRUMap<>( new TestRealm<String,TestEntry>( "AutomaticCacheTest" ), 4);
 	
 	//private static Cache<String,TestEntry> backend = new CacheHashMap<String,TestEntry>();
 	private static TestDataAccessor acc = new TestDataAccessor();

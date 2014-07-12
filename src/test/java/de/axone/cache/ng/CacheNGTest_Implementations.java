@@ -152,7 +152,7 @@ public class CacheNGTest_Implementations {
 	
 	public void storeAndRestoreFromTestCache() {
 		
-		CacheNG.Cache<Aid,TArticle> client = new CacheHashMap<>( RN.AID_ARTICLE.realm() );
+		CacheNG.Cache<Aid,TArticle> client = new CacheHashMap<>( RN.AID_ARTICLE );
 		
 		TArticle tart = TArticle.build( A12345 );
 		
@@ -174,7 +174,7 @@ public class CacheNGTest_Implementations {
 	public void buildByTestAutoCache() {
 		
 		CacheNG.AutomaticClient<Aid, TArticle> auto =
-				new AutomaticClientImpl<>( RN.AID_ARTICLE.realm() );
+				new AutomaticClientImpl<>( RN.AID_ARTICLE );
 				
 		TestAccessor_ArticleForIdentifier accessor = new TestAccessor_ArticleForIdentifier();
 		
@@ -216,7 +216,7 @@ public class CacheNGTest_Implementations {
 		assertThat( acc.fetch( T345 ) ).hasSize( 1 ).isNotNull();
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> auto =
-				new AutomaticClientImpl<>( RN.TID_LARTICLE.realm() );
+				new AutomaticClientImpl<>( RN.TID_LARTICLE );
 		
 		assertThat( auto ).hasNotCached( T123 )
 				.lookingInBackend().hasNotCached( T123 );

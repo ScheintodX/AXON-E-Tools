@@ -66,13 +66,13 @@ public class CacheNGTest_CombinedSearchQueries {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				new AutomaticClientImpl<>( RN.TID_LARTICLE.realm() );
+				new AutomaticClientImpl<>( RN.TID_LARTICLE );
 		
 		TestAccessor_ArticleForQuery forQuery =
 				new TestAccessor_ArticleForQuery( autoForTid, forTid );
 		
 		CacheNG.AutomaticClient<TestSearchQuery, List<TArticle>> autoForQuery =
-				new AutomaticClientImpl<>( RN.SQTID_LARTICLE.realm() );
+				new AutomaticClientImpl<>( RN.SQTID_LARTICLE );
 		
 		autoForTid.registerListener( new TidToQueryBridge( autoForQuery ) );
 		

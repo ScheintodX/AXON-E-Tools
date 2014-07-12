@@ -23,7 +23,7 @@ public class CacheNGTest_TimeoutAll {
 				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				new AutomaticClientImpl<>( RN.AID_ARTICLE.realm() );
+				new AutomaticClientImpl<>( RN.AID_ARTICLE );
 		
 		assertThat( auto ).hasNotCached( A12345 )
 				.hasNotCached( A12346 );
@@ -52,7 +52,7 @@ public class CacheNGTest_TimeoutAll {
 				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				new AutomaticClientImpl<>( RN.AID_ARTICLE.realm() );
+				new AutomaticClientImpl<>( RN.AID_ARTICLE );
 		
 		assertFalse( auto.isCached( A12345 ) );
 		assertFalse( auto.isCached( A12346 ) );
@@ -83,7 +83,7 @@ public class CacheNGTest_TimeoutAll {
 				new TestAccessor_ArticleForIdentifier();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				new AutomaticClientImpl<>( RN.AID_ARTICLE.realm() );
+				new AutomaticClientImpl<>( RN.AID_ARTICLE );
 		
 		// Mimic real range article identifiers
 		for( int i=0; i<X; i++ ){

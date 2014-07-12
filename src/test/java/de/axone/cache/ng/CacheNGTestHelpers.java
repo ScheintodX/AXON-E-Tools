@@ -8,8 +8,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
+import de.axone.cache.ng.CacheNGTest_ArticleListForSearchQuery.TestSearchQuery;
+import de.axone.cache.ng.CacheNGTest_ArticleListForTop.Top;
+
 public class CacheNGTestHelpers {
 	
+	/*
 	public enum RN {
 		
 		AID_ARTICLE( "aid->article" ),
@@ -25,21 +29,31 @@ public class CacheNGTestHelpers {
 			this.realm = realm;
 		}
 	
-		public CacheNG.Realm realm() {
+		public <K,O>CacheNG.Realm<K,O> realm() {
 			return new TestRealm( realm );
 		}
 		
-		public CacheNG.Realm unique(){
+		public <K,O>CacheNG.Realm<K,O> unique(){
 			return new TestRealm( realm, UUID.randomUUID().toString() );
 		}
 		
-		public CacheNG.Realm timeout( int timeout ){
+		public <K,O>CacheNG.Realm<K,O> timeout( int timeout ){
 			return new TestRealm( realm, timeout );
 		}
 		
 	}
+	*/
+	static abstract class RN {
+		
+		public static TestRealm<Aid,TArticle> AID_ARTICLE = new TestRealm<>( "aid->article" );
+		public static TestRealm<Tid,List<TArticle>> TID_LARTICLE = new TestRealm<>( "tid->L:article" );
+		public static TestRealm<Top,List<TArticle>> TOP_LARTICLE = new TestRealm<>( "top->L:article" );
+		
+		public static TestRealm<TestSearchQuery,List<TArticle>> SQTID_LARTICLE = new TestRealm<>( "sqtid->L:article" );
+	}
+	
 
-	static class TestRealm implements CacheNG.Realm {
+	static class TestRealm<K,O> implements CacheNG.Realm<K,O> {
 		
 		private final String client;
 		private final String name;
@@ -69,6 +83,10 @@ public class CacheNGTestHelpers {
 			return result;
 		}
 		
+		public TestRealm<K,O> unique() {
+			
+			return new TestRealm<>( realm() + "/" + UUID.randomUUID().toString() );
+		}
 	}
 	
 

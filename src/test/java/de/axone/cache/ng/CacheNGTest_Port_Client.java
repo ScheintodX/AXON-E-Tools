@@ -27,7 +27,8 @@ public class CacheNGTest_Port_Client {
 	// TODO: There is room here for parallel tests.
 	public void testHashCache(){
 		
-		CacheNG.Cache<String,TestEntry> cache = new CacheHashMap<String,TestEntry>( new TestRealm( "HashTest" ));
+		CacheNG.Cache<String,TestEntry> cache = new CacheHashMap<>(
+				new TestRealm<String,TestEntry>( "HashTest" ));
 		
 		assertPutGet( cache, A, a );
 		assertPutGet( cache, B, b );
@@ -42,7 +43,8 @@ public class CacheNGTest_Port_Client {
 	
 	public void testLRUCache(){
 		
-		CacheNG.Cache<String,TestEntry> cache = new CacheLRUMap<String,TestEntry>( new TestRealm( "LRUCache" ), 2);
+		CacheNG.Cache<String,TestEntry> cache = new CacheLRUMap<>(
+				new TestRealm<String,TestEntry>( "LRUCache" ), 2);
 		
 		assertPutGet( cache, A, a );
 		assertPutGet( cache, B, b );

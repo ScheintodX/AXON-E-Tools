@@ -45,7 +45,7 @@ public class AutomaticClientImpl<K,V>
 	private Stats stats = new DefaultStats( this );
 	
 	// Simplification for testing
-	AutomaticClientImpl( CacheNG.Realm realm ){
+	AutomaticClientImpl( CacheNG.Realm<K,V> realm ){
 		backend = new CacheHashMap<>( realm );
 	}
 

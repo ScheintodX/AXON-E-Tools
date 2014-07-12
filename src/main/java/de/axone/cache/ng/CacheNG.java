@@ -134,7 +134,7 @@ public interface CacheNG {
 	 * 
 	 * @author flo
 	 */
-	public interface Realm {
+	public interface Realm<K,O> {
 		
 		public String realm();
 	}

@@ -20,7 +20,7 @@ public class CacheNGTest_MaxLifetime {
 		TestAccessor_ArticleForIdentifier accessor = spy( new TestAccessor_ArticleForIdentifier() );
 		
 		CacheNG.Cache<Aid,TArticle> client = 
-				new CacheHashMap<>( RN.AID_ARTICLE.realm() );
+				new CacheHashMap<>( RN.AID_ARTICLE );
 		
 		// 100ms timeout
 		CacheNG.Cache<Aid,TArticle> timeoutClient =

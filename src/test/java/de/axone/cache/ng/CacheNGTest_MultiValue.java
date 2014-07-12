@@ -19,7 +19,7 @@ public class CacheNGTest_MultiValue {
 	public void accessMultiValuesViaOneBackendCache() {
 		
 		CacheNG.Cache<String, MultiValueData> backendMulti =
-				new CacheHashMap<>( new TestRealm( "S->MV" ) );
+				new CacheHashMap<>( new TestRealm<String,MultiValueData>( "S->MV" ) );
 		
 		TestStringAccessor strToStrAcc = new TestStringAccessor();
 		
@@ -87,7 +87,7 @@ public class CacheNGTest_MultiValue {
 	public void invalidationDoesTheRightThing() {
 		
 		CacheNG.Cache<String, MultiValueData> backendMulti =
-				new CacheHashMap<>( new TestRealm( "S->MV" ) );
+				new CacheHashMap<>( new TestRealm<String,MultiValueData>( "S->MV" ) );
 		
 		TestStringAccessor strToStrAcc = new TestStringAccessor();
 		

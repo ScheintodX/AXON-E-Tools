@@ -20,13 +20,13 @@ public class CacheLRUMap<K,O>
 		extends AbstractEntryCache<K,O>
 		implements CacheNG.Cache.Direct<K,O>, CacheNG.Cache.Watched {
 	
-	private final Realm realm;
+	private final Realm<K,O> realm;
 	private final LRUCache<K,Cache.Entry<O>> unsafeBackend;
 	private final Map<K,Cache.Entry<O>> backend;
 	
 	private Watcher watcher = new Watcher();
 
-	public CacheLRUMap( Realm realm, int maxCapacity ) {
+	public CacheLRUMap( Realm<K,O> realm, int maxCapacity ) {
 		this.realm = realm;
 		this.unsafeBackend = new LRUCache<K,Cache.Entry<O>>( maxCapacity );
 		this.backend = Collections.<K,Cache.Entry<O>>synchronizedMap( unsafeBackend );

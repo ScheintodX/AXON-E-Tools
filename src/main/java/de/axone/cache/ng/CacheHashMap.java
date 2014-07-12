@@ -19,10 +19,10 @@ public class CacheHashMap<K,V>
 		extends AbstractEntryCache<K,V>
 		implements Cache.Direct<K,V> {
 	
-	private final Realm name;
+	private final Realm<K,V> name;
 	private final Map<K,Cache.Entry<V>> backend;
 	
-	public CacheHashMap( Realm name ){
+	public CacheHashMap( Realm<K,V> name ){
 		
 		this.name = name;
 		this.backend = Collections.synchronizedMap( new HashMap<K,Cache.Entry<V>>() );
