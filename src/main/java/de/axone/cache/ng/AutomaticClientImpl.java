@@ -13,7 +13,7 @@ import de.axone.cache.ng.CacheNG.InvalidationManager;
 
 
 /**
- * Automatic Cache using DataProviders.
+ * Automatic Client using Accessors.
  * 
  * This is a frontend to for another cache which adds automatic fetching
  * capabilities and multiple value access.
@@ -21,16 +21,16 @@ import de.axone.cache.ng.CacheNG.InvalidationManager;
  * If a MultiValueDataAccessor is used fetching of more than one item can
  * be done with just one query which should speed up things significantly.
  * 
- * If the cache doesn't contain the requested data it uses the DataAccessor
+ * If this' cache doesn't contain the requested data it uses the DataAccessor
  * in order to obtain it.
  * 
  * Normally you would want to use this cache in connections with an CacheLRUMap
- * so it has a limited size but fills automatically.
+ * or CacheEHCache so that it has a limited size but fills automatically.
  *
  * @author flo
  *
- * @param <K> key
- * @param <V> value
+ * @param <K> Key-Type
+ * @param <V> Value-Type
  */
 public class AutomaticClientImpl<K,V>
 		extends AbstractCacheEventProvider<K,V>
@@ -212,7 +212,7 @@ public class AutomaticClientImpl<K,V>
 	@Override
 	public void invalidate( K key ){
 		
-		notifyListeners( key );
+		listenersInvalidate( key );
 		
 		invalidateEvent( key );
 	}
@@ -233,9 +233,14 @@ public class AutomaticClientImpl<K,V>
 	@Override
 	public void invalidateAll() {
 		
-		// TODO: EVENTS!!!!!
-		// (oder rauswerfen)
-
+		listenersInvalidateAll();
+		
+		invalidateAllEvent();
+	}
+	
+	@Override
+	public void invalidateAllEvent() {
+		
 		// Clear cache
 		try {
 			lock.writeLock().lock();
@@ -295,5 +300,6 @@ public class AutomaticClientImpl<K,V>
 		}
 		
 	}
+
 
 }

@@ -439,7 +439,8 @@ public interface CacheNG {
 		
 		public void registerListener( CacheEventListener<K> listener );
 		
-		void notifyListeners( K key );
+		void listenersInvalidate( K key );
+		void listenersInvalidateAll();
 	}
 	
 	/**
@@ -452,6 +453,7 @@ public interface CacheNG {
 	public interface CacheEventListener<K> {
 		
 		public void invalidateEvent( K key );
+		public void invalidateAllEvent();
 	}
 	
 	
@@ -477,6 +479,12 @@ public interface CacheNG {
 			T targetKey = bridge( sourceKey );
 			
 			target.invalidateEvent( targetKey );
+		}
+		
+		@Override
+		public void invalidateAllEvent() {
+			
+			target.invalidateAllEvent();
 		}
 		
 		/**

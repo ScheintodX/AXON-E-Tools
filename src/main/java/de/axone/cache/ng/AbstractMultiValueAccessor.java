@@ -1,6 +1,6 @@
 package de.axone.cache.ng;
 
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.Map;
 
 public abstract class AbstractMultiValueAccessor<K,V> implements CacheNG.Accessor<K, V> {
@@ -8,10 +8,7 @@ public abstract class AbstractMultiValueAccessor<K,V> implements CacheNG.Accesso
 	@Override
 	public V fetch( K key ) {
 		
-		LinkedList<K> list = new LinkedList<K>();
-		list.add( key );
-		
-		Map<K,V> result = fetch( list );
+		Map<K,V> result = fetch( Arrays.asList( key ) );
 		
 		return result.get( key );
 	}

@@ -30,7 +30,13 @@ public class CacheNGTest_ArticleForId {
 	
 		@Override
 		public void invalidateEvent( Aid key ) {
-			E.rr( "------" + key + "-----------" );
+			E.cho( "------" + key + "-----------" );
+		}
+
+		@Override
+		public void invalidateAllEvent() {
+			E.cho( "--------ALL-------------" );
+			
 		}
 	
 	}

@@ -17,10 +17,18 @@ public class AbstractCacheEventProvider<K,O> implements CacheEventProvider<K> {
 	}
 
 	@Override
-	public void notifyListeners( K key ) {
+	public void listenersInvalidate( K key ) {
 		
 		if( listeners != null ) for( CacheEventListener<K> listener : listeners ){
 			listener.invalidateEvent( key );
+		}
+	}
+
+	@Override
+	public void listenersInvalidateAll() {
+		
+		if( listeners != null ) for( CacheEventListener<K> listener : listeners ){
+			listener.invalidateAllEvent();
 		}
 	}
 
