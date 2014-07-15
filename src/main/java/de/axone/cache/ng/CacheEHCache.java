@@ -4,6 +4,7 @@ import java.io.File;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+import net.sf.ehcache.Status;
 import net.sf.ehcache.config.CacheConfiguration;
 import de.axone.cache.Watcher;
 import de.axone.cache.ng.CacheNG.Cache;
@@ -23,7 +24,7 @@ public class CacheEHCache<K,O>
 	
 	private Watcher watcher = new Watcher();
 	
-	public static <I,J> CacheEHCache<I,J>  instance( File tmpDir, Realm<I,J> realm, long size ){
+	public static <I,J> CacheEHCache<I,J>  instance( File tmpDir, Realm<I,J> realm, long size ) {
 		
 		CacheConfiguration config = new CacheConfiguration();
 		config.setName( realm.name() );
@@ -35,8 +36,14 @@ public class CacheEHCache<K,O>
 		net.sf.ehcache.Cache newCache = new net.sf.ehcache.Cache( config );
 		manager.addCacheIfAbsent( newCache );
 		
+		Status status = newCache.getStatus();
+		if( status != Status.STATUS_ALIVE ){
+			
+			throw new IllegalStateException( realm.name() + " is not alive" );
+		}
 		return new CacheEHCache<I,J>( realm, newCache );
 	}
+	
 	public static void shutdown(){
 		CacheManager.getInstance().shutdown();
 	}

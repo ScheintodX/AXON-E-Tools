@@ -28,7 +28,7 @@ import de.axone.cache.ng.CacheNGTest_ArticleListForTid.TestMapTidToArticle;
 // wie "ExecutorService" umgestellt werden. Die Exekutoren könnten von den jew.
 // Backends order von einer Factory erzeugt werden.
 
-@Test( groups="helper.testng" )
+@Test( groups="cacheng.combined" )
 public class CacheNGTest_CombinedSearchQueries {
 	
 	TestMapTidToArticle data = new TestMapTidToArticle();

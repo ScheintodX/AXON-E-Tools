@@ -10,16 +10,16 @@ import org.testng.annotations.Test;
 import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
-import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
+import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForAid;
 
-@Test( groups="helper.testng" )
+@Test( groups="cacheng.accessor" )
 public class CacheNGTest_AccessorUsage {
 
 	public void accessorIsOnlyUsedWhenNeeded(){
 		
 		CacheNG.AutomaticClient<Aid, TArticle> auto = new AutomaticClientImpl<>( RN.AID_ARTICLE );
 		
-		TestAccessor_ArticleForIdentifier acc = spy( new TestAccessor_ArticleForIdentifier() );
+		TestAccessor_ArticleForAid acc = spy( new TestAccessor_ArticleForAid() );
 		
 		verify( acc, never() ).fetch( A12345 );
 		

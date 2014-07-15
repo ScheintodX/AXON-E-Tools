@@ -13,7 +13,7 @@ import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
 
-@Test(groups="helper.cacheng" )
+@Test(groups="cacheng.helper" )
 public class CacheNGAssertTest {
 
 	public void checkAssertJForCache(){

@@ -11,16 +11,16 @@ import org.testng.annotations.Test;
 import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
-import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
+import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForAid;
 import de.axone.tools.E;
 
-@Test( groups="helper.testng" )
+@Test( groups="testng.timeoutall" )
 public class CacheNGTest_TimeoutAll {
 
 	public void cacheTimesoutEntriesAfterATimeoutPeriod() throws Exception {
 		
-		TestAccessor_ArticleForIdentifier accessor =
-				new TestAccessor_ArticleForIdentifier();
+		TestAccessor_ArticleForAid accessor =
+				new TestAccessor_ArticleForAid();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
 				new AutomaticClientImpl<>( RN.AID_ARTICLE );
@@ -48,8 +48,8 @@ public class CacheNGTest_TimeoutAll {
 	
 	public void cacheDoesNotTimeoutEntriesCreatedAfterTimeoutEvent() throws Exception {
 		
-		TestAccessor_ArticleForIdentifier accessor =
-				new TestAccessor_ArticleForIdentifier();
+		TestAccessor_ArticleForAid accessor =
+				new TestAccessor_ArticleForAid();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
 				new AutomaticClientImpl<>( RN.AID_ARTICLE );
@@ -79,8 +79,8 @@ public class CacheNGTest_TimeoutAll {
 	
 	public void testInvalidationWithLargeRandomIds() throws Exception {
 		
-		TestAccessor_ArticleForIdentifier accessor =
-				new TestAccessor_ArticleForIdentifier();
+		TestAccessor_ArticleForAid accessor =
+				new TestAccessor_ArticleForAid();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
 				new AutomaticClientImpl<>( RN.AID_ARTICLE );

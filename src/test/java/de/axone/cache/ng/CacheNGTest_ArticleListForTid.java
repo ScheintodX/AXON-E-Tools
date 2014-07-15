@@ -14,9 +14,10 @@ import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
 import de.axone.cache.ng.CacheNGTestHelpers.Tid;
 
-@Test( groups="helper.testng" )
+@Test( groups="cacheng.basic" )
 public class CacheNGTest_ArticleListForTid {
 
+	
 	static class TestAccessor_ArticleForTid
 			extends AbstractSingleValueAccessor<Tid, List<TArticle>>
 			implements CacheNG.Accessor<Tid, List<TArticle>>{
@@ -40,6 +41,7 @@ public class CacheNGTest_ArticleListForTid {
 	
 	}
 
+	
 	static class TestMapTidToArticle extends HashMap<Tid, List<TArticle>>{
 		
 		void addArticle( TArticle art ){
@@ -56,6 +58,7 @@ public class CacheNGTest_ArticleListForTid {
 		}
 	}
 
+	
 	public void cacheArticlesForTids(){
 		
 		TestMapTidToArticle data = new TestMapTidToArticle();
@@ -78,6 +81,5 @@ public class CacheNGTest_ArticleListForTid {
 		auto.invalidate( T123 );
 		assertThat( auto ).hasNotCached( T123 );
 	}
-	
 	
 }

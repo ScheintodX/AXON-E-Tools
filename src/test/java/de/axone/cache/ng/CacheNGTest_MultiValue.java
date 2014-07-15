@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 import de.axone.cache.ng.CacheNG.Cache;
 import de.axone.cache.ng.CacheNGTestHelpers.TestRealm;
 
-@Test( groups="helper.cacheng" )
+@Test( groups="cacheng.multivalue" )
 public class CacheNGTest_MultiValue {
 
 	private static final String NOT_HERE = "NOT_HERE";

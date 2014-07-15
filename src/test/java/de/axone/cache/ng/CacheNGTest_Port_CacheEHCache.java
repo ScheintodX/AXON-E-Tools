@@ -14,13 +14,13 @@ import org.testng.annotations.Test;
 import de.axone.cache.ng.CacheNGTestHelpers.TestRealm;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-@Test( groups="tools.cache.ehcache" )
+@Test( groups="cacheng.ehcache" )
 public class CacheNGTest_Port_CacheEHCache {
 	
 	public void testEHCache() throws Exception {
 		
 		CacheEHCache<String,TestValue> cache = CacheEHCache.instance(
-				new File( "/tmp/ehcache" ), new TestRealm<String,TestValue>( "testcache" ), 10 );
+				new File( "/tmp/ehcache" ), new TestRealm<String,TestValue>( "testcache" ).unique(), 10 );
 		
 		String TESTKEY = "testkey";
 		TestValue TESTVALUE = new TestValue( true );
@@ -62,7 +62,7 @@ public class CacheNGTest_Port_CacheEHCache {
 		// A simple wrapper around EHCache which does the configuration
 		// and provides a map like interface
 		CacheNG.Cache<TestKey,String> cache = CacheEHCache.instance(
-				new File( "/tmp/ehcache" ), new TestRealm<TestKey,String>( "testcache" ), 10 );
+				new File( "/tmp/ehcache" ), new TestRealm<TestKey,String>( "testcache" ).unique(), 10 );
 		
 		// May contain content from last run
 		cache.invalidateAll();

@@ -16,7 +16,7 @@ import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.TestRealm;
 import de.axone.tools.Sets;
 
-@Test( groups="helper.cacheng" )
+@Test( groups="cacheng.twostep" )
 public class CacheNGTest_AutomaticTwoStepClient {
 	
 	private Map<String,List<Aid>> map1 = new HashMap<>();

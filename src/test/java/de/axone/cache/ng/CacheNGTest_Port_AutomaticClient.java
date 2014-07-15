@@ -20,7 +20,7 @@ import de.axone.cache.ng.CacheNG.Accessor;
 import de.axone.cache.ng.CacheNGTestHelpers.TestRealm;
 import de.axone.cache.ng.CacheNGTest_Port_Client.TestEntry;
 
-@Test( groups="tools.autocache" )
+@Test( groups="cacheng.autocache" )
 public class CacheNGTest_Port_AutomaticClient {
 	
 	//private static final Object mutex = new Object();
@@ -287,6 +287,7 @@ public class CacheNGTest_Port_AutomaticClient {
 			return "Accessor Hitcount: " + hitcount + "/" + acccount + "=" + ((int)(Math.round( 100.0*hitcount/acccount )) + "%" );
 			
 		}
+		
 	}
 	
 }

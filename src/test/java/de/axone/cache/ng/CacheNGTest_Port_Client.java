@@ -14,7 +14,7 @@ import de.axone.cache.ng.CacheNGTestHelpers.TestRealm;
  * @author flo
  *
  */
-@Test( groups="tools.cache" )
+@Test( groups="cacheng.client" )
 public class CacheNGTest_Port_Client {
 	
 	static final String A="a", B="b", C="c", D="d";

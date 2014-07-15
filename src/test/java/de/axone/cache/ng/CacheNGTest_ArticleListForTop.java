@@ -21,7 +21,7 @@ import de.axone.cache.ng.CacheNGTestHelpers.Tid;
 import de.axone.cache.ng.CacheNGTest_ArticleListForTid.TestAccessor_ArticleForTid;
 import de.axone.cache.ng.CacheNGTest_ArticleListForTid.TestMapTidToArticle;
 
-@Test( groups="helper.cacheng" )
+@Test( groups="cacheng.events" )
 public class CacheNGTest_ArticleListForTop {
 
 	static final Top 

@@ -10,18 +10,18 @@ import org.testng.annotations.Test;
 import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
-import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
+import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForAid;
 
 
 // TODO: Test events for Automatic invalidation with Timeouts!!!
 
-@Test( groups="helper.cacheng" )
+@Test( groups="cacheng.events" )
 public class CacheNGTest_Events {
 
 	public void listenersReceiveEvents() throws Exception {
 		
-		TestAccessor_ArticleForIdentifier accMaster = spy( new TestAccessor_ArticleForIdentifier() );
-		TestAccessor_ArticleForIdentifier accSlave = spy( new TestAccessor_ArticleForIdentifier() );
+		TestAccessor_ArticleForAid accMaster = spy( new TestAccessor_ArticleForAid() );
+		TestAccessor_ArticleForAid accSlave = spy( new TestAccessor_ArticleForAid() );
 		
 		CacheHashMap<Aid,TArticle> cacheMaster =
 				spy( new CacheHashMap<>( RN.AID_ARTICLE.unique() ) );

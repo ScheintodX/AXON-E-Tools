@@ -19,7 +19,7 @@ import de.axone.cache.ng.CacheNGTestHelpers.Tid;
 import de.axone.cache.ng.CacheNGTest_ArticleListForTid.TestAccessor_ArticleForTid;
 import de.axone.cache.ng.CacheNGTest_ArticleListForTid.TestMapTidToArticle;
 
-@Test( groups="helper.testng" )
+@Test( groups="cacheng.query" )
 public class CacheNGTest_ArticleListForSearchQuery {
 
 	TestMapTidToArticle data = new TestMapTidToArticle();

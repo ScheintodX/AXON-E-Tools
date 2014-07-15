@@ -10,14 +10,14 @@ import org.testng.annotations.Test;
 import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
-import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
+import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForAid;
 
-@Test( groups="helper.testng" )
+@Test( groups="cacheng.lifetime" )
 public class CacheNGTest_MaxLifetime {
 
 	public void cacheArticlesForIdsAndTimeOut() throws Exception {
 		
-		TestAccessor_ArticleForIdentifier accessor = spy( new TestAccessor_ArticleForIdentifier() );
+		TestAccessor_ArticleForAid accessor = spy( new TestAccessor_ArticleForAid() );
 		
 		CacheNG.Cache<Aid,TArticle> client = 
 				new CacheHashMap<>( RN.AID_ARTICLE );

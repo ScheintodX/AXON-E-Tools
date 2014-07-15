@@ -9,7 +9,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import de.axone.cache.ng.CacheNG.Accessor;
 import de.axone.cache.ng.CacheNG.Cache;
-import de.axone.cache.ng.CacheNG.InvalidationManager;
 
 
 /**
@@ -35,49 +34,24 @@ import de.axone.cache.ng.CacheNG.InvalidationManager;
 public class AutomaticClientImpl<K,O>
 		implements CacheNG.AutomaticClient<K,O> {
 
-	final CacheNG.Cache<K,O> backend;
+	final CacheWrapperDelayedInvalidation<K,O> backend;
 	
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-	private InvalidationManager<K,O> invalidationManager;
-	
 	private Stats stats = new DefaultStats( this );
 	
 	// Simplification for testing
 	AutomaticClientImpl( CacheNG.Realm<K,O> realm ){
-		backend = new CacheHashMap<>( realm );
+		this( new CacheHashMap<>( realm ) );
 	}
 
 	public AutomaticClientImpl( CacheNG.Cache<K,O> backend ){
 		
 		assert backend != null;
 		
-		this.backend = backend;
+		this.backend = new CacheWrapperDelayedInvalidation<>( backend );
 	}
 	
-	@Override
-	public boolean isCached( K key ) {
-		
-		// This is quick
-		if( ! backend.isCached( key ) ) return false;
-		
-		// Fetch for further checks
-		Cache.Entry<O> entry = backend.fetchEntry( key );
-		
-		return entry != null && isAlive( key, entry );
-	}
-	
-	private boolean isAlive( K key, CacheNG.Cache.Entry<O> entry ){
-		
-		if( invalidationManager != null ){
-			
-			return invalidationManager.isValid( key, entry );
-		}
-		
-		return true;
-	}
-	
-
 	@Override
 	public Map<K,O> fetch( Collection<K> keys, Accessor<K,O> accessor ){
 		
@@ -92,11 +66,6 @@ public class AutomaticClientImpl<K,O>
     			
     			Cache.Entry<O> found = backend.fetchEntry( key );
     			
-				if( found != null && ! isAlive( key, found ) ){
-					invalidate( key );
-					found = null;
-				}
-
     			if( found == null ){
     				
     				stats.miss();
@@ -153,11 +122,6 @@ public class AutomaticClientImpl<K,O>
 			entry = backend.fetchEntry( key );
 		} finally { lock.readLock().unlock(); }
 		
-		if( entry != null && ! isAlive( key, entry ) ) {
-			invalidate( key );
-			entry = null;
-		}
-			
 		O result;
 		if( entry != null ){
 
@@ -237,52 +201,15 @@ public class AutomaticClientImpl<K,O>
 	public Stats stats(){
 		return stats;
 	}
-	
+
+	@Override
+	public boolean isCached( K key ) {
+		return backend.isCached( key );
+	}
+
 	@Override
 	public void invalidateAllWithin( int milliSeconds ) {
-		
-		invalidationManager = new TimoutInvalidationManager<K,O>(
-				System.currentTimeMillis(), milliSeconds );
+		backend.invalidateAllWithin( milliSeconds );
 	}
 	
-	static class TimoutInvalidationManager<K,O>
-			implements CacheNG.InvalidationManager<K, O> {
-		
-		private final long timeoutStart,
-		                   timeoutDuration;
-		
-		TimoutInvalidationManager( long timeoutStart, long timeoutDuration ){
-			
-			this.timeoutStart = timeoutStart;
-			this.timeoutDuration = timeoutDuration;
-		}
-	
-		@Override
-		public boolean isValid( K key, CacheNG.Cache.Entry<O> value ) {
-			
-			// Entry is newer than starting of timeout.
-			// This happend regularily if the entry is re-fetched after invalidation
-			if( value.creation() > timeoutStart ) return true;
-			
-			
-			long elapsed = System.currentTimeMillis() - timeoutStart;
-			
-			// Invalid immediately if > duration
-			if( elapsed >= timeoutDuration ) return false;
-			
-			long stretch = Integer.MAX_VALUE / timeoutDuration;
-			
-			int random = RandomMapper.positiveInteger( key.hashCode() );
-			
-			if( stretch * elapsed < random ){
-				
-				return false;
-			}
-			
-			return true;
-		}
-		
-	}
-
-
 }

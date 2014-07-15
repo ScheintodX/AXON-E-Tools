@@ -5,10 +5,9 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.RandomMapper;
 import de.axone.tools.E;
 
-@Test( groups="cache.tools" )
+@Test( groups="cacheng.tools" )
 public class RandomMapperTest {
 	
 	private static final int RUNS = 1_000_000;

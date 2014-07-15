@@ -14,10 +14,10 @@ import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
 import de.axone.cache.ng.CacheNGTestHelpers.Tid;
-import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForIdentifier;
+import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForAid;
 
 
-@Test(groups="helper.cacheng" )
+@Test(groups="cacheng.helper" )
 public class CacheNGTest_Implementations {
 	
 	static final Tid  T123 = tid( "123" ),
@@ -84,7 +84,7 @@ public class CacheNGTest_Implementations {
 	
 	public void buildArticleUsingAccessor() {
 		
-		TestAccessor_ArticleForIdentifier acc = new TestAccessor_ArticleForIdentifier();
+		TestAccessor_ArticleForAid acc = new TestAccessor_ArticleForAid();
 		
 		TArticle tart = acc.fetch( A12345 );
 		assertThat( tart )
@@ -143,7 +143,7 @@ public class CacheNGTest_Implementations {
 	
 	public void accessorFailsToFetchArticleWithMinus() {
 		
-		TestAccessor_ArticleForIdentifier acc = new TestAccessor_ArticleForIdentifier();
+		TestAccessor_ArticleForAid acc = new TestAccessor_ArticleForAid();
 		
 		TArticle tart = acc.fetch( A_FAIL );
 		
@@ -176,7 +176,7 @@ public class CacheNGTest_Implementations {
 		CacheNG.AutomaticClient<Aid, TArticle> auto =
 				new AutomaticClientImpl<>( RN.AID_ARTICLE );
 				
-		TestAccessor_ArticleForIdentifier accessor = new TestAccessor_ArticleForIdentifier();
+		TestAccessor_ArticleForAid accessor = new TestAccessor_ArticleForAid();
 		
 		assertThat( auto ).hasNotCached( A12345 )
 				.lookingInBackend().hasNotCached( A12345 );

@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 import de.axone.equals.Jenkins96Backend;
 import de.axone.tools.E;
 
-@Test( groups="helper.cacheng" )
+@Test( groups="cacheng.random" )
 public class CacheNGTest_GoodRandomValueFromHashes {
 
 	Jenkins96Backend j = new Jenkins96Backend();

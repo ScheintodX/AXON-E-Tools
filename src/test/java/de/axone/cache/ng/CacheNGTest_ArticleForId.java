@@ -13,10 +13,10 @@ import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
 import de.axone.tools.E;
 
-@Test( groups="helper.testng" )
+@Test( groups="cacheng.basic" )
 public class CacheNGTest_ArticleForId {
 
-	static class TestAccessor_ArticleForIdentifier
+	static class TestAccessor_ArticleForAid
 			extends AbstractSingleValueAccessor<Aid,TArticle>
 			implements CacheNG.Accessor<Aid, TArticle>,
 					CacheNG.CacheEventListener<Aid>{
@@ -43,8 +43,8 @@ public class CacheNGTest_ArticleForId {
 
 	public void cacheArticlesForIds(){
 		
-		TestAccessor_ArticleForIdentifier accessor =
-				new TestAccessor_ArticleForIdentifier();
+		TestAccessor_ArticleForAid accessor =
+				new TestAccessor_ArticleForAid();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
 				new AutomaticClientImpl<>( RN.AID_ARTICLE );
