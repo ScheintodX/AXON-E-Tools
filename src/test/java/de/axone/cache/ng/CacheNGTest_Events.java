@@ -23,11 +23,17 @@ public class CacheNGTest_Events {
 		TestAccessor_ArticleForIdentifier accMaster = spy( new TestAccessor_ArticleForIdentifier() );
 		TestAccessor_ArticleForIdentifier accSlave = spy( new TestAccessor_ArticleForIdentifier() );
 		
+		CacheHashMap<Aid,TArticle> cacheMaster =
+				spy( new CacheHashMap<>( RN.AID_ARTICLE.unique() ) );
+		
 		CacheNG.AutomaticClient<Aid, TArticle> autoMaster =
-				spy( new AutomaticClientImpl<Aid,TArticle>( RN.AID_ARTICLE.unique() ) );
+				spy( new AutomaticClientImpl<Aid,TArticle>( cacheMaster ) );
+		
+		CacheHashMap<Aid,TArticle> cacheSlave =
+				spy( new CacheHashMap<>( RN.AID_ARTICLE.unique() ) );
 		
 		CacheNG.AutomaticClient<Aid, TArticle> autoSlave =
-				spy( new AutomaticClientImpl<Aid,TArticle>( RN.AID_ARTICLE.unique() ) );
+				spy( new AutomaticClientImpl<Aid,TArticle>( cacheSlave ) );
 		
 		TArticle art;
 		
@@ -52,7 +58,7 @@ public class CacheNGTest_Events {
 		assertThat( autoSlave ).hasCached( A12345 );
 		
 		// === Connect caches ================================
-		autoMaster.registerListener( autoSlave );
+		cacheMaster.registerListener( cacheSlave );
 		
 		// Fetch again
 		art = autoMaster.fetch( A12345, accMaster );
@@ -65,7 +71,7 @@ public class CacheNGTest_Events {
 		autoMaster.invalidate( A12345 );
 		
 		verify( autoMaster, atLeastOnce() ).invalidate( A12345 ); // Yes. Same as line above
-		verify( autoSlave ).invalidateEvent( A12345 ); // This is what we are looking for
+		verify( cacheSlave ).invalidateEvent( A12345 ); // This is what we are looking for
 		assertThat( autoMaster ).hasNotCached( A12345 );
 		assertThat( autoSlave ).hasNotCached( A12345 );
 		

@@ -1,11 +1,11 @@
 package de.axone.cache.ng;
 
 
-public class TimeoutClient<K,O> extends CacheWrapper<K,O>{
+public class CacheWrapperTimeout<K,O> extends CacheWrapper<K,O>{
 
 	private final long maxLifeTime;
 	
-	TimeoutClient( CacheNG.Cache<K,O> backend, long maxLifeTime ){
+	CacheWrapperTimeout( CacheNG.Cache<K,O> backend, long maxLifeTime ){
 		super( backend );
 		this.maxLifeTime = maxLifeTime;
 	}

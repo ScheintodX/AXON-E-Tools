@@ -27,8 +27,11 @@ import org.slf4j.LoggerFactory;
 import com.yahoo.platform.yui.compressor.CssCompressor;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
-import de.axone.cache.Cache;
-import de.axone.cache.CacheLRUMap;
+import de.axone.cache.ng.CacheLRUMap;
+import de.axone.cache.ng.CacheNG;
+import de.axone.cache.ng.CacheNG.Cache;
+import de.axone.cache.ng.CacheNG.Realm;
+import de.axone.cache.ng.RealmImpl;
 import de.axone.tools.EasyParser;
 import de.axone.tools.FileWatcher;
 import de.axone.tools.UrlParser;
@@ -39,6 +42,8 @@ import de.axone.web.ImgColorRotator;
 public abstract class ResourcesServlet extends HttpServlet {
 	
 	private static final Logger log = LoggerFactory.getLogger( ResourcesServlet.class );
+	
+	private static final Realm<String,Object> DEFAULT_RESOURCE_REALM = new RealmImpl<>( "resource cache" );
 	
 	private static final long serialVersionUID = 1L;
 
@@ -80,8 +85,8 @@ public abstract class ResourcesServlet extends HttpServlet {
 		return uri; // Do nothing per default
 	}
 	
-	private Cache<String,Object> cache = new CacheLRUMap<>( "resource cache", 1000 );
-	protected Cache<String,Object> buffer(){
+	private CacheNG.Cache<String,Object> cache = new CacheLRUMap<>( DEFAULT_RESOURCE_REALM, 1000 );
+	protected CacheNG.Cache<String,Object> buffer(){
 		return cache;
 	}
 	
@@ -115,9 +120,9 @@ public abstract class ResourcesServlet extends HttpServlet {
 				String urlKey = uri + (doYui?"!":"");
 				
 				// Is there sth. in the buffer?
-				if( !doNotCache && buffer.containsKey( urlKey ) ) {
+				if( !doNotCache && buffer.isCached( urlKey ) ) {
 
-					httpData = (HttpDataHolder) buffer.get( urlKey );
+					httpData = (HttpDataHolder) buffer.fetch( urlKey );
 				}
 				
 				if( httpData == null || httpData.hasChanged() ){
@@ -297,7 +302,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 					httpData = new HttpDataHolder( dataAsArray, watcherList );
 					// Store doNotCache only if there is already an entry for that
 					// (in order to avoid wrong buffer entries)
-					if( !doNotCache || buffer.containsKey( urlKey )){
+					if( !doNotCache || buffer.isCached( urlKey )){
 						buffer.put( urlKey, httpData );
 					}
 				}

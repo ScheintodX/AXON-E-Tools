@@ -24,7 +24,7 @@ public class CacheNGTest_MaxLifetime {
 		
 		// 100ms timeout
 		CacheNG.Cache<Aid,TArticle> timeoutClient =
-				new TimeoutClient<>( client, 100 );
+				new CacheWrapperTimeout<>( client, 100 );
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
 				new AutomaticClientImpl<>( timeoutClient );

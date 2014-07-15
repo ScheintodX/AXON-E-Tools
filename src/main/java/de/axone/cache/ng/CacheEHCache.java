@@ -7,23 +7,26 @@ import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
 import de.axone.cache.Watcher;
 import de.axone.cache.ng.CacheNG.Cache;
+import de.axone.cache.ng.CacheNG.Realm;
 
 public class CacheEHCache<K,O>
-		extends AbstractEntryCache<K,O>
+		extends AbstractCache<K,O>
 		implements CacheNG.Cache<K,O>, CacheNG.Cache.Watched {
 	
+	private final Realm<K,O> realm;
 	private final net.sf.ehcache.Cache backend;
 	
-	public CacheEHCache( net.sf.ehcache.Cache ehCache ){
+	public CacheEHCache( Realm<K,O> realm, net.sf.ehcache.Cache ehCache ){
+		this.realm = realm;
 		this.backend = ehCache;
 	}
 	
 	private Watcher watcher = new Watcher();
 	
-	public static <I,J> CacheEHCache<I,J>  instance( File tmpDir, String name, long size ){
+	public static <I,J> CacheEHCache<I,J>  instance( File tmpDir, Realm<I,J> realm, long size ){
 		
 		CacheConfiguration config = new CacheConfiguration();
-		config.setName( name );
+		config.setName( realm.name() );
 		config.setDiskPersistent( true );
 		config.setDiskStorePath( tmpDir.getAbsolutePath() );
 		config.setMaxEntriesLocalHeap( size );
@@ -32,7 +35,7 @@ public class CacheEHCache<K,O>
 		net.sf.ehcache.Cache newCache = new net.sf.ehcache.Cache( config );
 		manager.addCacheIfAbsent( newCache );
 		
-		return new CacheEHCache<I,J>( newCache );
+		return new CacheEHCache<I,J>( realm, newCache );
 	}
 	public static void shutdown(){
 		CacheManager.getInstance().shutdown();
@@ -74,7 +77,7 @@ public class CacheEHCache<K,O>
 	}
 
 	@Override
-	public void invalidate( K key ) {
+	public void invalidateEvent( K key ) {
 		
 		O result = fetch( key );
 		if( result != null ){
@@ -83,7 +86,7 @@ public class CacheEHCache<K,O>
 	}
 
 	@Override
-	public void invalidateAll() {
+	public void invalidateAllEvent() {
 		backend.removeAll();
 	}
 
@@ -99,7 +102,7 @@ public class CacheEHCache<K,O>
 
 	@Override
 	public String info() {
-		return backend.toString();
+		return realm.name() + ": " + backend.toString();
 	}
 	@Override
 	public double ratio() {

@@ -30,26 +30,25 @@ import de.axone.cache.ng.CacheNG.InvalidationManager;
  * @author flo
  *
  * @param <K> Key-Type
- * @param <V> Value-Type
+ * @param <O> Value-Type
  */
-public class AutomaticClientImpl<K,V>
-		extends AbstractCacheEventProvider<K,V>
-		implements CacheNG.AutomaticClient<K,V> {
+public class AutomaticClientImpl<K,O>
+		implements CacheNG.AutomaticClient<K,O> {
 
-	final CacheNG.Cache<K,V> backend;
+	final CacheNG.Cache<K,O> backend;
 	
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-	private InvalidationManager<K,V> invalidationManager;
+	private InvalidationManager<K,O> invalidationManager;
 	
 	private Stats stats = new DefaultStats( this );
 	
 	// Simplification for testing
-	AutomaticClientImpl( CacheNG.Realm<K,V> realm ){
+	AutomaticClientImpl( CacheNG.Realm<K,O> realm ){
 		backend = new CacheHashMap<>( realm );
 	}
 
-	public AutomaticClientImpl( CacheNG.Cache<K,V> backend ){
+	public AutomaticClientImpl( CacheNG.Cache<K,O> backend ){
 		
 		assert backend != null;
 		
@@ -63,12 +62,12 @@ public class AutomaticClientImpl<K,V>
 		if( ! backend.isCached( key ) ) return false;
 		
 		// Fetch for further checks
-		Cache.Entry<V> entry = backend.fetchEntry( key );
+		Cache.Entry<O> entry = backend.fetchEntry( key );
 		
 		return entry != null && isAlive( key, entry );
 	}
 	
-	private boolean isAlive( K key, CacheNG.Cache.Entry<V> entry ){
+	private boolean isAlive( K key, CacheNG.Cache.Entry<O> entry ){
 		
 		if( invalidationManager != null ){
 			
@@ -80,18 +79,18 @@ public class AutomaticClientImpl<K,V>
 	
 
 	@Override
-	public Map<K,V> fetch( Collection<K> keys, Accessor<K,V> accessor ){
+	public Map<K,O> fetch( Collection<K> keys, Accessor<K,O> accessor ){
 		
 		assert keys != null && accessor != null;
 
-		HashMap<K,V> result = new HashMap<K,V>();
+		HashMap<K,O> result = new HashMap<K,O>();
 		Set<K> missed = null;
 
 		try{
 			lock.readLock().lock();
     		for( K key : keys ){
     			
-    			Cache.Entry<V> found = backend.fetchEntry( key );
+    			Cache.Entry<O> found = backend.fetchEntry( key );
     			
 				if( found != null && ! isAlive( key, found ) ){
 					invalidate( key );
@@ -114,14 +113,14 @@ public class AutomaticClientImpl<K,V>
 
 		if( missed != null ){
 
-			Map<K,V> fetched = accessor.fetch( missed );
+			Map<K,O> fetched = accessor.fetch( missed );
 
 			try {
 				lock.writeLock().lock();
 
 				for( K key : missed ){
 					
-					V value = fetched.get( key );
+					O value = fetched.get( key );
 					
 					if( value == null ){
 
@@ -142,13 +141,13 @@ public class AutomaticClientImpl<K,V>
 
 
 	@Override
-	public V fetch( K key, Accessor<K,V> accessor ) {
+	public O fetch( K key, Accessor<K,O> accessor ) {
 
 		assert key != null;
 		assert accessor != null;
 
 		// First try to get from cache
-		Cache.Entry<V> entry = null;
+		Cache.Entry<O> entry = null;
 		try{
 			lock.readLock().lock();
 			entry = backend.fetchEntry( key );
@@ -159,7 +158,7 @@ public class AutomaticClientImpl<K,V>
 			entry = null;
 		}
 			
-		V result;
+		O result;
 		if( entry != null ){
 
 			// If found mark hit
@@ -210,15 +209,7 @@ public class AutomaticClientImpl<K,V>
 
 	
 	@Override
-	public void invalidate( K key ){
-		
-		listenersInvalidate( key );
-		
-		invalidateEvent( key );
-	}
-
-	@Override
-	public void invalidateEvent( K key ) {
+	public void invalidate( K key ) {
 		
 		assert key != null;
 		
@@ -232,14 +223,6 @@ public class AutomaticClientImpl<K,V>
 	
 	@Override
 	public void invalidateAll() {
-		
-		listenersInvalidateAll();
-		
-		invalidateAllEvent();
-	}
-	
-	@Override
-	public void invalidateAllEvent() {
 		
 		// Clear cache
 		try {
@@ -258,7 +241,7 @@ public class AutomaticClientImpl<K,V>
 	@Override
 	public void invalidateAllWithin( int milliSeconds ) {
 		
-		invalidationManager = new TimoutInvalidationManager<K,V>(
+		invalidationManager = new TimoutInvalidationManager<K,O>(
 				System.currentTimeMillis(), milliSeconds );
 	}
 	

@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
+import de.axone.cache.ng.CacheNG.Realm;
+
 
 /**
  * BackendCache which does not cache anything
@@ -12,9 +14,15 @@ import java.util.Set;
  * @author flo
  *
  * @param <K>
- * @param <V>
+ * @param <O>
  */
-public class CacheNoCache<K,V> implements CacheNG.Cache.Direct<K,V> {
+public class CacheNoCache<K,O> implements CacheNG.Cache.Direct<K,O> {
+	
+	private final Realm<?,?> realm;
+	
+	public CacheNoCache( Realm<?,?> realm ){
+		this.realm = realm;
+	}
 
 	@Override
 	public Set<K> keySet() {
@@ -22,8 +30,8 @@ public class CacheNoCache<K,V> implements CacheNG.Cache.Direct<K,V> {
 	}
 
 	@Override
-	public Collection<V> values() {
-		return new LinkedList<V>();
+	public Collection<O> values() {
+		return new LinkedList<O>();
 	}
 
 	@Override
@@ -32,12 +40,12 @@ public class CacheNoCache<K,V> implements CacheNG.Cache.Direct<K,V> {
 	}
 
 	@Override
-	public V fetch( K key ) {
+	public O fetch( K key ) {
 		return null;
 	}
 
 	@Override
-	public void put( K key, V value ) {}
+	public void put( K key, O value ) {}
 
 	@Override
 	public void invalidate( K key ) {}
@@ -49,7 +57,7 @@ public class CacheNoCache<K,V> implements CacheNG.Cache.Direct<K,V> {
 
 	@Override
 	public String info() {
-		return "no caching";
+		return "no caching: " + realm.name();
 	}
 
 	@Override
@@ -58,15 +66,17 @@ public class CacheNoCache<K,V> implements CacheNG.Cache.Direct<K,V> {
 	}
 
 	@Override
-	public CacheNG.Cache.Entry<V> fetchEntry( K key ) {
+	public CacheNG.Cache.Entry<O> fetchEntry( K key ) {
 		return null;
 	}
 
-	/*
-	@Override
-	public void putEntry( K key, CacheNG.Client.Entry<V> entry ) {}
-	*/
-
 	@Override
 	public void invalidateAll() {}
+
+	@Override
+	public String toString() {
+		return info();
+	}
+	
+	
 }

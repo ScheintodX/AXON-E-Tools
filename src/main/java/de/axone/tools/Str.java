@@ -78,6 +78,10 @@ public class Str {
 	}
 	
 	// joinBB
+	@SuppressWarnings( "unchecked" )
+	public static <T, U extends T> StringBuilder joinBB( StringBuilder result, String joinWith, boolean ignoreEmpty,  U ... objects ){
+		return joinBB( result, new SimpleJoiner<T>( joinWith ), ignoreEmpty, Arrays.asList( objects ) );
+	}
 	public static <T, U extends T> StringBuilder joinBB( StringBuilder result, String joinWith, boolean ignoreEmpty, Iterable<U> objects ){
 		return joinBB( result, new SimpleJoiner<T>( joinWith ), ignoreEmpty, objects );
 	}

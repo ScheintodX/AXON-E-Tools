@@ -13,19 +13,19 @@ import de.axone.cache.ng.CacheNG.Realm;
  * @author flo
  *
  * @param <K>
- * @param <V>
+ * @param <O>
  */
-public class CacheHashMap<K,V>
-		extends AbstractEntryCache<K,V>
-		implements Cache.Direct<K,V> {
+public class CacheHashMap<K,O>
+		extends AbstractCache<K,O>
+		implements Cache.Direct<K,O> {
 	
-	private final Realm<K,V> name;
-	private final Map<K,Cache.Entry<V>> backend;
+	private final Realm<K,O> name;
+	private final Map<K,Cache.Entry<O>> backend;
 	
-	public CacheHashMap( Realm<K,V> name ){
+	public CacheHashMap( Realm<K,O> name ){
 		
 		this.name = name;
-		this.backend = Collections.synchronizedMap( new HashMap<K,Cache.Entry<V>>() );
+		this.backend = Collections.synchronizedMap( new HashMap<K,Cache.Entry<O>>() );
 	}
 
 	@Override
@@ -39,12 +39,12 @@ public class CacheHashMap<K,V>
 	}
 
 	@Override
-	public void put( K key, V entry ) {
+	public void put( K key, O entry ) {
 		backend.put( key, new DefaultEntry<>( entry ) );
 	}
 
 	@Override
-	public Cache.Entry<V> fetchEntry( K key ) {
+	public Cache.Entry<O> fetchEntry( K key ) {
 		return backend.get( key );
 	}
 
@@ -54,12 +54,12 @@ public class CacheHashMap<K,V>
 	}
 
 	@Override
-	public void invalidate( K key ) {
+	public void invalidateEvent( K key ) {
 		backend.remove( key );
 	}
 
 	@Override
-	public void invalidateAll() {
+	public void invalidateAllEvent() {
 		backend.clear();
 	}
 
@@ -74,7 +74,7 @@ public class CacheHashMap<K,V>
 	}
 
 	@Override
-	public Iterable<V> values() {
+	public Iterable<O> values() {
 		return new IterableEntryAsValue<>( backend.values() );
 	}
 	

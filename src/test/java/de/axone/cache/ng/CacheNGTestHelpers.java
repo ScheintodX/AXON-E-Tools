@@ -8,41 +8,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
+import de.axone.cache.ng.CacheNG.Realm;
 import de.axone.cache.ng.CacheNGTest_ArticleListForSearchQuery.TestSearchQuery;
 import de.axone.cache.ng.CacheNGTest_ArticleListForTop.Top;
 
 public class CacheNGTestHelpers {
 	
-	/*
-	public enum RN {
-		
-		AID_ARTICLE( "aid->article" ),
-		TID_LARTICLE( "tid->L:article" ),
-		TOP_LARTICLE( "top->L:article" ),
-		
-		SQTID_LARTICLE( "sqtid->L:article" ),
-		
-		;
-		
-		private final String realm;
-		RN( String realm ){
-			this.realm = realm;
-		}
-	
-		public <K,O>CacheNG.Realm<K,O> realm() {
-			return new TestRealm( realm );
-		}
-		
-		public <K,O>CacheNG.Realm<K,O> unique(){
-			return new TestRealm( realm, UUID.randomUUID().toString() );
-		}
-		
-		public <K,O>CacheNG.Realm<K,O> timeout( int timeout ){
-			return new TestRealm( realm, timeout );
-		}
-		
-	}
-	*/
 	static abstract class RN {
 		
 		public static TestRealm<Aid,TArticle> AID_ARTICLE = new TestRealm<>( "aid->article" );
@@ -76,17 +47,28 @@ public class CacheNGTestHelpers {
 		}
 	
 		@Override
-		public String realm() {
+		public String name() {
 			String result = client + "/" + name;
 			if( suffix != null ) result += "/" + suffix;
 			if( timeout != null ) result += "[" + timeout;
 			return result;
 		}
 		
+		@Override
+		public String [] config() {
+			return new String []{ client, name, suffix };
+		}
+		
 		public TestRealm<K,O> unique() {
 			
-			return new TestRealm<>( realm() + "/" + UUID.randomUUID().toString() );
+			return new TestRealm<>( name() + "/" + UUID.randomUUID().toString() );
 		}
+
+		@Override
+		public int compareTo( Realm<?, ?> o ) {
+			return 0; // We don't need this here
+		}
+
 	}
 	
 

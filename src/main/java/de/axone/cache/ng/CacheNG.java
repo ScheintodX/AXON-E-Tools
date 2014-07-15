@@ -134,9 +134,23 @@ public interface CacheNG {
 	 * 
 	 * @author flo
 	 */
-	public interface Realm<K,O> {
+	public interface Realm<K,O> extends Comparable<Realm<?,?>>{
 		
-		public String realm();
+		/**
+		 * String representation of this realm.
+		 * Can be used by cache backends to identify the cache
+		 * 
+		 * @return
+		 */
+		public String name();
+		
+		/**
+		 * String representaitons of this realm as used
+		 * for the config
+		 * @return
+		 */
+		public String[] config();
+		
 	}
 	
 	
@@ -189,14 +203,6 @@ public interface CacheNG {
 		 * @param key
 		 */
 		public void invalidate( K key );
-		
-		/**
-		 * Put the given object in the cache
-		 * 
-		 * @param key
-		 * @param object
-		 */
-		//public void putEntry( K key, Entry<O> entry );
 		
 		/**
 		 * Put the given entry in the cache
@@ -305,8 +311,7 @@ public interface CacheNG {
 	 * @param <K> Cache key
 	 * @param <O> Cached Object
 	 */
-	public interface AutomaticClient<K,O> extends 
-			CacheEventListener<K>, CacheEventProvider<K> {
+	public interface AutomaticClient<K,O> {
 		
 		/**
 		 * Get one entry from cache. If the entry is not cached try
@@ -346,6 +351,14 @@ public interface CacheNG {
 		 */
 		public void invalidate( K key );
 		
+		public abstract int size();
+		
+		public abstract int capacity();
+
+		public abstract void invalidateAll();
+
+		public abstract Stats stats();
+		
 		/**
 		 * Removes all entries from the cache within a given timespan
 		 * 
@@ -355,15 +368,6 @@ public interface CacheNG {
 		 * @param milliSeconds
 		 */
 		public void invalidateAllWithin( int milliSeconds );
-		
-		
-		public abstract int size();
-		
-		public abstract int capacity();
-
-		public abstract void invalidateAll();
-
-		public abstract Stats stats();
 		
 		
 		public interface Stats {

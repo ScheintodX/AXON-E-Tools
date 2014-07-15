@@ -65,16 +65,22 @@ public class CacheNGTest_CombinedSearchQueries {
 		TestAccessor_ArticleForTid forTid =
 				new TestAccessor_ArticleForTid( data );
 		
+		CacheHashMap<Tid,List<TArticle>> cacheForTid =
+				new CacheHashMap<>( RN.TID_LARTICLE );
+		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				new AutomaticClientImpl<>( RN.TID_LARTICLE );
+				new AutomaticClientImpl<>( cacheForTid );
 		
 		TestAccessor_ArticleForQuery forQuery =
 				new TestAccessor_ArticleForQuery( autoForTid, forTid );
 		
+		CacheHashMap<TestSearchQuery, List<TArticle>> cacheForQuery =
+				new CacheHashMap<>( RN.SQTID_LARTICLE );
+				
 		CacheNG.AutomaticClient<TestSearchQuery, List<TArticle>> autoForQuery =
-				new AutomaticClientImpl<>( RN.SQTID_LARTICLE );
+				new AutomaticClientImpl<>( cacheForQuery );
 		
-		autoForTid.registerListener( new TidToQueryBridge( autoForQuery ) );
+		cacheForTid.registerListener( new TidToQueryBridge( cacheForQuery ) );
 		
 		assertFalse( autoForQuery.isCached( qq1234 ) );
 		List<TArticle> arts = autoForQuery.fetch( qq1234, forQuery );

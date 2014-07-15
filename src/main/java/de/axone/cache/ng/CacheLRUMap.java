@@ -17,7 +17,7 @@ import de.axone.data.LRUCache;
  * @param <O>
  */
 public class CacheLRUMap<K,O>
-		extends AbstractEntryCache<K,O>
+		extends AbstractCache<K,O>
 		implements CacheNG.Cache.Direct<K,O>, CacheNG.Cache.Watched {
 	
 	private final Realm<K,O> realm;
@@ -74,12 +74,12 @@ public class CacheLRUMap<K,O>
 	}
 
 	@Override
-	public void invalidate( K key ) {
+	public void invalidateEvent( K key ) {
 		backend.remove( key );
 	}
 
 	@Override
-	public void invalidateAll() {
+	public void invalidateAllEvent() {
 		backend.clear();
 	}
 

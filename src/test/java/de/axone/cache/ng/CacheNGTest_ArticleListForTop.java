@@ -13,9 +13,7 @@ import java.util.Map;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNG.AutomaticClient;
 import de.axone.cache.ng.CacheNG.CacheBridge;
-import de.axone.cache.ng.CacheNG.CacheEventProvider;
 import de.axone.cache.ng.CacheNGTestHelpers.Identifiable;
 import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
@@ -46,16 +44,22 @@ public class CacheNGTest_ArticleListForTop {
 		TestAccessor_ArticleForTid accessorForTid =
 				new TestAccessor_ArticleForTid( data );
 		
+		CacheHashMap<Tid, List<TArticle>> cacheForTid =
+				new CacheHashMap<>( RN.TID_LARTICLE );
+				
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				new AutomaticClientImpl<>( RN.TID_LARTICLE );
+				new AutomaticClientImpl<>( cacheForTid );
 		
 		TestAccessor_ArticleForTop accessorForTop =
 				new TestAccessor_ArticleForTop( autoForTid, accessorForTid, tidForTop );
 		
-		CacheNG.AutomaticClient<Top, List<TArticle>> autoForTop =
-				new AutomaticClientImpl<>( RN.TOP_LARTICLE );
+		CacheHashMap<Top, List<TArticle>> cacheForTop =
+				new CacheHashMap<>( RN.TOP_LARTICLE );
 		
-		((CacheEventProvider<Tid>)autoForTid).registerListener( new TidToTopBridge( autoForTop, tidForTop ) );
+		CacheNG.AutomaticClient<Top, List<TArticle>> autoForTop =
+				new AutomaticClientImpl<>( cacheForTop );
+		
+		cacheForTid.registerListener( new TidToTopBridge( cacheForTop, tidForTop ) );
 		
 		
 		assertThat( autoForTop )
@@ -169,7 +173,7 @@ public class CacheNGTest_ArticleListForTop {
 		
 		private final TidForTop tft;
 		
-		public TidToTopBridge( AutomaticClient<Top, List<TArticle>> cacheForTop, TidForTop tft ) {
+		public TidToTopBridge( CacheNG.CacheEventListener<Top> cacheForTop, TidForTop tft ) {
 			
 			super( cacheForTop );
 			

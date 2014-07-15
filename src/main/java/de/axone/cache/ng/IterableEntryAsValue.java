@@ -5,22 +5,22 @@ import java.util.Iterator;
 
 import de.axone.cache.ng.CacheNG.Cache.Entry;
 
-public class IterableEntryAsValue<V> implements Iterable<V> {
+public class IterableEntryAsValue<O> implements Iterable<O> {
 	
-	private final Collection<Entry<V>> values;
+	private final Collection<Entry<O>> values;
 
-	public IterableEntryAsValue( Collection<Entry<V>> values ) {
+	public IterableEntryAsValue( Collection<Entry<O>> values ) {
 		this.values = values;
 	}
 
 	@Override
-	public Iterator<V> iterator() {
+	public Iterator<O> iterator() {
 		return new ValueIterator();
 	}
 	
-	private class ValueIterator implements Iterator<V> {
+	private class ValueIterator implements Iterator<O> {
 		
-		Iterator<Entry<V>> entryIterator = values.iterator();
+		Iterator<Entry<O>> entryIterator = values.iterator();
 
 		@Override
 		public boolean hasNext() {
@@ -28,7 +28,7 @@ public class IterableEntryAsValue<V> implements Iterable<V> {
 		}
 
 		@Override
-		public V next() {
+		public O next() {
 			return entryIterator.next().data();
 		}
 

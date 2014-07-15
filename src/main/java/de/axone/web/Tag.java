@@ -123,17 +123,6 @@ public abstract class Tag {
 		return simpleBB( new StringBuilder(), name, content, encodeContent, args ).toString();
 	}
 	
-	public static String hiddenInput( String name, String value ){
-
-		String [] parameters = new String[]{ "type", "hidden", "name", name, "value", value };
-
-		return simpleBB( new StringBuilder(), "input", null, parameters ).toString();
-	}
-	
-	public static String link( String target, String text, String clazz, String ... args ){
-		return linkBB( new StringBuilder(), target, text, clazz, args ).toString();
-	}
-	
 	public static StringBuilder linkBB( StringBuilder result, String target, String text, String clazz, String ... args ){
 		
 		if( args != null && args.length % 2 != 0 )
@@ -185,4 +174,23 @@ public abstract class Tag {
 	public static String a( String content, String href ){
 		return simple( "a", content, "href", href );
 	}
+	
+	public static String button( String name, String value, String content ){
+		
+		return simple( "button", content, "name", name, "value", value );
+	}
+	public static String form( String method, String action, String content ){
+		
+		return simple( "form", content, false, "method", method, "action", action );
+	}
+	
+	public static String hiddenInput( String name, String value ){
+
+		return simple( "input", null, "type", "hidden", "name", name, "value", value );
+	}
+	
+	public static String link( String target, String text, String clazz, String ... args ){
+		return linkBB( new StringBuilder(), target, text, clazz, args ).toString();
+	}
+	
 }

@@ -42,20 +42,10 @@ public class AutomaticClientNoCache<K,O>
 	}
 	
 	@Override
-	public void invalidateAllEvent() {
-		// NOP
-	}
-
-	@Override
 	public void invalidate( K key ) {
 		listenersInvalidate( key );
 	}
 	
-	@Override
-	public void invalidateEvent( K key ) {
-		// NOP
-	}
-
 	@Override
 	public boolean isCached( K key ) {
 		return false;

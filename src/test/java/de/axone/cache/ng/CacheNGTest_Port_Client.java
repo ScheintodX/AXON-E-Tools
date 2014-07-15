@@ -66,7 +66,7 @@ public class CacheNGTest_Port_Client {
 	public void testNoCache(){
 		
 		CacheNG.Cache<String,TestEntry> cache
-				= new CacheNoCache<String,TestEntry>();
+				= new CacheNoCache<String,TestEntry>( new TestRealm<>( "A cache" ) );
 		
 		cache.put( A, a );
 		cache.put( B, b );
@@ -77,7 +77,7 @@ public class CacheNGTest_Port_Client {
 				.doesNotHave( cached( B ) )
 				.doesNotHave( cached( C ) )
 				;
-		assertEquals( cache.info(), "no caching" );
+		assertEquals( cache.info(), "no caching: TestClient/A cache" );
 	}
 	
 	private void assertPutGet( CacheNG.Cache<String,TestEntry> cache, String key, TestEntry value ){

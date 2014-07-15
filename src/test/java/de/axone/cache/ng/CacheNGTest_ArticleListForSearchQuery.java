@@ -97,16 +97,22 @@ public class CacheNGTest_ArticleListForSearchQuery {
 		TestAccessor_ArticleForTid forTid =
 				new TestAccessor_ArticleForTid( data );
 		
-		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				new AutomaticClientImpl<>( RN.TID_LARTICLE );
+		CacheHashMap<Tid,List<TArticle>> cacheForTid =
+				new CacheHashMap<>( RN.TID_LARTICLE );
 		
+		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
+				new AutomaticClientImpl<>( cacheForTid );
+				
 		TestAccessor_ArticleForQuery forQuery =
 				new TestAccessor_ArticleForQuery( autoForTid, forTid );
 		
+		CacheHashMap<TestSearchQuery, List<TArticle>> cacheForQuery =
+				new CacheHashMap<>( RN.SQTID_LARTICLE );
+				
 		CacheNG.AutomaticClient<TestSearchQuery, List<TArticle>> autoForQuery =
-				new AutomaticClientImpl<>( RN.SQTID_LARTICLE );
+				new AutomaticClientImpl<>( cacheForQuery );
 		
-		autoForTid.registerListener( new TidToQueryBridge( autoForQuery ) );
+		cacheForTid.registerListener( new TidToQueryBridge( cacheForQuery ) );
 		
 		TestSearchQuery_Tid q1 = new TestSearchQuery_Tid( T123 ),
 		                    q2 = new TestSearchQuery_Tid( T234 );
