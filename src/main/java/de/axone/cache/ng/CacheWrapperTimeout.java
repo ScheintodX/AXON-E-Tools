@@ -5,7 +5,7 @@ public class CacheWrapperTimeout<K,O> extends CacheWrapper<K,O>{
 
 	private final long maxLifeTime;
 	
-	CacheWrapperTimeout( CacheNG.Cache<K,O> backend, long maxLifeTime ){
+	public CacheWrapperTimeout( CacheNG.Cache<K,O> backend, long maxLifeTime ){
 		super( backend );
 		this.maxLifeTime = maxLifeTime;
 	}
@@ -47,4 +47,5 @@ public class CacheWrapperTimeout<K,O> extends CacheWrapper<K,O>{
 		
 		return true;
 	}
+	
 }

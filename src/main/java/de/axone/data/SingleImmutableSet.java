@@ -127,6 +127,12 @@ public final class SingleImmutableSet<T> implements Set<T>, Serializable {
 			return false;
 		
 		return value.equals( ((SingleImmutableSet<?>)obj).value );
+	}
+
+	@Override
+	public String toString() {
+		return "[" + value.toString() + "]";
 	};
+	
 	
 }

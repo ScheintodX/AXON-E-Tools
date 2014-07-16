@@ -11,6 +11,7 @@ import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
 import de.axone.cache.ng.CacheNGTest_ArticleForId.TestAccessor_ArticleForAid;
+import de.axone.data.Duration;
 
 @Test( groups="cacheng.lifetime" )
 public class CacheNGTest_MaxLifetime {
@@ -24,7 +25,7 @@ public class CacheNGTest_MaxLifetime {
 		
 		// 100ms timeout
 		CacheNG.Cache<Aid,TArticle> timeoutClient =
-				new CacheWrapperTimeout<>( client, 100 );
+				new CacheWrapperTimeout<>( client, Duration.milliseconds( 100 ) );
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
 				new AutomaticClientImpl<>( timeoutClient );
