@@ -1,12 +1,13 @@
 package de.axone.cache.ng;
 
-import de.axone.cache.ng.CacheNG.Cache;
+import java.util.Set;
+
 
 public abstract class CacheWrapper<K,O> implements CacheNG.Cache<K,O> {
 	
 	protected final CacheNG.Cache<K,O> wrapped;
 
-	public CacheWrapper( Cache<K, O> wrapped ) {
+	public CacheWrapper( CacheNG.Cache<K,O> wrapped ) {
 		this.wrapped = wrapped;
 	}
 	
@@ -36,8 +37,8 @@ public abstract class CacheWrapper<K,O> implements CacheNG.Cache<K,O> {
 	}
 
 	@Override
-	public void invalidateAll() {
-		wrapped.invalidateAll();
+	public void invalidateAll( boolean force ) {
+		wrapped.invalidateAll( force );
 	}
 
 	@Override
@@ -53,6 +54,21 @@ public abstract class CacheWrapper<K,O> implements CacheNG.Cache<K,O> {
 	@Override
 	public String info() {
 		return wrapped.info();
+	}
+	
+	@Override
+	public double ratio() {
+		return wrapped.ratio();
+	}
+
+	@Override
+	public Set<K> keySet() {
+		return wrapped.keySet();
+	}
+
+	@Override
+	public Iterable<O> values() {
+		return wrapped.values();
 	}
 
 }

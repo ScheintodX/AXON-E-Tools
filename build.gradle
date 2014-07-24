@@ -52,11 +52,11 @@ dependencies {
 	compile 'commons-lang:commons-lang:2.6'
 
 	compile 'org.hibernate.common:hibernate-commons-annotations:4.0+'
-	compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
+	compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0+'
 
 	compile 'net.sf.ehcache:ehcache-core:2.5.2'
-	compile 'org.apache.httpcomponents:httpclient:4.0.1'
-	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.0'
+	compile 'org.apache.httpcomponents:httpclient:4.3+'
+	compile 'com.fasterxml.jackson.core:jackson-databind:2.4+'
 
 	compile 'org.slf4j:slf4j-api:1.7+'
 

@@ -37,8 +37,8 @@ public class AutomaticClientNoCache<K,O>
 	}
 
 	@Override
-	public void invalidateAll() {
-		listenersInvalidateAll();
+	public void invalidateAll( boolean force ) {
+		listenersInvalidateAll( force );
 	}
 	
 	@Override
@@ -49,11 +49,6 @@ public class AutomaticClientNoCache<K,O>
 	@Override
 	public boolean isCached( K key ) {
 		return false;
-	}
-
-	@Override
-	public void invalidateAllWithin( int milliSeconds ) {
-		// NOP
 	}
 
 }

@@ -34,9 +34,8 @@ public class CacheNGTest_ArticleForId {
 		}
 
 		@Override
-		public void invalidateAllEvent() {
-			E.cho( "--------ALL-------------" );
-			
+		public void invalidateAllEvent( boolean force ) {
+			E.cho( "--------ALL: " + force + " -------------" );
 		}
 	
 	}

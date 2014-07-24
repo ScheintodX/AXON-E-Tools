@@ -44,7 +44,7 @@ public class CacheNGTest_Port_CacheEHCache {
 				;
 		
 		cache.put( TESTKEY, TESTVALUE );
-		cache.invalidateAll();
+		cache.invalidateAll( false );
 		assertThat( cache )
 				.doesNotHave( cached( TESTKEY ) )
 				.hasSize( 0 )
@@ -65,7 +65,7 @@ public class CacheNGTest_Port_CacheEHCache {
 				new File( "/tmp/ehcache" ), new TestRealm<TestKey,String>( "testcache" ).unique(), 10 );
 		
 		// May contain content from last run
-		cache.invalidateAll();
+		cache.invalidateAll( false );
 		
 		// equals and hash matches
 		TestKey k11 = new TestKey( true, 1 );
@@ -95,7 +95,7 @@ public class CacheNGTest_Port_CacheEHCache {
 		// This is interesting: Clear needs to find the objects to clear
 		// So we must patch it.
 		k21.equals = true; 
-		cache.invalidateAll();
+		cache.invalidateAll( false );
 		assertEquals( cache.size(), 0 );
 		
 		// equals but hash missmatches
@@ -107,7 +107,7 @@ public class CacheNGTest_Port_CacheEHCache {
 				.hasCached( k31 )
 				.hasNotCached( k32 )
 				;
-		cache.invalidateAll();
+		cache.invalidateAll( false );
 	}
 	
 	private static final class TestValue extends HashMap<String,String>{

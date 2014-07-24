@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import de.axone.cache.Watcher;
 import de.axone.cache.ng.CacheNG.Cache;
 import de.axone.cache.ng.CacheNG.Realm;
 import de.axone.data.LRUCache;
@@ -18,14 +17,12 @@ import de.axone.data.LRUCache;
  */
 public class CacheLRUMap<K,O>
 		extends AbstractCache<K,O>
-		implements CacheNG.Cache.Direct<K,O>, CacheNG.Cache.Watched {
+		implements CacheNG.Cache<K,O> {
 	
 	private final Realm<K,O> realm;
 	private final LRUCache<K,Cache.Entry<O>> unsafeBackend;
 	private final Map<K,Cache.Entry<O>> backend;
 	
-	private Watcher watcher = new Watcher();
-
 	public CacheLRUMap( Realm<K,O> realm, int maxCapacity ) {
 		this.realm = realm;
 		this.unsafeBackend = new LRUCache<K,Cache.Entry<O>>( maxCapacity );
@@ -35,37 +32,26 @@ public class CacheLRUMap<K,O>
 	@Override
 	public double ratio() {
 		
-		return watcher.ratio();
+		return -1;
 	}
 
 	@Override
 	public String info() {
 		
-		return "LRU '" + realm + "'" +
-				" (Size: " + size() + " of " + unsafeBackend.getCapacity() + 
-				", Hits: " + watcher.hits() + "/" + watcher.accesses() + " = " + Math.round( watcher.ratio() *1000 )/10.0 + "%)";
+		return String.format( "LRU '%s' (Size: %d of %d)", 
+				realm, size(), unsafeBackend.getCapacity() );
 	}
 	
 	@Override
 	public boolean isCached( K key ){
 		
-		boolean result = backend.containsKey( key );
-		
-		if( result ) watcher.hit();
-		else watcher.miss();
-		
-		return result;
+		return backend.containsKey( key );
 	}
 	
 	@Override
 	public Cache.Entry<O> fetchEntry( K key ){
 		
-		Cache.Entry<O> result = backend.get( key );
-		
-		if( result != null ) watcher.hit();
-		else watcher.miss();
-		
-		return result;
+		return backend.get( key );
 	}
 
 	@Override
@@ -79,7 +65,7 @@ public class CacheLRUMap<K,O>
 	}
 
 	@Override
-	public void invalidateAllEvent() {
+	public void invalidateAllEvent( boolean force ) {
 		backend.clear();
 	}
 

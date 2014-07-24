@@ -1,27 +1,50 @@
 package de.axone.cache.ng;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 import de.axone.cache.ng.CacheNG.Cache;
-import de.axone.cache.ng.CacheNG.InvalidationManager;
+import de.axone.data.Duration;
 
 public class CacheWrapperDelayedInvalidation<K,O> extends CacheWrapper<K,O> {
 
-	private InvalidationManager<K,O> invalidationManager;
+	private final long timeoutDuration;
+	private long timeoutStart;
 	
-	public CacheWrapperDelayedInvalidation( Cache<K, O> wrapped ) {
+	public CacheWrapperDelayedInvalidation( Cache<K, O> wrapped, long timeoutDuration ) {
 		super( wrapped );
+		this.timeoutDuration = timeoutDuration;
 	}
 	
-	public void invalidateAllWithin( int milliSeconds ) {
+	@Override
+	public void invalidateAll( boolean force ) {
 		
-		invalidationManager = new TimoutInvalidationManager<K,O>(
-				System.currentTimeMillis(), milliSeconds );
+		if( force ){
+			wrapped.invalidateAll( force );
+		} else {
+			timeoutStart = System.currentTimeMillis();
+		}
 	}
 
 	private boolean isAlive( K key, CacheNG.Cache.Entry<O> entry ){
 		
-		if( invalidationManager != null ){
+		// Entry is newer than starting of timeout.
+		// This happend regularily if the entry is re-fetched after invalidation
+		if( entry.creation() > timeoutStart ) return true;
+		
+		
+		long elapsed = System.currentTimeMillis() - timeoutStart;
+		
+		// Invalid immediately if > duration
+		if( elapsed >= timeoutDuration ) return false;
+		
+		long stretch = Integer.MAX_VALUE / timeoutDuration;
+		
+		int random = RandomMapper.positiveInteger( key.hashCode() );
+		
+		if( stretch * elapsed < random ){
 			
-			return invalidationManager.isValid( key, entry );
+			return false;
 		}
 		
 		return true;
@@ -53,44 +76,12 @@ public class CacheWrapperDelayedInvalidation<K,O> extends CacheWrapper<K,O> {
 		
 		return entry != null && isAlive( key, entry );
 	}
-	
-	static class TimoutInvalidationManager<K,O>
-			implements CacheNG.InvalidationManager<K, O> {
+
+	@Override
+	public String info() {
 		
-		private final long timeoutStart,
-		                   timeoutDuration;
-		
-		TimoutInvalidationManager( long timeoutStart, long timeoutDuration ){
-			
-			this.timeoutStart = timeoutStart;
-			this.timeoutDuration = timeoutDuration;
-		}
-	
-		@Override
-		public boolean isValid( K key, CacheNG.Cache.Entry<O> value ) {
-			
-			// Entry is newer than starting of timeout.
-			// This happend regularily if the entry is re-fetched after invalidation
-			if( value.creation() > timeoutStart ) return true;
-			
-			
-			long elapsed = System.currentTimeMillis() - timeoutStart;
-			
-			// Invalid immediately if > duration
-			if( elapsed >= timeoutDuration ) return false;
-			
-			long stretch = Integer.MAX_VALUE / timeoutDuration;
-			
-			int random = RandomMapper.positiveInteger( key.hashCode() );
-			
-			if( stretch * elapsed < random ){
-				
-				return false;
-			}
-			
-			return true;
-		}
-		
+		return super.info() + String.format( "[Delayed (%.0fs) %s]",
+				Duration.inSeconds( timeoutDuration ), DateFormat.getDateTimeInstance().format( new Date( timeoutStart+timeoutDuration ) ) );
 	}
 
 }

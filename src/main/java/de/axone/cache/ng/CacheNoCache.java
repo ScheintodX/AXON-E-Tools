@@ -16,7 +16,7 @@ import de.axone.cache.ng.CacheNG.Realm;
  * @param <K>
  * @param <O>
  */
-public class CacheNoCache<K,O> implements CacheNG.Cache.Direct<K,O> {
+public class CacheNoCache<K,O> implements CacheNG.Cache<K,O> {
 	
 	private final Realm<?,?> realm;
 	
@@ -71,11 +71,17 @@ public class CacheNoCache<K,O> implements CacheNG.Cache.Direct<K,O> {
 	}
 
 	@Override
-	public void invalidateAll() {}
+	public void invalidateAll( boolean force ) {}
 
 	@Override
 	public String toString() {
 		return info();
+	}
+
+	@Override
+	public double ratio() {
+		// No caching so zero is correct
+		return 0;
 	}
 	
 	

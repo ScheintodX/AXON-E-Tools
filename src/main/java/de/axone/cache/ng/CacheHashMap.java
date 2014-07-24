@@ -17,7 +17,7 @@ import de.axone.cache.ng.CacheNG.Realm;
  */
 public class CacheHashMap<K,O>
 		extends AbstractCache<K,O>
-		implements Cache.Direct<K,O> {
+		implements CacheNG.Cache<K,O> {
 	
 	private final Realm<K,O> name;
 	private final Map<K,Cache.Entry<O>> backend;
@@ -59,7 +59,7 @@ public class CacheHashMap<K,O>
 	}
 
 	@Override
-	public void invalidateAllEvent() {
+	public void invalidateAllEvent( boolean force ) {
 		backend.clear();
 	}
 
@@ -76,6 +76,11 @@ public class CacheHashMap<K,O>
 	@Override
 	public Iterable<O> values() {
 		return new IterableEntryAsValue<>( backend.values() );
+	}
+
+	@Override
+	public double ratio() {
+		return -1;
 	}
 	
 }

@@ -215,7 +215,7 @@ public interface CacheNG {
 		/**
 		 * Clear the complete cache
 		 */
-		public void invalidateAll();
+		public void invalidateAll( boolean force );
 		
 		/**
 		 * Return the used size of the cache
@@ -232,6 +232,13 @@ public interface CacheNG {
 		public int capacity();
 		
 		/**
+		 * Returns the usage ratio or -1 if not supported
+		 * 
+		 * @return
+		 */
+		public double ratio();
+		
+		/**
 		 * Get some meaningful information. 
 		 * 
 		 * (At least the size should be returned)
@@ -241,31 +248,35 @@ public interface CacheNG {
 		public String info();
 		
 		/**
-		 * Implements more of Map interface for direct access
-		 * 
-		 * This is additional because we cannot expect distributed caches
-		 * to have a keyset fast (if at all) available.
 		 * 
 		 * @author flo
 		 *
 		 * @param <K>
 		 * @param <V>
 		 */
-		public interface Direct<K,V> extends Cache<K,V> {
-			
-			/**
-			 * @see java.util.Map#keySet()
-			 * @return A set of all keys
-			 */
-		    Set<K> keySet();
-		    
-		    /**
-			 * @see java.util.Map#values()
-		     * @return A collection of all values
-		     */
-		    Iterable<V> values();
-		}
 		
+		/**
+		 * Implements more of Map interface for direct access
+		 * 
+		 * This is additional because we cannot expect distributed caches
+		 * to have a keyset fast (if at all) available.
+		 * 
+		 * @see isDirectSupported
+		 * @see java.util.Map#keySet()
+		 * @return A set of all keys
+		 * @throws UnsupportedOperationException if not supported
+		 */
+	    public Set<K> keySet();
+	    
+	    /**
+	     * Return an Iterable instance for this caches values
+	     * 
+	     * @see keySet
+		 * @see java.util.Map#values()
+	     * @return A collection of all values
+		 * @throws UnsupportedOperationException if not supported
+	     */
+	    public Iterable<O> values();
 		
 		/**
 		 * One cache entry
@@ -291,16 +302,6 @@ public interface CacheNG {
 			public long creation();
 		}
 	
-		/**
-		 * Can be implemented optionally and provides additional runtime information
-		 * for this cache
-		 * 
-		 * @author flo
-		 */
-		public interface Watched {
-			
-			public double ratio();
-		}
 	}
 	
 	/**
@@ -355,20 +356,9 @@ public interface CacheNG {
 		
 		public abstract int capacity();
 
-		public abstract void invalidateAll();
+		public abstract void invalidateAll( boolean force );
 
 		public abstract Stats stats();
-		
-		/**
-		 * Removes all entries from the cache within a given timespan
-		 * 
-		 * This method can be used to avoid heavy backend load if all
-		 * entries where removed at once.
-		 * 
-		 * @param milliSeconds
-		 */
-		public void invalidateAllWithin( int milliSeconds );
-		
 		
 		public interface Stats {
 			
@@ -420,19 +410,6 @@ public interface CacheNG {
 	}
 	
 	/**
-	 * Manages cache invalidation.
-	 * 
-	 * @author flo
-	 *
-	 * @param <K> Key-type
-	 * @param <O> Value-type
-	 */
-	public interface InvalidationManager<K,O> {
-		
-		public boolean isValid( K key, Cache.Entry<O> value );
-	}
-	
-	/**
 	 * Passes cache invalidation events to listeners
 	 * 
 	 * @author flo
@@ -444,7 +421,7 @@ public interface CacheNG {
 		public void registerListener( CacheEventListener<K> listener );
 		
 		void listenersInvalidate( K key );
-		void listenersInvalidateAll();
+		void listenersInvalidateAll( boolean force );
 	}
 	
 	/**
@@ -457,7 +434,11 @@ public interface CacheNG {
 	public interface CacheEventListener<K> {
 		
 		public void invalidateEvent( K key );
-		public void invalidateAllEvent();
+		public void invalidateAllEvent( boolean force );
+	}
+	
+	public interface CacheKey {
+		public Object cacheKey();
 	}
 	
 	
@@ -486,9 +467,9 @@ public interface CacheNG {
 		}
 		
 		@Override
-		public void invalidateAllEvent() {
+		public void invalidateAllEvent( boolean force ) {
 			
-			target.invalidateAllEvent();
+			target.invalidateAllEvent( force );
 		}
 		
 		/**

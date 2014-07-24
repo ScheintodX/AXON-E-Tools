@@ -1,6 +1,7 @@
 package de.axone.cache.ng;
 
 import java.io.File;
+import java.util.Set;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
@@ -12,7 +13,7 @@ import de.axone.cache.ng.CacheNG.Realm;
 
 public class CacheEHCache<K,O>
 		extends AbstractCache<K,O>
-		implements CacheNG.Cache<K,O>, CacheNG.Cache.Watched {
+		implements CacheNG.Cache<K,O> {
 	
 	private final Realm<K,O> realm;
 	private final net.sf.ehcache.Cache backend;
@@ -93,7 +94,7 @@ public class CacheEHCache<K,O>
 	}
 
 	@Override
-	public void invalidateAllEvent() {
+	public void invalidateAllEvent( boolean force ) {
 		backend.removeAll();
 	}
 
@@ -114,6 +115,16 @@ public class CacheEHCache<K,O>
 	@Override
 	public double ratio() {
 		return watcher.ratio();
+	}
+
+	@Override
+	public Set<K> keySet() {
+		throw new UnsupportedOperationException( "Doesn't has direct access" );
+	}
+
+	@Override
+	public Iterable<O> values() {
+		throw new UnsupportedOperationException( "Doesn't has direct access" );
 	}
 
 }

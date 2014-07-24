@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * Watches one file and can report if it has changed.
  * To minimize io this check is only done in a given
  * interval.
- *
+ * 
  * @author flo
  */
 public class FileWatcher implements Watcher {

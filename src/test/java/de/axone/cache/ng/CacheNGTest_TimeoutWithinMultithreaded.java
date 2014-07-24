@@ -31,8 +31,11 @@ public class CacheNGTest_TimeoutWithinMultithreaded {
 	CacheNG.Cache<Aid,TArticle> cache =
 			new CacheHashMap<>( RN.AID_ARTICLE );
 	
+	CacheWrapperDelayedInvalidation<Aid,TArticle> wrapper =
+			new CacheWrapperDelayedInvalidation<>( cache, TIME );
+	
 	CacheAccessCounter<Aid,TArticle> counter =
-			new CacheAccessCounter<>( cache );
+			new CacheAccessCounter<>( wrapper );
 	
 	CacheNG.AutomaticClient<Aid,TArticle> autoClient =
 			new AutomaticClientImpl<>( counter );
@@ -51,8 +54,7 @@ public class CacheNGTest_TimeoutWithinMultithreaded {
 	@Test( dependsOnMethods="fillCache" )
 	public void invalidateAll(){
 		
-		E.rr( "invalidate within: " + TIME + "ms" );
-		autoClient.invalidateAllWithin( TIME );
+		autoClient.invalidateAll( false );
 	}
 	
 	private AtomicInteger count = new AtomicInteger(),

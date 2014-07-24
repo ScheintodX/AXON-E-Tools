@@ -11,9 +11,10 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 
 public class HttpUtil {
@@ -59,66 +60,71 @@ public class HttpUtil {
 
 	public static HttpUtilResponse request( URL url, String eTag, String lastModified ) throws URISyntaxException, ClientProtocolException, IOException{
 		
-		HttpClient client = new DefaultHttpClient();
+		HttpClientBuilder builder = HttpClientBuilder.create();
 		
-		HttpGet httpget = new HttpGet( url.toURI() );
-		if( eTag != null ){
-			httpget.setHeader( "If-None-Match", eTag );
-		}
-		if( lastModified != null ){
-			httpget.setHeader( "If-Modified-Since", lastModified );
-		}
-		
-		HttpResponse response = client.execute( httpget );
-		//E.poster( printHttpInfo( httpget, response ) );
-		
-		HttpUtilResponse uResponse = new HttpUtilResponse();
-		uResponse.code = response.getStatusLine().getStatusCode();
-		
-		// break here if not modified
-		if( uResponse.code == 304 ) return uResponse;
-		
-		if( uResponse.code == 200 ){
+		try( CloseableHttpClient client = builder.build() ){
 			
-			Header [] eTags = response.getHeaders( "ETag" );
-			if( eTags != null && eTags.length > 0 ){
-				uResponse.eTag = eTags[ eTags.length-1 ].getValue();
+			HttpGet httpget = new HttpGet( url.toURI() );
+			if( eTag != null ){
+				httpget.setHeader( "If-None-Match", eTag );
 			}
-			Header [] lastModifieds = response.getHeaders( "Last-Modified" );
-			if( lastModifieds != null && lastModifieds.length > 0 ){
-				uResponse.lastModified = lastModifieds[ lastModifieds.length-1 ].getValue();
+			if( lastModified != null ){
+				httpget.setHeader( "If-Modified-Since", lastModified );
 			}
 			
-			Header cacheControl = response.getLastHeader( "Cache-Control" );
-			if( cacheControl != null ){
-				Pattern pattern = Pattern.compile( "max-age=([0-9]+)" );
-				Matcher matcher = pattern.matcher( cacheControl.getValue() );
-				if( matcher.find() ){
-					String maxAgeGroup = matcher.group();
-					String maxAgeString = maxAgeGroup.substring( maxAgeGroup.indexOf( '=' )+1 );
-					uResponse.maxAge = Long.parseLong( maxAgeString );
-				}
-			}
-			
-			Header contentType = response.getLastHeader( "Content-Type" );
-			if( contentType != null ){
+			try( CloseableHttpResponse response = client.execute( httpget ) ){
 				
-				Pattern pattern = Pattern.compile( ".*; *charset=(.+)" );
-				Matcher matcher = pattern.matcher( contentType.getValue() );
-				if( matcher.find() ){
-					//uResponse.encoding = found.substring( found.indexOf( "=" )+1 );
-					uResponse.encoding = matcher.group(1).trim();
+				//E.poster( printHttpInfo( httpget, response ) );
+				
+				HttpUtilResponse uResponse = new HttpUtilResponse();
+				uResponse.code = response.getStatusLine().getStatusCode();
+				
+				// break here if not modified
+				if( uResponse.code == 304 ) return uResponse;
+				
+				if( uResponse.code == 200 ){
+					
+					Header [] eTags = response.getHeaders( "ETag" );
+					if( eTags != null && eTags.length > 0 ){
+						uResponse.eTag = eTags[ eTags.length-1 ].getValue();
+					}
+					Header [] lastModifieds = response.getHeaders( "Last-Modified" );
+					if( lastModifieds != null && lastModifieds.length > 0 ){
+						uResponse.lastModified = lastModifieds[ lastModifieds.length-1 ].getValue();
+					}
+					
+					Header cacheControl = response.getLastHeader( "Cache-Control" );
+					if( cacheControl != null ){
+						Pattern pattern = Pattern.compile( "max-age=([0-9]+)" );
+						Matcher matcher = pattern.matcher( cacheControl.getValue() );
+						if( matcher.find() ){
+							String maxAgeGroup = matcher.group();
+							String maxAgeString = maxAgeGroup.substring( maxAgeGroup.indexOf( '=' )+1 );
+							uResponse.maxAge = Long.parseLong( maxAgeString );
+						}
+					}
+					
+					Header contentType = response.getLastHeader( "Content-Type" );
+					if( contentType != null ){
+						
+						Pattern pattern = Pattern.compile( ".*; *charset=(.+)" );
+						Matcher matcher = pattern.matcher( contentType.getValue() );
+						if( matcher.find() ){
+							//uResponse.encoding = found.substring( found.indexOf( "=" )+1 );
+							uResponse.encoding = matcher.group(1).trim();
+						}
+					}
+					
+					HttpEntity entity = response.getEntity();
+					
+					try( InputStream in = entity.getContent() ){
+						byte [] content = Slurper.slurp( in );
+						uResponse.content = content;
+					}
+					
 				}
+				return uResponse;
 			}
-			
-			HttpEntity entity = response.getEntity();
-			
-			try( InputStream in = entity.getContent() ){
-				byte [] content = Slurper.slurp( in );
-				uResponse.content = content;
-			}
-			
 		}
-		return uResponse;
 	}
 }

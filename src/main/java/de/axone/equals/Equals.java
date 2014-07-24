@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -775,6 +776,11 @@ public class Equals {
 			// over program runs and calling hashcode isn't.
 			if( o instanceof Currency ){
 				o = ( ((Currency)o).getCurrencyCode() );
+			}
+			
+			// This is to ignore precision
+			if( o instanceof BigDecimal ){
+				o = new Double( ((BigDecimal)o).doubleValue() );
 			}
 			
 			// Enums have not stable hash code either

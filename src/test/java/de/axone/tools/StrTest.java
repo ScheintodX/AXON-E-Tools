@@ -1,7 +1,9 @@
 package de.axone.tools;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.testng.annotations.Test;
 
 @Test( groups="tools.str" )
@@ -23,5 +25,126 @@ public class StrTest {
 		
 		// Mixed
 		assertEquals( Str.join( ",", 1L, 2, "3" ), "1,2,3" );
+	}
+	
+	public void testSplitOnce() throws Exception {
+		
+		assertThat( Str.splitFastOnce( "a", ';' ) )
+				.contains( "a" )
+				.hasSize( 1 )
+				;
+		
+		assertThat( Str.splitFastOnce( "a;b", ';' ) )
+				.contains( "a" )
+				.contains( "b" )
+				.hasSize( 2 )
+				;
+		
+		assertThat( Str.splitFastOnce( "abc;def;hij", ';' ) )
+				.contains( "abc" )
+				.contains( "def;hij" )
+				.hasSize( 2 )
+				;
+		
+		assertThat( Str.splitFastOnce( "", ';' ) )
+				.contains( "" )
+				.hasSize( 1 )
+				;
+		
+		assertThat( Str.splitFastOnce( ";", ';' ) )
+				.contains( "" )
+				.hasSize( 2 )
+				;
+		
+		assertThat( Str.splitFastOnce( ";;", ';' ) )
+				.contains( "" )
+				.contains( ";" )
+				.hasSize( 2 )
+				;
+		
+	}
+	
+	public void testSplitFastUnsafe() throws Exception {
+		
+		assertThat( Str.splitFastLimited( "a", ';', 8 ) )
+				.contains( "a" )
+				.hasSize( 1 )
+				;
+		
+		assertThat( Str.splitFastLimited( "a;b", ';', 8 ) )
+				.contains( "a" )
+				.contains( "b" )
+				.hasSize( 2 )
+				;
+		
+		assertThat( Str.splitFastLimited( "abc;def;hij", ';', 8 ) )
+				.contains( "abc" )
+				.contains( "def" )
+				.contains( "hij" )
+				.hasSize( 3 )
+				;
+		
+		assertThat( Str.splitFastLimited( "abc;def;hij", ';', 2 ) )
+				.contains( "abc" )
+				.contains( "def;hij" )
+				.hasSize( 2 )
+				;
+		assertThat( Str.splitFastLimited( "abc;;", ';', 2 ) )
+				.contains( "abc" )
+				.contains( ";" )
+				.hasSize( 2 )
+				;
+		
+		assertThat( Str.splitFastLimited( "", ';', 8 ) )
+				.contains( "" )
+				.hasSize( 1 )
+				;
+		
+		assertThat( Str.splitFastLimited( ";", ';', 8 ) )
+				.contains( "" )
+				.hasSize( 2 )
+				;
+		
+		assertThat( Str.splitFastLimited( ";;", ';', 8 ) )
+				.contains( "" )
+				.hasSize( 3 )
+				;
+	}
+	
+	public void timing(){
+		
+		long start, end;
+		
+		String test = "abc;def;hij";
+		
+		// Warmup
+		for( int i=0; i<10_000_000; i++ ){
+			Str.splitFastLimited( test, ';', 8 );
+		}
+		for( int i=0; i<10_000_000; i++ ){
+			StringUtils.split( test, ';' );
+		}
+		
+		start = System.currentTimeMillis();
+		for( int i=0; i<10_000_000; i++ ){
+			Str.splitFastLimited( test, ';', 8 );
+		}
+		end = System.currentTimeMillis();
+		E.rr( "Str Took " + (end-start) + " ms" );
+		
+		start = System.currentTimeMillis();
+		for( int i=0; i<10_000_000; i++ ){
+			Str.splitFastOnce( test, ';' );
+		}
+		end = System.currentTimeMillis();
+		E.rr( "Str Once Took " + (end-start) + " ms" );
+		
+		start = System.currentTimeMillis();
+		for( int i=0; i<10_000_000; i++ ){
+			StringUtils.split( test, ';' );
+		}
+		end = System.currentTimeMillis();
+		E.rr( "StringUtils Took " + (end-start) + " ms" );
+		
 	}
 }

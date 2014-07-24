@@ -65,7 +65,7 @@ public class CacheNGTest_AutomaticTwoStepClient {
 				.hasSize( 2 );
 		assertThat( aidListForString ).hasCached( "A" );
 		
-		aidListForString.invalidateAll();
+		aidListForString.invalidateAll( false );
 		
 		assertThat( aidListForString ).hasNotCached( "A" );
 	}
@@ -81,7 +81,7 @@ public class CacheNGTest_AutomaticTwoStepClient {
 				.isEqualTo( "Art A1" );
 		assertThat( stringForAid ).hasCached( aid( "a1" ) );
 		
-		stringForAid.invalidateAll();
+		stringForAid.invalidateAll( false );
 		
 		assertThat( stringForAid ).hasNotCached( aid( "a1" ) );
 	}

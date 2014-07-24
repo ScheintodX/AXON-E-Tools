@@ -20,10 +20,10 @@ public abstract class AbstractCache<K,O>
 		invalidateEvent( key );
 	}
 	
-	public void invalidateAll(){
+	public void invalidateAll( boolean force ){
 		
-		listenersInvalidateAll();
-		invalidateAllEvent();
+		listenersInvalidateAll( force );
+		invalidateAllEvent( force );
 	}
 
 }

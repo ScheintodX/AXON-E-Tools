@@ -4,6 +4,8 @@ import static de.axone.cache.ng.CacheNGAssert.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
+import java.util.Set;
+
 import org.testng.annotations.Test;
 
 import de.axone.cache.ng.CacheNG.Cache;
@@ -177,8 +179,8 @@ public class CacheNGTest_MultiValue {
 		}
 
 		@Override
-		public void invalidateAll() {
-			wrapped.invalidateAll();
+		public void invalidateAll( boolean force ) {
+			wrapped.invalidateAll( force );
 		}
 
 		@Override
@@ -194,6 +196,21 @@ public class CacheNGTest_MultiValue {
 		@Override
 		public String info() {
 			return wrapped.info();
+		}
+		
+		@Override
+		public double ratio(){
+			return wrapped.ratio();
+		}
+
+		@Override
+		public Set<String> keySet() {
+			return wrapped.keySet();
+		}
+
+		@Override
+		public Iterable<O> values() {
+			throw new UnsupportedOperationException( "Cannot iterate over values" );
 		}
 
 	}

@@ -47,5 +47,11 @@ public class CacheWrapperTimeout<K,O> extends CacheWrapper<K,O>{
 		
 		return true;
 	}
+
+	@Override
+	public String info() {
+		
+		return super.info() + "[Timeout: " + maxLifeTime + " ms]";
+	}
 	
 }

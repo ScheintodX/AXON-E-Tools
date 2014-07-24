@@ -19,11 +19,10 @@ public class CacheNGTest_TimeoutAll {
 
 	public void cacheTimesoutEntriesAfterATimeoutPeriod() throws Exception {
 		
+		CacheNG.AutomaticClient<Aid,TArticle> auto = buildAutoClient();
+		
 		TestAccessor_ArticleForAid accessor =
 				new TestAccessor_ArticleForAid();
-		
-		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				new AutomaticClientImpl<>( RN.AID_ARTICLE );
 		
 		assertThat( auto ).hasNotCached( A12345 )
 				.hasNotCached( A12346 );
@@ -36,7 +35,7 @@ public class CacheNGTest_TimeoutAll {
 				.hasCached( A12345 )
 				.hasCached( A12346 );
 		
-		auto.invalidateAllWithin( 100 );
+		auto.invalidateAll( false );
 		
 		synchronized( this ){ wait( 110 ); }
 		
@@ -48,11 +47,10 @@ public class CacheNGTest_TimeoutAll {
 	
 	public void cacheDoesNotTimeoutEntriesCreatedAfterTimeoutEvent() throws Exception {
 		
+		CacheNG.AutomaticClient<Aid,TArticle> auto = buildAutoClient();
+		
 		TestAccessor_ArticleForAid accessor =
 				new TestAccessor_ArticleForAid();
-		
-		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				new AutomaticClientImpl<>( RN.AID_ARTICLE );
 		
 		assertFalse( auto.isCached( A12345 ) );
 		assertFalse( auto.isCached( A12346 ) );
@@ -61,7 +59,7 @@ public class CacheNGTest_TimeoutAll {
 		assertThat( art ).isNotNull();
 		assertTrue( auto.isCached( A12345 ) );
 		
-		auto.invalidateAllWithin( 100 );
+		auto.invalidateAll( false );
 		
 		synchronized( this ){ wait( 100 ); }
 		
@@ -77,13 +75,26 @@ public class CacheNGTest_TimeoutAll {
 	
 	private static final int X = 12000;
 	
+	private CacheNG.AutomaticClient<Aid,TArticle> buildAutoClient() {
+		
+		CacheNG.Cache<Aid, TArticle> cache = 
+				new CacheHashMap<>( RN.AID_ARTICLE );
+				
+		CacheWrapperDelayedInvalidation<Aid, TArticle> wrapper =
+				new CacheWrapperDelayedInvalidation<>( cache, 1000 );
+		
+		CacheNG.AutomaticClient<Aid,TArticle> auto =
+				new AutomaticClientImpl<>( wrapper );
+				
+		return auto;
+	}
+	
 	public void testInvalidationWithLargeRandomIds() throws Exception {
+		
+		CacheNG.AutomaticClient<Aid,TArticle> auto = buildAutoClient();
 		
 		TestAccessor_ArticleForAid accessor =
 				new TestAccessor_ArticleForAid();
-		
-		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				new AutomaticClientImpl<>( RN.AID_ARTICLE );
 		
 		// Mimic real range article identifiers
 		for( int i=0; i<X; i++ ){
@@ -91,7 +102,7 @@ public class CacheNGTest_TimeoutAll {
 			assertThat( auto ).hasCached( aid( i+":123" ) );
 		}
 		
-		auto.invalidateAllWithin( 1000 );
+		auto.invalidateAll( false );
 		
 		synchronized( this ){ wait( 500 ); }
 		

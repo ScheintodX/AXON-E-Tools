@@ -34,7 +34,7 @@ import de.axone.cache.ng.CacheNG.Cache;
 public class AutomaticClientImpl<K,O>
 		implements CacheNG.AutomaticClient<K,O> {
 
-	final CacheWrapperDelayedInvalidation<K,O> backend;
+	final CacheNG.Cache<K,O> backend;
 	
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -46,10 +46,8 @@ public class AutomaticClientImpl<K,O>
 	}
 
 	public AutomaticClientImpl( CacheNG.Cache<K,O> backend ){
-		
 		assert backend != null;
-		
-		this.backend = new CacheWrapperDelayedInvalidation<>( backend );
+		this.backend = backend;
 	}
 	
 	@Override
@@ -186,12 +184,12 @@ public class AutomaticClientImpl<K,O>
 	}
 	
 	@Override
-	public void invalidateAll() {
+	public void invalidateAll( boolean force ) {
 		
 		// Clear cache
 		try {
 			lock.writeLock().lock();
-    		backend.invalidateAll();
+    		backend.invalidateAll( force );
 		} finally {
 			lock.writeLock().unlock();
 		}
@@ -205,11 +203,6 @@ public class AutomaticClientImpl<K,O>
 	@Override
 	public boolean isCached( K key ) {
 		return backend.isCached( key );
-	}
-
-	@Override
-	public void invalidateAllWithin( int milliSeconds ) {
-		backend.invalidateAllWithin( milliSeconds );
 	}
 	
 }
