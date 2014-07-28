@@ -1,5 +1,6 @@
 package de.axone.data;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -14,7 +15,9 @@ public abstract class Weighted {
 	}
 	
 	
-	public static class WrappedItem<T> implements Item<T> {
+	public static class WrappedItem<T> implements Item<T>, Serializable {
+		
+		private static final long serialVersionUID = 1L;
 
 		private final T item;
 		private final double weight;

@@ -1,7 +1,5 @@
 package de.axone.tools;
 
-
-
 public class Base64ApacheCommons extends Base64 {
 	
 	/* Static Methods */
