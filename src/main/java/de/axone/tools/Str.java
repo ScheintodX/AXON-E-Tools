@@ -321,4 +321,46 @@ public class Str {
 			return new String[]{ s };
 		}
 	}
+	
+	// --- R e m o v e --------------------------------------------------
+	
+	public static String removeChars( String s, char ... chars ){
+		
+		Arrays.sort( chars );
+		
+		StringBuilder result = new StringBuilder();
+		for( int i=0; i<s.length(); i++ ){
+			
+			char current = s.charAt( i );
+			
+			if( Arrays.binarySearch( chars, current ) < 0 ){
+				result.append( current );
+			}
+		}
+		
+		return result.toString();
+	}
+	
+	public static String collapseWhitespace( String s ) {
+		
+		StringBuilder result = new StringBuilder( s.length() );
+		
+		boolean startOfString = true;
+		boolean lastWasWs = true;
+		for( int i=0; i<s.length(); i++ ){
+			
+			char c = s.charAt( i );
+			if( Character.isWhitespace( c ) ){
+				if( lastWasWs ) continue;
+				lastWasWs = true;
+			} else {
+				if( lastWasWs && ! startOfString ) result.append( ' ' );
+				lastWasWs = false;
+				startOfString = false;
+				result.append( c );
+			}
+		}
+		
+		return result.toString();
+	}
 }

@@ -891,7 +891,7 @@ public final class SuperURL {
 			if( ! forName.containsKey( key ) ){
 				forName.put( key, new LinkedList<QueryPart>() );
 			}
-			QueryPart part = new QueryPart( key, value.toString() );
+			QueryPart part = new QueryPart( key, value != null ? value.toString() : null );
 			forName.get( key ).addLast( part );
 			path.add( part );
 			return this;
@@ -999,7 +999,7 @@ public final class SuperURL {
 			
 			public QueryPart( String parseMe ){
 				
-				String[] parts = parseMe.split( "=", 2 );
+				String[] parts = Str.splitFastLimited( parseMe, '=', 2 );
 				
 				key = parts[ 0 ];
 				if( parts.length > 1 ){

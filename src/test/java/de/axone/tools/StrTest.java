@@ -147,4 +147,10 @@ public class StrTest {
 		E.rr( "StringUtils Took " + (end-start) + " ms" );
 		
 	}
+	
+	public void cleanup_Whitespace(){
+		
+		assertEquals( Str.collapseWhitespace( " a\tb\n c  	d\r" ), "a b c d" );
+		
+	}
 }

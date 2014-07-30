@@ -17,7 +17,7 @@ public class SuperURLHttpServletRequest extends TestHttpServletRequest {
 
 	@Override
 	public StringBuffer getRequestURL() {
-		return new StringBuffer( url.toString( false ) );
+		return new StringBuffer( url.toString( true ) );
 	}
 
 	@Override
