@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.axone.web.SuperURL;
+import de.axone.web.SuperURLBuilders;
 
 public abstract class AbstractRestServlet<DATA, REQUEST extends RestRequest> extends HttpServlet {
 	
@@ -29,8 +30,8 @@ public abstract class AbstractRestServlet<DATA, REQUEST extends RestRequest> ext
 	protected void _process( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException {
 		
 		if( log.isTraceEnabled() ){
-			SuperURL u = new SuperURL( req );
-			log.trace( "Request for: {}", u.toString( false ) );
+			SuperURL u = SuperURLBuilders.fromRequest().build( req );
+			log.trace( "Request for: {}", u.toStringEncode( false ) );
 		}
 		
 		resp.setCharacterEncoding( "utf-8" );

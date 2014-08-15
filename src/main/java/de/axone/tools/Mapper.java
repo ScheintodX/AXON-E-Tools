@@ -41,9 +41,18 @@ public abstract class Mapper {
 	public static <T> HashMap<T,T> hashMap( T ... values ){
 		return map( new HashMap<T,T>(), false, values );
 	}
+	
+	@SafeVarargs
+	public static <T> HashMap<T,T> hashMap( T [] ... values ){
+		return map( new HashMap<T,T>(), false, values );
+	}
 		
 	@SafeVarargs
 	public static <T> TreeMap<T,T> treeMap( T ... values ){
+		return map( new TreeMap<T,T>(), false, values );
+	}
+	@SafeVarargs
+	public static <T> TreeMap<T,T> treeMap( T [] ... values ){
 		return map( new TreeMap<T,T>(), false, values );
 	}
 	
@@ -76,6 +85,16 @@ public abstract class Mapper {
 		for( int i = 0; i < values.length; i+= 2 ){
 			if( ignoreEmptyValues || values[ i+1 ] != null )
 				result.put( values[ i ], values[ i+1 ] );
+		}
+		return result;
+	}
+	
+	@SafeVarargs
+	public static <T,M extends Map<T,T>> M map( M result, boolean ignoreEmptyValues,  T [] ... values ){
+
+		for( T [] value : values ){
+			if( ignoreEmptyValues || value[ 1 ] != null )
+				result.put( value[ 0 ], value[ 1 ] );
 		}
 		return result;
 	}
@@ -243,10 +262,10 @@ public abstract class Mapper {
 
 		LinkedList<String> result = new LinkedList<String>();
 
-		for( T key : map.keySet() ){
-
-			U value = map.get( key );
-			result.add( key.toString() + joinWith + value.toString() );
+		for( Map.Entry<T,U> entry : map.entrySet() ) {
+			
+			result.add( entry.getKey().toString() +
+					joinWith + entry.getValue().toString() );
 		}
 		
 		return result;
@@ -277,9 +296,9 @@ public abstract class Mapper {
 	public static <X,Y,M extends Map<X,Y>> M clean( M map ){
 		
 		LinkedList<X> empty = new LinkedList<X>();
-		for( X key : map.keySet() ){
+		for( Map.Entry<X,Y> entry : map.entrySet() ){
 			
-			if( map.get( key ) == null ) empty.add( key );
+			if( entry.getValue() == null ) empty.add( entry.getKey() );
 		}
 		for( X key : empty ){
 			map.remove( key );

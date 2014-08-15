@@ -126,16 +126,17 @@ public class Str {
 	public static <K,V> StringBuilder joinBB( StringBuilder result, MapJoiner<K,V> joiner, boolean ignoreEmpty, Map<K,V> map ){
 		
 		int index = 0;
-		if( map != null ) for( K o : map.keySet() ){
+		if( map != null ) for( Map.Entry<K,V> entry : map.entrySet() ){
 			
-			V value = map.get( o );
+			K key = entry.getKey();
+			V value = entry.getValue();
 			
 			if( value == null && ! ignoreEmpty ) continue;
 
 			if( index > 0 ) result.append( joiner.getRecordSeparator() );
 
 			result
-				.append( joiner.keyToString( o, index ) )
+				.append( joiner.keyToString( key, index ) )
 				.append( joiner.getFieldSeparator() )
 				.append( joiner.valueToString( value, index ) )
 			;
@@ -263,6 +264,20 @@ public class Str {
 		return result.toString();
 	}
 	
+	public static String [] splitFast( String s, char fs ){
+		
+		int n=1;
+		for( int i=0; i<s.length(); i++ ){
+			if( s.charAt( i ) == fs ){
+				n++;
+			}
+		}
+		
+		if( n == 1 ) return new String[]{ s };
+		
+		return splitFastLimited( s, fs, n );
+	}
+	
 	
 	/**
 	 *  StipedDonwVersionOfSplit resticted to n results
@@ -275,7 +290,6 @@ public class Str {
 	 * @param split
 	 * @return
 	 */
-	
 	public static String [] splitFastLimited( String s, char split, int n ){
 		
 		final String [] result = new String[n];
@@ -363,4 +377,69 @@ public class Str {
 		
 		return result.toString();
 	}
+	
+	public static final String translate( String value, char from, String to ){
+		
+		if( value == null ) return null;
+		
+		StringBuilder result = new StringBuilder( value.length() + value.length()/10 );
+		
+		for( int i=0; i<value.length(); i++ ){
+			
+			char c = value.charAt( i );
+			
+			if( c == from ){
+				result.append( to );
+			} else {
+				result.append( c );
+			}
+		}
+		return result.toString();
+	}
+	
+	public static final String translate( String value, char [] from, String [] to ){
+		
+		if( value == null ) return null;
+		
+		StringBuilder result = new StringBuilder( value.length() + value.length()/10 );
+		
+		for( int i=0; i<value.length(); i++ ){
+			
+			char c = value.charAt( i );
+			
+			boolean found = false;
+			for( int j = 0; j<from.length; j++ ){
+				
+				if( c == from[ j ] ){
+					result.append( to[ j ] );
+					found = true;
+				}
+			}
+			if( ! found ) result.append( c );
+		}
+		
+		return result.toString();
+	}
+	
+	public static final boolean contains( String value, char ch ){
+		
+		return value.indexOf( ch ) >= 0;
+	}
+	
+	public static final boolean containsOneOf( String value, char [] chars ){
+		
+		value.indexOf( 'c' );
+		
+		for( int i=0; i<value.length(); i++ ){
+			
+			char c = value.charAt( i );
+			
+			for( char ct : chars ){
+				
+				if( c == ct ) return true;
+			}
+		}
+		return false;
+	}
+	
 }

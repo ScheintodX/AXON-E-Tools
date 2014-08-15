@@ -76,9 +76,10 @@ public abstract class Tag {
 			.append( name )
 		;
 
-		if( args != null ) for( String argName : args.keySet() ){
+		if( args != null ) for( Map.Entry<String,String> entry : args.entrySet() ){
 			
-			String argValue = args.get( argName );
+			String argName = entry.getKey();
+			String argValue = entry.getValue();
 
 			builder
 				.append( " " )

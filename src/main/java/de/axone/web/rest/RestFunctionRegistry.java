@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import de.axone.exception.IllegalNamedArgumentException;
 import de.axone.web.Method;
 import de.axone.web.SuperURL;
+import de.axone.web.SuperURLBuilders;
 
 public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 
@@ -35,7 +36,7 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 	public void run( DATA data, REQUEST req,
 			HttpServletResponse resp ) throws Exception {
 
-		SuperURL url = new SuperURL( req );
+		SuperURL url = SuperURLBuilders.fromRequest().build( req );
 		
 		if( url.getPath() == null || url.getPath().length() < stepBack ) {
 

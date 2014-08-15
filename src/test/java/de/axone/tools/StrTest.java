@@ -111,6 +111,23 @@ public class StrTest {
 				;
 	}
 	
+	public void testGeneralSplit(){
+		
+		String [] parts = Str.splitFast( "1;2;3;4;5;6;7;8;9;10", ';' );
+		
+		assertThat( parts )
+				.hasSize( 10 )
+				;
+		
+		parts = Str.splitFast( "/", '/' );
+		
+		assertThat( parts )
+				.hasSize( 2 )
+				.contains( "" )
+				;
+		
+	}
+	
 	public void timing(){
 		
 		long start, end;
@@ -153,4 +170,17 @@ public class StrTest {
 		assertEquals( Str.collapseWhitespace( " a\tb\n c  	d\r" ), "a b c d" );
 		
 	}
+	
+	public void translateSomeCharacters(){
+		
+		char [] from = new char [] { 'b','c' };
+		String [] to = new String [] { "BB", "CC" };
+		
+		assertNull( Str.translate( null, from, to ), "aBBCCd" );
+		
+		assertEquals( Str.translate( "", from, to ), "" );
+		
+		assertEquals( Str.translate( "abcd", from, to ), "aBBCCd" );
+	}
+	
 }

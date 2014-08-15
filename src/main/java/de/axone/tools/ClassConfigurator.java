@@ -125,13 +125,14 @@ public abstract class ClassConfigurator {
 	public static void configure( Object object, Map<String,String> parameters )
 	throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException{
 		
-		for (String parameter : parameters.keySet()) {
+		for( Map.Entry<String,String> entry : parameters.entrySet() ){
+			String parameter = entry.getKey();
 
 			String methodName = methodize(parameter);
 
 			Method method = object.getClass().getMethod( methodName, String.class );
 
-			method.invoke( object, parameters.get( parameter ) );
+			method.invoke( object, entry.getValue() );
 		}
 	}
 

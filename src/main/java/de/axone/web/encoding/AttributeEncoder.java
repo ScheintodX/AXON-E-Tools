@@ -1,11 +1,11 @@
 package de.axone.web.encoding;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import de.axone.tools.Str;
 
 public class AttributeEncoder implements Encoder{
 	
-	private static final Pattern pattern = Pattern.compile( "[&<>\"']" );
+	private static final char [] FROM = { '<','>','&', '"', '\'' };
+	private static final String [] TO = { "&lt;", "&gt;", "&amp;", "&quot;", "&apos;" };
 	
 	protected AttributeEncoder(){}
 	private static final AttributeEncoder instance = new AttributeEncoder();
@@ -17,36 +17,8 @@ public class AttributeEncoder implements Encoder{
 		
 		if( value == null ) return null;
 		
-		Matcher matcher = pattern.matcher( value );
-		StringBuffer result = new StringBuffer();
+		return Str.translate( value, FROM, TO );
 		
-		while( matcher.find() ){
-			
-			int index = matcher.start();
-			char c = value.charAt( index );
-			switch( c ){
-			case '&':
-				matcher.appendReplacement( result, "&amp;" );
-				break;
-			case '>':
-				matcher.appendReplacement( result, "&gt;" );
-				break;
-			case '<':
-				matcher.appendReplacement( result, "&lt;" );
-				break;
-			case '"':
-				matcher.appendReplacement( result, "&quot;" );
-				break;
-			case '\'':
-				matcher.appendReplacement( result, "&apos;" );
-				break;
-			default:
-				throw new IllegalArgumentException( ""+c );
-			}
-		}
-		matcher.appendTail( result );
-		
-		return result.toString();
 	}
 
 	@Override

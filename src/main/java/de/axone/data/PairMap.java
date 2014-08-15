@@ -39,9 +39,10 @@ public class PairMap<L,R,V> extends MapProxy<Pair<L,R>,V>{
 	public Map<R,V> getRight( L l ){
 		@SuppressWarnings( "unchecked" )
 		Map<R,V> result = (Map<R,V>) genMap();
-		for( Pair<L,R> t : this.keySet() ){
+		for( Map.Entry<Pair<L,R>,V> entry : this.entrySet() ){
+			Pair<L,R> t = entry.getKey();
 			if( t.getLeft().equals( l ) ){
-				result.put( t.getRight(), get( t ) );
+				result.put( t.getRight(), entry.getValue() );
 			}
 		}
 		return result;
@@ -53,9 +54,10 @@ public class PairMap<L,R,V> extends MapProxy<Pair<L,R>,V>{
 	public Map<L,V> getLeft( R r ){
 		@SuppressWarnings( "unchecked" )
 		Map<L,V> result = (Map<L,V>) genMap();
-		for( Pair<L,R> t : this.keySet() ){
+		for( Map.Entry<Pair<L,R>,V> entry : this.entrySet() ){
+			Pair<L,R> t = entry.getKey();
 			if( t.getRight().equals( r ) ){
-				result.put( t.getLeft(), get( t ) );
+				result.put( t.getLeft(), entry.getValue() );
 			}
 		}
 		return result;

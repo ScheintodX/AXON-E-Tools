@@ -23,8 +23,8 @@ public abstract class Filter<T> {
 	public <U extends Map<?,T>> U filter( U map ){
 		
 		LinkedList<Object> failed = new LinkedList<Object>();
-		for( Object key : map.keySet() ){
-			if( !ok( map.get( key ) ) ) failed.add( key );
+		for( Map.Entry<?,T> entry : map.entrySet() ){
+			if( !ok( entry.getValue() ) ) failed.add( entry.getKey() );
 		}
 		for( Object key : failed ){
 			map.remove( key );

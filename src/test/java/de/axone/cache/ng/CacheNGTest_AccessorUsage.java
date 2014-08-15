@@ -38,6 +38,7 @@ public class CacheNGTest_AccessorUsage {
 		
 		auto.invalidate( A12345 );
 		art = auto.fetch( A12345, acc );
+		assertNotNull( art );
 		
 		// Now we had to get it again, make it two calls
 		verify( acc, times( 2 ) ).fetch( A12345 );

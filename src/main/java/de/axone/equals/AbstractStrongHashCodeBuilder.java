@@ -213,8 +213,8 @@ public abstract class AbstractStrongHashCodeBuilder<T> implements StrongHashCode
 		else if( a.size() == 0 ) appendEmpty();
 		else {
 			Set<StrongPair> set = new HashSet<StrongPair>( a.size() );
-			for( Object key : a.keySet() ){
-				set.add( new StrongPair( key, a.get( key ) ) );
+			for( Map.Entry<?,?> entry : a.entrySet() ) {
+				set.add( new StrongPair( entry.getKey(), entry.getValue() ) );
 			}
 			append( set );
 		}

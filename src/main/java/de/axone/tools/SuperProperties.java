@@ -134,16 +134,13 @@ public class SuperProperties {
 		backend.store( writer, null );
 	}
 	public void store( File file ) throws IOException {
-		FileWriter out = new FileWriter( file );
-		backend.store( out, null );
-		out.close();
+		try( FileWriter out = new FileWriter( file ) ){
+			backend.store( out, null );
+		}
 	}
 	public void load( File file ) throws IOException {
-		FileReader in = new FileReader( file );
-		try {
+		try( FileReader in = new FileReader( file ) ){
 			load( in );
-		} finally {
-			in.close();
 		}
 	}
 

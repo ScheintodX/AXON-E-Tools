@@ -1,5 +1,6 @@
 package de.axone.web;
 
+import java.nio.ByteBuffer;
 import java.util.zip.CRC32;
 
 public abstract class Header {
@@ -11,5 +12,14 @@ public abstract class Header {
 		String eTag = Long.toHexString( crc32.getValue() );
 
 		return "\"" + eTag + "\"";
+	}
+	
+	public static String makeETag( ByteBuffer data ){
+		
+		byte [] x = new byte[ data.remaining() ];
+		
+		data.get( x );
+		
+		return makeETag( x );
 	}
 }

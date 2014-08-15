@@ -26,51 +26,51 @@ import de.axone.tools.Sets;
 @Test( groups="tools.equals" )
 public class EqualsTest {
 	
-	private static final class OO {
+	private static final class TestMethodsContainer {
 		
-		private O o1 = new O( 1, "s1", new X( "x1" ), true, "2.0" );
-		private O o11 = new O( 1, "s1", new X( "x1" ), true, "2.0" );
+		private TestMethods o1 = new TestMethods( 1, "s1", new X( "x1" ), true, "2.0" );
+		private TestMethods o11 = new TestMethods( 1, "s1", new X( "x1" ), true, "2.0" );
 		
-		private O o2 = new O( 2, "s1", new X( "x1" ), true, "2.0" );
-		private O o3 = new O( 1, "s2", new X( "x1" ), true, "2.0" );
-		private O o4 = new O( 1, "s2", new X( "x2" ), true, "2.0" );
-		private O o5 = new O( 1, "s2", new X( "x2" ), false, "2.0" );
-		private O o6 = new O( 1, "s2", new X( "x2" ), true, "2.00" );
+		private TestMethods o2 = new TestMethods( 2, "s1", new X( "x1" ), true, "2.0" );
+		private TestMethods o3 = new TestMethods( 1, "s2", new X( "x1" ), true, "2.0" );
+		private TestMethods o4 = new TestMethods( 1, "s2", new X( "x2" ), true, "2.0" );
+		private TestMethods o5 = new TestMethods( 1, "s2", new X( "x2" ), false, "2.0" );
+		private TestMethods o6 = new TestMethods( 1, "s2", new X( "x2" ), true, "2.00" );
 		
-		private O o20 = new O( 0, "s1", new X( "x1" ), true, "2.0" );
-		private O o30 = new O( 1, null, new X( "x1" ), true, "2.0" );
-		private O o40 = new O( 1, "s1", null,          true, "2.0" );
-		private O o50 = new O( 1, "s1", new X( "x1" ), true, null );
+		private TestMethods o20 = new TestMethods( 0, "s1", new X( "x1" ), true, "2.0" );
+		private TestMethods o30 = new TestMethods( 1, null, new X( "x1" ), true, "2.0" );
+		private TestMethods o40 = new TestMethods( 1, "s1", null,          true, "2.0" );
+		private TestMethods o50 = new TestMethods( 1, "s1", new X( "x1" ), true, null );
 	}
 
-	private static final class oo {
+	private static final class TestVariablesContainer {
 		
-		private o o1 = new o( 1, "s1", new X( "x1" ), true, "2.0" );
-		private o o11 = new o( 1, "s1", new X( "x1" ), true, "2.0" );
+		private TestVariables o1 = new TestVariables( 1, "s1", new X( "x1" ), true, "2.0" );
+		private TestVariables o11 = new TestVariables( 1, "s1", new X( "x1" ), true, "2.0" );
 		
-		private o o2 = new o( 2, "s1", new X( "x1" ), true, "2.0" );
-		private o o3 = new o( 1, "s2", new X( "x1" ), true, "2.0" );
-		private o o4 = new o( 1, "s2", new X( "x2" ), true, "2.0" );
-		private o o5 = new o( 1, "s2", new X( "x2" ), false, "2.0" );
-		private o o6 = new o( 1, "s2", new X( "x2" ), true, "2.00" );
+		private TestVariables o2 = new TestVariables( 2, "s1", new X( "x1" ), true, "2.0" );
+		private TestVariables o3 = new TestVariables( 1, "s2", new X( "x1" ), true, "2.0" );
+		private TestVariables o4 = new TestVariables( 1, "s2", new X( "x2" ), true, "2.0" );
+		private TestVariables o5 = new TestVariables( 1, "s2", new X( "x2" ), false, "2.0" );
+		private TestVariables o6 = new TestVariables( 1, "s2", new X( "x2" ), true, "2.00" );
 		
-		private o o20 = new o( 0, "s1", new X( "x1" ), true, "2.0" );
-		private o o30 = new o( 1, null, new X( "x1" ), true, "2.0" );
-		private o o40 = new o( 1, "s1", null,          true, "2.0" );
-		private o o50 = new o( 1, "s1", new X( "x1" ), true, null );
+		private TestVariables o20 = new TestVariables( 0, "s1", new X( "x1" ), true, "2.0" );
+		private TestVariables o30 = new TestVariables( 1, null, new X( "x1" ), true, "2.0" );
+		private TestVariables o40 = new TestVariables( 1, "s1", null,          true, "2.0" );
+		private TestVariables o50 = new TestVariables( 1, "s1", new X( "x1" ), true, null );
 	}
 
 	//@Test( enabled=false )
 	public void verySimpleTest(){
 		
-		O o = new O( 1, "s1", null, true, null );
+		TestMethods o = new TestMethods( 1, "s1", null, true, null );
 		assertNotNull( o.hashCode() );
 	}
 	
 	//@Test( enabled=false )
 	public void verySimpleTest_(){
 		
-		o o = new o( 1, "s1", null, true, null );
+		TestVariables o = new TestVariables( 1, "s1", null, true, null );
 		assertNotNull( o.hashCode() );
 	}
 		
@@ -123,7 +123,7 @@ public class EqualsTest {
 	//@Test( enabled=false )
 	public void testAnnotations(){
 		
-		EqualsClass ec = O.class.getAnnotation( EqualsClass.class );
+		EqualsClass ec = TestMethods.class.getAnnotation( EqualsClass.class );
 		assertNotNull( ec );
 		assertEquals( ec.select(), Select.ALL );
 		assertEquals( ec.workOn(), WorkOn.METHODS );
@@ -131,8 +131,8 @@ public class EqualsTest {
 	
 	public void testKeepUntouched() throws Exception {
 		
-		O s1 = new O( 1, "s1", new X( "x1" ), true, "2.0" );
-		O x1 = new O();
+		TestMethods s1 = new TestMethods( 1, "s1", new X( "x1" ), true, "2.0" );
+		TestMethods x1 = new TestMethods();
 		
 		assertNotEquals( x1, s1 );
 		
@@ -147,7 +147,7 @@ public class EqualsTest {
 	//@Test( enabled=false )
 	public void testBuilder(){
 		
-		OO o = new OO();
+		TestMethodsContainer o = new TestMethodsContainer();
 		
 		assertEquals( o.o1, o.o1 );
 		assertEquals( o.o11, o.o11 );
@@ -169,7 +169,7 @@ public class EqualsTest {
 	//@Test( enabled=false )
 	public void testBuilder_(){
 		
-		oo o = new oo();
+		TestVariablesContainer o = new TestVariablesContainer();
 		
 		assertEquals( o.o1, o.o1 );
 		assertEquals( o.o11, o.o11 );
@@ -191,7 +191,7 @@ public class EqualsTest {
 	//@Test( enabled=false )
 	public void testHashcode(){
 		
-		OO o = new OO();
+		TestMethodsContainer o = new TestMethodsContainer();
 		
 		assertTrue( o.o1.hashCode() == o.o1.hashCode() );
 		assertTrue( o.o11.hashCode() == o.o11.hashCode() );
@@ -213,7 +213,7 @@ public class EqualsTest {
 	//@Test( enabled=false )
 	public void testHashcode_(){
 		
-		oo o = new oo();
+		TestVariablesContainer o = new TestVariablesContainer();
 		
 		assertTrue( o.o1.hashCode() == o.o1.hashCode() );
 		assertTrue( o.o11.hashCode() == o.o11.hashCode() );
@@ -235,7 +235,7 @@ public class EqualsTest {
 	//@Test( enabled=false )
 	public void testStrongHashCode(){
 		
-		OO o = new OO();
+		TestMethodsContainer o = new TestMethodsContainer();
 		
 		assertTrue( o.o1.strongHashCode().equals( o.o1.strongHashCode() ) );
 		assertTrue( o.o11.strongHashCode().equals( o.o11.strongHashCode() ) );
@@ -257,7 +257,7 @@ public class EqualsTest {
 	//@Test( enabled=false )
 	public void testStrongHashCode_(){
 		
-		oo o = new oo();
+		TestVariablesContainer o = new TestVariablesContainer();
 		
 		assertTrue( o.o1.strongHashCode().equals( o.o1.strongHashCode() ) );
 		assertTrue( o.o11.strongHashCode().equals( o.o11.strongHashCode() ) );
@@ -279,9 +279,9 @@ public class EqualsTest {
 	//@Test( enabled=false )
 	public void testSynchronize(){
 		
-		OO oo = new OO();
+		TestMethodsContainer oo = new TestMethodsContainer();
 		
-		O o = new O( 0, null, null, false, null );
+		TestMethods o = new TestMethods( 0, null, null, false, null );
 		
 		assertEquals( Equals.synchronize( o, oo.o1, null ), oo.o1 );
 		assertFalse( o.getList() == oo.o1.getList() );
@@ -305,9 +305,9 @@ public class EqualsTest {
 	//@Test( enabled=false )
 	public void testSynchronize_(){
 		
-		oo oo = new oo();
+		TestVariablesContainer oo = new TestVariablesContainer();
 		
-		o o = new o( 0, null, null, false, null );
+		TestVariables o = new TestVariables( 0, null, null, false, null );
 		
 		assertEquals( Equals.synchronize( o, oo.o1, null ), oo.o1 );
 		assertFalse( o.list == oo.o1.list );
@@ -331,9 +331,9 @@ public class EqualsTest {
 	//@Test( enabled=false )
 	public void testSynchronizeMapper(){
 		
-		OO oo = new OO();
+		TestMethodsContainer oo = new TestMethodsContainer();
 		
-		O o = new O( 0, null, null, false, null );
+		TestMethods o = new TestMethods( 0, null, null, false, null );
 		
 		TestSynchroMapper sm = new TestSynchroMapper();
 		
@@ -361,7 +361,7 @@ public class EqualsTest {
 		assertFalse( o.getMap().equals( oo.o1.getMap() ) );
 		assertEquals( o.getMap().get( "s" ), "s1X" );
 		
-		O o_ = new O();
+		TestMethods o_ = new TestMethods();
 		
 		assertEquals( sm.fields, Sets.treeSetOf( "b", "bd", "int", "list", "map", "set", "string", "x", "v", "b") );
 		
@@ -398,9 +398,9 @@ public class EqualsTest {
 	////@Test( enabled=false )
 	public void testSynchronizeMapper_(){
 		
-		oo oo = new oo();
+		TestVariablesContainer oo = new TestVariablesContainer();
 		
-		o o = new o( 0, null, null, false, null );
+		TestVariables o = new TestVariables( 0, null, null, false, null );
 		
 		Equals.synchronize( o, oo.o1, new TestSynchroMapper() );
 		
@@ -426,7 +426,7 @@ public class EqualsTest {
 		assertFalse( o.map.equals( oo.o1.map ) );
 		assertEquals( o.map.get( "s" ), "s1X" );
 		
-		o o_ = new o();
+		TestVariables o_ = new TestVariables();
 		
 		Equals.synchronize( o_, oo.o1, new TestSynchroMapper() );
 		
@@ -482,7 +482,7 @@ public class EqualsTest {
 	
 	@SuppressWarnings( "unused" )
 	@EqualsClass( workOn = WorkOn.METHODS )
-	private static class O implements StrongHash {
+	private static class TestMethods implements StrongHash {
 		
 		private int i;
 		private String s;
@@ -495,9 +495,9 @@ public class EqualsTest {
 		
 		private double ignore = Math.random();
 		
-		O(){}
+		TestMethods(){}
 		
-		O( int i, String s, X x, boolean b, String bd ){
+		TestMethods( int i, String s, X x, boolean b, String bd ){
 			
 			this.i=i;
 			this.s=s;
@@ -586,7 +586,7 @@ public class EqualsTest {
 	}
 	
 	@EqualsClass( workOn = WorkOn.FIELDS )
-	private static class o implements StrongHash {
+	private static class TestVariables implements StrongHash {
 		
 		public int i;
 		public String s;
@@ -607,9 +607,9 @@ public class EqualsTest {
 		public double ignore5 = Math.random();
 		
 		
-		o(){}
+		TestVariables(){}
 		
-		o( int i, String s, X x, boolean b, String bd ){
+		TestVariables( int i, String s, X x, boolean b, String bd ){
 			
 			this.i=i;
 			this.s=s;

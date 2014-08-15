@@ -147,7 +147,7 @@ public abstract class Weighted {
 	public static <X extends Item<?>> WeightComparator<X> WEIGHT_COMPARATOR(){ return WEIGHT_COMPARATOR; }
 	
 	public static class WeightComparator<X extends Item<?>>
-			implements Comparator<X> {
+			implements Comparator<X>, Serializable {
 
 		@Override
 		public int compare( X o1, X o2 ) {
@@ -164,7 +164,7 @@ public abstract class Weighted {
 	public static <Y extends Comparable<Y>, X extends Item<Y>> ItemComparator<Y,X> ITEM_COMPARATOR(){ return ITEM_COMPARATOR; }
 	
 	public static class ItemComparator<Y extends Comparable<Y>, X extends Item<Y> >
-			implements Comparator<X> {
+			implements Comparator<X>, Serializable {
 
 		@Override
 		public int compare( X o1, X o2 ) {

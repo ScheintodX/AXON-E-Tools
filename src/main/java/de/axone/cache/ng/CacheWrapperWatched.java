@@ -13,13 +13,13 @@ public class CacheWrapperWatched<K,O> extends CacheWrapper<K,O> {
 		misses++;
 	}
 
-	public long hits(){
+	public synchronized long hits(){
 		return hits;
 	}
-	public long misses(){
+	public synchronized long misses(){
 		return misses;
 	}
-	public long accesses(){
+	public synchronized long accesses(){
 		return hits+misses;
 	}
 

@@ -138,9 +138,6 @@ public class BeanConfigurator {
 			throw new IllegalArgumentException( "Getter not found: " + getterName );
 		}
 		
-		if( method == null )
-			throw new IllegalArgumentException( "Setter doesn't exist for " + bean.getClass().getCanonicalName() + ": " + name );
-			
 		return method.invoke( bean );
 	}
 	

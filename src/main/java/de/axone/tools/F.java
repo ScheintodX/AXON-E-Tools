@@ -46,13 +46,16 @@ public class F {
 		
 		r.append( "{" );
 		boolean first = true;
-		for( Object key : m.keySet() ){
+		for( Map.Entry<?,?> entry : m.entrySet() ){
+			
+			Object key = entry.getKey();
+			
 			if( first ) first = false;
 			else r.append( ", " );
 			
 			formatItem( r, key );
 			r.append( "=>" );
-			formatItem( r, m.get( key ) );
+			formatItem( r, entry.getValue() );
 		}
 		r.append( "}" );
 	}

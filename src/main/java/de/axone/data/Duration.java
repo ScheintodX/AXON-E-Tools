@@ -23,19 +23,19 @@ public abstract class Duration {
 	}
 	
 	public static double inSeconds( long milliseconds ){
-		return milliseconds / 1000;
+		return milliseconds / 1000d;
 	}
 	
 	public static double inMinutes( long milliseconds ){
-		return milliseconds / 1000 / 60;
+		return milliseconds / 1000d / 60;
 	}
 	
 	public static double inHours( long milliseconds ){
-		return milliseconds / 1000 / 60 / 60;
+		return milliseconds / 1000d / 60 / 60;
 	}
 	
 	public static double inDays( long milliseconds ){
-		return milliseconds / 1000 / 60 / 60 / 24;
+		return milliseconds / 1000d / 60 / 60 / 24;
 	}
 	
 }

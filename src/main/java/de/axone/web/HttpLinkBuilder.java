@@ -19,64 +19,6 @@ import de.axone.web.SuperURL.Query.QueryPart;
 public class HttpLinkBuilder {
 
 	/**
-	 * Make a link to this page
-	 * 
-	 * @param request
-	 * @return
-	 */
-	public static String makeLink( HttpServletRequest request, boolean encode ){
-		
-		return makeLink( request, null, encode );
-	}
-	
-	/**
-	 * Make a link to this page and replace the given parameters
-	 * 
-	 * @param request
-	 * @param replaceParameters
-	 * @return
-	 */
-	public static String makeLink( HttpServletRequest request, Map<String,String> replaceParameters, boolean encode ) {
-		
-		return makeLink( request, false, false, null, replaceParameters, encode );
-	}
-	
-	/**
-	 * Make a link to this page and replace the given parameters
-	 * 
-	 * Additional specify whether to use host and path in the link
-	 * 
-	 * @param request
-	 * @param noHost use the host part in the link
-	 * @param noPath use the path part in the link
-	 * @param replaceParameters
-	 * @return
-	 */
-	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath, Map<String,String> replaceParameters, boolean encode ) {
-		
-		return makeLink( request, noHost, noPath, null, replaceParameters, encode );
-	}
-	
-	/**
-	 * Make a link to this page and replace the given parameters
-	 * 
-	 * Additional specify whether to use host and path in the link
-	 * and supply a white list of parameters which are to be kept.
-	 * 
-	 * @param request
-	 * @param noHost use the host part in the link
-	 * @param noPath use the path part in the link
-	 * @param keepParameters list of parameters which shall be kept or null if all are kept
-	 * @param replaceParameters key/value pairs of parameters to set to create or set to new values
-	 * @return
-	 */
-	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath, List<String> keepParameters, Map<String,String> replaceParameters, boolean encode ) {
-		
-		return makeLink( request, noHost, noPath, keepParameters, replaceParameters, null, encode );
-	}
-		
-	
-	/**
 	 * Make a link to this page and replace the given parameters
 	 * 
 	 * Additional specify whether to use host and path in the link
@@ -90,13 +32,15 @@ public class HttpLinkBuilder {
 	 * @param removeParameters list of parameters to remove from query or null if none are removed
 	 * @return
 	 */
-	public static String makeLink( HttpServletRequest request, boolean noHost, boolean noPath,
-			List<String> keepParameters, Map<String,String> replaceParameters, List<String> removeParameters,
-			boolean encode ) {
+	public static SuperURL makeLink( HttpServletRequest request, boolean noHost, boolean noPath,
+			List<String> keepParameters, Map<String,String> replaceParameters, List<String> removeParameters ) {
 		
-		SuperURL url = new SuperURL( request, noHost );
-		
-		if( noPath ) url.setPath( null );
+		SuperURL url = SuperURLBuilders.fromRequest()
+				.ignoring( SuperURL.Part.UserInfo, SuperURL.Part.Fragment )
+				.ignoringIf( noHost, SuperURL.UPTO_PATH )
+				.ignoringIf( noPath, SuperURL.Part.Path )
+				.build( request )
+				;
 		
 		if( keepParameters != null ){
 			Query oldQuery = url.getQuery();
@@ -128,12 +72,12 @@ public class HttpLinkBuilder {
 			}
 		}
 		
-		if( replaceParameters != null ) for( String key : replaceParameters.keySet() ){
+		if( replaceParameters != null ) for( Map.Entry<String,String> entry : replaceParameters.entrySet() ){
 			
-			url.setQueryParameter( key, replaceParameters.get( key ) );
+			url.setQueryParameter( entry.getKey(), entry.getValue() );
 		}
 		
-		return url.toString( encode );
+		return url;
 	}
 		
 }

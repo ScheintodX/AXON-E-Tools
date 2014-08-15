@@ -55,8 +55,8 @@ public class ResultWriter {
 			LinkedHashMap<String,Object> map = mapper.convertValue( data, mapType );
 			
 			if( overwrite != null ){
-				for( String key : overwrite.keySet() ){
-					map.put( key, overwrite.get( key ) );
+				for( Map.Entry<String,Object> entry : overwrite.entrySet() ){
+					map.put( entry.getKey(), entry.getValue() );
 				}
 			}
 			
@@ -82,8 +82,8 @@ public class ResultWriter {
 			LinkedHashMap<String,Object> map = mapper.convertValue( data, mapType );
 			
 			if( overwrite != null ){
-				for( String key : overwrite.keySet() ){
-					map.put( key, overwrite.get( key ) );
+				for( Map.Entry<String,Object> entry : overwrite.entrySet() ){
+					map.put( entry.getKey(), entry.getValue() );
 				}
 			}
 			

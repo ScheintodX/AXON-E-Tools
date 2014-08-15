@@ -24,13 +24,13 @@ public class Watcher implements Watched {
 		
 	}
 	
-	public long hits(){
+	public synchronized long hits(){
 		return hits;
 	}
-	public long misses(){
+	public synchronized long misses(){
 		return misses;
 	}
-	public long accesses(){
+	public synchronized long accesses(){
 		return hits+misses;
 	}
 

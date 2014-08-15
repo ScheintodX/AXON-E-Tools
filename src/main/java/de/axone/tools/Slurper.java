@@ -1,10 +1,16 @@
 package de.axone.tools;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.util.Arrays;
+import java.nio.channels.WritableByteChannel;
+import java.nio.file.StandardOpenOption;
 
 /**
  * Slurps data from inputs until all data is read.
@@ -15,24 +21,34 @@ import java.util.Arrays;
  * Don't use on unlimited sources (like /dev/random, /dev/null) because
  * it will create OutOfMemory errors.
  * 
- * This methods don't close the source. So encapsulate in try/finally
+ * This methods don't close the source. So encapsulate in try/finallyin
  * and do it manually by yourself.
  * 
  * TODO: Die Sache mit den Buffern lässt sich bestimmt weiter optimieren
  * und kürzen.
+ * Und das Naminb vereinheitlichen. 
  * 
  * @author flo
  */
 public class Slurper {
 	
-	private static final int DEFAULT_STARTSIZE = 4096;
-	private static final int DEFAULT_EXTENDSIZE = 4096;
+	private static final int DEFAULT_STARTSIZE = 4096,
+	                         DEFAULT_EXTENDSIZE = 4096,
+	                         DEFAULT_COPY_BUFFER = 4096;
 	
-	private static final byte [] EMPTY_ARRAY = new byte[]{};
+	//private static final byte [] EMPTY_ARRAY = new byte[]{};
 	private static final ByteBuffer EMPTY_BUFFER = ByteBuffer.allocate(0);
 	
 	private static final String DEFAULT_CHARSET = "utf8";
 	
+	public static String slurpString( File in ) throws IOException {
+		return slurpString( in, DEFAULT_CHARSET );
+	}
+	public static String slurpString( File in, String charset ) throws IOException {
+		try( FileInputStream fin = new FileInputStream( in ) ){
+			return slurpString( fin, charset );
+		}
+	}
 	public static String slurpString( InputStream in ) throws IOException {
 		return slurpString( in, DEFAULT_CHARSET );
 	}
@@ -53,12 +69,40 @@ public class Slurper {
 		return new String( slurp( in, startsize, extendsize ), charsetName );
 	}
 	
-	public static byte[] slurp( InputStream in ) throws IOException{
+	/*
+	public static ByteBuffer slurpInBuffer( File in ) throws IOException {
+		
+		try( FileChannel fch = FileChannel.open( in.toPath(), StandardOpenOption.READ ) ){
+			
+			return slurp( fch );
+		}
+	}
+	*/
+	
+	public static byte[] slurp( File in ) throws IOException {
+		try( FileInputStream fin = new FileInputStream( in ) ){
+			return slurp( fin );
+		}
+	}
+	public static byte[] slurp( InputStream in ) throws IOException {
 		return slurp( in, DEFAULT_STARTSIZE, DEFAULT_EXTENDSIZE );
 	}
-	public static byte[] slurp( InputStream in, int startsize ) throws IOException{
+	public static byte[] slurp( InputStream in, int startsize ) throws IOException {
 		return slurp( in, startsize, DEFAULT_EXTENDSIZE );
 	}
+	public static byte[] slurp( InputStream in, int startsize, int extendsize ) throws IOException {
+		
+		ByteBuffer result = slurp( Channels.newChannel( in ), startsize, extendsize );
+		if( result.hasArray() ){
+			return result.array();
+		} else {
+			byte [] r = new byte[ result.remaining() ];
+			result.get( r );
+			return r;
+		}
+	}
+		
+	/*
 	public static byte[] slurp( InputStream in, int startsize, int extendsize ) throws IOException{
 		
 		if( startsize <= 0 ) startsize = DEFAULT_STARTSIZE;
@@ -95,6 +139,7 @@ public class Slurper {
 			return EMPTY_ARRAY;
 		}
 	}
+	*/
 	
 	public static ByteBuffer slurp( ReadableByteChannel in ) throws IOException{
 		return slurp( in, DEFAULT_STARTSIZE, DEFAULT_EXTENDSIZE );
@@ -141,6 +186,7 @@ public class Slurper {
 		}
 	}
 	
+	/*
 	private static byte [] addToBuffer( byte [] buffer, int pos, byte [] add, int len, int extendsize ){
 		
 		int bLen = buffer.length;
@@ -166,6 +212,7 @@ public class Slurper {
 		
 		return result;
 	}
+	*/
 	
 	/**
 	 * Add 'add' to 'buffer'
@@ -200,7 +247,7 @@ public class Slurper {
 		
 		if( buffer.capacity() != buffer.position() ){
 		
-			ByteBuffer result = ByteBuffer.allocate( buffer.position() );
+			ByteBuffer result = ByteBuffer.allocateDirect( buffer.position() );
 			
 			buffer.flip();
 			
@@ -212,5 +259,47 @@ public class Slurper {
 		buffer.rewind();
 		
 		return buffer;
+	}
+	
+	public static void copy( OutputStream outS, InputStream inS ) throws IOException{
+		
+		try( 
+			WritableByteChannel dst = Channels.newChannel( outS );
+			ReadableByteChannel src = Channels.newChannel( inS );
+		){
+		
+			ByteBuffer buffer = ByteBuffer.allocateDirect( DEFAULT_COPY_BUFFER );
+			
+			while( ( src.read( buffer ) ) > -1 ){
+				
+				buffer.flip();
+				
+				dst.write( buffer );
+				
+				buffer.compact();
+			}
+			
+			buffer.flip();
+			
+			while( buffer.hasRemaining() ){
+				
+				dst.write( buffer );
+			}
+		}
+	}
+	
+	public static void burp( OutputStream outS, byte [] data ) throws IOException {
+		
+		outS.write( data, 0, data.length );
+		outS.flush();
+	}
+	
+	public static void burp( File outS, ByteBuffer buffer ) throws IOException {
+		
+		try( WritableByteChannel ch = FileChannel.open( outS.toPath(), StandardOpenOption.WRITE ) ){
+		
+			ch.write( buffer );
+		}
+		
 	}
 }

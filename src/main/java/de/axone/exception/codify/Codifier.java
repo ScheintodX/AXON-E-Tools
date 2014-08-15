@@ -20,7 +20,7 @@ import de.axone.tools.Mapper;
 import de.axone.tools.S;
 import de.axone.tools.Str;
 import de.axone.tools.Str.MapJoiner;
-import de.axone.web.SuperURL;
+import de.axone.web.SuperURLBuilders;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 // TODO: Registrieren von Packages. Oder macht man das besser online? Oder beides?
@@ -164,11 +164,7 @@ public abstract class Codifier {
 	
 	public static URL url( Throwable throwable ) {
 		
-		try {
-			return new SuperURL( link( throwable ) ).toURL();
-		} catch( Exception e ) {
-			throw new RuntimeException( e );
-		}
+		return SuperURLBuilders.fromString().build( link( throwable ) ).toURL();
 	}
 	
 	public static String baseUrl(){

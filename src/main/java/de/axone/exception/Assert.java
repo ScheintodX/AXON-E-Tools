@@ -90,6 +90,25 @@ public abstract class Assert {
 		if( l != length ) throw Ex.up( new ArgumentRangeException( name, " length ==" + length, l ) );
 	}
 	
+	public static void lengthEQ( String [] value, String name, int length ){
+		if( value == null ) return;
+		int l = value.length;
+		if( l != length ) throw Ex.up( new ArgumentRangeException( name, " length ==" + length, l ) );
+	}
+	
+	public static <T> void lengthEQ( T [] value, String name, int length ){
+		if( value == null ) return;
+		int l = value.length;
+		if( l != length ) throw Ex.up( new ArgumentRangeException( name, " length ==" + length, l ) );
+	}
+	
+	public static void lengthEQ( Collection<?> value, String name, int length ){
+		if( value == null ) return;
+		int l = value.size();
+		if( l != length ) throw Ex.up( new ArgumentRangeException( name, " length ==" + length, l ) );
+	}
+	
+	
 	// Size of countable objects (not Strings!) ----
 	// Collections
 	public static void size( Collection<?> object, String name, int size ){

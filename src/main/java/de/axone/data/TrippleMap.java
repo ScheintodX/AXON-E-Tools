@@ -34,26 +34,21 @@ public class TrippleMap<A,B,C,V> extends MapProxy<Tripple<A,B,C>,V>{
 	
 	public PairMap<A,B,V> getAB( C c ){
 		PairMap<A,B,V> result = new PairMap<>( mapping );
-		for( Tripple<A,B,C> t : this.keySet() ){
+		for( Map.Entry<Tripple<A,B,C>,V> entry : this.entrySet() ){
+			Tripple<A,B,C> t = entry.getKey();
 			if( t.getC().equals( c ) ){
-				result.put( new Pair<A,B>( t.getA(), t.getB() ), get( t ) );
+				result.put( new Pair<A,B>( t.getA(), t.getB() ), entry.getValue() );
 			}
 		}
-		/* More efficient
-		for( Map.Entry<Tripple<A,B,C>, V> entry : this.entrySet() ){
-			if( entry.getKey().getC().equals( c ) ){
-				result.put( new Pair<A,B>( entry.getKey().getA(), entry.getKey().getB() ), entry.getValue() );
-			}
-		}
-		*/
 		return result;
 	}
 
 	public PairMap<A,C,V> getAC( B b ){
 		PairMap<A,C,V> result = new PairMap<>( mapping );
-		for( Tripple<A,B,C> t : this.keySet() ){
+		for( Map.Entry<Tripple<A,B,C>,V> entry : this.entrySet() ){
+			Tripple<A,B,C> t = entry.getKey();
 			if( t.getB().equals( b ) ){
-				result.put( new Pair<A,C>( t.getA(), t.getC() ), get( t ) );
+				result.put( new Pair<A,C>( t.getA(), t.getC() ), entry.getValue() );
 			}
 		}
 		return result;
@@ -61,9 +56,10 @@ public class TrippleMap<A,B,C,V> extends MapProxy<Tripple<A,B,C>,V>{
 
 	public PairMap<B,C,V> getBC( A a ){
 		PairMap<B,C,V> result = new PairMap<>( mapping );
-		for( Tripple<A,B,C> t : this.keySet() ){
+		for( Map.Entry<Tripple<A,B,C>,V> entry : this.entrySet() ){
+			Tripple<A,B,C> t = entry.getKey();
 			if( t.getA().equals( a ) ){
-				result.put( new Pair<B,C>( t.getB(), t.getC() ), get( t ) );
+				result.put( new Pair<B,C>( t.getB(), t.getC() ), entry.getValue() );
 			}
 		}
 		return result;
@@ -72,9 +68,10 @@ public class TrippleMap<A,B,C,V> extends MapProxy<Tripple<A,B,C>,V>{
 	public Map<A,V> getA( B b, C c ){
 		@SuppressWarnings( "unchecked" )
 		Map<A,V> result = (Map<A,V>) genMap();
-		for( Tripple<A,B,C> t : this.keySet() ){
+		for( Map.Entry<Tripple<A,B,C>,V> entry : this.entrySet() ){
+			Tripple<A,B,C> t = entry.getKey();
 			if( t.getB().equals( b ) && t.getC().equals( c ) ){
-				result.put( t.getA(), get( t ) );
+				result.put( t.getA(), entry.getValue() );
 			}
 		}
 		return result;
@@ -83,9 +80,10 @@ public class TrippleMap<A,B,C,V> extends MapProxy<Tripple<A,B,C>,V>{
 	public Map<B,V> getB( A a, C c ){
 		@SuppressWarnings( "unchecked" )
 		Map<B,V> result = (Map<B,V>) genMap();
-		for( Tripple<A,B,C> t : this.keySet() ){
+		for( Map.Entry<Tripple<A,B,C>,V> entry : this.entrySet() ){
+			Tripple<A,B,C> t = entry.getKey();
 			if( t.getA().equals( a ) && t.getC().equals( c ) ){
-				result.put( t.getB(), get( t ) );
+				result.put( t.getB(), entry.getValue() );
 			}
 		}
 		return result;
@@ -94,9 +92,10 @@ public class TrippleMap<A,B,C,V> extends MapProxy<Tripple<A,B,C>,V>{
 	public Map<C,V> getC( A a, B b ){
 		@SuppressWarnings( "unchecked" )
 		Map<C,V> result = (Map<C,V>) genMap();
-		for( Tripple<A,B,C> t : this.keySet() ){
+		for( Map.Entry<Tripple<A,B,C>,V> entry : this.entrySet() ){
+			Tripple<A,B,C> t = entry.getKey();
 			if( t.getA().equals( a ) && t.getB().equals( b ) ){
-				result.put( t.getC(), get( t ) );
+				result.put( t.getC(), entry.getValue() );
 			}
 		}
 		return result;

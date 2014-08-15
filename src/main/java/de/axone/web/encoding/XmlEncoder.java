@@ -1,16 +1,19 @@
 package de.axone.web.encoding;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import de.axone.tools.Str;
+
 
 /**
  * Encoding escapes html entities: &lt; &gt; &amp;
+ * 
+ * TODO: Das geht schneller
  * 
  * @author flo
  */
 public class XmlEncoder implements Encoder {
 	
-	private static final Pattern pattern = Pattern.compile( "[<>&]" );
+	public static final char [] FROM = { '<','>','&' };
+	public static final String [] TO = { "&lt;", "&gt;", "&amp;" };
 	
 	protected XmlEncoder(){}
 	private static final XmlEncoder instance = new XmlEncoder();
@@ -22,32 +25,9 @@ public class XmlEncoder implements Encoder {
 		
 		if( value == null ) return null;
 		
-		Matcher matcher = pattern.matcher( value );
-		StringBuffer result = new StringBuffer();
-		
-		while( matcher.find() ){
-			
-			int index = matcher.start();
-			char c = value.charAt( index );
-			switch( c ){
-			case '<':
-				matcher.appendReplacement( result, "&lt;" );
-				break;
-			case '>':
-				matcher.appendReplacement( result, "&gt;" );
-				break;
-			case '&':
-				matcher.appendReplacement( result, "&amp;" );
-				break;
-			default:
-				throw new IllegalArgumentException( "" + c + " (at index: " + index + ")" );
-			}
-		}
-		matcher.appendTail( result );
-		
-		return result.toString();
+		return Str.translate( value, FROM, TO );
 	}
-
+	
 	@Override
 	public String encode( String value ) {
 		

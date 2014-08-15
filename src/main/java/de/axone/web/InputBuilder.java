@@ -17,9 +17,12 @@ public abstract class InputBuilder {
 
 		StringBuilder result = new StringBuilder();
 
-		for( String key : fields.keySet() ){
-
-			result.append( hiddenField( key, fields.get( key ) ) ).append( '\n' );
+		for( Map.Entry<String,String> entry : fields.entrySet() ){
+			
+			result
+					.append( hiddenField( entry.getKey(), entry.getValue() ) )
+					.append( '\n' )
+					;
 		}
 		return result.toString();
 	}

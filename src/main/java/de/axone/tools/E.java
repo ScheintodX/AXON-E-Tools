@@ -18,7 +18,7 @@ public abstract class E {
 		if( lino ) printPos( out, depth );
 		
 		if( os == null ){
-			out.print( F.ormat( os ) );
+			out.print( F.ormat( null ) );
 		} else if( os.length == 0 ){
 			out.print( "- [] -" );
 		} else {
