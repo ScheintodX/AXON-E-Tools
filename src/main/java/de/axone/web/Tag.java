@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import de.axone.exception.Assert;
-import de.axone.web.encoding.AttributeEncoder;
-import de.axone.web.encoding.XmlEncoder;
+import de.axone.web.encoding.Encoder_Attribute;
+import de.axone.web.encoding.Encoder_Xml;
 
 
 public abstract class Tag {
@@ -37,7 +37,7 @@ public abstract class Tag {
 				.append( " " )
 				.append( args[i] )
 				.append( "=\"" )
-				.append( AttributeEncoder.ENCODE( args[ i+1 ] ) )
+				.append( Encoder_Attribute.ENCODE( args[ i+1 ] ) )
 				.append( "\"" )
 			;
 		}
@@ -48,7 +48,7 @@ public abstract class Tag {
 		} else {
 			builder
 				.append( ">" )
-    			.append( encodeContent ? XmlEncoder.ENCODE( content ) : content )
+    			.append( encodeContent ? Encoder_Xml.ENCODE( content ) : content )
     			.append( "</" )
     			.append( name )
     			.append( ">" )
@@ -85,7 +85,7 @@ public abstract class Tag {
 				.append( " " )
 				.append( argName )
 				.append( "=\"" )
-				.append( AttributeEncoder.ENCODE( argValue ) )
+				.append( Encoder_Attribute.ENCODE( argValue ) )
 				.append( "\"" )
 			;
 		}
@@ -96,7 +96,7 @@ public abstract class Tag {
 		} else {
 			builder
 				.append( ">" )
-    			.append( encodeContent ? XmlEncoder.ENCODE( content ) : content )
+    			.append( encodeContent ? Encoder_Xml.ENCODE( content ) : content )
     			.append( "</" )
     			.append( name )
     			.append( ">" )
@@ -146,7 +146,7 @@ public abstract class Tag {
 				href
 					.append( args[i] )
 					.append( "=" )
-					.append( AttributeEncoder.ENCODE( args[i+1] ) )
+					.append( Encoder_Attribute.ENCODE( args[i+1] ) )
 				;
 			}
 		}

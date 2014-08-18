@@ -22,6 +22,19 @@ import de.axone.web.SuperURL.Path;
 import de.axone.web.SuperURL.Query;
 import de.axone.web.SuperURL.UserInfo;
 
+/*
+ * NOTE:
+ * 
+ * http://www.axon-e.de/foo/bar?key=value
+ * 
+ * request.getRequestURI()  -> /foo/bar?key=value
+ * request.getRequestURL()  -> http://www.axon-e.de/foo/bar (without query)
+ * request.getPathInfo()    -> /foo/bar (including /)
+ * request.getQueryString() -> key=value (without ?)
+ * 
+ */
+
+
 public class SuperURLBuilders {
 	
 	private static final Logger log =
@@ -90,13 +103,13 @@ public class SuperURLBuilders {
 			
 			SuperURL sUrl = new SuperURL();
 			
-			if( ! using.contains( Part.Scheme ) ) sUrl.includeScheme = false;
-			if( ! using.contains( Part.UserInfo ) ) sUrl.includeUserInfo = false;
-			if( ! using.contains( Part.Host ) ) sUrl.includeHost = false;
-			if( ! using.contains( Part.Port ) ) sUrl.includePort = false;
-			if( ! using.contains( Part.Path ) ) sUrl.includePath = false;
-			if( ! using.contains( Part.Query ) ) sUrl.includeQuery = false;
-			if( ! using.contains( Part.Fragment ) ) sUrl.includeFragment = false;
+			if( ! using.contains( Part.Scheme ) ) sUrl.setIncludeScheme( false );
+			if( ! using.contains( Part.UserInfo ) ) sUrl.setIncludeUserInfo( false );
+			if( ! using.contains( Part.Host ) ) sUrl.setIncludeHost( false );
+			if( ! using.contains( Part.Port ) ) sUrl.setIncludePort( false );
+			if( ! using.contains( Part.Path ) ) sUrl.setIncludePath( false );
+			if( ! using.contains( Part.Query ) ) sUrl.setIncludeQuery( false );
+			if( ! using.contains( Part.Fragment ) ) sUrl.setIncludeFragment( false );
 			
 			return sUrl;
 	
@@ -265,15 +278,13 @@ public class SuperURLBuilders {
 		@Override
 		public SuperURL update( SuperURL dst, URI uri ){
 			
-			//E.rr( uri );
-			
 			if( using.contains( Part.Scheme ) ){
 	    		dst.setScheme( uri.getScheme() );
 			}
 	    		
 			if( using.contains( Part.UserInfo ) ){
 	    		if( uri.getUserInfo() != null ){
-	        		dst.setUserInfo( UserInfo.parse( uri.getUserInfo(), false ) );
+	        		dst.setUserInfo( UserInfo.parse( uri.getRawUserInfo(), true ) );
 	    		} else {
 	    			dst.setUserInfo( null );
 	    		}
@@ -301,7 +312,7 @@ public class SuperURLBuilders {
 			
 			if( using.contains( Part.Path ) ){
 				if( uri.getPath() != null ){
-					Path path = Path.parse( uri.getPath(), false );
+					Path path = Path.parse( uri.getRawPath(), true );
 		    		dst.setPath( path );
 				} else {
 					dst.setPath( null );
@@ -310,7 +321,7 @@ public class SuperURLBuilders {
 			
 			if( using.contains( Part.Query ) ){
 				if( uri.getQuery() != null ){
-		    		dst.setQuery( Query.parse( uri.getQuery(), false ) );
+		    		dst.setQuery( Query.parse( uri.getRawQuery(), true ) );
 				} else {
 					dst.setQuery( null );
 				}
@@ -371,7 +382,7 @@ public class SuperURLBuilders {
 			if( query != null )
 					url.append( '?' ).append( query );
 			
-			return SuperURLBuilders.fromString().build( url.toString() );
+			return SuperURLBuilders.fromString().using( using ).build( url.toString() );
 		}
 
 		/**

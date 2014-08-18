@@ -6,6 +6,8 @@ import static org.testng.Assert.*;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractIterableAssert;
 
+import de.axone.web.SuperURL.Encode;
+
 public class SuperURLAssert 
 			extends AbstractAssert<SuperURLAssert, SuperURL> {
 
@@ -23,8 +25,11 @@ public class SuperURLAssert
 		assertThat( actual.getQuery() ).isEqualTo( expected.getQuery() );
 		assertEquals( actual.getPath(), expected.getPath() );
 		
-		assertEquals( actual.toStringEncode( false ), expected.toStringEncode( false ) );
-		assertEquals( actual.toStringEncode( true ), expected.toStringEncode( true ) );
+		for( Encode encode : Encode.values() ){
+			assertThat( actual.toStringEncode( encode ) )
+					.as( encode.toString() )
+					.isEqualTo( expected.toStringEncode( encode ) );
+		}
 		
 		assertEquals( actual, expected );
 		
@@ -76,8 +81,8 @@ public class SuperURLAssert
 			return this;
 		}
 
-		public HostAssert asStringEquals( boolean encode, String hostStr ) {
-			assertThat( actual.toString( encode ) )
+		public HostAssert asStringEquals( SuperURL.Encode encode, String hostStr ) {
+			assertThat( actual.toStringEncode( encode ) )
 					.isEqualTo( hostStr )
 					;
 			return this;

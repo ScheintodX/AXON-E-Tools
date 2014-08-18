@@ -1,17 +1,15 @@
 package de.axone.web;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -30,9 +28,6 @@ import de.axone.web.SuperURLBuilders.SuperURLBuilder_Copy;
 import de.axone.web.SuperURLBuilders.SuperURLBuilder_Request;
 import de.axone.web.SuperURLBuilders.SuperURLBuilder_String;
 import de.axone.web.SuperURLBuilders.SuperURLBuilder_URI;
-import de.axone.web.encoding.AttributeEncoder;
-import de.axone.web.encoding.HtmlEncoder;
-
 
 /**
  * Extended and more usefull version of Javas URI class whereas
@@ -64,29 +59,43 @@ public final class SuperURL {
 	private static final String UTF8 = "utf-8";
 
 	public enum Part {
-		Scheme, UserInfo, Host, Port, Path, Query, Fragment
+		Scheme, UserInfo, Host, Port, Path, Query, Fragment;
+		
+		public static final Set<Part>
+				ALL_PARTS = Collections.unmodifiableSet( EnumSet.allOf( Part.class ) ),
+				NO_PARTS = Collections.unmodifiableSet( EnumSet.noneOf( Part.class ) ),
+				UPTO_PATH = Collections.unmodifiableSet( EnumSet.of( Part.Scheme, Part.UserInfo, Part.Host, Part.Port ) ),
+				FROM_PATH = Collections.unmodifiableSet( EnumSet.of( Part.Path, Part.Query, Part.Fragment ) )
+				;
+		
 	}
 	
-	public static final Set<Part> ALL_PARTS = Collections.unmodifiableSet( EnumSet.allOf( Part.class ) ),
-	                              NO_PARTS = Collections.unmodifiableSet( EnumSet.noneOf( Part.class ) ),
-	                              UPTO_PATH = Collections.unmodifiableSet( EnumSet.of( Part.Scheme, Part.UserInfo, Part.Host, Part.Port ) ),
-	                              FROM_PATH = Collections.unmodifiableSet( EnumSet.of( Part.Path, Part.Query, Part.Fragment ) )
-	                              ;
+	public enum Encode {
+		Plain, Minimal, Full;
+	}
 	
-	private String scheme;
-	boolean includeScheme = true;
-	private UserInfo userInfo;
-	boolean includeUserInfo = true;
-	private Host host;
-	boolean includeHost = true;
-	private Integer port;
-	boolean includePort = true;
-	private Path path;
-	boolean includePath = true;
-	private Query query;
-	boolean includeQuery = true;
-	private String fragment;
-	boolean includeFragment = true;
+	public enum FinalEncoding {
+		Plain, Html, Attribute;
+	}
+	
+	private static final EnumMap<Encode, SuperURLPrinter> printers;
+	static {
+		printers = new EnumMap<>( Encode.class );
+		printers.put( Encode.Plain, SuperURLPrinter.Plain );
+		printers.put( Encode.Minimal, SuperURLPrinter.MinimalEncoded );
+		printers.put( Encode.Full, SuperURLPrinter.FullEncoded );
+	}
+	
+	private EnumSet<Part> include = EnumSet.allOf( Part.class );
+	
+	
+	String scheme;
+	UserInfo userInfo;
+	Host host;
+	Integer port;
+	Path path;
+	Query query;
+	String fragment;
 	
 	public SuperURL(){}
 	
@@ -94,35 +103,47 @@ public final class SuperURL {
 		
 		if( scheme != null ){
 			this.scheme = scheme;
-			this.includeScheme = true;
+			include.add( Part.Scheme );
 		}
 		if( userInfo != null ){
 			this.userInfo = userInfo;
-			this.includeUserInfo = true;
+			include.add( Part.UserInfo );
 		}
 		if( host != null ){
 			this.host = host;
-			this.includeHost = true;
+			include.add( Part.Host );
 		}
 		if( port != null ){
 			this.port = port;
-			this.includePort = true;
+			include.add( Part.Port );
 		}
 		if( path != null ){
 			this.path = path;
-			this.includePath = true;
+			include.add( Part.Path );
 		}
 		if( query != null ){
 			this.query = query;
-			this.includeQuery = true;
+			include.add( Part.Query );
 		}
 		if( fragment != null ){
 			this.fragment = fragment;
-			this.includeFragment = true;
+			include.add( Part.Fragment );
 		}
 	}
 	
 	/* --- Direct Access --- */
+	
+	public SuperURL setInclude( Part part, boolean include ){
+		if( include ){
+			this.include.add( part );
+		} else {
+			this.include.remove( part );
+		}
+		return this;
+	}
+	public boolean isInclude( Part part ){
+		return include.contains( part );
+	}
 	
 	public String getScheme() {
 		return scheme;
@@ -131,12 +152,11 @@ public final class SuperURL {
 		this.scheme = scheme;
 		return this;
 	}
-	public SuperURL setIncludeScheme( boolean includeScheme ){
-		this.includeScheme = includeScheme;
-		return this;
+	public SuperURL setIncludeScheme( boolean include ){
+		return setInclude( Part.Scheme, include );
 	}
 	public boolean isIncludeScheme(){
-		return includeScheme;
+		return isInclude( Part.Scheme );
 	}
 
 	public UserInfo getUserInfo() {
@@ -146,12 +166,11 @@ public final class SuperURL {
 		this.userInfo = userInfo;
 		return this;
 	}
-	public SuperURL setIncludeUserInfo( boolean includeUserInfo ){
-		this.includeUserInfo = includeUserInfo;
-		return this;
+	public SuperURL setIncludeUserInfo( boolean include ){
+		return setInclude( Part.UserInfo, include );
 	}
 	public boolean isIncludeUserInfo(){
-		return includeUserInfo;
+		return isInclude( Part.UserInfo );
 	}
 
 	public Host getHost() {
@@ -160,11 +179,11 @@ public final class SuperURL {
 	public void setHost( Host host ) {
 		this.host = host;
 	}
-	public void setIncludeHost( boolean includeHost ){
-		this.includeHost = includeHost;
+	public SuperURL setIncludeHost( boolean include ){
+		return setInclude( Part.Host, include );
 	}
 	public boolean isIncludeHost(){
-		return includeHost;
+		return isInclude( Part.Host );
 	}
 
 	public Integer getPort() {
@@ -174,12 +193,11 @@ public final class SuperURL {
 		this.port = port;
 		return this;
 	}
-	public SuperURL setIncludePort( boolean includePort ){
-		this.includePort = includePort;
-		return this;
+	public SuperURL setIncludePort( boolean include ){
+		return setInclude( Part.Port, include );
 	}
 	public boolean isIncludePort(){
-		return includePort;
+		return isInclude( Part.Port );
 	}
 
 	public String getFragment() {
@@ -189,12 +207,11 @@ public final class SuperURL {
 		this.fragment = fragment;
 		return this;
 	}
-	public SuperURL setIncludeFragment( boolean includeFragment ){
-		this.includeFragment = includeFragment;
-		return this;
+	public SuperURL setIncludeFragment( boolean include ){
+		return setInclude( Part.Fragment, include );
 	}
 	public boolean isIncludeFragment(){
-		return includeFragment;
+		return isInclude( Part.Fragment );
 	}
 	
 	// TODO: Da ist das automatische erzeugen des Pfades dazu gekommen.
@@ -207,12 +224,11 @@ public final class SuperURL {
 		this.path = path;
 		return this;
 	}
-	public SuperURL setIncludePath( boolean includePath ){
-		this.includePath = includePath;
-		return this;
+	public SuperURL setIncludePath( boolean include ){
+		return setInclude( Part.Path, include );
 	}
 	public boolean isIncludePath(){
-		return includePath;
+		return isInclude( Part.Path );
 	}
 
 	public Query getQuery() {
@@ -223,12 +239,11 @@ public final class SuperURL {
 		this.query = query;
 		return this;
 	}
-	public SuperURL setIncludeQuery( boolean includeQuery ){
-		this.includeQuery = includeQuery;
-		return this;
+	public SuperURL setIncludeQuery( boolean include ){
+		return setInclude( Part.Query, include );
 	}
 	public boolean isIncludeQuery(){
-		return includeQuery;
+		return isInclude( Part.Query );
 	}
 	
 	/* --- Helpers --- */
@@ -238,7 +253,6 @@ public final class SuperURL {
 	}
 	
 	public String getQueryParameter( String key ){
-		
 		return getQuery().getValue( key );
 	}
 	
@@ -263,96 +277,61 @@ public final class SuperURL {
 	
 	/* --- ToString --- */
 	
-	public StringBuilder toStringBB( StringBuilder result, boolean encode ){
-		
-		if( includeScheme && scheme != null ){
-			result.append( scheme ).append( "://" );
-		}
-		
-		if( includeUserInfo && userInfo != null ){
-			userInfo.toStringBB( result, encode );
-			result.append( '@' );
-		}
-		
-		if( includeHost && host != null ){
-			host.toStringBB( result, encode );
-		}
-		
-		if( includePort && port != null ){
-			result.append( ':' ).append( port );
-		}
-		
-		if( includePath && path != null ){
-			if( ! path.startsWithSlash && path.length() > 0 ) result.append( '/' );
-			path.toStringBB( result, encode );
-		}
-		
-		if( includeQuery && query != null && query.size() > 0 ){
-			result.append( '?' );
-			query.toStringBB( result, encode );
-		}
-		
-		if( includeFragment && fragment != null ){
-			
-			String fragmentStr = fragment;
-			if( encode ) fragmentStr = encode( fragmentStr );
-			result.append( '#' ).append( fragmentStr );
-		}
-		
-		return result;
+	public String toStringEncode( Encode encode ){
+		return printers.get( encode ).toString( this );
 	}
-	public StringBuilder toStringB( boolean encode ){
-		return toStringBB( new StringBuilder(), encode );
-	}
-	public String toStringEncode( boolean encode ){
-		return toStringB( encode ).toString();
-	}
+	
 	@Deprecated
 	@Override
 	public String toString(){
-		return toStringEncode( true );
+		return toDebug();
 	}
 	
 	public String toRedirect(){
 		
-		return toStringEncode( true );
+		return SuperURLPrinter.FullEncoded
+				.toString( this );
 	}
 	
 	public String toHtml(){
 		
-		return HtmlEncoder.ENCODE( toStringEncode( false ) );
+		return SuperURLPrinter.MinimalEncoded
+				.finishFor( FinalEncoding.Html ).toString( this );
 	}
+	
+	public String toDebug() {
+		
+		return SuperURLPrinter.MinimalEncoded
+				.toString( this );
+	}
+	
+	// Called from AjaxFunction_cart
+	public String toAjax() {
+		
+		return SuperURLPrinter.MinimalEncoded
+				.toString( this );
+	}
+
+	
 	
 	public String toAttribute(){
 		
-		return AttributeEncoder.ENCODE( toStringEncode( true ) );
+		return SuperURLPrinter.MinimalEncoded
+				.finishFor( FinalEncoding.Attribute ).toString( this );
 	}
 	
 	public String toText() {
 		
-		return toStringEncode( false );
+		return SuperURLPrinter.Plain.toString( this );
 	}
 	
 	public String toValue() {
 		
-		return toStringEncode( true );
+		return SuperURLPrinter.MinimalEncoded.toString( this );
 	}
 	
-	public void writeInHolder( Writer writer ) throws IOException{
-		writer.write( toStringEncode( true ) );
-	}
-
-	public static String encode( String text ) {
-		
-		if( text == null ) return text;
-		
-		try {
-			return URLEncoder.encode( text, UTF8 );
-		} catch( UnsupportedEncodingException e ) {
-			throw new IllegalArgumentException( "Cannot urlify " + text );
-		}
-	}
 	
+	@Deprecated
 	private static final String decode( String value ){
 		
 		if( value == null ) return null;
@@ -365,11 +344,12 @@ public final class SuperURL {
 	}
 	
 	public URL toURL() {
+		String asString = SuperURLPrinter.FullEncoded.toString( this );
 		try {
-			return new URL( toStringEncode( false ) );
+			return new URL( asString );
 		} catch( MalformedURLException e ){
 			throw new IllegalStateException( 
-					"Cannot create URL for: " + this.toStringEncode( false ), e );
+					"Cannot create URL for: " + asString, e );
 		}
 	}
 	
@@ -379,19 +359,12 @@ public final class SuperURL {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ( includeScheme ? 1231 : 1237 );
 		result = prime * result + ( ( scheme == null ) ? 0 : scheme.hashCode() );
-		result = prime * result + ( includeUserInfo ? 1231 : 1237 );
 		result = prime * result + ( ( userInfo == null ) ? 0 : userInfo.hashCode() );
-		result = prime * result + ( includeHost ? 1231 : 1237 );
 		result = prime * result + ( ( host == null ) ? 0 : host.hashCode() );
-		result = prime * result + ( includePort ? 1231 : 1237 );
 		result = prime * result + ( ( port == null ) ? 0 : port.hashCode() );
-		result = prime * result + ( includePath ? 1231 : 1237 );
 		result = prime * result + ( ( path == null ) ? 0 : path.hashCode() );
-		result = prime * result + ( includeQuery ? 1231 : 1237 );
 		result = prime * result + ( ( query == null ) ? 0 : query.hashCode() );
-		result = prime * result + ( includeFragment ? 1231 : 1237 );
 		result = prime * result + ( ( fragment == null ) ? 0 : fragment.hashCode() );
 		return result;
 	}
@@ -405,55 +378,48 @@ public final class SuperURL {
 		
 		SuperURL other = (SuperURL) obj;
 		
-		return equals( other, ALL_PARTS );
+		return equals( other, Part.ALL_PARTS );
 	}
 	
 	public boolean equals( SuperURL other, Set<Part> parts ) {
 		
 		if( parts.contains( Part.Scheme ) ){
-			if( includeScheme != other.includeScheme ) return false;
 			if( scheme == null ) {
 				if( other.scheme != null ) return false;
 			} else if( !scheme.equals( other.scheme ) ) return false;
 		}
 				
 		if( parts.contains( Part.UserInfo ) ){
-			if( includeUserInfo != other.includeUserInfo ) return false;
 			if( userInfo == null ) {
 				if( other.userInfo != null ) return false;
 			} else if( !userInfo.equals( other.userInfo ) ) return false;
 		}
 		
 		if( parts.contains( Part.Host ) ){
-			if( includeHost != other.includeHost ) return false;
 			if( host == null ) {
 				if( other.host != null ) return false;
 			} else if( !host.equals( other.host ) ) return false;
 		}
 			
 		if( parts.contains( Part.Port ) ){
-			if( includePort != other.includePort ) return false;
 			if( port == null ) {
 				if( other.port != null ) return false;
 			} else if( !port.equals( other.port ) ) return false;
 		}
 			
 		if( parts.contains( Part.Path ) ){
-			if( includePath != other.includePath ) return false;
 			if( path == null ) {
 				if( other.path != null ) return false;
 			} else if( !path.equals( other.path ) ) return false;
 		}
 			
 		if( parts.contains( Part.Query ) ){
-			if( includeQuery != other.includeQuery ) return false;
 			if( query == null ) {
 				if( other.query != null ) return false;
 			} else if( !query.equals( other.query ) ) return false;
 		}
 			
 		if( parts.contains( Part.Fragment ) ){
-			if( includeFragment != other.includeFragment ) return false;
 			if( fragment == null ) {
 				if( other.fragment != null ) return false;
 			} else if( !fragment.equals( other.fragment ) ) return false;
@@ -530,31 +496,6 @@ public final class SuperURL {
     		return Str.join( ".", getNet() );
     	}
     	
-    	public StringBuilder toStringBB( StringBuilder result, boolean encode ){
-    		
-    		boolean first = true;
-    		for( String part : parts ){
-    			
-    			if( encode ) part = encode( part );
-    			
-    			if( first ) first = false;
-    			else result.append( '.' );
-    			
-    			result.append( part );
-    		}
-    		return result;
-    	}
-    	public StringBuilder toStringB( boolean encode ){
-    		return toStringBB( new StringBuilder(), encode );
-    	}
-    	public String toString( boolean encode ){
-    		return toStringB( encode ).toString();
-    	}
-    	@Override
-    	public String toString(){
-    		return toString( false );
-    	}
-
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -577,6 +518,15 @@ public final class SuperURL {
 			
 			return true;
 		}
+		
+		@Override
+		public String toString() {
+			return SuperURLPrinter.Plain.toString( this );
+		}
+		
+		public String toStringEncode( Encode encode ){
+			return printers.get( encode ).toString( this );
+		}
 
 		public List<String> toList() {
 			return new ArrayList<>( parts );
@@ -591,9 +541,9 @@ public final class SuperURL {
 	
 	public static final class Path implements Iterable<String> {
 		
-		private LinkedList<String> path;
-		private boolean endsWithSlash;
-		private boolean startsWithSlash;
+		LinkedList<String> path;
+		boolean endsWithSlash;
+		boolean startsWithSlash;
 		
 		public Path(){
 			this( new LinkedList<String>(), false );
@@ -860,37 +810,16 @@ public final class SuperURL {
 			
 			return new Path( newPath, endsWithSlash );
 		}
-		public StringBuilder toStringBB( StringBuilder result, boolean encode ){
-			
-			if( startsWithSlash ) result.append( '/' );
-			
-			boolean first = true;
-			for( String part : path ){
-				
-				if( encode ) part = encode( part );
-				
-				if( first ) first = false; 
-				else result.append( '/' );
-				
-				result.append( part );
-			}
-			
-			// Now we need to prevent double slashes if starts && ends and no content
-			if( endsWithSlash && ( ! startsWithSlash || path.size() > 0 ) ) result.append( '/' );
-			
-			return result;
-		}
-		public StringBuilder toStringB( boolean encode ){
-			return toStringBB( new StringBuilder(), encode );
-		}
-		public String toString( boolean encode ){
-			return toStringB( encode ).toString();
-		}
 		
 		@Override
 		public String toString(){
-			return toString( false );
+			return SuperURLPrinter.Plain.toString( this );
 		}
+		
+		public String toStringEncode( Encode encode ){
+			return printers.get( encode ).toString( this );
+		}
+
 
 		@Override
 		public Iterator<String> iterator() {
@@ -929,8 +858,8 @@ public final class SuperURL {
 	
 	public static final class Query implements Iterable<Query.QueryPart> {
 		
-		private HashMap<String,LinkedList<QueryPart>> forName = new HashMap<String,LinkedList<QueryPart>>();
-		private LinkedList<QueryPart> path = new LinkedList<QueryPart>();
+		HashMap<String,LinkedList<QueryPart>> forName = new HashMap<String,LinkedList<QueryPart>>();
+		LinkedList<QueryPart> path = new LinkedList<QueryPart>();
 		
 		public Query(){}
 		
@@ -1117,29 +1046,15 @@ public final class SuperURL {
 			return this;
 		}
 			
-		public StringBuilder toStringBB( StringBuilder result, boolean encode ){
-			
-			boolean first = true;
-			for( QueryPart part : path ){
-				
-				if( first ) first = false;
-				else result.append( '&' );
-				
-				part.toStringBB( result, encode );
-			}
-			return result;
-		}
-		
-		public StringBuilder toStringB( boolean encode ){
-			return toStringBB( new StringBuilder(), encode );
-		}
-		public String toString( boolean encode ){
-			return toStringB( encode ).toString();
-		}
 		@Override
 		public String toString(){
-			return toString( false );
+			return SuperURLPrinter.Plain.toString( this );
 		}
+		
+		public String toStringEncode( Encode encode ){
+			return printers.get( encode ).toString( this );
+		}
+
 		
 		// Compatibility
 		
@@ -1213,8 +1128,8 @@ public final class SuperURL {
 		
 		public static final class QueryPart {
 			
-			private String key;
-			private String value;
+			String key;
+			String value;
 			
 			public QueryPart( String key, String value ){
 				this.key = key;
@@ -1255,35 +1170,9 @@ public final class SuperURL {
 				this.value = val;
 			}
 			
-			public StringBuilder toStringBB( StringBuilder builder, boolean encode ){
-				
-				String keyStr = key;
-				String valStr = value;
-				
-				if( encode ){
-					if( keyStr != null ) keyStr = encode( keyStr );
-					if( valStr != null ) valStr = encode( valStr );
-				}
-				
-				if( keyStr != null ){
-    				builder.append( keyStr );
-				}
-				
-				if( valStr != null ){
-					builder.append( '=' ).append( valStr );
-				}
-				
-				return builder;
-			}
-			public StringBuilder toStringB( boolean encode ){
-				return toStringBB( new StringBuilder(), encode );
-			}
-			public String toString( boolean encode ){
-				return toStringB( encode ).toString();
-			}
 			@Override
 			public String toString(){
-				return toString( false );
+				return key + "=" + value;
 			}
 
 			@Override
@@ -1319,8 +1208,8 @@ public final class SuperURL {
 	
 	public static final class UserInfo {
 		
-		private String user;
-		private String pass;
+		String user;
+		String pass;
 		
 		public UserInfo(){}
 		
@@ -1369,35 +1258,15 @@ public final class SuperURL {
 			return this;
 		}
 		
-		public StringBuilder toStringBB( StringBuilder result, boolean encode ){
-			
-			String userStr = user;
-			String passStr = pass;
-			
-			if( encode ){
-				if( userStr != null ) userStr = encode( userStr );
-				if( passStr != null ) passStr = encode( passStr );
-			}
-			
-			if( userStr != null ){
-    			result.append( userStr );
-			}
-			
-			if( passStr != null ){
-				result.append( ':' ).append( passStr );
-			}
-			return result;
-		}
-		public StringBuilder toStringB( boolean encode ){
-			return toStringBB( new StringBuilder(), encode );
-		}
-		public String toString( boolean encode ){
-			return toStringB( encode ).toString();
-		}
 		@Override
 		public String toString(){
-			return toString( false );
+			return SuperURLPrinter.Plain.toString( this );
 		}
+		
+		public String toStringEncode( Encode encode ){
+			return printers.get( encode ).toString( this );
+		}
+
 
 		@Override
 		public int hashCode() {
@@ -1459,5 +1328,5 @@ public final class SuperURL {
 	public static SuperURL copyDeep( SuperURL other ){
 		return BUILDER_DEEP_COPY.build( other );
 	}
-	
+
 }

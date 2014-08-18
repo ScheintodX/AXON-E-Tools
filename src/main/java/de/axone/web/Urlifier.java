@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.axone.web.encoding.AmpEncoder;
-import de.axone.web.encoding.HtmlEncoder;
+import de.axone.web.encoding.Encoder_Amp;
+import de.axone.web.encoding.Encoder_Html;
 
 /**
  * Class to support encoding of Urls in any form.
@@ -237,7 +237,7 @@ public abstract class Urlifier {
 	public static String escapeAmp( String plain ){
 		if( plain == null ) return null;
 		
-		return AmpEncoder.ENCODE( plain );
+		return Encoder_Amp.ENCODE( plain );
 	}
 	
 	/**
@@ -253,7 +253,7 @@ public abstract class Urlifier {
 	public static String escapeHtml( String plain ){
 		if( plain == null ) return null;
 		
-		return HtmlEncoder.ENCODE( plain );
+		return Encoder_Html.ENCODE( plain );
 		
 	}
 	
@@ -276,7 +276,7 @@ public abstract class Urlifier {
 	 * @return encoded url
 	 */
 	private static String encodeRedirectURL( SuperURL url ){
-		return url.toStringEncode( true );
+		return url.toRedirect();
 	}
 
 	/**

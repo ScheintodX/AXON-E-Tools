@@ -7,21 +7,20 @@ import java.util.regex.Pattern;
  * Encodes single &amp; characters to &amp;amp;
  * 
  * @author flo
- *
  */
-public class AmpEncoder implements Encoder {
+public class Encoder_Amp implements Encoder {
 	
 	// Note: ?= is a lookahead matcher. (Meaning: is expected to be there but
 	// isnt't included in match
 	private static final Pattern pattern = Pattern.compile( "&(?=\\s+)" );
 	
-	private AmpEncoder(){}
-	private static AmpEncoder instance = new AmpEncoder();
-	public static AmpEncoder instance(){
+	private Encoder_Amp(){}
+	private static Encoder_Amp instance = new Encoder_Amp();
+	public static Encoder_Amp instance(){
 		return instance;
 	}
 	
-	public static String ENCODE( String value ) {
+	public static String ENCODE( CharSequence value ) {
 		
 		if( value == null ) return null;
 		
@@ -31,9 +30,14 @@ public class AmpEncoder implements Encoder {
 	}
 
 	@Override
-	public String encode( String value ) {
+	public String encode( CharSequence value ) {
 		
 		return ENCODE( value );
+	}
+
+	@Override
+	public Appendable filter( Appendable out ) {
+		return new EncodingAppender( this, out );
 	}
 
 }

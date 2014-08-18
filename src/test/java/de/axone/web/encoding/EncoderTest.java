@@ -12,8 +12,8 @@ public class EncoderTest {
 		String plain = "&lt;blah &  blub  & blob&gt;";
     	String ref = "&lt;blah &amp;  blub  &amp; blob&gt;";
 		
-    	assertNull( AmpEncoder.ENCODE( null ) );
-		assertEquals( AmpEncoder.ENCODE( plain ), ref );
+    	assertNull( Encoder_Amp.ENCODE( null ) );
+		assertEquals( Encoder_Amp.ENCODE( plain ), ref );
 	}
 	
 	public void testHtmlEncoder(){
@@ -21,8 +21,8 @@ public class EncoderTest {
 		String plain = "<blah &  blub  & blob>";
     	String ref = "&lt;blah &amp;  blub  &amp; blob&gt;";
 		
-    	assertNull( HtmlEncoder.ENCODE( null ) );
-		assertEquals( HtmlEncoder.ENCODE( plain ), ref );
+    	assertNull( Encoder_Html.instance().encode( null ) );
+		assertEquals( Encoder_Html.instance().encode( plain ), ref );
 	}
 	
 	public void testAttributeEncoder(){
@@ -30,7 +30,7 @@ public class EncoderTest {
 		String plain = "'<bla>\"test\"</bla>'";
 		String ref = "&apos;&lt;bla&gt;&quot;test&quot;&lt;/bla&gt;&apos;";
 		
-    	assertNull( AttributeEncoder.ENCODE( null ) );
-		assertEquals( AttributeEncoder.ENCODE( plain ), ref );
+    	assertNull( Encoder_Attribute.ENCODE( null ) );
+		assertEquals( Encoder_Attribute.ENCODE( plain ), ref );
 	}
 }

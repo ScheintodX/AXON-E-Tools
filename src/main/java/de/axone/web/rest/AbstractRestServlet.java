@@ -31,7 +31,7 @@ public abstract class AbstractRestServlet<DATA, REQUEST extends RestRequest> ext
 		
 		if( log.isTraceEnabled() ){
 			SuperURL u = SuperURLBuilders.fromRequest().build( req );
-			log.trace( "Request for: {}", u.toStringEncode( false ) );
+			log.trace( "Request for: {}", u.toDebug() );
 		}
 		
 		resp.setCharacterEncoding( "utf-8" );

@@ -3,8 +3,8 @@ package de.axone.web;
 import java.util.Map;
 
 import de.axone.tools.Mapper;
-import de.axone.web.encoding.AttributeEncoder;
-import de.axone.web.encoding.XmlEncoder;
+import de.axone.web.encoding.Encoder_Attribute;
+import de.axone.web.encoding.Encoder_Xml;
 
 public abstract class InputBuilder {
 
@@ -34,9 +34,9 @@ public abstract class InputBuilder {
 		result
 			.append( "<input type=\"hidden\"" )
 			.append( " name=\"" )
-			.append( AttributeEncoder.ENCODE( name ) )
+			.append( Encoder_Attribute.ENCODE( name ) )
 			.append( "\" value=\"" )
-			.append( AttributeEncoder.ENCODE( value ) )
+			.append( Encoder_Attribute.ENCODE( value ) )
 			.append( "\"/>" )
 		;
 		return result;
@@ -48,7 +48,7 @@ public abstract class InputBuilder {
 		
 		result
 			.append( "<option value=\"" )
-			.append( AttributeEncoder.ENCODE( key ) )
+			.append( Encoder_Attribute.ENCODE( key ) )
 			.append( '"' )
 		;
 		if( selected ){
@@ -56,7 +56,7 @@ public abstract class InputBuilder {
 		}
 		result
 			.append( "\">" )
-			.append( XmlEncoder.ENCODE( value ) )
+			.append( Encoder_Xml.ENCODE( value ) )
 			.append( "</option>" )
 		;
 		
@@ -67,9 +67,9 @@ public abstract class InputBuilder {
 		
 		StringBuilder result = new StringBuilder();
 		
-		String nameE = AttributeEncoder.ENCODE( name );
-		String keyE = AttributeEncoder.ENCODE( key );
-		String valueE = AttributeEncoder.ENCODE( value );
+		String nameE = Encoder_Attribute.ENCODE( name );
+		String keyE = Encoder_Attribute.ENCODE( key );
+		String valueE = Encoder_Attribute.ENCODE( value );
 		String idE = nameE + "_" + keyE;
 		
 		result

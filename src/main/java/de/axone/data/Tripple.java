@@ -24,8 +24,8 @@ public class Tripple<A, B, C> implements Comparable<Tripple<A, B, C>>{
         this.c = c;
     }
     
-    public static <A, B, C> Tripple<A, B, C> create(A a, B b, C c) {
-        return new Tripple<A, B, C>(a, b, c);
+    public static <X, Y, Z> Tripple<X, Y, Z> create(X a, Y b, Z c) {
+        return new Tripple<X, Y, Z>(a, b, c);
     }
  
   

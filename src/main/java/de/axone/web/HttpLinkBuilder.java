@@ -37,10 +37,13 @@ public class HttpLinkBuilder {
 		
 		SuperURL url = SuperURLBuilders.fromRequest()
 				.ignoring( SuperURL.Part.UserInfo, SuperURL.Part.Fragment )
-				.ignoringIf( noHost, SuperURL.UPTO_PATH )
+				.ignoringIf( noHost, SuperURL.Part.UPTO_PATH )
 				.ignoringIf( noPath, SuperURL.Part.Path )
 				.build( request )
 				;
+		
+		//E.rr( url );
+		//E.rr( url.getQuery() );
 		
 		if( keepParameters != null ){
 			Query oldQuery = url.getQuery();
@@ -57,6 +60,7 @@ public class HttpLinkBuilder {
 			}
 		}
 		
+		//E.rr( url.getQuery() );
 		if( removeParameters != null ){
 			Query oldQuery = url.getQuery();
 			if( oldQuery != null && oldQuery.getPath() != null ){
@@ -72,10 +76,16 @@ public class HttpLinkBuilder {
 			}
 		}
 		
-		if( replaceParameters != null ) for( Map.Entry<String,String> entry : replaceParameters.entrySet() ){
+		//E.rr( url.getQuery() );
+		
+		if( replaceParameters != null ){
 			
-			url.setQueryParameter( entry.getKey(), entry.getValue() );
+			for( Map.Entry<String,String> entry : replaceParameters.entrySet() ){
+			
+				url.setQueryParameter( entry.getKey(), entry.getValue() );
+			}
 		}
+		//E.rr( url.getQuery() );
 		
 		return url;
 	}

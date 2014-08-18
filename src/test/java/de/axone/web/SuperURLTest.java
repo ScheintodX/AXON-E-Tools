@@ -12,8 +12,12 @@ import java.net.URLEncoder;
 
 import org.testng.annotations.Test;
 
+import de.axone.tools.E;
+import de.axone.web.SuperURL.Encode;
+import de.axone.web.SuperURL.FinalEncoding;
 import de.axone.web.SuperURL.Host;
 import de.axone.web.SuperURL.Path;
+import de.axone.web.SuperURL.Query.QueryPart;
 
 @Test( groups="web.superurl" )
 public class SuperURLTest {
@@ -155,11 +159,11 @@ public class SuperURLTest {
 				.netContains( "axon-e", 0 )
 				.netAsStringEquals( "axon-e" )
 				.tldEquals( "de" )
-				.asStringEquals( false, hostStr )
+				.asStringEquals( Encode.Plain, hostStr )
 				;
 		
 		host.getParts().remove( 0 );
-		assertThat( host ).asStringEquals( false, "axon-e.de" );
+		assertThat( host ).asStringEquals( Encode.Plain, "axon-e.de" );
 		
 		/* ----------- */
 		hostStr = "test.webs.axon-e.de";
@@ -174,7 +178,7 @@ public class SuperURLTest {
 				.hostEquals( "test" )
 				.netAsStringEquals( "webs.axon-e" )
 				.tldEquals( "de" )
-				.asStringEquals( false, hostStr )
+				.asStringEquals( Encode.Plain, hostStr )
 				;
 		
 	}
@@ -222,49 +226,49 @@ public class SuperURLTest {
 		assertEquals( path.length(), 0 );
 		assertFalse( path.isStartsWithSlash() );
 		assertFalse( path.isEndsWithSlash() );
-		assertEquals( path.toString(false), "" );
+		assertEquals( path.toString(), "" );
 		
 		path = SuperURL.Path.parse( "" );
 		assertEquals( path.length(), 0 );
 		assertFalse( path.isStartsWithSlash() );
 		assertFalse( path.isEndsWithSlash() );
-		assertEquals( path.toString(false), "" );
+		assertEquals( path.toString(), "" );
 		
 		path = SuperURL.Path.parse( "/" );
 		assertEquals( path.length(), 0 );
 		assertTrue( path.isStartsWithSlash() );
 		assertFalse( path.isEndsWithSlash() );
-		assertEquals( path.toString(false), "/" );
+		assertEquals( path.toString(), "/" );
 		
 		path = SuperURL.Path.parse( "//" );
 		assertEquals( path.length(), 1 );
 		assertTrue( path.isStartsWithSlash() );
 		assertTrue( path.isEndsWithSlash() );
-		assertEquals( path.toString(false), "//" );
+		assertEquals( path.toString(), "//" );
 		
 		path = SuperURL.Path.parse( "///" );
 		assertEquals( path.length(), 2 );
 		assertTrue( path.isStartsWithSlash() );
 		assertTrue( path.isEndsWithSlash() );
-		assertEquals( path.toString(false), "///" );
+		assertEquals( path.toString(), "///" );
 		
 		path = SuperURL.Path.parse( "/a" );
 		assertEquals( path.length(), 1 );
 		assertTrue( path.isStartsWithSlash() );
 		assertFalse( path.isEndsWithSlash() );
-		assertEquals( path.toString(false), "/a" );
+		assertEquals( path.toString(), "/a" );
 		
 		path = SuperURL.Path.parse( "a/" );
 		assertEquals( path.length(), 1 );
 		assertFalse( path.isStartsWithSlash() );
 		assertTrue( path.isEndsWithSlash() );
-		assertEquals( path.toString(false), "a/" );
+		assertEquals( path.toString(), "a/" );
 		
 		path = SuperURL.Path.parse( "/a/" );
 		assertEquals( path.length(), 1 );
 		assertTrue( path.isStartsWithSlash() );
 		assertTrue( path.isEndsWithSlash() );
-		assertEquals( path.toString(false), "/a/" );
+		assertEquals( path.toString(), "/a/" );
 	}
 	
 	// Tests only important types
@@ -334,6 +338,11 @@ public class SuperURLTest {
 		assertEquals( query.size(), 5 );
 		assertEquals( query.getParts( "key2" ).size(), 3 );
 		assertEquals( query.getValue( "key2" ), "newval23" );
+		
+		query.setValue( "key2", "newval2x" );
+		assertEquals( query.size(), 3 );
+		assertEquals( query.getParts( "key2" ).size(), 1 );
+		assertEquals( query.getValue( "key2" ), "newval2x" );
 		
 		SuperURL.Query query2 = SuperURL.Query.parse( query.toString() );
 		
@@ -432,7 +441,7 @@ public class SuperURLTest {
     	
     	SuperURL complete = SuperURLBuilders.fromString().build( uriString );
     	
-    	assertEquals( complete.toStringEncode( false ), uriString );
+    	assertEquals( complete.toStringEncode( Encode.Plain ), uriString );
     	
     	assertEquals( complete.getScheme(), "https" );
     	assertEquals( complete.getUserInfo().toString(), "myuser:mypass" );
@@ -442,7 +451,7 @@ public class SuperURLTest {
     	assertEquals( complete.getFragment(), "myFragment" );
     	
     	// In this case encoded version equals unencoded
-    	assertEquals( complete.toStringEncode( true ), uriString );
+    	assertEquals( complete.toStringEncode( Encode.Full ), uriString );
     }
     
     @Test( dependsOnMethods = "testSuperURL" )
@@ -475,8 +484,8 @@ public class SuperURLTest {
     	url.appendPath( path );
     	urlSlash.appendPath( path );
     	
-    	assertEquals( url.toStringEncode( false ), refUrl );
-    	assertEquals( urlSlash.toStringEncode( false ), refUrl );
+    	assertEquals( url.toStringEncode( Encode.Plain ), refUrl );
+    	assertEquals( urlSlash.toStringEncode( Encode.Plain ), refUrl );
     }
     
     public void createEmpty() {
@@ -499,7 +508,7 @@ public class SuperURLTest {
     	assertEquals( empty.getQuery(), new SuperURL.Query() );
     	assertNull( empty.getFragment() );
     	
-    	assertEquals( empty.toStringEncode( false ), "" ); // TODO: not nice
+    	assertEquals( empty.toStringEncode( Encode.Plain ), "" ); // TODO: not nice
     	
     }
     
@@ -518,8 +527,8 @@ public class SuperURLTest {
     	url.appendPath( path );
     	urlSlash.appendPath( path );
     	
-    	assertEquals( url.toStringEncode( false ), refUrl );
-    	assertEquals( urlSlash.toStringEncode( false ), refUrl );
+    	assertEquals( url.toStringEncode( Encode.Plain ), refUrl );
+    	assertEquals( urlSlash.toStringEncode( Encode.Plain ), refUrl );
     	
     	url = SuperURLBuilders.fromString().build( urlS );
     	urlSlash = SuperURLBuilders.fromString().build( urlSlashS );
@@ -527,8 +536,8 @@ public class SuperURLTest {
     	url.appendPath( path + "/" );
     	urlSlash.appendPath( path + "/" );
     	
-    	assertEquals( url.toStringEncode( false ), refUrl + "/" );
-    	assertEquals( urlSlash.toStringEncode( false ), refUrl + "/" );
+    	assertEquals( url.toStringEncode( Encode.Plain ), refUrl + "/" );
+    	assertEquals( urlSlash.toStringEncode( Encode.Plain ), refUrl + "/" );
     }
     
     public void testKnownProblemsWithSquareBracketsInPath() throws Exception {
@@ -537,8 +546,8 @@ public class SuperURLTest {
     			"/tree/3015/5mm-Glas" +
     			"/article/00393/Weedstar-Mad-Professor-(3.Semester)-40cm-hoch.xhtml[/url]";
     	SuperURL url = SuperURLBuilders.fromString().build( urlS );
-    	assertEquals( url.toStringEncode( false ), urlS );
-    	assertEquals( url.toStringEncode( true ),"http://headshop-de.localhost:8080" +
+    	assertEquals( url.toStringEncode( Encode.Plain ), urlS );
+    	assertEquals( url.toStringEncode( Encode.Full ),"http://headshop-de.localhost:8080" +
     			"/tree/3015/5mm-Glas" +
     			"/article/00393/Weedstar-Mad-Professor-%283.Semester%29-40cm-hoch.xhtml%5B/url%5D" );
     }
@@ -547,22 +556,49 @@ public class SuperURLTest {
     	
     	SuperURL url = SuperURLBuilders.fromString().build( "http://www.axon-e.de" );
     	url.getPath().addFirst( "I'm 100% yours" );
-    	assertEquals( url.toStringEncode( false ), "http://www.axon-e.de/I'm 100% yours" );
-    	assertEquals( url.toStringEncode( true ), "http://www.axon-e.de/I%27m+100%25+yours" );
+    	assertEquals( url.toStringEncode( Encode.Plain ), "http://www.axon-e.de/I'm 100% yours" );
+    	assertEquals( url.toStringEncode( Encode.Minimal ), "http://www.axon-e.de/I'm+100%25+yours" );
+    	assertEquals( url.toStringEncode( Encode.Full ), "http://www.axon-e.de/I%27m+100%25+yours" );
+    }
+    
+    public void canParseAmpInQuery() throws Exception {
+    	
+    	SuperURL url = SuperURLBuilders.fromString().build( "http://www.axon-e.de?a=a&b=b%26b&c=c" );
+    	
+    	assertThat( url.getQuery() )
+    			.containsOnly(
+    					new QueryPart( "a", "a" ),
+    					new QueryPart( "b", "b&b" ),
+    					new QueryPart( "c", "c" ) )
+    			.hasSize( 3 )
+    			;
+    }
+    
+    public void canParseSlashInPath() throws Exception {
+    	
+    	SuperURL url = SuperURLBuilders.fromString().build( "http://www.axon-e.de/a/b%2fb/c" );
+    	
+    	assertThat( url.getPath() )
+    			.containsOnly( "a", "b/b", "c" )
+    			.hasSize( 3 )
+    			;
+    	
     }
     
     public void testEncoding() throws Exception {
     	
     	SuperURL url = SuperURLBuilders.fromString().build( "http://www.axon-e.de/Bläh" );
-    	assertEquals( url.toStringEncode( true ), "http://www.axon-e.de/Bl%C3%A4h" );
-    	assertEquals( url.toStringEncode( false ), "http://www.axon-e.de/Bläh" );
+    	assertEquals( url.toStringEncode( Encode.Plain ), "http://www.axon-e.de/Bläh" );
+    	assertEquals( url.toStringEncode( Encode.Minimal ), "http://www.axon-e.de/Bläh" );
+    	assertEquals( url.toStringEncode( Encode.Full ), "http://www.axon-e.de/Bl%C3%A4h" );
     	
     	url = new SuperURL();
     	url.setScheme( "http" );
     	url.setHost( SuperURL.Host.parse( "www.äxon-e.de" ) );
     	url.setPath( Path.parse( "Bläh" ) );
-    	assertEquals( url.toStringEncode( true ), "http://www.%C3%A4xon-e.de/Bl%C3%A4h" );
-    	assertEquals( url.toStringEncode( false ), "http://www.äxon-e.de/Bläh" );
+    	assertEquals( url.toStringEncode( Encode.Plain ), "http://www.äxon-e.de/Bläh" );
+    	assertEquals( url.toStringEncode( Encode.Minimal ), "http://www.äxon-e.de/Bläh" );
+    	assertEquals( url.toStringEncode( Encode.Full ), "http://www.%C3%A4xon-e.de/Bl%C3%A4h" );
     	
     }
     
@@ -572,8 +608,8 @@ public class SuperURLTest {
     	
     	url.getPath().addAll( "foo/bar" );
     	
-    	assertEquals( url.toStringEncode( false ), "http://www.axon-e.de/foo/bar" );
-    	assertEquals( url.toStringEncode( true ), "http://www.axon-e.de/foo%2Fbar" );
+    	assertEquals( url.toStringEncode( Encode.Plain ), "http://www.axon-e.de/foo/bar" );
+    	assertEquals( url.toStringEncode( Encode.Full ), "http://www.axon-e.de/foo%2Fbar" );
     	
     }
     
@@ -587,8 +623,8 @@ public class SuperURLTest {
     	assertEquals( query.getValue( "a" ), "b" );
     	assertNull( query.getValue( "q" ) );
     	
-    	assertEquals( url.toStringEncode( false ), "http://www.axon-e.de?q&a=b" );
-    	assertEquals( url.toStringEncode( true ), "http://www.axon-e.de?q&a=b" ); //Same
+    	assertEquals( url.toStringEncode( Encode.Plain ), "http://www.axon-e.de?q&a=b" );
+    	assertEquals( url.toStringEncode( Encode.Full ), "http://www.axon-e.de?q&a=b" ); //Same
     	
     }
     
@@ -599,7 +635,7 @@ public class SuperURLTest {
     	SuperURL url = SuperURLBuilders.fromString().build( unencoded );
     	
     	assertEquals( url.getScheme(), "http" );
-    	assertEquals( url.getHost().toString( false ), "www.axon-e.de" );
+    	assertEquals( url.getHost().toString(), "www.axon-e.de" );
     	assertThat( url.getPath().toList() )
     			.contains( "Bläh", atIndex( 0 ) )
     			.hasSize( 1 )
@@ -609,7 +645,7 @@ public class SuperURLTest {
     			.hasSize( 1 )
     			;
     	
-    	String encoded = url.toStringEncode( true );
+    	String encoded = url.toStringEncode( Encode.Full );
     	assertEquals( encoded, "http://www.axon-e.de/Bl%C3%A4h?f%C3%BC%C3%BC=b%C3%A4r" );
     	
     	SuperURL reread = SuperURLBuilders.fromString().build( encoded );
@@ -631,18 +667,33 @@ public class SuperURLTest {
     	assertEquals( url.getPath().length(), 0 );
     	assertFalse( url.getPath().isEndsWithSlash() );
     	assertFalse( url.getPath().isStartsWithSlash() );
-    	assertEquals( url.toStringEncode( false ), noSlash );
+    	assertEquals( url.toStringEncode( Encode.Plain ), noSlash );
     	
     	url = SuperURLBuilders.fromString().build( oneSlash );
     	assertEquals( url.getPath().length(), 0 );
     	assertTrue( url.getPath().isStartsWithSlash() );
     	assertFalse( url.getPath().isEndsWithSlash() );
-    	assertEquals( url.toStringEncode( false ), oneSlash );
+    	assertEquals( url.toStringEncode( Encode.Plain ), oneSlash );
     	
     	url = SuperURLBuilders.fromString().build( twoSlash );
     	assertEquals( url.getPath().length(), 1 );
     	assertTrue( url.getPath().isStartsWithSlash() );
     	assertTrue( url.getPath().isEndsWithSlash() );
-    	assertEquals( url.toStringEncode( false ), twoSlash );
+    	assertEquals( url.toStringEncode( Encode.Plain ), twoSlash );
+    }
+    
+    public void testFinalEncoding() {
+    	
+    	SuperURL url = SuperURLBuilders.fromString().build( "http://www.axon-e.de?q&a=b" );
+    	
+    	SuperURLPrinter p = SuperURLPrinter.Plain
+    			.finishFor( FinalEncoding.Html );
+    	
+    	E.rr( p.getClass() );
+    	
+    	String encoded = p.toString( url );
+    	
+    	assertEquals( encoded, "http://www.axon-e.de?q&amp;a=b" );
+    	
     }
 }

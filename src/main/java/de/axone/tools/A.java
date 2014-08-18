@@ -199,4 +199,26 @@ public class A {
 		return new HashSet<Object>( objectList( values ) );
 	}
 	
+	
+	public static char [] union( char [] a, char ... b ){
+		
+		char [] result = new char[ a.length + b.length ];
+		
+		System.arraycopy( a, 0, result, 0, a.length );
+		System.arraycopy( b, 0, result, a.length, b.length );
+		
+		return result;
+	}
+
+	public static String [] union( String [] a, String ... b ){
+		
+		String [] result = new String[ a.length + b.length ];
+		
+		System.arraycopy( a, 0, result, 0, a.length );
+		System.arraycopy( b, 0, result, a.length, b.length );
+		
+		return result;
+	}
+	
+	
 }
