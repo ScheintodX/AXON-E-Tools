@@ -176,8 +176,9 @@ public final class SuperURL {
 	public Host getHost() {
 		return host;
 	}
-	public void setHost( Host host ) {
+	public SuperURL setHost( Host host ) {
 		this.host = host;
+		return this;
 	}
 	public SuperURL setIncludeHost( boolean include ){
 		return setInclude( Part.Host, include );

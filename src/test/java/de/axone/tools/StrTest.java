@@ -134,14 +134,20 @@ public class StrTest {
 		
 		String test = "abc;def;hij";
 		
-		// Warmup
+		for( int i=0; i<10_000_000; i++ ){
+			test.split( ";" );
+		}
+		start = System.currentTimeMillis();
+		for( int i=0; i<10_000_000; i++ ){
+			test.split( ";" );
+		}
+		end = System.currentTimeMillis();
+		E.rr( "String.split Took " + (end-start) + " ms" );
+		
+		// splitFastLimited
 		for( int i=0; i<10_000_000; i++ ){
 			Str.splitFastLimited( test, ';', 8 );
 		}
-		for( int i=0; i<10_000_000; i++ ){
-			StringUtils.split( test, ';' );
-		}
-		
 		start = System.currentTimeMillis();
 		for( int i=0; i<10_000_000; i++ ){
 			Str.splitFastLimited( test, ';', 8 );
@@ -149,6 +155,10 @@ public class StrTest {
 		end = System.currentTimeMillis();
 		E.rr( "Str Took " + (end-start) + " ms" );
 		
+		// splitFastOnce
+		for( int i=0; i<10_000_000; i++ ){
+			Str.splitFastOnce( test, ';' );
+		}
 		start = System.currentTimeMillis();
 		for( int i=0; i<10_000_000; i++ ){
 			Str.splitFastOnce( test, ';' );
@@ -156,6 +166,11 @@ public class StrTest {
 		end = System.currentTimeMillis();
 		E.rr( "Str Once Took " + (end-start) + " ms" );
 		
+		
+		// String utils
+		for( int i=0; i<10_000_000; i++ ){
+			StringUtils.split( test, ';' );
+		}
 		start = System.currentTimeMillis();
 		for( int i=0; i<10_000_000; i++ ){
 			StringUtils.split( test, ';' );
