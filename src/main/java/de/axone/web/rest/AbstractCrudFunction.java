@@ -17,7 +17,7 @@ implements CrudFunction<ID, DATA,REQUEST> {
 	private static final String A_HELP = "help";
 	protected static final String P_ID = "id";
 	
-	public enum ACTION{ CREATE, READ, UPDATE, DELETE, LIST, OTHER, CONFIG, HELP };
+	public enum Actions{ CREATE, READ, UPDATE, DELETE, LIST, OTHER, CONFIG, HELP };
 	
 	private final RestFunctionDescription description;
 	
@@ -86,7 +86,7 @@ implements CrudFunction<ID, DATA,REQUEST> {
 		
 		String idStr = parameters.get( P_ID );
 		
-		ACTION action = ACTION( data, method, idStr, parameters, url, out, req, resp );
+		Actions action = ACTION( data, method, idStr, parameters, url, out, req, resp );
 		
 		doAction( data, method, action, idStr, parameters, url, out, req, resp );
 		
@@ -101,35 +101,35 @@ implements CrudFunction<ID, DATA,REQUEST> {
 		*/
 	}
 	
-	protected ACTION ACTION( DATA data, Method method, String idStr,
+	protected Actions ACTION( DATA data, Method method, String idStr,
 			Map<String, String> parameters, SuperURL url, PrintWriter out,
 			REQUEST req, HttpServletResponse resp ) throws Exception {
 		
-		ACTION action = ACTION.OTHER;
+		Actions action = Actions.OTHER;
 		
 		
 		switch( method ){
 		
 			case GET:
 				if( A_NEW.equals( url.getPath().getLast() ) ){
-					action = ACTION.CREATE;
+					action = Actions.CREATE;
 				} else if( A_HELP.equals( url.getPath().getLast() ) ){
-					action = ACTION.HELP;
+					action = Actions.HELP;
 				} else if( A_CONFIG.equals( url.getPath().getLast() ) ){
-					action = ACTION.CONFIG;
+					action = Actions.CONFIG;
 				} else if( url.getPath().length() == 1 && idStr != null ){
-					action = ACTION.READ;
+					action = Actions.READ;
 				} else if( url.getPath().length() == 0 ) {
-					action = ACTION.LIST;
+					action = Actions.LIST;
 				}
 				break;
 				
 			case POST:
 			case PUT:
-				action = ACTION.UPDATE; break;
+				action = Actions.UPDATE; break;
 				
 			case DELETE:
-				action = ACTION.DELETE; break;
+				action = Actions.DELETE; break;
 				
 			default:
 				throw new IllegalArgumentException( "Unsupported Method: " + method );
@@ -138,7 +138,7 @@ implements CrudFunction<ID, DATA,REQUEST> {
 		return action;
 	}
 	
-	protected void doAction( DATA data, Method method, ACTION action, String idStr,
+	protected void doAction( DATA data, Method method, Actions action, String idStr,
 			Map<String, String> parameters, SuperURL url, PrintWriter out,
 			REQUEST req, HttpServletResponse resp ) throws Exception {
 		

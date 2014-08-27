@@ -15,8 +15,6 @@ import org.testng.annotations.Test;
 import de.axone.tools.E;
 import de.axone.web.SuperURL.Encode;
 import de.axone.web.SuperURL.FinalEncoding;
-import de.axone.web.SuperURL.Host;
-import de.axone.web.SuperURL.Path;
 import de.axone.web.SuperURL.Query.QueryPart;
 
 @Test( groups="web.superurl" )
@@ -136,10 +134,10 @@ public class SuperURLTest {
 		
 		SuperURL url2 = new SuperURL();
 		url2.setScheme( "http" );
-		url2.setHost( Host.parse( "www.axon-e.de" ) );
+		url2.setHost( SuperURLBuilders.Host().parse( "www.axon-e.de" ).build() );
 		url2.setPort( 8080 );
-		url2.setPath( Path.parse( "/foo/bar/" ) );
-		url2.setQuery( SuperURL.Query.parse( "par=val" ) );
+		url2.setPath( SuperURLBuilders.Path().parse( "/foo/bar/" ).build() );
+		url2.setQuery( SuperURLBuilders.Query().parse( "par=val" ).build() );
 		
 		assertThat( url ).isEqualTo( url2 );
 		
@@ -152,7 +150,7 @@ public class SuperURLTest {
 		
 		/* ----------- */
 		hostStr = "www.axon-e.de";
-		host = SuperURL.Host.parse( hostStr );
+		host = SuperURLBuilders.Host().parse( hostStr ).build();
 		
 		assertThat( host )
 				.hostEquals( "www" )
@@ -167,7 +165,7 @@ public class SuperURLTest {
 		
 		/* ----------- */
 		hostStr = "test.webs.axon-e.de";
-		host = SuperURL.Host.parse( hostStr );
+		host = SuperURLBuilders.Host().parse( hostStr ).build();
 		
 		assertThat( host.getNet() )
 				.contains( "webs", atIndex( 0 ) )
@@ -189,7 +187,7 @@ public class SuperURLTest {
 		String pathStr;
 		
 		pathStr = "/dir1/dir2/file.ext";
-		path = SuperURL.Path.parse( pathStr );
+		path = SuperURLBuilders.Path().parse( pathStr ).build();
 		
 		assertEquals( path.length(), 3 );
 		assertEquals( path.getFirst(), "dir1" );
@@ -222,49 +220,49 @@ public class SuperURLTest {
 		
 		SuperURL.Path path;
 		
-		path = SuperURL.Path.parse( null );
+		path = SuperURLBuilders.Path().parse( null ).build();
 		assertEquals( path.length(), 0 );
 		assertFalse( path.isStartsWithSlash() );
 		assertFalse( path.isEndsWithSlash() );
 		assertEquals( path.toString(), "" );
 		
-		path = SuperURL.Path.parse( "" );
+		path = SuperURLBuilders.Path().parse( "" ).build();
 		assertEquals( path.length(), 0 );
 		assertFalse( path.isStartsWithSlash() );
 		assertFalse( path.isEndsWithSlash() );
 		assertEquals( path.toString(), "" );
 		
-		path = SuperURL.Path.parse( "/" );
+		path = SuperURLBuilders.Path().parse( "/" ).build();
 		assertEquals( path.length(), 0 );
 		assertTrue( path.isStartsWithSlash() );
 		assertFalse( path.isEndsWithSlash() );
 		assertEquals( path.toString(), "/" );
 		
-		path = SuperURL.Path.parse( "//" );
+		path = SuperURLBuilders.Path().parse( "//" ).build();
 		assertEquals( path.length(), 1 );
 		assertTrue( path.isStartsWithSlash() );
 		assertTrue( path.isEndsWithSlash() );
 		assertEquals( path.toString(), "//" );
 		
-		path = SuperURL.Path.parse( "///" );
+		path = SuperURLBuilders.Path().parse( "///" ).build();
 		assertEquals( path.length(), 2 );
 		assertTrue( path.isStartsWithSlash() );
 		assertTrue( path.isEndsWithSlash() );
 		assertEquals( path.toString(), "///" );
 		
-		path = SuperURL.Path.parse( "/a" );
+		path = SuperURLBuilders.Path().parse( "/a" ).build();
 		assertEquals( path.length(), 1 );
 		assertTrue( path.isStartsWithSlash() );
 		assertFalse( path.isEndsWithSlash() );
 		assertEquals( path.toString(), "/a" );
 		
-		path = SuperURL.Path.parse( "a/" );
+		path = SuperURLBuilders.Path().parse( "a/" ).build();
 		assertEquals( path.length(), 1 );
 		assertFalse( path.isStartsWithSlash() );
 		assertTrue( path.isEndsWithSlash() );
 		assertEquals( path.toString(), "a/" );
 		
-		path = SuperURL.Path.parse( "/a/" );
+		path = SuperURLBuilders.Path().parse( "/a/" ).build();
 		assertEquals( path.length(), 1 );
 		assertTrue( path.isStartsWithSlash() );
 		assertTrue( path.isEndsWithSlash() );
@@ -274,12 +272,12 @@ public class SuperURLTest {
 	// Tests only important types
 	public void testMimeTypes() throws Exception {
 		
-		assertEquals( SuperURL.Path.parse( "index.Xhtml" ).getMimeType(), "text/html" );
-		assertEquals( SuperURL.Path.parse( "index.hTml" ).getMimeType(), "text/html" );
-		assertEquals( SuperURL.Path.parse( "img.jpg" ).getMimeType(), "image/jpeg" );
-		assertEquals( SuperURL.Path.parse( "img.jpEg" ).getMimeType(), "image/jpeg" );
-		assertEquals( SuperURL.Path.parse( "img.giF" ).getMimeType(), "image/gif" );
-		assertEquals( SuperURL.Path.parse( "file.CSS" ).getMimeType(), "text/css" );
+		assertEquals( SuperURLBuilders.Path().parse( "index.Xhtml" ).build().getMimeType(), "text/html" );
+		assertEquals( SuperURLBuilders.Path().parse( "index.hTml" ).build().getMimeType(), "text/html" );
+		assertEquals( SuperURLBuilders.Path().parse( "img.jpg" ).build().getMimeType(), "image/jpeg" );
+		assertEquals( SuperURLBuilders.Path().parse( "img.jpEg" ).build().getMimeType(), "image/jpeg" );
+		assertEquals( SuperURLBuilders.Path().parse( "img.giF" ).build().getMimeType(), "image/gif" );
+		assertEquals( SuperURLBuilders.Path().parse( "file.CSS" ).build().getMimeType(), "text/css" );
 	}
 	
 	// Compare results to those of the URLParser in order to
@@ -297,7 +295,7 @@ public class SuperURLTest {
 		String queryStr;
 		
 		queryStr = "key1=val1&key2=val2&key2=val22&key3";
-		query = SuperURL.Query.parse( queryStr );
+		query = SuperURLBuilders.Query().parse( queryStr ).build();
 		
 		assertEquals( query.size(), 4 );
 		assertTrue( query.has( "key1" ) );
@@ -344,7 +342,7 @@ public class SuperURLTest {
 		assertEquals( query.getParts( "key2" ).size(), 1 );
 		assertEquals( query.getValue( "key2" ), "newval2x" );
 		
-		SuperURL.Query query2 = SuperURL.Query.parse( query.toString() );
+		SuperURL.Query query2 = SuperURLBuilders.Query().parse( query.toString() ).build();
 		
 		assertTrue( query2.equals( query ) );
 		assertEquals( (Object)query2, query );
@@ -356,7 +354,7 @@ public class SuperURLTest {
 		
 		String test = "a=b&ä=ü&"+AE+"="+UE+"&"+"x=äü"+AE+UE+EQ+AMP;
 		
-		SuperURL.Query query = SuperURL.Query.parse( test, true );
+		SuperURL.Query query = SuperURLBuilders.Query().parse( test, true ).build();
 		
 		assertThat( query )
 				.contains( "a", "b" )
@@ -594,8 +592,8 @@ public class SuperURLTest {
     	
     	url = new SuperURL();
     	url.setScheme( "http" );
-    	url.setHost( SuperURL.Host.parse( "www.äxon-e.de" ) );
-    	url.setPath( Path.parse( "Bläh" ) );
+    	url.setHost( SuperURLBuilders.Host().parse( "www.äxon-e.de" ).build() );
+    	url.setPath( SuperURLBuilders.Path().parse( "Bläh" ).build() );
     	assertEquals( url.toStringEncode( Encode.Plain ), "http://www.äxon-e.de/Bläh" );
     	assertEquals( url.toStringEncode( Encode.Minimal ), "http://www.äxon-e.de/Bläh" );
     	assertEquals( url.toStringEncode( Encode.Full ), "http://www.%C3%A4xon-e.de/Bl%C3%A4h" );

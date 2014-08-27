@@ -34,6 +34,7 @@ import de.axone.cache.ng.CacheNG.Realm;
 import de.axone.cache.ng.RealmImpl;
 import de.axone.tools.EasyParser;
 import de.axone.tools.FileWatcher;
+import de.axone.tools.Str;
 import de.axone.tools.UrlParser;
 import de.axone.web.CssColorRotator;
 import de.axone.web.Header;
@@ -41,13 +42,15 @@ import de.axone.web.ImgColorRotator;
 
 public abstract class ResourcesServlet extends HttpServlet {
 	
+	private static final String FAVICON_ICO = "favicon.ico";
+
 	private static final Logger log = LoggerFactory.getLogger( ResourcesServlet.class );
 	
 	private static final Realm<String,Object> DEFAULT_RESOURCE_REALM = new RealmImpl<>( "resource cache" );
 	
 	private static final long serialVersionUID = 1L;
 
-	private static final String FS = ";";
+	private static final char FS = ';';
 	private static final String PREFIX = "/static";
 	private static final String P_DO_YUI = "yui";
 	private static final String P_NO_CACHE = "nc";
@@ -62,13 +65,13 @@ public abstract class ResourcesServlet extends HttpServlet {
 	protected Logger log(){ return log; }
 	
 	protected String uriPrefix(){
-		return "";
+		return PREFIX;
 	}
 	
 	protected String filter( HttpServletRequest req, HttpServletResponse resp, String uri ) {
 		
-		if( uri.endsWith( "favicon.ico" ) ){
-			return favicon( req, resp, uri );
+		if( uri.endsWith( FAVICON_ICO ) ){
+			uri = favicon( req, resp, uri );
 		}
 		
 		String prefix = uriPrefix();
@@ -78,7 +81,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 		
 		uri = DEPLENK.matcher( uri ).replaceAll( ":" );
 			
-		return uri; // Do nothing per default
+		return uri;
 	}
 	
 	protected String favicon( HttpServletRequest req, HttpServletResponse resp,  String uri ) {
@@ -99,9 +102,11 @@ public abstract class ResourcesServlet extends HttpServlet {
 			// Get settings
 			File basedir = basedir();
 			long cachetime = cachetime();
+			
+			String requestUri = request.getRequestURI();
 
     		// Get requested resources
-			String uri = filter( request, response, request.getRequestURI() );
+			String uri = filter( request, response, requestUri );
 			
 			protect( request, uri );
 
@@ -127,7 +132,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 				
 				if( httpData == null || httpData.hasChanged() ){
 					
-					String [] uriSplitted = uri.split( FS );
+					String [] uriSplitted = Str.splitFast( uri, FS );
 					
 					LinkedList<FileWatcher> watcherList = new LinkedList<FileWatcher>();
 					LinkedList<byte[]> datas = new LinkedList<byte[]>();
@@ -137,11 +142,6 @@ public abstract class ResourcesServlet extends HttpServlet {
 					ImgColorRotator rotImg = null;
 
 					for( String uriPart : uriSplitted ){
-						
-						// Remove /static
-						if( uriPart.startsWith( PREFIX ) ){
-			    			uriPart = uriPart.substring( PREFIX.length() );
-						}
 						
 						@SuppressWarnings( "unused" )
 						boolean isHtml=false, isCss=false, isJs=false, isPng=false, isJpg=false, isGif=false, isIcon=false;

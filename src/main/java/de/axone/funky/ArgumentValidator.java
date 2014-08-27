@@ -1,6 +1,6 @@
 package de.axone.funky;
 
-public interface ArgumentValidator<T> {
+public interface ArgumentValidator<V> {
 
 	/**
 	 * Return a description of the valid ranges of this argument.
@@ -19,6 +19,6 @@ public interface ArgumentValidator<T> {
 	 * @param value
 	 * @return an error message or null if ok
 	 */
-	public String validate( T value );
+	public String validate( V value );
 	
 }

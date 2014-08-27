@@ -5,9 +5,9 @@ import java.util.List;
 
 import de.axone.tools.S;
 
-public class ArgumentImpl<C,T extends ArgumentType<C>> implements Argument<C,T> {
+public class ArgumentImpl<V,AT extends ArgumentType<V>> implements Argument<V,AT> {
 	
-	private final T type;
+	private final AT type;
 	
 	private final String name;
 	private String
@@ -19,12 +19,12 @@ public class ArgumentImpl<C,T extends ArgumentType<C>> implements Argument<C,T> 
 			optional,
 			positional;
 	
-	private List<ArgumentValidator<C>>
+	private List<ArgumentValidator<V>>
 			validators = new LinkedList<>();
 	
-	private C defaultValue;
+	private V defaultValue;
 	
-	public ArgumentImpl( T type, String name, String shortName, String description, String longDescription, boolean optional, boolean positional ) {
+	public ArgumentImpl( AT type, String name, String shortName, String description, String longDescription, boolean optional, boolean positional ) {
 		this.type = type;
 		this.name = name;
 		this.shortName = shortName;
@@ -33,15 +33,17 @@ public class ArgumentImpl<C,T extends ArgumentType<C>> implements Argument<C,T> 
 		this.optional = optional;
 		this.positional = positional;
 	}
+	
 	public static <X, Y extends ArgumentType<X>> ArgumentImpl<X,Y> Optional( Y type, String name, String description ){
 		return new ArgumentImpl<X,Y>( type, name, null, null, null, true, false );
 	}
+	
 	public static <X, Y extends ArgumentType<X>> ArgumentImpl<X,Y> Required( Y type, String name, String description ){
 		return new ArgumentImpl<X,Y>( type, name, null, null, null, false, true );
 	}
 	
 	@Override
-	public T type() {
+	public AT type() {
 		return type;
 	}
 
@@ -50,7 +52,7 @@ public class ArgumentImpl<C,T extends ArgumentType<C>> implements Argument<C,T> 
 		return name;
 	}
 
-	public ArgumentImpl<C,T> shortName( String shortName ){
+	public ArgumentImpl<V,AT> shortName( String shortName ){
 		this.shortName = shortName;
 		return this;
 	}
@@ -64,7 +66,7 @@ public class ArgumentImpl<C,T extends ArgumentType<C>> implements Argument<C,T> 
 	public String description() {
 		return description;
 	}
-	public ArgumentImpl<C,T> description( String description ){
+	public ArgumentImpl<V,AT> description( String description ){
 		this.description = description;
 		return this;
 	}
@@ -73,7 +75,7 @@ public class ArgumentImpl<C,T extends ArgumentType<C>> implements Argument<C,T> 
 	public boolean optional() {
 		return optional;
 	}
-	public ArgumentImpl<C,T> optional( boolean optional ){
+	public ArgumentImpl<V,AT> optional( boolean optional ){
 		this.optional = optional;
 		return this;
 	}
@@ -82,7 +84,7 @@ public class ArgumentImpl<C,T extends ArgumentType<C>> implements Argument<C,T> 
 	public boolean positional() {
 		return positional;
 	}
-	public ArgumentImpl<C,T> positional( boolean positional ){
+	public ArgumentImpl<V,AT> positional( boolean positional ){
 		this.positional = positional;
 		return this;
 	}
@@ -91,26 +93,26 @@ public class ArgumentImpl<C,T extends ArgumentType<C>> implements Argument<C,T> 
 	public String longDescription() {
 		return longDescription;
 	}
-	public ArgumentImpl<C,T> longDescription( String longDescription ){
+	public ArgumentImpl<V,AT> longDescription( String longDescription ){
 		this.longDescription = longDescription;
 		return this;
 	}
 	
 	@Override
-	public C defaultValue() {
+	public V defaultValue() {
 		return defaultValue;
 	}
-	public ArgumentImpl<C,T> defaultValue( C defaultValue ){
+	public ArgumentImpl<V,AT> defaultValue( V defaultValue ){
 		this.defaultValue = defaultValue;
 		return this;
 	}
 	
-	public ArgumentImpl<C,T> validate( ArgumentValidator<C> validator ){
+	public ArgumentImpl<V,AT> validate( ArgumentValidator<V> validator ){
 		this.validators.add( validator );
 		return this;
 	}
 	@Override
-	public List<ArgumentValidator<C>> validators() {
+	public List<ArgumentValidator<V>> validators() {
 		return validators;
 	}
 	
@@ -137,7 +139,7 @@ public class ArgumentImpl<C,T extends ArgumentType<C>> implements Argument<C,T> 
 			builder.append( S.nl ).append( longDescription );
 		
 		if( validators != null )
-			for( ArgumentValidator<C> validator : validators )
+			for( ArgumentValidator<V> validator : validators )
 				builder.append( validator );
 		
 		return builder.toString();

@@ -37,6 +37,7 @@ public class HttpUtil {
 				"size: " + (content != null ? content.length : 0)
 			;
 		}
+
 	}
 	
 	public static String printHttpInfo( HttpGet httpget, HttpResponse response ){

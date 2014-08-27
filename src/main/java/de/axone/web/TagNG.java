@@ -50,7 +50,7 @@ public class TagNG {
 	
 	public TagNG UP(){ return parent; }
 	
-	public TagNG _( String content ){
+	public TagNG $( String content ){
 		return new TagNG( this, content );
 	}
 	

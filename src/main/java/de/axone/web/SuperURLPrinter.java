@@ -2,6 +2,7 @@ package de.axone.web;
 
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -23,7 +24,9 @@ import de.axone.web.encoding.Encoder_Attribute;
 import de.axone.web.encoding.Encoder_Html;
 import de.axone.web.encoding.TranslatingEncoder;
 
-public abstract class SuperURLPrinter {
+public abstract class SuperURLPrinter implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	public static SuperURLPrinter Plain = new FastPlain();
 	public static SuperURLPrinter MinimalEncoded = new FastMinimalEncoded();
@@ -50,6 +53,8 @@ public abstract class SuperURLPrinter {
 	public abstract SuperURL.Encode encoding();
 		
 	private static abstract class Abstract extends SuperURLPrinter {
+	
+		private static final long serialVersionUID = 1L;
 	
 		@Override
 		public String toString( SuperURL url ){
@@ -121,6 +126,8 @@ public abstract class SuperURLPrinter {
 	
 	public static class Custom extends Abstract {
 		
+		private static final long serialVersionUID = 1L;
+	
 		public static EnumMap<Encode,FastPlain> ForEncode = new EnumMap<>( Encode.class );
 		static {
 			ForEncode.put( Encode.Plain, (FastPlain)Plain );
@@ -268,6 +275,8 @@ public abstract class SuperURLPrinter {
 		
 	public static class FastPlain extends Abstract {
 
+		private static final long serialVersionUID = 1L;
+	
 		@Override
 		public <W extends Appendable> W write( W result, SuperURL url ) throws IOException{
 			
@@ -437,6 +446,8 @@ public abstract class SuperURLPrinter {
 	
 	public static class FastFullEncoded extends FastPlain {
 		
+		private static final long serialVersionUID = 1L;
+	
 		private static final String UTF_8 = "utf-8";
 
 		@Override
@@ -456,6 +467,8 @@ public abstract class SuperURLPrinter {
 	}
 	
 	public static class FastMinimalEncoded extends FastPlain {
+		
+		private static final long serialVersionUID = 1L;
 		
 		private static final char [] gen_delims = new char [] { '%', ':', '/', '?', '#', '[', ']', '@' };
 		
@@ -532,6 +545,8 @@ public abstract class SuperURLPrinter {
 	}
 	
 	public static class Wrapper extends SuperURLPrinter{
+		
+		private static final long serialVersionUID = 1L;
 		
 		protected final SuperURLPrinter wrapped;
 		
@@ -627,6 +642,8 @@ public abstract class SuperURLPrinter {
 	}
 	
 	public static final class Finisher extends SuperURLPrinter.Wrapper {
+		
+		private static final long serialVersionUID = 1L;
 		
 		private static EnumMap<FinalEncoding,Encoder> ENCODER = new EnumMap<>( FinalEncoding.class );
 		static {

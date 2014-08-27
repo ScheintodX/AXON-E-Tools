@@ -36,7 +36,9 @@ public class FunctionDescriptionImpl implements FunctionDescription {
 	
 	public <C,T extends ArgumentType<C>> FunctionDescriptionImpl required( T type, String name, String description ) {
 		
-		return argument( ArgumentImpl.Required( type, name, description ) );
+		ArgumentImpl<C,T> arg = ArgumentImpl.Required( type, name, description );
+		
+		return argument( arg );
 	}
 	public <C,T extends ArgumentType<C>> FunctionDescriptionImpl required( String name, String description ) {
 		
@@ -49,7 +51,9 @@ public class FunctionDescriptionImpl implements FunctionDescription {
 	
 	public <C,T extends ArgumentType<C>> FunctionDescriptionImpl optional( T type, String name, String description ) {
 		
-		return argument( ArgumentImpl.Optional( type, name, description ) );
+		ArgumentImpl<C,T> arg = ArgumentImpl.Optional( type, name, description );
+		
+		return argument( arg );
 	}
 	public <C,T extends ArgumentType<C>> FunctionDescriptionImpl optional( String name, String description ) {
 		

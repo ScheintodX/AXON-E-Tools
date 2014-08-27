@@ -4,9 +4,12 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,12 +17,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.axone.data.Label;
 import de.axone.exception.Assert;
 import de.axone.tools.Str;
-import de.axone.web.SuperURL.Host;
 import de.axone.web.SuperURL.Part;
 import de.axone.web.SuperURL.Path;
 import de.axone.web.SuperURL.Query;
+import de.axone.web.SuperURL.Query.QueryPart;
 import de.axone.web.SuperURL.UserInfo;
 
 /*
@@ -97,22 +101,6 @@ public class SuperURLBuilders {
 		public S ignoringIf( boolean condition, Collection<Part> parts ){
 			if( condition ) this.using.removeAll( parts );
 			return myself;
-		}
-		
-		public SuperURL empty() {
-			
-			SuperURL sUrl = new SuperURL();
-			
-			if( ! using.contains( Part.Scheme ) ) sUrl.setIncludeScheme( false );
-			if( ! using.contains( Part.UserInfo ) ) sUrl.setIncludeUserInfo( false );
-			if( ! using.contains( Part.Host ) ) sUrl.setIncludeHost( false );
-			if( ! using.contains( Part.Port ) ) sUrl.setIncludePort( false );
-			if( ! using.contains( Part.Path ) ) sUrl.setIncludePath( false );
-			if( ! using.contains( Part.Query ) ) sUrl.setIncludeQuery( false );
-			if( ! using.contains( Part.Fragment ) ) sUrl.setIncludeFragment( false );
-			
-			return sUrl;
-	
 		}
 		
 		public SuperURL build( T from ) {
@@ -235,7 +223,7 @@ public class SuperURLBuilders {
 	    		
 			if( using.contains( Part.Host ) ){
 	    		if( url.getHost() != null ){
-	        		dst.setHost( Host.parse( url.getHost(), true ) );
+	        		dst.setHost( Host().parse( url.getHost(), true ).build() );
 	    		} else {
 	    			dst.setHost( null );
 	    		}
@@ -251,7 +239,7 @@ public class SuperURLBuilders {
 			
 			if( using.contains( Part.Path ) ){
 				if( url.getPath() != null ){
-		    		dst.setPath( Path.parse( url.getPath(), true ) );
+		    		dst.setPath( Path().parse( url.getPath(), true ).build() );
 				} else {
 					dst.setPath( null );
 				}
@@ -259,7 +247,7 @@ public class SuperURLBuilders {
 			
 			if( using.contains( Part.Query ) ){
 				if( url.getQuery() != null ){
-		    		dst.setQuery( Query.parse( url.getQuery(), true ) );
+		    		dst.setQuery( Query().parse( url.getQuery(), true ).build() );
 				} else {
 					dst.setQuery( null );
 				}
@@ -296,7 +284,7 @@ public class SuperURLBuilders {
 	    		
 			if( using.contains( Part.Host ) ){
 	    		if( uri.getHost() != null ){
-	        		dst.setHost( Host.parse( uri.getHost(), false ) );
+	        		dst.setHost( Host().parse( uri.getHost(), false ).build() );
 	    		} else {
 	    			dst.setHost( null );
 	    		}
@@ -312,7 +300,7 @@ public class SuperURLBuilders {
 			
 			if( using.contains( Part.Path ) ){
 				if( uri.getPath() != null ){
-					Path path = Path.parse( uri.getRawPath(), true );
+					Path path = Path().parse( uri.getRawPath(), true ).build();
 		    		dst.setPath( path );
 				} else {
 					dst.setPath( null );
@@ -321,7 +309,7 @@ public class SuperURLBuilders {
 			
 			if( using.contains( Part.Query ) ){
 				if( uri.getQuery() != null ){
-		    		dst.setQuery( Query.parse( uri.getRawQuery(), true ) );
+		    		dst.setQuery( Query().parse( uri.getRawQuery(), true ).build() );
 				} else {
 					dst.setQuery( null );
 				}
@@ -407,7 +395,7 @@ public class SuperURLBuilders {
 			if( using.contains( Part.Host ) ){
 				String serverName = request.getServerName();
 				if( serverName != null )
-						dst.setHost( Host.parse( serverName, false ) );
+						dst.setHost( Host().parse( serverName, false ).build() );
 			}
 			
 			if( using.contains( Part.Port ) ){
@@ -417,13 +405,13 @@ public class SuperURLBuilders {
 			if( using.contains( Part.Path ) ){
 				String pathInfo = request.getPathInfo();
 				if( pathInfo != null )
-						dst.setPath( Path.parse( request.getPathInfo(), true ) );
+						dst.setPath( Path().parse( request.getPathInfo(), true ).build() );
 			}
 			
 			if( using.contains( Part.Query ) ){
 				String queryString = request.getQueryString();
 				if( queryString != null )
-						dst.setQuery( Query.parse( queryString, true ) );
+						dst.setQuery( Query().parse( queryString, true ).build() );
 			}
 			
 			return dst;
@@ -448,13 +436,13 @@ public class SuperURLBuilders {
 				dst.setScheme( request.getScheme() );
 			}
 			if( using.contains( Part.Host ) ){
-				dst.setHost( Host.parse( request.getServerName(), false ) );
+				dst.setHost( Host().parse( request.getServerName(), false ).build() );
 			}
 			if( using.contains( Part.Port ) ){
 				dst.setPort( request.getServerPort() );
 			}
 			if( using.contains( Part.Path ) ){
-				dst.setPath( Path.parse( request.getPathInfo() ) );
+				dst.setPath( Path().parse( request.getPathInfo() ).build() );
 			}
 			if( using.contains( Part.Query ) ){
 			
@@ -567,6 +555,187 @@ public class SuperURLBuilders {
 				dst.setIncludeFragment( from.isIncludeFragment() );
 			}
 			return dst;
+		}
+		
+	}
+	
+	public static HostBuilder Host(){
+		return new HostBuilder();
+	}
+	public static PathBuilder Path(){
+		return new PathBuilder();
+	}
+	public static QueryBuilder Query(){
+		return new QueryBuilder();
+	}
+	
+	public static class HostBuilder {
+		
+		private SuperURL.Host result = new SuperURL.Host();
+		
+		public HostBuilder parse( String parseMe ){
+			return parse( parseMe, true );
+		}
+		
+		public HostBuilder parse( String parseMe, boolean decode ){
+			
+			String [] parts = Str.splitFast( parseMe, '.' );
+			
+			if( decode ){
+				for( int i=0; i<parts.length; i++ ){
+					parts[ i ] = SuperURL.decode( parts[ i ] );
+				}
+			}
+			
+			result.parts = new ArrayList<>( Arrays.asList( parts ) );
+			
+			return this;
+		}
+		
+		public SuperURL.Host build(){
+			return result;
+		}
+	}
+	
+	public static class PathBuilder {
+		
+		private SuperURL.Path result = new SuperURL.Path();
+		
+		public PathBuilder parse( String parseMe ){
+			return parse( parseMe, true );
+		}
+		
+		public PathBuilder parse( String parseMe, boolean decode ){
+			
+			if( parseMe == null || parseMe.length() == 0 ){
+				return this;
+			}
+			
+			if( "/".equals( parseMe ) ){
+				result.setStartsWithSlash( true );
+				return this;
+			}
+			
+			String[] parts = Str.splitFast( parseMe, '/' );
+			
+			ArrayList<String> asList = new ArrayList<>( parts.length );
+			
+			for( int i = 0; i < parts.length ; i++ ){
+				
+				String part = parts[ i ];
+				
+				if( i == 0 ){
+					if( part.length() == 0 ){
+						result.startsWithSlash = true;
+						continue;
+					}
+				}
+				if( i == parts.length -1 ){
+					if( part.length() == 0 ){
+						result.endsWithSlash = true;
+						continue;
+					}
+				}
+				
+				if( decode ) part = SuperURL.decode( part );
+				
+				asList.add( part );
+			}
+			
+			result.path.addAll( asList );
+			
+			return this;
+		}
+		
+		
+		public SuperURL.Path build(){
+			return result;
+		}
+	}
+	
+	public static class QueryBuilder {
+		
+		SuperURL.Query result = new SuperURL.Query();
+		
+		public QueryBuilder part( QueryPart part ){
+			
+			if( part != null ) result.add( part );
+			
+			return this;
+		}
+		
+		public QueryBuilder parts( Query parameters ) {
+			
+			if( parameters != null ) result.addAll( parameters );
+			
+			return this;
+		}
+		
+		public QueryBuilder label( String key, Label value ){
+			
+			return value( key, value != null ? value.label() : null );
+		}
+		
+		public QueryBuilder value( String key, String value ){
+			
+			return part( new QueryPart( key, value ) );
+		}
+		
+		public SuperURL.Query build(){
+			
+			return result;
+		}
+		
+		public QueryBuilder parse( String parseMe ){
+			
+			return parse( parseMe, true );
+		}
+		
+		public QueryBuilder parse( String parseMe, boolean decode ){
+			
+			String[] parts = Str.splitFast( parseMe, '&' );
+        			
+			for( String part : parts ){
+        				
+				QueryPart qPart = QueryPart.parse( part, decode );
+				
+				result.add( qPart );
+			}
+			
+			return this;
+		}
+		
+		public QueryBuilder fromPlainMap( Map<String,String> parameters ){
+		
+			for( Map.Entry<String,String> entry : parameters.entrySet() ){
+				result.addValue( entry.getKey(), entry.getValue() );
+			}
+			return this;
+		}
+		
+		public QueryBuilder fromMultiMap( Map<String,String[]> parameters ){
+			
+			for( Map.Entry<String,String[]> paras : parameters.entrySet() ){
+				
+				for( String value : paras.getValue() ){
+					
+					result.addValue( paras.getKey(), value );
+				}
+			}
+			return this;
+		}
+		
+		public QueryBuilder fromArray( String ... parameters ){
+			
+			if( parameters.length % 2 != 0 )
+					throw new IllegalArgumentException( "Only even parameter count allowed" );
+			
+			for( int i=0; i<parameters.length; i+=2 ){
+				
+				result.addValue( parameters[ i ], parameters[ i+1 ] );
+			}
+			
+			return this;
 		}
 		
 	}

@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @param <T> The result type in which this argument is parsed
  */
-public interface Argument<C,T extends ArgumentType<C>> {
+public interface Argument<V,T extends ArgumentType<V>> {
 	
 	//public static enum Type { INTEGER, FLOAT, STRING, BOOLEAN, OBJECT; }
 	
@@ -71,13 +71,13 @@ public interface Argument<C,T extends ArgumentType<C>> {
 	 * 
 	 * @return
 	 */
-	public C defaultValue();
+	public V defaultValue();
 	
 	/**
 	 * Return list of validators
 	 * 
 	 * @return
 	 */
-	public List<ArgumentValidator<C>> validators();
+	public List<ArgumentValidator<V>> validators();
 	
 }

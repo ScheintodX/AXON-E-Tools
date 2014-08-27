@@ -7,7 +7,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
+import de.axone.data.Label;
 import de.axone.exception.Assert;
 import de.axone.tools.Str;
 import de.axone.web.SuperURLBuilders.SuperURLBuilder_Copy;
@@ -268,9 +269,10 @@ public final class SuperURL {
 	public SuperURL appendPath( String path ){
 		return appendPath( path, true );
 	}
+	
 	public SuperURL appendPath( String path, boolean decode ){
 		
-		Path newPath = SuperURL.Path.parse( path, decode );
+		Path newPath = SuperURLBuilders.Path().parse( path, decode ).build();
 		getPath().append( newPath );
 		getPath().endsWithSlash = newPath.endsWithSlash;
 		return this;
@@ -331,9 +333,13 @@ public final class SuperURL {
 		return SuperURLPrinter.MinimalEncoded.toString( this );
 	}
 	
+	public String toUnique() {
+		
+		return SuperURLPrinter.FullEncoded.toString( this );
+	}
+
 	
-	@Deprecated
-	private static final String decode( String value ){
+	static final String decode( String value ){
 		
 		if( value == null ) return null;
 		
@@ -437,26 +443,6 @@ public final class SuperURL {
 			parts = new LinkedList<String>();
 		}
 		
-		public static Host parse( String parseMe ){
-			return parse( parseMe, true );
-		}
-		public static Host parse( String parseMe, boolean decode ){
-			
-			Host result = new Host();
-			
-			String [] parts = Str.splitFast( parseMe, '.' );
-			
-			if( decode ){
-				for( int i=0; i<parts.length; i++ ){
-					parts[ i ] = decode( parts[ i ] );
-				}
-			}
-			
-			result.parts = new ArrayList<>( Arrays.asList( parts ) );
-			
-			return result;
-		}
-		
 		public Host copy() {
 			Host result = new Host();
 			result.parts.addAll( parts );
@@ -552,54 +538,6 @@ public final class SuperURL {
 		public Path( LinkedList<String> path, boolean endsWithSlash ){
 			this.path = path;
 			this.endsWithSlash = endsWithSlash;
-		}
-		
-		public static Path parse( String parseMe ){
-			return parse( parseMe, true );
-		}
-		
-		public static Path parse( String parseMe, boolean decode ){
-			
-			Path result = new Path();
-			
-			if( parseMe == null || parseMe.length() == 0 ){
-				return result;
-			}
-			
-			if( "/".equals( parseMe ) ){
-				result.setStartsWithSlash( true );
-				return result;
-			}
-			
-			String[] parts = Str.splitFast( parseMe, '/' );
-			
-			ArrayList<String> asList = new ArrayList<>( parts.length );
-			
-			for( int i = 0; i < parts.length ; i++ ){
-				
-				String part = parts[ i ];
-				
-				if( i == 0 ){
-					if( part.length() == 0 ){
-						result.startsWithSlash = true;
-						continue;
-					}
-				}
-				if( i == parts.length -1 ){
-					if( part.length() == 0 ){
-						result.endsWithSlash = true;
-						continue;
-					}
-				}
-				
-				if( decode ) part = decode( part );
-				
-				asList.add( part );
-			}
-			
-			result.path.addAll( asList );
-			
-			return result;
 		}
 		
 		public Path copy() {
@@ -864,65 +802,19 @@ public final class SuperURL {
 		
 		public Query(){}
 		
-		public static Query parse( String parseMe ){
-			return parse( parseMe, true );
+		public static Query fromLabel( String key, Label value ){
+			return new Query( new QueryPart( key, value.label() ) );
 		}
-		public static Query parse( String parseMe, boolean decode ){
-			
-			Query result = new Query();
-			
-			String[] parts = Str.splitFast( parseMe, '&' );
-        			
-			for( String part : parts ){
-        				
-				QueryPart qPart = QueryPart.parse( part, decode );
-				
-				result.add( qPart );
-			}
-			
-			return result;
-		}
-		
-		public static Query fromPlainMap( Map<String,String> parameters ){
-		
-			Query result = new Query();
-			
-			for( Map.Entry<String,String> entry : parameters.entrySet() ){
-				result.addValue( entry.getKey(), entry.getValue() );
-			}
-			return result;
-		}
-		
-		public static Query fromMultiMap( Map<String,String[]> parameters ){
-			
-			Query result = new Query();
-			
-			for( Map.Entry<String,String[]> paras : parameters.entrySet() ){
-				
-				for( String value : paras.getValue() ){
-					
-					result.addValue( paras.getKey(), value );
-				}
-			}
-			return result;
-		}
-		
-		public static Query fromArray( String ... parameters ){
-			
-			if( parameters.length % 2 != 0 )
-					throw new IllegalArgumentException( "Only even parameter count allowed" );
-			
-			Query result = new Query();
-			
-			for( int i=0; i<parameters.length; i+=2 ){
-				
-				result.addValue( parameters[ i ], parameters[ i+1 ] );
-			}
-			
-			return result;
+		public static Query fromPart( String key, String value ){
+			return new Query( new QueryPart( key, value ) );
 		}
 		
 		public Query( QueryPart ... parts ){
+			
+			addAll( parts );
+		}
+		
+		public Query( Collection<QueryPart> parts ){
 			
 			addAll( parts );
 		}
@@ -987,7 +879,15 @@ public final class SuperURL {
 			if( ! forName.containsKey( key ) ){
 				forName.put( key, new LinkedList<QueryPart>() );
 			}
-			QueryPart part = new QueryPart( key, value != null ? value.toString() : null );
+			String valueAsString = null;
+			if( value != null ){
+				if( value instanceof Label ){
+					valueAsString = ((Label)value).label();
+				} else {
+					valueAsString = value.toString();
+				}
+			}
+			QueryPart part = new QueryPart( key, valueAsString );
 			forName.get( key ).addLast( part );
 			path.add( part );
 			return this;
@@ -1002,6 +902,15 @@ public final class SuperURL {
 		}
 		
 		public Query addAll( QueryPart ... parts ){
+			
+			for( QueryPart part : parts ){
+				
+				add( part );
+			}
+			return this;
+		}
+		
+		public Query addAll( Collection<QueryPart> parts ){
 			
 			for( QueryPart part : parts ){
 				
@@ -1028,11 +937,12 @@ public final class SuperURL {
 			return this;
 		}
 		
-		public Query setValue( String key, String value ){
+		public Query setValue( String key, Object value ){
 			remValue( key );
 			addValue( key, value );
 			return this;
 		}
+		
 		public Query remValue( String key ){
 			
 			if( forName.containsKey( key ) ){

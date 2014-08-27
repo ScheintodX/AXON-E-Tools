@@ -1,8 +1,8 @@
 package de.axone.tools;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 
 import org.apache.http.client.ClientProtocolException;
@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.axone.tools.HttpUtil.HttpUtilResponse;
+import de.axone.web.SuperURL;
 
 /**
  * Tells if a web resource needs reloading.
@@ -26,8 +27,10 @@ import de.axone.tools.HttpUtil.HttpUtilResponse;
  *
  * @author flo
  */
-public class HttpWatcher {
+public class HttpWatcher implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	public static final Logger log =
 			LoggerFactory.getLogger( HttpWatcher.class );
 
@@ -37,7 +40,7 @@ public class HttpWatcher {
 	private static final long MAX_TIMEOUT = 1 * DAYS; // At least recheck once a day
 	//private static final long MAX_TIMEOUT = 1 * SECONDS; // For manual testing
 
-	private final URL url;
+	private final SuperURL url;
 	private final long minTimeout;
 
 	private String eTag;
@@ -54,7 +57,7 @@ public class HttpWatcher {
 	 * @param url to watch
 	 * @param minTimeout which has to pass until a new check is done
 	 */
-	public HttpWatcher( URL url, long minTimeout ){
+	public HttpWatcher( SuperURL url, long minTimeout ){
 
 		this.url = url;
 		this.minTimeout = minTimeout;
@@ -65,7 +68,7 @@ public class HttpWatcher {
 	 *
 	 * @param url to watch
 	 */
-	public HttpWatcher( URL url ){
+	public HttpWatcher( SuperURL url ){
 
 		this( url, TIMEOUT );
 	}
@@ -87,7 +90,7 @@ public class HttpWatcher {
 				
 				if( log.isTraceEnabled() ) log.trace( "Check for: " + url + "(" + eTag + ")" );
 				
-				HttpUtilResponse response = HttpUtil.request( url, eTag, lastModified );
+				HttpUtilResponse response = HttpUtil.request( url.toURL(), eTag, lastModified );
 				
 				log.trace( response.toString() );
 		
@@ -104,18 +107,18 @@ public class HttpWatcher {
 					result = response;
 				}
 			} catch( ClientProtocolException e ) {
-				log.error( url.toString(), e );
+				log.error( url.toDebug(), e );
 			} catch( URISyntaxException e ) {
-				log.error( url.toString(), e );
+				log.error( url.toDebug(), e );
 			} catch( IOException e ) {
-				log.error( url.toString(), e );
+				log.error( url.toDebug(), e );
 			}
 		}
 		
 		return result;
 	}
 
-	public URL getURL(){
+	public SuperURL getURL(){
 		return url;
 	}
 
@@ -132,16 +135,16 @@ public class HttpWatcher {
 
 	/* STATIC METHODS for persistent Watchers */
 	private static HashMap<String, HttpWatcher> staticWatchers = new HashMap<String, HttpWatcher>();
-	public synchronized static HttpWatcher staticWatcher( URL url, long timeout ){
+	public synchronized static HttpWatcher staticWatcher( SuperURL url, long timeout ){
 
-		String key = url.toString() + "/" + timeout;
+		String key = url.toUnique() + "/" + timeout;
 
 		if( ! staticWatchers.containsKey( key ) ){
 			staticWatchers.put( key, new HttpWatcher( url, timeout ) );
 		}
 		return staticWatchers.get( key );
 	}
-	public static HttpWatcher staticWatcher( URL url ){
+	public static HttpWatcher staticWatcher( SuperURL url ){
 		return staticWatcher( url, TIMEOUT );
 	}
 

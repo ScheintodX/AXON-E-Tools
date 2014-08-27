@@ -1,9 +1,9 @@
 package de.axone.funky;
 
-public interface ArgumentType<T> {
+public interface ArgumentType<V> {
 
-	public Class<T> type();
+	public Class<V> type();
 	public abstract String name();
-	public abstract T parse( String value );
+	public abstract V parse( String value );
 	
 }

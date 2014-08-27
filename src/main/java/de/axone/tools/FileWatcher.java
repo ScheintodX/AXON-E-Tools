@@ -1,6 +1,7 @@
 package de.axone.tools;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.HashMap;
 
 import org.slf4j.Logger;
@@ -13,7 +14,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @author flo
  */
-public class FileWatcher implements Watcher {
+public class FileWatcher implements Watcher, Serializable {
+	
+	private static final long serialVersionUID = 1L;
 
 	public static final Logger log =
 			LoggerFactory.getLogger( FileWatcher.class );
