@@ -1,20 +1,25 @@
 package de.axone.cache;
 
-import de.axone.cache.Cache.Watched;
+import java.util.concurrent.atomic.AtomicLong;
+
 
 public class Watcher implements Watched {
 	
-	private long hits, misses;
+	private AtomicLong hits = new AtomicLong(),
+	                   misses = new AtomicLong();
 	
-	public synchronized void hit(){
-		hits++;
+	public void hit(){
+		hits.incrementAndGet();
 	}
-	public synchronized void miss(){
-		misses++;
+	public void miss(){
+		misses.incrementAndGet();
 	}
 
 	@Override
-	public synchronized double ratio() {
+	public double ratio() {
+		
+		long hits = this.hits.get();
+		long misses = this.misses.get();
 		
 		long sum = hits+misses;
 		
@@ -24,14 +29,13 @@ public class Watcher implements Watched {
 		
 	}
 	
-	public synchronized long hits(){
-		return hits;
+	public long hits(){
+		return hits.get();
 	}
-	public synchronized long misses(){
-		return misses;
+	public long misses(){
+		return misses.get();
 	}
-	public synchronized long accesses(){
-		return hits+misses;
+	public long accesses(){
+		return hits.get()+misses.get();
 	}
-
 }

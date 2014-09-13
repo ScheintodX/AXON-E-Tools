@@ -102,15 +102,4 @@ public interface Cache<K,V> {
 	    Collection<V> values();
 	}
 	
-	/**
-	 * Can be implemented optionally and provides additional runtime information
-	 * for this cache
-	 * 
-	 * @author flo
-	 */
-	public interface Watched {
-		
-		public double ratio();
-	}
-	
 }
