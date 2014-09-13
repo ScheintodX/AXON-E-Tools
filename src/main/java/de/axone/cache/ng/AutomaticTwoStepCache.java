@@ -16,7 +16,7 @@ public class AutomaticTwoStepCache<K,I,O> {
 		this.valuesForIntermediate = valuesForIntermediate;
 	}
 	
-	public List<O> fetch( K key, CacheNG.Accessor<K,List<I>> intermediateAccessor, CacheNG.Accessor<I,O> valueAccessor ){
+	public List<O> fetch( K key, CacheNG.SingleValueAccessor<K,List<I>> intermediateAccessor, CacheNG.MultiValueAccessor<I,O> valueAccessor ){
 		
 		List<I> intermediates = intermediatesForKey.fetch( key, intermediateAccessor );
 		

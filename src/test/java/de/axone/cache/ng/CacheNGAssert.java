@@ -6,7 +6,6 @@ import org.assertj.core.api.Condition;
 import org.assertj.core.description.Description;
 import org.assertj.core.description.TextDescription;
 
-import de.axone.cache.ng.CacheNG.Accessor;
 import de.axone.cache.ng.CacheNG.Cache;
 import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
@@ -110,7 +109,7 @@ public abstract class CacheNGAssert {
 			return myself;
 		}
 		
-		public CacheObjectAssert<K,O,AutoCacheAssert<K,O>> fetch( K key, Accessor<K,O> accessor ){
+		public CacheObjectAssert<K,O,AutoCacheAssert<K,O>> fetch( K key, CacheNG.SingleValueAccessor<K,O> accessor ){
 			
 			return new CacheObjectAssert<>( this, actual.fetch( key, accessor ) );
 		}

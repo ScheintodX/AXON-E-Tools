@@ -102,7 +102,7 @@ public class CacheNGTest_CombinedSearchQueries {
 		
 		@Override
 		public List<TArticle> execute( CacheNG.AutomaticClient<Tid, List<TArticle>> data,
-				CacheNG.Accessor<Tid, List<TArticle>> accessor ) {
+				CacheNG.SingleValueAccessor<Tid, List<TArticle>> accessor ) {
 			
 			Set<TArticle> result = new LinkedHashSet<TArticle>();
 					

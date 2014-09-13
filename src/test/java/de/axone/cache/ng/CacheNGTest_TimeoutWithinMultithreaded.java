@@ -141,7 +141,7 @@ public class CacheNGTest_TimeoutWithinMultithreaded {
 	}
 	
 	
-	static class TestAccessor extends AbstractSingleValueAccessor<Aid,TArticle> {
+	static class TestAccessor implements CacheNG.SingleValueAccessor<Aid,TArticle> {
 		
 		AtomicInteger count = new AtomicInteger();
 

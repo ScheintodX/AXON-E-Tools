@@ -16,7 +16,7 @@ import java.util.TreeMap;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNG.Accessor;
+import de.axone.cache.ng.CacheNG.UniversalAccessor;
 import de.axone.cache.ng.CacheNGTestHelpers.TestRealm;
 import de.axone.cache.ng.CacheNGTest_Port_Client.TestEntry;
 
@@ -252,7 +252,7 @@ public class CacheNGTest_Port_AutomaticClient {
 		}
 	};
 	
-	private static final class TestDataAccessor implements Accessor<String,TestEntry> {
+	private static final class TestDataAccessor implements UniversalAccessor<String,TestEntry> {
 		
 		private int hitcount;
 		private int acccount;

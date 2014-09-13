@@ -1,8 +1,10 @@
 package de.axone.cache.ng;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Mögliche Cache-Arten nach Key
@@ -127,7 +129,7 @@ import java.util.Set;
  * @author flo
  * 
  */
-public interface CacheNG {
+public abstract class CacheNG {
 	
 	/**
 	 * Identifies a realm for the backend
@@ -321,7 +323,7 @@ public interface CacheNG {
 		 * @param key
 		 * @return
 		 */
-		public O fetch( K key, Accessor<K,O> accessor );
+		public O fetch( K key, SingleValueAccessor<K,O> accessor );
 		
 		
 		/**
@@ -332,7 +334,7 @@ public interface CacheNG {
 		 * @param accessor
 		 * @return
 		 */
-		public Map<K,O> fetch( Collection<K> keys, Accessor<K,O> accessor );
+		public Map<K,O> fetch( Collection<K> keys, MultiValueAccessor<K,O> accessor );
 		
 		
 		/**
@@ -369,22 +371,15 @@ public interface CacheNG {
 	}
 	
 	/**
-	 * Accesses the Backend and get one value
+	 * Accesses the Backend and get multiple values as Map
 	 * 
 	 * @author flo
 	 *
 	 * @param <K> Key-Type
 	 * @param <O> Value-Type
 	 */
-	public interface Accessor<K,O> {
-		
-		/**
-		 * Fetch a single entry
-		 * 
-		 * @param key
-		 * @return
-		 */
-		public O fetch( K key );
+	@FunctionalInterface
+	public interface MultiValueAccessor<K,O> {
 		
 		/**
 		 * Fetch multiple entries at once.
@@ -396,6 +391,108 @@ public interface CacheNG {
 		 */
 		public Map<K,O> fetch( Collection<K> keys );
 	}
+	
+	/**
+	 * Accesses the Backend and get one value
+	 * 
+	 * @author flo
+	 *
+	 * @param <K> Key-Type
+	 * @param <O> Value-Type
+	 */
+	@FunctionalInterface
+	public interface SingleValueAccessor<K,O> {
+		
+		/**
+		 * Fetch a single entry
+		 * 
+		 * @param key
+		 * @return
+		 */
+		public O fetch( K key );
+	}
+	
+	/**
+	 * Accesses the Backend and get one value
+	 * 
+	 * @author flo
+	 *
+	 * @param <K> Key-Type
+	 * @param <O> Value-Type
+	 */
+	public interface UniversalAccessor<K,O> 
+			extends SingleValueAccessor<K,O>, MultiValueAccessor<K,O> {
+		
+		@Override
+		default public O fetch( K key ) {
+			
+			return fetch( Arrays.asList( key ) ).get( key );
+		}
+		
+		@Override
+		default public Map<K, O> fetch( Collection<K> keys ) {
+			
+			return keys.stream()
+					.collect( Collectors.toMap(
+							key -> key,
+							key -> fetch( key ) ) );
+		}
+	}
+	
+	public static <K,O> SingleValueAccessor<K,O> multi2single( MultiValueAccessor<K,O> multi ){
+		
+		return key -> multi.fetch( Arrays.asList( key ) ).get( key );
+	}
+	
+	public static <K,O> MultiValueAccessor<K,O> single2multi( SingleValueAccessor<K,O> single ){
+		
+		return keys -> keys.stream()
+				.collect( Collectors.toMap(
+						k -> k,
+						k -> single.fetch( k ) ) );
+	}
+	
+	public static <K,O> UniversalAccessor<K,O> multi2universal( MultiValueAccessor<K,O> multi ){
+		
+		return new UniversalAccessor<K,O>() {
+	
+			@Override
+			public O fetch( K key ) {
+				
+				return multi.fetch( Arrays.asList( key ) ).get( key );
+			}
+			
+			@Override
+			public Map<K, O> fetch( Collection<K> keys ) {
+				
+				return multi.fetch( keys );
+			}
+		};
+		
+	}
+	
+	public static <K,O> UniversalAccessor<K,O> single2universal( SingleValueAccessor<K,O> single ){
+		
+		return new UniversalAccessor<K,O>() {
+			
+			@Override
+			public O fetch( K key ) {
+				
+				return single.fetch( key );
+			}
+			
+			@Override
+			public Map<K, O> fetch( Collection<K> keys ) {
+				
+				return keys.stream()
+						.collect( Collectors.toMap(
+								k -> k,
+								k -> single.fetch( k ) ) );
+			}
+		};
+		
+	}
+		
 	
 	/**
 	 * 
@@ -450,7 +547,7 @@ public interface CacheNG {
 	 * @param <S> Source-type
 	 * @param <T> Target-type
 	 */
-	public abstract class CacheBridge<S,T> implements CacheEventListener<S> {
+	public abstract static class CacheBridge<S,T> implements CacheEventListener<S> {
 		
 		private final CacheEventListener<T> target;
 		

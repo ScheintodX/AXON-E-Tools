@@ -430,7 +430,7 @@ public class PictureBuilder {
 	private static class Dim {
 		int w, h;
 	}
-
+	
 	private class OldFilenameFilter implements FilenameFilter {
 
 		@Override
@@ -440,25 +440,19 @@ public class PictureBuilder {
 		}
 	}
 
-	public static final JpegFilter JPEG = new JpegFilter();
+	public static final FilenameFilter JPEG = ( dir, name ) -> {
 
-	private static class JpegFilter implements FilenameFilter {
-
-		@Override
-		public boolean accept( File dir, String name ) {
-
-			if( name.length() > 4
-					&& ".jpg".equalsIgnoreCase( name
-							.substring( name.length() - 4 ) )
-					|| name.length() > 5
-					&& ".jpeg".equalsIgnoreCase( name
-							.substring( name.length() - 5 ) ) ) {
-				return true;
-			}
-
-			return false;
+		if( name.length() > 4
+				&& ".jpg".equalsIgnoreCase( name
+						.substring( name.length() - 4 ) )
+				|| name.length() > 5
+				&& ".jpeg".equalsIgnoreCase( name
+						.substring( name.length() - 5 ) ) ) {
+			return true;
 		}
-	}
+
+		return false;
+	};
 
 	private static class JpegSorter implements Comparator<File>, Serializable {
 		

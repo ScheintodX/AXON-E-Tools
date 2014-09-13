@@ -17,8 +17,7 @@ import de.axone.tools.E;
 public class CacheNGTest_ArticleForId {
 
 	static class TestAccessor_ArticleForAid
-			extends AbstractSingleValueAccessor<Aid,TArticle>
-			implements CacheNG.Accessor<Aid, TArticle>,
+			implements CacheNG.UniversalAccessor<Aid, TArticle>,
 					CacheNG.CacheEventListener<Aid>{
 	
 		@Override

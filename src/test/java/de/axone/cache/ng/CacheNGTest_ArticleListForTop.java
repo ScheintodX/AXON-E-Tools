@@ -139,16 +139,15 @@ public class CacheNGTest_ArticleListForTop {
 	
 	
 	public static class TestAccessor_ArticleForTop
-			extends AbstractSingleValueAccessor<Top, List<TArticle>>
-			implements CacheNG.Accessor<Top, List<TArticle>> {
+			implements CacheNG.SingleValueAccessor<Top, List<TArticle>> {
 
 		private final CacheNG.AutomaticClient<Tid, List<TArticle>> forTid;
-		private final CacheNG.Accessor<Tid,List<TArticle>> accessor;
+		private final CacheNG.SingleValueAccessor<Tid,List<TArticle>> accessor;
 		private final TidForTop tft;
 		
 		public TestAccessor_ArticleForTop(
 				CacheNG.AutomaticClient<Tid, List<TArticle>> forTid,
-				CacheNG.Accessor<Tid,List<TArticle>> accessor, TidForTop tft) {
+				CacheNG.SingleValueAccessor<Tid,List<TArticle>> accessor, TidForTop tft) {
 			this.forTid = forTid;
 			this.accessor = accessor;
 			this.tft = tft;

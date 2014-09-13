@@ -264,8 +264,7 @@ public class CacheNGTest_MultiValue {
 	
 	
 	static class TestStringAccessor
-			extends AbstractSingleValueAccessor<String,String>
-			implements CacheNG.Accessor<String,String> {
+			implements CacheNG.SingleValueAccessor<String,String> {
 		
 		@Override
 		public String fetch( String key ) {
@@ -275,8 +274,7 @@ public class CacheNGTest_MultiValue {
 	}
 	
 	static class TestIntegerAccessor
-			extends AbstractSingleValueAccessor<String,Integer>
-			implements CacheNG.Accessor<String,Integer> {
+			implements CacheNG.SingleValueAccessor<String,Integer> {
 		
 		@Override
 		public Integer fetch( String key ) {

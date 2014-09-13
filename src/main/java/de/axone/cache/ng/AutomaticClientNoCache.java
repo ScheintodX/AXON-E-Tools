@@ -10,13 +10,13 @@ public class AutomaticClientNoCache<K,O>
 	private final Stats stats = new DefaultStats( this );
 	
 	@Override
-	public Map<K, O> fetch( Collection<K> keys,CacheNG.Accessor<K, O> accessor ) {
+	public Map<K, O> fetch( Collection<K> keys,CacheNG.MultiValueAccessor<K, O> accessor ) {
 		stats.miss();
 		return accessor.fetch( keys );
 	}
 
 	@Override
-	public O fetch( K key, CacheNG.Accessor<K, O> accessor ) {
+	public O fetch( K key, CacheNG.SingleValueAccessor<K, O> accessor ) {
 		stats.miss();
 		return accessor.fetch( key );
 	}

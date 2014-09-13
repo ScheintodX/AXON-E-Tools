@@ -11,7 +11,6 @@ import java.util.Set;
 
 import org.testng.annotations.Test;
 
-import de.axone.cache.ng.CacheNG.CacheBridge;
 import de.axone.cache.ng.CacheNG.CacheEventListener;
 import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
@@ -145,7 +144,7 @@ public class CacheNGTest_ArticleListForSearchQuery {
 		
 		public List<TArticle> execute(
 				CacheNG.AutomaticClient<Tid,List<TArticle>> data,
-				CacheNG.Accessor<Tid,List<TArticle>> accessor );
+				CacheNG.SingleValueAccessor<Tid,List<TArticle>> accessor );
 	}
 	
 	static class TestSearchQuery_Tid implements TestSearchQuery {
@@ -159,7 +158,7 @@ public class CacheNGTest_ArticleListForSearchQuery {
 		@Override
 		public List<TArticle> execute(
 				CacheNG.AutomaticClient<Tid,List<TArticle>> data,
-				CacheNG.Accessor<Tid,List<TArticle>> accessor ){
+				CacheNG.SingleValueAccessor<Tid,List<TArticle>> accessor ){
 			
 			return data.fetch( tid, accessor );
 		}
@@ -183,7 +182,7 @@ public class CacheNGTest_ArticleListForSearchQuery {
 	}
 	
 	
-	static class TidToQueryBridge extends CacheBridge<Tid,TestSearchQuery>{
+	static class TidToQueryBridge extends CacheNG.CacheBridge<Tid,TestSearchQuery>{
 
 		public TidToQueryBridge( CacheEventListener<TestSearchQuery> target ) {
 			super( target );
@@ -198,14 +197,13 @@ public class CacheNGTest_ArticleListForSearchQuery {
 	
 	
 	static class TestAccessor_ArticleForQuery 
-			extends AbstractSingleValueAccessor<TestSearchQuery, List<TArticle>>
-			implements CacheNG.Accessor<TestSearchQuery, List<TArticle>>{
+			implements CacheNG.SingleValueAccessor<TestSearchQuery, List<TArticle>> {
 		
 		private final CacheNG.AutomaticClient<Tid,List<TArticle>> data;
-		private final CacheNG.Accessor<Tid,List<TArticle>> accessor;
+		private final CacheNG.SingleValueAccessor<Tid,List<TArticle>> accessor;
 
 		public TestAccessor_ArticleForQuery( CacheNG.AutomaticClient<Tid,List<TArticle>> data,
-				CacheNG.Accessor<Tid,List<TArticle>> accessor ) {
+				CacheNG.SingleValueAccessor<Tid,List<TArticle>> accessor ) {
 			
 			this.data = data;
 			this.accessor = accessor;

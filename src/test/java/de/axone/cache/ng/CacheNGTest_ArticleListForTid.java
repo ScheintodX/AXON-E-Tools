@@ -19,8 +19,7 @@ public class CacheNGTest_ArticleListForTid {
 
 	
 	static class TestAccessor_ArticleForTid
-			extends AbstractSingleValueAccessor<Tid, List<TArticle>>
-			implements CacheNG.Accessor<Tid, List<TArticle>>{
+			implements CacheNG.SingleValueAccessor<Tid, List<TArticle>> {
 		
 		private final TestMapTidToArticle data;
 		

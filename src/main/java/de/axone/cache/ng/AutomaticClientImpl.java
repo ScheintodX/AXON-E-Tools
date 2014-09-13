@@ -7,8 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import de.axone.cache.ng.CacheNG.Accessor;
 import de.axone.cache.ng.CacheNG.Cache;
+import de.axone.cache.ng.CacheNG.MultiValueAccessor;
+import de.axone.cache.ng.CacheNG.SingleValueAccessor;
 
 
 /**
@@ -51,7 +52,7 @@ public class AutomaticClientImpl<K,O>
 	}
 	
 	@Override
-	public Map<K,O> fetch( Collection<K> keys, Accessor<K,O> accessor ){
+	public Map<K,O> fetch( Collection<K> keys, MultiValueAccessor<K,O> accessor ){
 		
 		assert keys != null && accessor != null;
 
@@ -108,7 +109,7 @@ public class AutomaticClientImpl<K,O>
 
 
 	@Override
-	public O fetch( K key, Accessor<K,O> accessor ) {
+	public O fetch( K key, SingleValueAccessor<K,O> accessor ) {
 
 		assert key != null;
 		assert accessor != null;

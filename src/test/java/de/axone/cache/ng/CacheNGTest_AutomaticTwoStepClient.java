@@ -36,22 +36,11 @@ public class CacheNGTest_AutomaticTwoStepClient {
 		map2.put( aid( "d1" ), null );
 	}
 	
-	private CacheNG.Accessor<String,List<Aid>> String2AidList = new AbstractSingleValueAccessor<String, List<Aid>>() {
+	private CacheNG.UniversalAccessor<String,List<Aid>> String2AidList =
+			CacheNG.single2universal( key -> map1.get( key ) );
 
-		@Override
-		public List<Aid> fetch( String key ) {
-			return map1.get( key );
-		}
-		
-	};
-	
-	private CacheNG.Accessor<Aid, String> Aid2String = new AbstractSingleValueAccessor<Aid,String>() {
-
-		@Override
-		public String fetch( Aid key ) {
-			return map2.get( key );
-		}
-	};
+	private CacheNG.UniversalAccessor<Aid, String> Aid2String =
+			CacheNG.single2universal( key -> map2.get( key ) );
 
 	public void stringToListBasicOperations(){
 		
@@ -151,9 +140,9 @@ public class CacheNGTest_AutomaticTwoStepClient {
 		CacheNG.AutomaticClient<Aid, String> stringForAid =
 				spy( new AutomaticClientImpl<>( new TestRealm<Aid,String>( "S->S" ) ) );
 		
-		CacheNG.Accessor<String,List<Aid>> string2AidList = spy( String2AidList );
+		CacheNG.UniversalAccessor<String,List<Aid>> string2AidList = spy( String2AidList );
 		
-		CacheNG.Accessor<Aid, String> aid2String = spy( Aid2String );
+		CacheNG.UniversalAccessor<Aid, String> aid2String = spy( Aid2String );
 				
 		AutomaticTwoStepCache<String, Aid, String> atsc =
 				new AutomaticTwoStepCache<>( aidListForString, stringForAid );
