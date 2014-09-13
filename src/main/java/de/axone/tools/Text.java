@@ -506,6 +506,28 @@ public abstract class Text {
 		return builder;
 	}
 	
+	
+	/**
+	 * Trim text to a certain length.
+	 * Append timmedMark if text is longer than expected.
+	 * 
+	 * If a trimmedMark is supplied this method makes sure that the trimmed text with
+	 * mark appended is not longer than 'width'.
+	 * 
+	 * @param text
+	 * @param width
+	 * @param trimmedMark
+	 * @return
+	 */
+	
+	public static String trimTo( String text, int width, String trimmedMark ){
+		
+		if( text.length() <= width ) return text;
+		if( trimmedMark != null ) width = width - trimmedMark.length();
+		if( width < 0 ) throw new IllegalArgumentException( "width is less than trimmedMark length" );
+		return text.substring( 0, width ) + trimmedMark;
+	}
+	
 	public enum Align { LEFT, RIGHT; }
 	
 	public static String left( String text, int width ){
