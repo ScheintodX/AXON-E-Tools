@@ -1,5 +1,6 @@
 package de.axone.cache.ng;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -389,7 +390,7 @@ public abstract class CacheNG {
 		 * @param keys
 		 * @return
 		 */
-		public Map<K,O> fetch( Collection<K> keys );
+		public Map<K,O> fetch( Collection<K> keys ) ;
 	}
 	
 	/**
@@ -409,7 +410,7 @@ public abstract class CacheNG {
 		 * @param key
 		 * @return
 		 */
-		public O fetch( K key );
+		public O fetch( K key ) ;
 	}
 	
 	/**
@@ -534,11 +535,6 @@ public abstract class CacheNG {
 		public void invalidateAllEvent( boolean force );
 	}
 	
-	public interface CacheKey {
-		public Object cacheKey();
-	}
-	
-	
 	/**
 	 * Connects two caches and translates invalidation events
 	 * 
@@ -579,6 +575,32 @@ public abstract class CacheNG {
 		 */
 		protected abstract T bridge( S key );
 		
+	}
+	
+	/**
+	 * Helper interface for other classes.
+	 * 
+	 * Not used here!
+	 * 
+	 * @author flo
+	 * @return an object which will be used as cache key. Note that this object must fullfill the contract from 'CacheKey'
+	 */
+	public interface HasCacheKey {
+		public Object cacheKey();
+	}
+	
+	/**
+	 * Reminder interface what needs to be implemented in an cache key.
+	 * 
+	 * Not used here!
+	 * 
+	 * @author flo
+	 */
+	public interface CacheKey extends Serializable {
+		@Override
+		public int hashCode();
+		@Override
+		public boolean equals( Object other );
 	}
 	
 }
