@@ -22,11 +22,11 @@ public class Pair<L, R> implements Comparable<Pair<L,R>> {
         return new Pair<A, B>(left, right);
     }
     
-    private int hashCode = -1;
+    private int hashCode = 0;
     
     @Override
 	public int hashCode() {
-    	if( hashCode == -1 ){
+    	if( hashCode == 0 ){
 			final int prime = 31;
 			hashCode = 1;
 			hashCode = prime * hashCode + ( ( left == null ) ? 0 : left.hashCode() );

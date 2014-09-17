@@ -9,10 +9,15 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import de.axone.data.DoubleImmutableSet;
 import de.axone.data.Pair;
+import de.axone.data.SingleImmutableList;
+import de.axone.data.SingleImmutableMap;
+import de.axone.data.SingleImmutableSet;
 import de.axone.exception.Assert;
 
 public abstract class Mapper {
@@ -305,6 +310,21 @@ public abstract class Mapper {
 		}
 		
 		return map;
+	}
+	
+	// Fast Sets
+	
+	public static <T> Set<T> immutableSet( T value ){
+		return new SingleImmutableSet<>( value );
+	}
+	public static <T> Set<T> immutableSet( T value1, T value2 ){
+		return new DoubleImmutableSet<>( value1, value2 );
+	}
+	public static <T> List<T> immutableList( T value ){
+		return new SingleImmutableList<>( value );
+	}
+	public static <K,V> Map<K,V> immutableMap( K key, V value ){
+		return new SingleImmutableMap<>( key, value );
 	}
 	
 	public interface Converter<T,X> {

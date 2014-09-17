@@ -2,24 +2,37 @@ package de.axone.data;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
-public final class SingleImmutableSet<T> implements Set<T>, Serializable {
+import de.axone.refactor.NotTested;
+import de.axone.tools.Mapper;
+
+@NotTested
+public final class DoubleImmutableSet<T> implements Set<T>, Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final T value;
+	private final T value1, value2;
+	private HashSet<T> helper;
 	
-	public SingleImmutableSet( T value ){
-		this.value = value;
+	public DoubleImmutableSet( T value1, T value2 ){
+		this.value1 = value1;
+		this.value2 = value2;
+	}
+	
+	private HashSet<T> helper(){
+		if( helper == null ){
+			helper = Mapper.hashSet( value1, value2 );
+		}
+		return helper;
 	}
 
 	@Override
 	public int size() {
-		return 1;
+		return 2;
 	}
 
 	@Override
@@ -29,17 +42,17 @@ public final class SingleImmutableSet<T> implements Set<T>, Serializable {
 
 	@Override
 	public boolean contains( Object o ) {
-		return Objects.equals( value, o );
+		return Objects.equals( value1, o ) || Objects.equals( value2, o );
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		return new MyIterator();
+		return helper().iterator();
 	}
 
 	@Override
 	public Object[] toArray() {
-		return new Object[]{ value };
+		return new Object[]{ value1, value2 };
 	}
 
 	@Override
@@ -59,12 +72,14 @@ public final class SingleImmutableSet<T> implements Set<T>, Serializable {
 
 	@Override
 	public boolean containsAll( Collection<?> c ) {
-		if( c instanceof SingleImmutableSet )
-				return Objects.equals( value, ((SingleImmutableSet<?>)c).value );
-		if( c.size() > 1 ) return false;
+		
+		if( c.size() > 2 ) return false;
 		if( c.size() == 0 ) return true;
-		Object o = c.iterator().next();
-		return Objects.equals( value, o );
+		
+		for( Object o : c ){
+			if( ! contains( o ) ) return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -87,52 +102,44 @@ public final class SingleImmutableSet<T> implements Set<T>, Serializable {
 		throw new UnsupportedOperationException( "Set is immutable" );
 	}
 	
-	private class MyIterator implements Iterator<T> {
-		
-		boolean hasNext = true;
-		
-		@Override
-		public boolean hasNext() {
-			return hasNext;
-		}
-
-		@Override
-		public T next() {
-			if( ! hasNext ) throw new NoSuchElementException();
-			hasNext = false;
-			return value;
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException( "Set is immutable" );
-		}
-		
-	}
-
 	@Override
 	public int hashCode() {
-		return value == null ? 0 : value.hashCode();
+		int result = 0;
+		if( value1 != null ) result += value1.hashCode();
+		if( value2 != null ) result += value2.hashCode();
+		return result;
 	}
 
 	@Override
 	public boolean equals( Object obj ) {
-		if( this == obj ) return true;
-		if( obj == null ) return false;
-		if( !( obj instanceof Set ) ) return false;
-		
-		if( ((Set<?>)obj).size() != 1 ) return false;
-		
-		if( obj instanceof SingleImmutableSet ) {
-			return Objects.equals( value, ((SingleImmutableSet<?>)obj).value );
-		} else {
-			return Objects.equals( value, ((Set<?>)obj).iterator().next() );
+		if( this == obj )
+			return true;
+		if( obj == null )
+			return false;
+		if( obj instanceof Set ){
+			
+			if( obj instanceof DoubleImmutableSet ){
+				@SuppressWarnings( "rawtypes" )
+				DoubleImmutableSet other = (DoubleImmutableSet) obj;
+				
+				return Objects.equals( value1, other.value1 )
+				    && Objects.equals( value2, other.value2 )
+				    || Objects.equals( value1, other.value2 )
+				    && Objects.equals( value2, other.value1 )
+				    ;
+			} else {
+				
+				if( ((Set<?>)obj).size() != 2 ) return false;
+				
+				return containsAll( (Set<?>) obj );
+			}
 		}
+		return false;
 	}
 
 	@Override
 	public String toString() {
-		return "[" + value.toString() + "]";
+		return "[" + value1.toString() + "," + value2.toString() + "]";
 	};
 	
 	

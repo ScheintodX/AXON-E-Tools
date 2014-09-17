@@ -3,6 +3,8 @@ package de.axone.tools;
 import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 import org.testng.annotations.Test;
 
@@ -95,6 +97,11 @@ public class StrTest {
 				.hasSize( 2 )
 				;
 		
+		assertThat( "".split( ";" ) )
+				.contains( "" )
+				.hasSize( 1 )
+				;
+		
 		assertThat( Str.splitFastLimited( "", ';', 8 ) )
 				.contains( "" )
 				.hasSize( 1 )
@@ -107,6 +114,19 @@ public class StrTest {
 		
 		assertThat( Str.splitFastLimited( ";;", ';', 8 ) )
 				.contains( "" )
+				.hasSize( 3 )
+				;
+	}
+	
+	public void testSplitFastAtSpaces(){
+		
+		assertThat( Str.splitFastAtSpacesToList( "  a\t	b \n c" ) )
+				.contains( "a", "b", "c" )
+				.hasSize( 3 )
+				;
+		
+		assertThat( Str.splitFastAtSpacesToList( "  a	b  c " ) )
+				.contains( "a", "b", "c" )
 				.hasSize( 3 )
 				;
 	}
@@ -128,11 +148,23 @@ public class StrTest {
 		
 	}
 	
+	
 	public void timing(){
 		
 		long start, end;
 		
 		String test = "abc;def;hij";
+		
+		Pattern pat = Pattern.compile( ";" );
+		for( int i=0; i<10_000_000; i++ ){
+			pat.split( test );
+		}
+		start = System.currentTimeMillis();
+		for( int i=0; i<10_000_000; i++ ){
+			pat.split( test );
+		}
+		end = System.currentTimeMillis();
+		E.rr( "Pattern.split Took " + (end-start) + " ms" );
 		
 		for( int i=0; i<10_000_000; i++ ){
 			test.split( ";" );
@@ -177,6 +209,33 @@ public class StrTest {
 		}
 		end = System.currentTimeMillis();
 		E.rr( "StringUtils Took " + (end-start) + " ms" );
+		
+		
+		// Test2
+		
+		// Pattern
+		Pattern p = Pattern.compile( "\\s+" );
+		String test2 = "   a \tb  c ";
+		for( int i=0; i<10_000_000; i++ ){
+			p.split( test2 );
+		}
+		start = System.currentTimeMillis();
+		for( int i=0; i<10_000_000; i++ ){
+			p.split( test2 );
+		}
+		end = System.currentTimeMillis();
+		E.rr( "Pattern Took " + (end-start) + " ms" );
+		
+		// Pattern
+		for( int i=0; i<10_000_000; i++ ){
+			Str.splitFastAtSpacesToList( test2 );
+		}
+		start = System.currentTimeMillis();
+		for( int i=0; i<10_000_000; i++ ){
+			Str.splitFastAtSpacesToList( test2 );
+		}
+		end = System.currentTimeMillis();
+		E.rr( "FastSpaces Took " + (end-start) + " ms" );
 		
 	}
 	

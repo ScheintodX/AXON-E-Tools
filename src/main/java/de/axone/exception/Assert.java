@@ -201,14 +201,18 @@ public abstract class Assert {
 		if( o1 != o2 ) throw Ex.up( new ArgumentRangeException( name, "==" + o2, o1 ) );
 	}
 	// instance --------------------
-	public static void isInstance( Object o, String name, Class<?> clz ){
-		if( o == null ) return;
+	@SuppressWarnings( "unchecked" )
+	public static <T> T isInstance( Object o, String name, Class<T> clz ){
+		if( o == null ) return null;
 		if( ! o.getClass().isInstance( clz ) ) throw Ex.up( new ArgumentInstanceException( name, clz ) );
+		return (T)o;
 	}
 	// class --------------------
-	public static void isClass( Object o, String name, Class<?> clz ){
-		if( o == null ) return;
+	@SuppressWarnings( "unchecked" )
+	public static <T> T isClass( Object o, String name, Class<?> clz ){
+		if( o == null ) return null;
 		if( ! o.getClass().isInstance( clz ) ) throw Ex.up( new ArgumentClassException( name, clz ) );
+		return (T)o;
 	}
 	
 }

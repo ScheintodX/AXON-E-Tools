@@ -32,6 +32,8 @@ import de.axone.async.ThreadQueue;
 public class PictureBuilder {
 	
 	public static final Logger log = LoggerFactory.getLogger( PictureBuilder.class );
+	
+	private static final String imageioLock = "ImageIO read lock";
 
 	private final String mainDir;
 	private final File cacheDir;
@@ -227,8 +229,10 @@ public class PictureBuilder {
     				// Read in
     				BufferedImage inImage;
     				try{
-    				inImage = ImageIO.read( imageFile );
-    				} catch( IOException e ){
+    					synchronized( imageioLock ){ // Prevent problems with liblcms2-2
+		    				inImage = ImageIO.read( imageFile );
+    					}
+    				} catch( Throwable e ){
     					throw new IOException( "Cannot read: " + imageFile.getAbsolutePath(), e );
     				}
 
@@ -237,7 +241,9 @@ public class PictureBuilder {
 
     					BufferedImage watermarkImage;
     					try {
-        					watermarkImage = ImageIO.read( watermark );
+    						synchronized( imageioLock ){ // Prevent problems with liblcms2-2
+	        					watermarkImage = ImageIO.read( watermark );
+    						}
         				} catch( IOException e ){
         					throw new IOException( "Cannot read watermark: " + watermark.getAbsolutePath(), e );
         				}
@@ -294,11 +300,13 @@ public class PictureBuilder {
     				iwp.setCompressionMode( ImageWriteParam.MODE_EXPLICIT );
     				iwp.setProgressiveMode( ImageWriteParam.MODE_DEFAULT );
     				iwp.setCompressionQuality( quality );
-    				FileImageOutputStream output = new FileImageOutputStream( cache );
-    				writer.setOutput( output );
     				IIOImage image = new IIOImage( resultImage, null, null );
-    				writer.write( null, image, iwp );
-    				output.close();
+    				try( FileImageOutputStream output = new FileImageOutputStream( cache ) ){
+	    				writer.setOutput( output );
+	    				synchronized( imageioLock ){ // Just in case writing is as buggy as reading
+		    				writer.write( null, image, iwp );
+	    				}
+    				}
     			}
     		} finally {
     			if( ! hq ) threadQueue.releaseLock( lock );

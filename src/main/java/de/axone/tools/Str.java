@@ -1,7 +1,12 @@
 package de.axone.tools;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+
+import de.axone.refactor.NotTested;
 
 public class Str {
 
@@ -317,6 +322,57 @@ public class Str {
 		return Arrays.copyOf( result, num+1 );
 	}
 	
+	public static List<String> splitFastToList( String s, char split ){
+		
+		List<String> result = new ArrayList<>( 8 );
+		
+		final int len = s.length();
+		
+		int i, last=0;
+		for( i=0; i<len; i++ ){
+			
+			if( split == s.charAt( i ) ){
+				
+				result.add( s.substring( last, i ) );
+				
+				last = i+1;
+			};
+		}
+		
+		if( len>=last ){
+			result.add( s.substring( last ) );
+		}
+		
+		return result;
+	}
+	
+	public static List<String> splitFastAtSpacesToList( String s ){
+		
+		List<String> result = new ArrayList<>( 8 );
+		
+		final int len = s.length();
+		
+		int i, last=0;
+		for( i=0; i<len; i++ ){
+			
+			if( Character.isWhitespace( s.charAt( i ) ) ){
+				
+				if( last < i ){
+					result.add( s.substring( last, i ) );
+				}
+				
+				last = i+1;
+			};
+		}
+		
+		if( len>last ){
+			result.add( s.substring( last ) );
+		}
+		
+		return result;
+	}
+	
+	
 	/**
 	 * Split s one time
 	 * 
@@ -376,6 +432,74 @@ public class Str {
 		}
 		
 		return result.toString();
+	}
+	
+	@NotTested
+	public static List<String> collapseEmpty( List<String> list ){
+		
+		List<String> result = new ArrayList<>( list.size() );
+		
+		for( String value : list ){
+			if( value != null && value.length() > 0 ) result.add( value );
+		}
+		
+		return result;
+	}
+	
+	@NotTested
+	public static List<String> collapseEmptyInPlace( List<String> list ){
+		
+		for( Iterator<String> it = list.iterator(); it.hasNext(); ){
+			String value = it.next();
+			if( value == null || value.length() == 0 ) it.remove();;
+		}
+		return list;
+	}
+	
+	@NotTested
+	public static List<String> trim( List<String> list ){
+		
+		List<String> result = new ArrayList<>( list.size() );
+		for( String value : list ){
+			if( value == null ) result.add( null );
+			result.add( value.trim() );
+		}
+		return result;
+	}
+	
+	@NotTested
+	public static List<String> trimInPlace( List<String> list ){
+		
+		for( int i=0; i<list.size(); i++ ){
+			
+			String value = list.get( i );
+			if( value == null ) continue;
+			String trimmed = value.trim();
+			if( value != trimmed ) list.set( i, trimmed );
+		}
+		return list;
+	}
+	
+	@NotTested
+	public static List<String> trimEmpty( List<String> list ){
+		
+		List<String> result = new ArrayList<>( list.size() );
+		
+		for( String value : list ){
+			if( value != null && value.length() > 0 && value.trim().length() > 0 ) result.add( value );
+		}
+		
+		return result;
+	}
+	
+	@NotTested
+	public static List<String> trimEmptyInPlace( List<String> list ){
+		
+		for( Iterator<String> it = list.iterator(); it.hasNext(); ){
+			String value = it.next();
+			if( value == null || value.length() == 0 || value.trim().length() == 0 ) it.remove();;
+		}
+		return list;
 	}
 	
 	public static final String translate( String value, char from, String to ){
