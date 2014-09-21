@@ -25,11 +25,12 @@ public class ImgColorRotator {
 	 * 
 	 * Convinience method with user-friendly input
 	 * 
-	 * @see CssColorRotator#rotate( String, double, double, double )
+	 * @see ImgColorRotator#rotate(int)
 	 * 
 	 * @param hueDelta  0° .. 360°
 	 * @param saturationGamma  0 .. oo in 1/1000th
 	 * @param brightnessGamma  0 .. oo in 1/1000th
+	 * @param inverse the output
 	 */
 	public ImgColorRotator( int hueDelta, int saturationGamma, int brightnessGamma, boolean inverse ){
 		
@@ -50,9 +51,10 @@ public class ImgColorRotator {
 	 * saturation and brightness are calculated by setting the original value to the pow of the
 	 * given gamma value;
 	 * 
-	 * @param hueDelta  0 .. 1 => 0° .. 360°
+	 * @param hueDelta  0 .. 1 =&gt; 0° .. 360°
 	 * @param saturationGamma  0 .. oo
 	 * @param brightnessGamma  0 .. oo
+	 * @param inverse the output
 	 */
 	public ImgColorRotator( double hueDelta, double saturationGamma, double brightnessGamma, boolean inverse ){
 		
@@ -79,7 +81,9 @@ public class ImgColorRotator {
 	 * saturation and brightness are calculated by setting the original value to the pow of the
 	 * given gamma value;
 	 * 
-	 * @param imageData
+	 * @param imageData as raw byte array
+	 * @param imageType 
+	 * @return the converted image data
 	 * @throws IOException 
 	 */
 	public byte[] rotate( byte [] imageData, String imageType ) throws IOException{

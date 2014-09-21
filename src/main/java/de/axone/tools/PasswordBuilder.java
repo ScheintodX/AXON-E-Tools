@@ -146,7 +146,7 @@ public class PasswordBuilder {
 	 * 
 	 * The password is in the form of aaaa1111
 	 * 
-	 * @return
+	 * @return the generated password
 	 */
 	public static String makeSimplaPasswd(){
 		
@@ -160,6 +160,8 @@ public class PasswordBuilder {
 	 * 
 	 * uses DEFAULT_LENGTH as length. Currently 12 chars.
 	 * humanized, including upper and lower case, numbers but no special chars
+	 * 
+	 * @return the generated password
 	 */
 	public static String makePasswd(){
 		return makePasswd( DEFAULT_LENGTH );

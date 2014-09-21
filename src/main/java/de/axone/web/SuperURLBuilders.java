@@ -380,11 +380,13 @@ public class SuperURLBuilders {
 		 * and includes GET AND POST parameters.
 		 * 
 		 * This is not what you want if you only want to parse the
-		 * URL. So use {@see #fromRequestURI(HttpServletRequest)} or
-		 * {@see #fromRequestURL(HttpServletRequest)} instead.
+		 * URL. So use {@link #updateUsingRequestURI(SuperURL, HttpServletRequest)} or
+		 * {@link #updateUsingRequestURL(SuperURL, HttpServletRequest)} instead.
 		 * 
-		 * @param req
-		 * @return
+		 * 
+		 * @param dst The url to be updated
+		 * @param request the HttpServletRequest to use for updating
+		 * @return the updated url
 		 */
 		public SuperURL updateParsingRequest( SuperURL dst, HttpServletRequest request ) {
 			
@@ -424,11 +426,12 @@ public class SuperURLBuilders {
 		 * and includes GET AND POST parameters.
 		 * 
 		 * This is not what you want if you only want to parse the
-		 * URL. So use {@see #fromRequestURI(HttpServletRequest)} or
-		 * {@see #fromRequestURL(HttpServletRequest)} instead.
+		 * URL. So use {@link #updateUsingRequestURI(SuperURL, HttpServletRequest)} or
+		 * {@link #updateUsingRequestURL(SuperURL, HttpServletRequest)} instead.
 		 * 
-		 * @param req
-		 * @return
+		 * @param dst The url to be updated
+		 * @param request the HttpServletRequest to use for updating
+		 * @return the updated url
 		 */
 		public SuperURL updateUsingRequestAndParameters( SuperURL dst, HttpServletRequest request ) {
 			

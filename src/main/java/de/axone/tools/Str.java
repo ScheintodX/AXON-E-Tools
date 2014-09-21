@@ -293,7 +293,7 @@ public class Str {
 	 * @param s
 	 * @param n
 	 * @param split
-	 * @return
+	 * @return the splitted values in a string array
 	 */
 	public static String [] splitFastLimited( String s, char split, int n ){
 		
@@ -378,7 +378,7 @@ public class Str {
 	 * 
 	 * @param s
 	 * @param split
-	 * @return
+	 * @return the splitted values in a string array
 	 */
 	public static String [] splitFastOnce( String s, char split ){
 		

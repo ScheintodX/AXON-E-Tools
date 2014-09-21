@@ -3,11 +3,9 @@ package de.axone.tools;
 public interface NameGenerator {
 	
 	/**
-	 * Generate one name
+	 * @return one generated name
 	 * 
-	 * @param includeTitle set true to generate title
 	 * @param male true: male, false: female, null: both
-	 * @return
 	 */
 	public Name generate( Boolean male );
 

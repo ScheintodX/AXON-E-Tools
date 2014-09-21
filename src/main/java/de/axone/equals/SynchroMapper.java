@@ -9,9 +9,9 @@ public interface SynchroMapper {
 	/**
 	 * Create a copy of a <em>not Synchronizable</em> object
 	 * 
-	 * @param name
-	 * @param object
-	 * @return
+	 * @param name of field to synchonize
+	 * @param object content of field
+	 * @return the created copy
 	 */
 	public Object copyOf( String name, Object object );
 	
@@ -19,9 +19,9 @@ public interface SynchroMapper {
 	/**
 	 * Synchronize one <em>Synchronizable</em> object in another
 	 * 
-	 * @param name
-	 * @param destination
-	 * @param source
+	 * @param name of field to synchonize
+	 * @param destination target where to synchronize to
+	 * @param source object content of field
 	 * @return The destination value. Can be another then the provided
 	 */
 	public Object synchronize( String name, Object destination, Object source );
@@ -30,9 +30,9 @@ public interface SynchroMapper {
 	/**
 	 * Returns an emty instance of a <em>Synchronizable</em> object
 	 * 
-	 * @param name
-	 * @param object
-	 * @return
+	 * @param name of field to synchonize
+	 * @param object content of field
+	 * @return the created instance
 	 */
 	public Object emptyInstanceOf( String name, Object object );
 	
@@ -40,10 +40,10 @@ public interface SynchroMapper {
 	/**
 	 * Find one object in a collection
 	 * 
-	 * @param name
-	 * @param collection
-	 * @param src
-	 * @return
+	 * @param name of field to synchonize
+	 * @param collection to look into
+	 * @param src object content of field
+	 * @return the found object or NULL
 	 */
 	public Object find( String name, Collection<?> collection, Object src );
 	
@@ -101,7 +101,7 @@ public interface SynchroMapper {
 		}
 
 		/**
-		 * Default implementation calls {@Link Equals.synchronize} to synchronize
+		 * Default implementation calls {@link Equals#synchronize} to synchronize
 		 * 
 		 * This synchromapper is passed
 		 */

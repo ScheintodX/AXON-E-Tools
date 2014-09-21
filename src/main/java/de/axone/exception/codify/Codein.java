@@ -37,7 +37,7 @@ public interface Codein {
 	 * name when reporting. Otherwise or when not implementing this interface the
 	 * configured application name is used.
 	 * 
-	 * @return 
+	 * @return the component's name
 	 */
 	public String getComponentName();
 	
@@ -50,7 +50,7 @@ public interface Codein {
 	 * Since the most interessting exceptions are those of the components
 	 * for exceptions which don't use this interface TRUE is presumed.
 	 * 
-	 * @return
+	 * @return true if this is a component (s.a.)
 	 */
 	public boolean isComponent();
 	

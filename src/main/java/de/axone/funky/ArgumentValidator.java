@@ -9,7 +9,7 @@ public interface ArgumentValidator<V> {
 	 *  
 	 *  TODO: Context rein ums dynamisch zu gestalten
 	 *  
-	 * @return
+	 * @return a description of the valid ranges of this argument.
 	 */
 	public String description();
 	

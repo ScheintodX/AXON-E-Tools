@@ -45,14 +45,14 @@ import de.axone.web.SuperURLBuilders.SuperURLBuilder_URI;
  * host: www.subdomain.myhost.com
  * port: 80. mostly nothing
  * path: blah/blo/blu/bläh
- * query: key1=value1&key2=value2;key3=value3
+ * query: key1=value1&amp;key2=value2;key3=value3
  * fragment: something
  * 
  * More for URLs: RFC 2396
  * 
  * Note that all encoding is done using UTF-8!
  * 
- * see <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>
+ * @see <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>
  * @author flo
  */
 public final class SuperURL {
@@ -728,11 +728,10 @@ public final class SuperURL {
 		}
 		
 		/**
-		 * Get slice of path as new Path
+		 * @return slice of path as new Path
 		 * 
 		 * @param index to start the slice from. 0 means complete copy. positive integer remove
 		 *        from the left. negative from the right;
-		 * @return
 		 */
 		public Path slice( int index ){
 			
@@ -988,9 +987,8 @@ public final class SuperURL {
 			return result;
 		}
 		
-		/**
+		/*
 		 * Built to match request.getParameterNames
-		 * @return
 		 */
 		public Enumeration<String> getParameterNames(){
 			Vector<String> result = new Vector<>();

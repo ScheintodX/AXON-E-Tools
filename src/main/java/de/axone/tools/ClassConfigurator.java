@@ -18,9 +18,10 @@ import java.util.regex.Pattern;
  * Every class created in this way must conform to following conditions:
  * 
  * <ol>
- * <li>Class must have an public parameterless constructor</li>
+ * <li>Class must have an public parameterless constructor
  * <li>For every parameter parmN there must be a public setter Method with this
- * signature: public void setParamN( String value )</li>
+ * signature: public void setParamN( String value )
+ * </ol>
  * 
  * @author flo
  * 
@@ -55,6 +56,8 @@ public abstract class ClassConfigurator {
 	 * which then are used to construct the object.
 	 * 
 	 * @param description
+	 * @param constructorClasses 
+	 * @param constructorParameters 
 	 * @throws ClassNotFoundException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException

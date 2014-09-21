@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
+import de.axone.refactor.Refactor;
+
+@Refactor( action="combine", target="SearchResultItem", reason="nearly the same" )
 public abstract class Weighted {
 	
 	

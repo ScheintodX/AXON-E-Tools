@@ -3,7 +3,7 @@ package de.axone.cache.ng;
 import java.util.Random;
 
 /**
- * Maps i -> random(i) 
+ * Maps i -&gt; random(i) 
  * so that it's a stable mapping.
  * 
  * @author flo

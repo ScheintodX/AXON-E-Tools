@@ -8,13 +8,14 @@ import java.util.List;
  * @author flo
  *
  * @param <T> The result type in which this argument is parsed
+ * @param <V> The value type of this argument
  */
 public interface Argument<V,T extends ArgumentType<V>> {
 	
 	//public static enum Type { INTEGER, FLOAT, STRING, BOOLEAN, OBJECT; }
 	
 	/**
-	 * Returns the type of this argument
+	 * @return the type of this argument
 	 */
 	public T type();
 	
@@ -23,7 +24,7 @@ public interface Argument<V,T extends ArgumentType<V>> {
 	 * 
 	 * E.g. "all"
 	 * 
-	 * @return
+	 * @return the name of this argument
 	 */
 	public String name();
 	
@@ -32,51 +33,39 @@ public interface Argument<V,T extends ArgumentType<V>> {
 	 * 
 	 * This is used by the shell parser
 	 * 
-	 * E.g. "a" -> "-a"
+	 * E.g. "a" -&gt; "-a"
 	 * 
 	 * @return a short name
 	 */
 	public String shortName();
 	
 	/**
-	 * Returns a description of what this argument does
-	 * 
-	 * @return
+	 * @return a description of what this argument does
 	 */
 	public String description();
 	
 	/**
-	 * Returns a detailed description of what this does
-	 * 
-	 * @return
+	 * @return a detailed description of what this does
 	 */
 	public String longDescription();
 	
 	/**
-	 * Returns if this argument is optional
-	 * 
-	 * @return
+	 * @return if this argument is optional
 	 */
 	public boolean optional();
 	
 	/**
-	 * Returns if this argument is positional
-	 * 
-	 * @return
+	 * @return if this argument is positional
 	 */
 	public boolean positional();
 	
 	/**
-	 * Returns the default value for optional arguments
-	 * 
-	 * @return
+	 * @return the default value for optional arguments
 	 */
 	public V defaultValue();
 	
 	/**
-	 * Return list of validators
-	 * 
-	 * @return
+	 * @return list of validators
 	 */
 	public List<ArgumentValidator<V>> validators();
 	

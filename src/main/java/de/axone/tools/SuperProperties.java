@@ -39,21 +39,21 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * <li>Lists
  * </ul>
  *
- * <h5>Prefixes</h5>
+ * <em>Prefixes</em>
  * <p>Prefixes are prepended to the properties key and are set at class
  * creation time. Subsets prepend additional prefixes.
  * E.g. <tt>new SuperProperties().supset( "one" ).subset( "two" )</tt>
  * will prefix all keys in the new class with <tt>"one.two."</tt>.
  * In following if key is used it will be allways prefixed.
  *
- * <h5>Accessors</h5>
+ * <em>Accessors</em>
  * <p> Accessors are in multiple versions:<ul>
  * <li><tt>getXyz( key : String )</tt> returns <tt>null</tt> if missing.
  * <li><tt>getXyz( key : String, default : String )</tt> returns <em>default</em> if missing.
  * <li><tt>getXyzRequired( key : String )</tt> throws <em>Exception</em> if missing.
  * </ul>
  *
- * <h5>Class creation</h5>
+ * <em>Class creation</em>
  * <p>Classes can be directly created and eventually configured if they confirm
  * to the class syntax used by <tt>ClassConfigurator</tt><ul>
  * <li>Have empty contructor

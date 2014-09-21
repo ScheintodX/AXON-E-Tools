@@ -5,16 +5,16 @@ public abstract class Xml {
 	/**
 	 * Encode string using xml entities
 	 *
-	 * @param xml
+	 * @param xmlText to encode
 	 * @return the encoded text
 	 * @deprecated Use HtmlEncoder
 	 */
 	@Deprecated
-	public static String encodeText( String xml ){
+	public static String encodeText( String xmlText ){
 
-		if( xml == null ) return null;
+		if( xmlText == null ) return null;
 
-		return xml
+		return xmlText
 			.replace( "&", "&amp;" )
 			.replace( "<", "&lt;" )
 		;
@@ -23,16 +23,16 @@ public abstract class Xml {
 	/**
 	 * Encode string using xml entities
 	 *
-	 * @param xml
+	 * @param xmlText to encode
 	 * @return the encoded text
 	 * @deprecated Use HtmlEncoder
 	 */
 	@Deprecated
-	public static String encodeAttr( String xml ){
+	public static String encodeAttr( String xmlText ){
 
-		if( xml == null ) return null;
+		if( xmlText == null ) return null;
 
-		return xml
+		return xmlText
 			.replace( "&", "&amp;" )
 			.replace( "<", "&lt;" )
 			.replace( "\"", "&quot;" )

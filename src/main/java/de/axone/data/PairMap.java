@@ -72,11 +72,13 @@ public class PairMap<L,R,V> extends MapProxy<Pair<L,R>,V>{
 	 * Row1Key, 1,       2,       3
 	 * Row2Key, 4,       5,       6
 	 * ...
+	 * @param mapping 
 	 * 
 	 * @param table
-	 * @param rowKeys
-	 * @param colKeys
-	 * @return
+	 * @param rowKeysType 
+	 * @param colKeysType 
+	 * @param valueType 
+	 * @return the generated PairMap
 	 */
 	public static final <R,C,V> PairMap<R,C,V> buildFromTable( Mapping mapping,
 			Object[][] table, Class<R> rowKeysType, Class<C> colKeysType, Class<V> valueType ){

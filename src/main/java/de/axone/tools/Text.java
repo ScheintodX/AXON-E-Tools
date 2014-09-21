@@ -14,9 +14,9 @@ public abstract class Text {
 	 *
 	 * Like label(...) but prints the given width
 	 *
-	 * @param c
-	 * @param width
-	 * @param label
+	 * @param c char to use for banner border
+	 * @param width of banner
+	 * @param label label to print in banner
 	 * @return the banner as string
 	 */
 	public static String banner( char c, int width, String label ){
@@ -58,8 +58,8 @@ public abstract class Text {
 	 * ### label text ###
 	 * ##################
 	 *
-	 * @param c
-	 * @param label
+	 * @param c char to use for border
+	 * @param label to display in center of label
 	 * @return the label as string
 	 */
 	public static String label( char c, String label ){
@@ -137,8 +137,8 @@ public abstract class Text {
 	 *
 	 * The width is calculated by the widest line
 	 *
-	 * @param c
-	 * @param text
+	 * @param c char to use for border
+	 * @param text to display in center of poster
 	 * @return the poster as string
 	 */
 	public static String poster( char c, String text ){
@@ -279,9 +279,9 @@ public abstract class Text {
 	 *
 	 * E.g.: <tt>limitText( '#', "Test" )</tt> will return "<tt># Test #</tt>"
 	 *
-	 * @param buffer
-	 * @param c
-	 * @param text
+	 * @param buffer to print into
+	 * @param c char to use for border
+	 * @param text to display at center
 	 * @return the limited text as passed thru string builder
 	 */
 	public static StringBuilder limitedTextBB( StringBuilder buffer, char c, String text ){
@@ -308,10 +308,10 @@ public abstract class Text {
 	 * Too short strings are filled with spaces.
 	 * Too long strings are cut according to parameter <tt>limit</tt>
 	 *
-	 * @param builder
-	 * @param width
-	 * @param text
-	 * @param limit <tt>true<tt> will cut off the end of the text.
+	 * @param builder to print into
+	 * @param width of text returned
+	 * @param text to print
+	 * @param limit <tt>true</tt> will cut off the end of the text.
 	 *
 	 * @return the line with the passed thru string builder
 	 */
@@ -343,11 +343,11 @@ public abstract class Text {
 	/**
 	 * Combination of the two named methods
 	 *
-	 * @param builder
-	 * @param c
-	 * @param width
-	 * @param text
-	 * @param limit
+	 * @param builder to print into
+	 * @param c char to use for border
+	 * @param width of text returned
+	 * @param text to print
+	 * @param limit <tt>true</tt> will cut off the end of the text.
 	 * @return the line with the passed thru string builder
 	 */
 	public static StringBuilder limitedFixedLineBB( StringBuilder builder, char c, int width, String text, boolean limit ){
@@ -366,10 +366,10 @@ public abstract class Text {
 	 * Prints values in format ....Name: Value with
 	 * configurable indention
 	 *
-	 * @param builder
+	 * @param builder to print into
 	 * @param indent number of spaces to prepend
-	 * @param label
-	 * @param value
+	 * @param label to print
+	 * @param valueO value to print. objects are converted to string
 	 * @return the value with the passed thru string builder
 	 */
 	public static StringBuilder valueBB( StringBuilder builder, int indent, String label, Object valueO ){
@@ -401,7 +401,8 @@ public abstract class Text {
 	/**
 	 * Generate indention
 	 *
-	 * @param indent
+	 * @param builder to print into
+	 * @param indent number of spaces to prepend
 	 * @return the indended line with the passed thru string builder
 	 */
 	public static StringBuilder indentBB( StringBuilder builder, int indent ){
@@ -514,10 +515,10 @@ public abstract class Text {
 	 * If a trimmedMark is supplied this method makes sure that the trimmed text with
 	 * mark appended is not longer than 'width'.
 	 * 
-	 * @param text
-	 * @param width
-	 * @param trimmedMark
-	 * @return
+	 * @param text to trim
+	 * @param width to trim to
+	 * @param trimmedMark mark to output when trimmed
+	 * @return the trimmed value
 	 */
 	
 	public static String trimTo( String text, int width, String trimmedMark ){

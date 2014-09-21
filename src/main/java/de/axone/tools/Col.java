@@ -13,7 +13,7 @@ public abstract class Col {
 	 * 
 	 * @param <V>
 	 * @param <C>
-	 * @param col
+	 * @param collection to clone
 	 * @return an empty clone
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
@@ -38,8 +38,8 @@ public abstract class Col {
 	 * @param <V>
 	 * @param <Cd>
 	 * @param <Cs>
-	 * @param dst
-	 * @param src
+	 * @param dst destination
+	 * @param src source
 	 * @param processor to use for processing
 	 * @return a the Collection given as dst with the processed elements
 	 */
@@ -88,7 +88,7 @@ public abstract class Col {
 	 * @param <C>
 	 * @param collection
 	 * @param processor
-	 * @return
+	 * @return the given collection (no copy) with the elements processed
 	 */
 	public static <V, C extends Collection<V>> C processInPlace( C collection, Processor<V> processor ){
 	
@@ -115,7 +115,7 @@ public abstract class Col {
 	 * @param src
 	 * @param conv
 	 * @see #process(Collection, Collection, Processor)
-	 * @return
+	 * @return the given collection (no copy) with the elements processed
 	 */
 	public static <V,C extends Collection<V>> C processUnchecked( C src, Processor<V> conv ){
 		try {

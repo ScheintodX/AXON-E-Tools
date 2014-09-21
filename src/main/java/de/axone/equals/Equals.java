@@ -75,9 +75,9 @@ public class Equals {
 	 * 
 	 * The object's class must be annotated with @@EqualsClass
 	 * 
-	 * @param <T>
-	 * @param object
-	 * @return
+	 * @param <T> type of object to process
+	 * @param object to hash
+	 * @return the generated hash code
 	 */
 	public static <T> int hash( T object ){
 		
@@ -97,10 +97,10 @@ public class Equals {
 	 * 
 	 * The objects' class must be annotated with @@EqualsClass
 	 * 
-	 * @param <T>
-	 * @param o1
-	 * @param o2
-	 * @return
+	 * @param <T> type of object to process
+	 * @param o1 First object for equals
+	 * @param o2 Second object for equals
+	 * @return true if both are equal
 	 */
 	public static <T> boolean equals( T o1, T o2 ) {
 		
@@ -124,7 +124,7 @@ public class Equals {
 	 * This works in a similar way than hashCode but generates
 	 * a cryptographic strong hash code
 	 * 
-	 * @param <T>
+	 * @param <T> type of object to process
 	 * @param object the object to hash
 	 * @return a base 64 encoded hash code string
 	 */
@@ -139,7 +139,7 @@ public class Equals {
 	 * This works in a similar way than hashCode but generates
 	 * a cryptographic strong hash code
 	 * 
-	 * @param <T>
+	 * @param <T> type of object to process
 	 * @param object the object to hash
 	 * @return the strong hash code as byte array
 	 */
@@ -159,7 +159,7 @@ public class Equals {
 	/**
 	 * Synchronise 'destination' so that it will equals source.
 	 * 
-	 * Formally: <tt>synchronize( o1, o2 ) => equals( o1, o2 ) == true</tt>
+	 * Formally: <tt>synchronize( o1, o2 ) =&gt; equals( o1, o2 ) == true</tt>
 	 * 
 	 * This is done 'in place'. No copy of 'target' is created
 	 * However if 'target' is null a new instance will be created using
@@ -172,11 +172,9 @@ public class Equals {
 	 * You can specify a SynchroMapper which can process the fields which
 	 * are copied. (But not the ones which aren't)
 	 * 
-	 * @throws NoSuchMethodException if there is a mismatch between setter and getter
-	 * 
-	 * @param <T>
-	 * @param destination
-	 * @param source
+	 * @param <T> type of object to process
+	 * @param destination to synchronise into
+	 * @param source to synchronise from
 	 * @param synchroMapper to do coping or <tt>null</tt> to use DefaultSynchroMapper
 	 * @return the destination (the original, not a copy!)
 	 */

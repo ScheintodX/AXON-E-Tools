@@ -15,6 +15,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * And always remember: It's not a bug ...
  * 
  * @author flo
+ * @param <V> value type
  */
 @Test( groups="tools.java" )
 public class JavaFeatureTest<V> {

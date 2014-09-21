@@ -24,11 +24,12 @@ public class CssColorRotator {
 	 * 
 	 * Convinience method with user-friendly input
 	 * 
-	 * @see #rotate( String, double, double, double )
+	 * @see #rotate(Color, double, double, double, boolean)
 	 * 
 	 * @param hueDelta  0° .. 360°
 	 * @param saturationGamma  0 .. oo in 1/1000th
 	 * @param brightnessGamma  0 .. oo in 1/1000th
+	 * @param inverse the result
 	 */
 	public CssColorRotator( int hueDelta, int saturationGamma, int brightnessGamma, boolean inverse ){
 		
@@ -49,9 +50,10 @@ public class CssColorRotator {
 	 * saturation and brightness are calculated by setting the original value to the pow of the
 	 * given gamma value;
 	 * 
-	 * @param hueDelta  0 .. 1 => 0° .. 360°
+	 * @param hueDelta  0 .. 1 =&gt; 0° .. 360°
 	 * @param saturationGamma  0 .. oo
 	 * @param brightnessGamma  0 .. oo
+	 * @param inverse the result
 	 */
 	public CssColorRotator( double hueDelta, double saturationGamma, double brightnessGamma, boolean inverse ){
 		
@@ -80,6 +82,7 @@ public class CssColorRotator {
 	 * given gamma value;
 	 * 
 	 * @param css
+	 * @return the converted css string
 	 */
 	public String rotate( String css ){
 		

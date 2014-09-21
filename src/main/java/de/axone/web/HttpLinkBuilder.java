@@ -30,7 +30,7 @@ public class HttpLinkBuilder {
 	 * @param keepParameters list of parameters which shall be kept or null if all are kept
 	 * @param replaceParameters key/value pairs of parameters to set to create or set to new values
 	 * @param removeParameters list of parameters to remove from query or null if none are removed
-	 * @return
+	 * @return the generated url
 	 */
 	public static SuperURL makeLink( HttpServletRequest request, boolean noHost, boolean noPath,
 			List<String> keepParameters, Map<String,String> replaceParameters, List<String> removeParameters ) {

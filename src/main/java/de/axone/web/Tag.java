@@ -164,14 +164,15 @@ public abstract class Tag {
 	 * Just a test for now. But we could insert simplified versions here.
 	 */
 	/**
-	 * No stable interface
+	 * No stable interface from here on
+	 * 
+	 * @param content 
+	 * @param args 
+	 * @return tag as string
 	 */
 	public static String a( String content, String ... args ){
 		return simple( "a", content, args );
 	}
-	/**
-	 * No stable interface
-	 */
 	public static String a( String content, String href ){
 		return simple( "a", content, "href", href );
 	}

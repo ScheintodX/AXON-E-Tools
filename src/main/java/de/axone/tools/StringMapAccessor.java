@@ -18,8 +18,8 @@ public abstract class StringMapAccessor<K> {
 	/**
 	 * Implement the direct to the Map/List via key
 	 * 
-	 * @param key
-	 * @return
+	 * @param key to fetch value for
+	 * @return the value for the key
 	 */
 	protected abstract String doGet( K key );
 	
@@ -27,8 +27,8 @@ public abstract class StringMapAccessor<K> {
 	 * Create info. This is used for error messages
 	 * when required value is not available.
 	 * 
-	 * @param key
-	 * @return
+	 * @param key to fetch value for
+	 * @return the generated info
 	 */
 	protected abstract String info( K key );
 

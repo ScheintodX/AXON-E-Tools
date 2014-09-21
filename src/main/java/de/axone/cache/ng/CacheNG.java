@@ -10,27 +10,28 @@ import java.util.stream.Collectors;
 /**
  * Mögliche Cache-Arten nach Key
  * 
+ * <pre>
  * TID
- *   -> TreeItem
- *   -> L:AID : Articles
- *   -> L:AID : TopSeller
- * [ -> L:Comments z.B. neueste ]
- * [ -> L:Tags ] <-Articles
- * [ -> M:Parameters ] <-Articles
- *   -> L:PID : Pages
+ *   -* TreeItem
+ *   -* L:AID : Articles
+ *   -* L:AID : TopSeller
+ * [ -* L:Comments z.B. neueste ]
+ * [ -* L:Tags ] &lt;-Articles
+ * [ -* M:Parameters ] &lt;-Articles
+ *   -* L:PID : Pages
  * 
- * Top (tranlates to List<TID>)
+ * Top (tranlates to List&lt;TID&gt;)
  *   s. o. ausser TreeItems, Pages
  * 
  * AID
- *   -> Article
- *   -> L:Comments / Rating
- *   -> Bestand
- *   -> XREF: XSell: L:Articles
+ *   -* Article
+ *   -* L:Comments / Rating
+ *   -* Bestand
+ *   -* XREF: XSell: L:Articles
  * 
  * Article beinhaltet schon: (deswegen nicht f. AID)
- *   -> L:Para
- *   -> L:Tags
+ *   -* L:Para
+ *   -* L:Tags
  * 
  * Sonstiges:
  *   
@@ -40,7 +41,7 @@ import java.util.stream.Collectors;
  * * DESC.x
  * * TID
  * * Top
- *     -> alle L:Article
+ *     -* alle L:Article
  * caching verm. nur auf root-query ebene.
  * Die subqueries können aber wieder auf gecachte backends
  * zugreifen wenn nötig.
@@ -58,10 +59,10 @@ import java.util.stream.Collectors;
  *     PARA.name=blah
  *     tag=bier
  * 
- * invalidate( tid=123 )-> invalidate( root )
+ * invalidate( tid=123 )-* invalidate( root )
  * genau wie
- * invalidate( para.name=blah )->invalidate( root )
- * invalidate( tag=bier )->invalidate( root )
+ * invalidate( para.name=blah )-*invalidate( root )
+ * invalidate( tag=bier )-*invalidate( root )
  * 
  * XRef
  *		ART_XSELL, ART_TOP,
@@ -70,11 +71,9 @@ import java.util.stream.Collectors;
  *		ART_USER, TREE_USER
  * 
  * Templates:
- *   File -> Pair<FileWatcher,DataHolder>
- *   URL -> Pair<HttpWatcher,DataHolder>
+ *   File -* Pair&lt;FileWatcher,DataHolder&gt;
+ *   URL -* Pair&lt;HttpWatcher,DataHolder&gt;
  *   .
- *   @see WebTemplateFactory
- * 
  * 
  * MISSING:
  * 
@@ -92,8 +91,8 @@ import java.util.stream.Collectors;
  *  registriert und bei invalidation ereigenissen informiert.
  *  
  *  also
- *  WebTemplate -> register( Article:123 )
- *              -> register( 
+ *  WebTemplate -* register( Article:123 )
+ *              -* register( 
  *              
  *              
  *  CacheDataHolder {
@@ -112,23 +111,20 @@ import java.util.stream.Collectors;
  *  
  * Cache-Names
  * -------------------------------------------------------------------------------
- * TID->TreeItem
- * TID->L:AID
- * TID->L:AID(Topseller)
- * TID->L:Comments
- * TID->L:Comments(Newest)
- * TID->L:Tags
- * TID->M:Parameters (???)
- * TID->L:PID
+ * TID-*TreeItem
+ * TID-*L:AID
+ * TID-*L:AID(Topseller)
+ * TID-*L:Comments
+ * TID-*L:Comments(Newest)
+ * TID-*L:Tags
+ * TID-*M:Parameters (???)
+ * TID-*L:PID
  *  
- * AID->Article
- * AID->L:Comments
- * 
- * 
- * 
+ * AID-*Article
+ * AID-*L:Comments
+ * </pre>
  * 
  * @author flo
- * 
  */
 public abstract class CacheNG {
 	
@@ -136,21 +132,20 @@ public abstract class CacheNG {
 	 * Identifies a realm for the backend
 	 * 
 	 * @author flo
+	 * @param <K> The key type
+	 * @param <O> The value type
 	 */
 	public interface Realm<K,O> extends Comparable<Realm<?,?>>{
 		
 		/**
-		 * String representation of this realm.
+		 * @return String representation of this realm.
 		 * Can be used by cache backends to identify the cache
-		 * 
-		 * @return
 		 */
 		public String name();
 		
 		/**
-		 * String representaitons of this realm as used
+		 * @return String representaitons of this realm as used
 		 * for the config
-		 * @return
 		 */
 		public String[] config();
 		
@@ -193,10 +188,9 @@ public abstract class CacheNG {
 		public O fetch( K key );
 		
 		/**
-		 * Tells if the object identified by key exists
+		 * @return true if the object identified by key exists
 		 * 
 		 * @param key
-		 * @return
 		 */
 		public boolean isCached( K key );
 		
@@ -217,46 +211,35 @@ public abstract class CacheNG {
 		
 		/**
 		 * Clear the complete cache
+		 * 
+		 * TODO: What does 'force' do?
+		 * 
+		 * @param force 
 		 */
 		public void invalidateAll( boolean force );
 		
 		/**
-		 * Return the used size of the cache
-		 * 
-		 * @return the size in number of entries
+		 * @return the used size of the cache
 		 */
 		public int size();
 		
 		/**
-		 * Return the available capacity of the cache
-		 * 
-		 * @return the capacity in number of entries or -1 for infinite
+		 * @return the available capacity of the cache
+		 * or -1 for infinite
 		 */
 		public int capacity();
 		
 		/**
-		 * Returns the usage ratio or -1 if not supported
-		 * 
-		 * @return
+		 * @return the usage ratio or -1 if not supported
 		 */
 		public double ratio();
 		
 		/**
-		 * Get some meaningful information. 
+		 * @return some meaningful information. 
 		 * 
 		 * (At least the size should be returned)
-		 * 
-		 * @return
 		 */
 		public String info();
-		
-		/**
-		 * 
-		 * @author flo
-		 *
-		 * @param <K>
-		 * @param <V>
-		 */
 		
 		/**
 		 * Implements more of Map interface for direct access
@@ -264,7 +247,6 @@ public abstract class CacheNG {
 		 * This is additional because we cannot expect distributed caches
 		 * to have a keyset fast (if at all) available.
 		 * 
-		 * @see isDirectSupported
 		 * @see java.util.Map#keySet()
 		 * @return A set of all keys
 		 * @throws UnsupportedOperationException if not supported
@@ -272,11 +254,9 @@ public abstract class CacheNG {
 	    public Set<K> keySet();
 	    
 	    /**
-	     * Return an Iterable instance for this caches values
+	     * @return an Iterable instance for this caches values
 	     * 
-	     * @see keySet
 		 * @see java.util.Map#values()
-	     * @return A collection of all values
 		 * @throws UnsupportedOperationException if not supported
 	     */
 	    public Iterable<O> values();
@@ -291,16 +271,12 @@ public abstract class CacheNG {
 		public interface Entry<O> {
 			
 			/**
-			 * The entries data
-			 * 
-			 * @return
+			 * @return The entries data
 			 */
 			public O data();
 			
 			/**
-			 * The entries creation time
-			 * 
-			 * @return
+			 * @return The entries creation time
 			 */
 			public long creation();
 		}
@@ -318,33 +294,31 @@ public abstract class CacheNG {
 	public interface AutomaticClient<K,O> {
 		
 		/**
-		 * Get one entry from cache. If the entry is not cached try
+		 * @return Get one entry from cache. If the entry is not cached try
 		 * to get it using the Accessor
 		 * 
 		 * @param key
-		 * @return
+		 * @param accessor to use to fetch the value
 		 */
 		public O fetch( K key, SingleValueAccessor<K,O> accessor );
 		
 		
 		/**
-		 * Get a bunch of entries from the cache. If the entries are
+		 * @return a bunch of entries from the cache. If the entries are
 		 * not cached try to fetch them using the Accessor.
 		 * 
 		 * @param keys
 		 * @param accessor
-		 * @return
 		 */
 		public Map<K,O> fetch( Collection<K> keys, MultiValueAccessor<K,O> accessor );
 		
 		
 		/**
-		 * Returns true if this entry is already stored.
+		 * @return true if this entry is already stored.
 		 * 
 		 * Dues not try to fetch from Accessor
 		 * 
 		 * @param key
-		 * @return
 		 */
 		public boolean isCached( K key );
 		
@@ -388,7 +362,7 @@ public abstract class CacheNG {
 		 * Frequently this is more efficient than fetching single values
 		 * 
 		 * @param keys
-		 * @return
+		 * @return the entries found
 		 */
 		public Map<K,O> fetch( Collection<K> keys ) ;
 	}
@@ -405,10 +379,9 @@ public abstract class CacheNG {
 	public interface SingleValueAccessor<K,O> {
 		
 		/**
-		 * Fetch a single entry
+		 * @return a single entry
 		 * 
 		 * @param key
-		 * @return
 		 */
 		public O fetch( K key ) ;
 	}
@@ -500,7 +473,6 @@ public abstract class CacheNG {
 	 * @author flo
 	 *
 	 * @param <K> Key-Type
-	 * @param <MV> MultiValue store type
 	 * @param <O> Value type
 	 */
 	public interface BackendAccessor<K,O> extends Cache<K,O> {
@@ -580,19 +552,21 @@ public abstract class CacheNG {
 	/**
 	 * Helper interface for other classes.
 	 * 
-	 * Not used here!
+	 * <em>Not used here!</em>
 	 * 
 	 * @author flo
-	 * @return an object which will be used as cache key. Note that this object must fullfill the contract from 'CacheKey'
 	 */
 	public interface HasCacheKey {
+		/**
+		 * @return an object which will be used as cache key. Note that this object must fullfill the contract from 'CacheKey'
+		 */
 		public Object cacheKey();
 	}
 	
 	/**
 	 * Reminder interface what needs to be implemented in an cache key.
 	 * 
-	 * Not used here!
+	 * <em>Not used here!</em>
 	 * 
 	 * @author flo
 	 */

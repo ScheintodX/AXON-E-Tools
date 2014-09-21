@@ -142,9 +142,9 @@ public class SipHash_2_4 {
 	/**
 	 * Convenience method for hashing a byte array with key 
 	 * 
-	 * @param key
-	 * @param data
-	 * @return
+	 * @param key used for "encryption"
+	 * @param data to hash
+	 * @return the generated hash code
 	 */
 	public long hash(byte[] key, byte[] data) {
 		initialize(key);

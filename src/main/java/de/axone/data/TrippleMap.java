@@ -113,10 +113,13 @@ public class TrippleMap<A,B,C,V> extends MapProxy<Tripple<A,B,C>,V>{
 	 * Row3Key, 9,       10,     11,      12,
 	 * ...
 	 * 
+	 * @param mapping
 	 * @param table
-	 * @param rowKeys
-	 * @param colKeys
-	 * @return
+	 * @param rowKeysType
+	 * @param colGroupType
+	 * @param colKeysType
+	 * @param valueType
+	 * @return the generated TrippleMap
 	 */
 	public static final <R,G,C,V> TrippleMap<R,G,C,V> buildFromTable( Mapping mapping, Object[][] table,
 			Class<R> rowKeysType, Class<G> colGroupType, Class<C> colKeysType, Class<V> valueType ){

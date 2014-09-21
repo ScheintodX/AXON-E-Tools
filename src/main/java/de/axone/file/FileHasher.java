@@ -7,12 +7,16 @@ public class FileHasher {
 	/**
 	 * check recursively if something has changed and
 	 * compare to old checksum.
+	 * 
+	 * @param dir to check
+	 * @param oldChecksum from last run
+	 * @return <tt>true</tt> if changed
 	 */
-	public static boolean hasChanged( File dir, int oldSum ){
+	public static boolean hasChanged( File dir, int oldChecksum ){
 
 		int newSum = checksumDir( dir );
 
-		if( newSum != oldSum ){
+		if( newSum != oldChecksum ){
 
 			return true;
 		} else {
@@ -43,7 +47,7 @@ public class FileHasher {
 	 * Generate a checksum over relevant file parameters.
 	 *
 	 * @param file
-	 * @return
+	 * @return the generated checksum
 	 */
 	public static long checksum( File file ){
 

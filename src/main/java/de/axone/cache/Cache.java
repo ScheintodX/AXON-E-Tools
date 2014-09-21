@@ -10,8 +10,8 @@ import java.util.Set;
  * 
  * @author flo
  *
- * @param <K>
- * @param <V>
+ * @param <K> key type
+ * @param <V> value type
  */
 public interface Cache<K,V> {
 	
@@ -25,25 +25,23 @@ public interface Cache<K,V> {
 	public V put( K key, V value );
 	
 	/**
-	 * Get something from the cache
+	 * @return something from the cache
 	 * 
-	 * @param key
-	 * @return
+	 * @param key to query
 	 */
 	public V get( Object key );
 	
 	/**
-	 * Returns true if the cache contains this
+	 * @return true if the cache contains this
 	 * 
-	 * @param key
-	 * @return
+	 * @param key to query
 	 */
 	public boolean containsKey( Object key );
 	
 	/**
 	 * Remove something from cache.
 	 * 
-	 * @param key
+	 * @param key to query
 	 * @return the removed value
 	 */
 	public V remove( Object key );
@@ -72,7 +70,7 @@ public interface Cache<K,V> {
 	 * 
 	 * (At least the size should be returned)
 	 * 
-	 * @return
+	 * @return some meaningful information. 
 	 */
 	public String info();
 	
@@ -84,20 +82,22 @@ public interface Cache<K,V> {
 	 * 
 	 * @author flo
 	 *
-	 * @param <K>
-	 * @param <V>
+	 * @param <K> The key type
+	 * @param <V> The value type
 	 */
 	public interface Direct<K,V> extends Cache<K,V> {
 		
 		/**
-		 * @see java.util.Map#keySet()
 		 * @return A set of all keys
+		 * 
+		 * @see java.util.Map#keySet()
 		 */
 	    Set<K> keySet();
 	    
 	    /**
-		 * @see java.util.Map#values()
 	     * @return A collection of all values
+	     * 
+		 * @see java.util.Map#values()
 	     */
 	    Collection<V> values();
 	}

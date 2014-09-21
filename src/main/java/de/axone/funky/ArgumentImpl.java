@@ -144,5 +144,4 @@ public class ArgumentImpl<V,AT extends ArgumentType<V>> implements Argument<V,AT
 		
 		return builder.toString();
 	}
-
 }

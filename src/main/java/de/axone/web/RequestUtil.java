@@ -28,7 +28,7 @@ public class RequestUtil extends AbstractStringAccessor {
 		
 	/**
 	 * Extract Parameter which is only identified by name
-	 * in format <tt>name-value<tt>. This is useful for transmitting parameters
+	 * in format <tt>name-value</tt>. This is useful for transmitting parameters
 	 * by <tt>&lt;input type="submit"&gt;</tt> and <tt>&lt;button&gt;</tt>
 	 * where value cannot be used because it is displayed.
 	 *
