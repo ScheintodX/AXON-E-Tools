@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 		this.stepBack = stepBack;
 	}
 
-	public void run( DATA data, REQUEST req,
+	public void run( @Nullable DATA data, REQUEST req,
 			HttpServletResponse resp ) throws Exception {
 
 		SuperURL url = SuperURLBuilders.fromRequest().build( req );

@@ -462,7 +462,7 @@ public class Str {
 		List<String> result = new ArrayList<>( list.size() );
 		for( String value : list ){
 			if( value == null ) result.add( null );
-			result.add( value.trim() );
+			else result.add( value.trim() );
 		}
 		return result;
 	}

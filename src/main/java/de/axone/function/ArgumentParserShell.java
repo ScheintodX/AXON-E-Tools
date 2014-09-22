@@ -88,6 +88,7 @@ public class ArgumentParserShell implements ArgumentParser {
 	private static final char split[] = { ' ', '\t' };
 	
 	@Override
+	@SuppressWarnings( "null" )
 	public String [] parseLine( String userInput ){
 		
 		LinkedList<String> result = new LinkedList<String>();

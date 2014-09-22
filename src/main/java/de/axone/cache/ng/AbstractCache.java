@@ -1,5 +1,8 @@
 package de.axone.cache.ng;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import de.axone.cache.ng.CacheNG.Cache;
 
 public abstract class AbstractCache<K,O>
@@ -8,7 +11,7 @@ public abstract class AbstractCache<K,O>
 
 	public abstract Cache.Entry<O> fetchEntry( K key );
 	
-	public O fetch( K key ){
+	public @Nullable O fetch( @Nonnull K key ){
 		Cache.Entry<O> entry = fetchEntry( key );
 		if( entry == null ) return null;
 		return entry.data();
