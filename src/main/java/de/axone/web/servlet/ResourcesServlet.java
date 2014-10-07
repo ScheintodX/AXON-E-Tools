@@ -93,6 +93,13 @@ public abstract class ResourcesServlet extends HttpServlet {
 		return cache;
 	}
 	
+	/**
+	 * Overwrite in subclasses
+	 * 
+	 * @param request
+	 * @param uri
+	 * @throws Exception
+	 */
 	protected void protect( HttpServletRequest request, String uri ) throws Exception {};
 
 	@Override
@@ -203,7 +210,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 						}
 						
 						FileWatcher watcher = new FileWatcher( file );
-						watcher.hasChanged(); //reset watcher
+						watcher.haveChanged(); //reset watcher
 	
 						if( !file.isFile() ) {
 	
@@ -396,8 +403,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 		}
 	}
 	
-	protected void onError( HttpServletRequest req, HttpServletResponse resp, Throwable e ) 
-	throws Exception {
+	protected void onError( HttpServletRequest req, HttpServletResponse resp, Throwable e ) throws Exception {
 		
 		try {
 			resp.sendError( HttpServletResponse.SC_NOT_FOUND, e.getMessage() );
@@ -484,7 +490,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 		public boolean hasChanged() {
 			boolean hasChanged = false;
 			for( FileWatcher watcher : getWatchers() ){
-				if( watcher.hasChanged() ){
+				if( watcher.haveChanged() ){
 					hasChanged = true;
 					break;
 				}

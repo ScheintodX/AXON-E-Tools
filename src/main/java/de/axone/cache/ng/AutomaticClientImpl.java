@@ -37,15 +37,10 @@ public class AutomaticClientImpl<K,O>
 
 	final CacheNG.Cache<K,O> backend;
 	
-	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-	private Stats stats = new DefaultStats( this );
+	private final Stats stats = new DefaultStats( this );
 	
-	// Simplification for testing
-	AutomaticClientImpl( CacheNG.Realm<K,O> realm ){
-		this( new CacheHashMap<>( realm ) );
-	}
-
 	public AutomaticClientImpl( CacheNG.Cache<K,O> backend ){
 		assert backend != null;
 		this.backend = backend;

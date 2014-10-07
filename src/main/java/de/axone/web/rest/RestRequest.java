@@ -8,8 +8,10 @@ import de.axone.web.Method;
 
 public interface RestRequest extends HttpServletRequest {
 
-	public abstract Method getRestMethod();
-
 	public abstract ObjectMapper mapper();
+
+	default public Method getRestMethod() {
+		return Method.valueOf( getMethod() );
+	}
 
 }

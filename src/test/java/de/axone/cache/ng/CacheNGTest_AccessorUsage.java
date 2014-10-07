@@ -17,7 +17,7 @@ public class CacheNGTest_AccessorUsage {
 
 	public void accessorIsOnlyUsedWhenNeeded(){
 		
-		CacheNG.AutomaticClient<Aid, TArticle> auto = new AutomaticClientImpl<>( RN.AID_ARTICLE );
+		CacheNG.AutomaticClient<Aid, TArticle> auto = new AutomaticClientImpl<>( new CacheHashMap<>( RN.AID_ARTICLE ) );
 		
 		TestAccessor_ArticleForAid acc = spy( new TestAccessor_ArticleForAid() );
 		

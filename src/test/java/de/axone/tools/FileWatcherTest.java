@@ -16,44 +16,44 @@ public class FileWatcherTest {
 
 		FileWatcher watcher = new FileWatcher( tmp, 100 );
 
-		assertTrue( watcher.hasChanged() );
-		assertFalse( watcher.hasChanged() );
+		assertTrue( watcher.haveChanged() );
+		assertFalse( watcher.haveChanged() );
 		
 		synchronized( this ){
 			this.wait( 1100 ); //Note: Unix ctime min unit is 1s
 		}
 
-		assertFalse( watcher.hasChanged() );
+		assertFalse( watcher.haveChanged() );
 		
 		// Touch
 		FileOutputStream out = new FileOutputStream( tmp );
 		out.write( 'x' );
 		out.close();
 		
-		assertFalse( watcher.hasChanged() );
+		assertFalse( watcher.haveChanged() );
 
 		synchronized( this ){
 			this.wait( 110 );
 		}
 
-		assertTrue( watcher.hasChanged() );
+		assertTrue( watcher.haveChanged() );
 
 		synchronized( this ){
 			this.wait( 1100 );
 		}
 
-		assertFalse( watcher.hasChanged() );
+		assertFalse( watcher.haveChanged() );
 
 		boolean ok = tmp.delete();
 		assertTrue( ok );
-		assertFalse( watcher.hasChanged() );
+		assertFalse( watcher.haveChanged() );
 		
 		synchronized( this ){
 			this.wait( 110 );
 		}
 
-		assertTrue( watcher.hasChanged() );
-		assertFalse( watcher.hasChanged() );
+		assertTrue( watcher.haveChanged() );
+		assertFalse( watcher.haveChanged() );
 
 	}
 }

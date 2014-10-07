@@ -21,7 +21,7 @@ import org.testng.annotations.Test;
 import de.axone.equals.EqualsClass.Select;
 import de.axone.equals.EqualsClass.WorkOn;
 import de.axone.equals.SynchroMapper.DefaultSynchroMapper;
-import de.axone.tools.Sets;
+import de.axone.tools.Mapper;
 
 @Test( groups="tools.equals" )
 public class EqualsTest {
@@ -363,7 +363,7 @@ public class EqualsTest {
 		
 		TestMethods o_ = new TestMethods();
 		
-		assertEquals( sm.fields, Sets.treeSetOf( "b", "bd", "int", "list", "map", "set", "string", "x", "v", "b") );
+		assertEquals( sm.fields, Mapper.treeSet( "b", "bd", "int", "list", "map", "set", "string", "x", "v", "b") );
 		
 		sm = new TestSynchroMapper();
 		
@@ -391,7 +391,7 @@ public class EqualsTest {
 		assertFalse( o_.getMap().equals( oo.o1.getMap() ) );
 		assertEquals( o_.getMap().get( "s" ), "s1X" );
 		
-		assertEquals( sm.fields, Sets.treeSetOf( "b", "bd", "int", "list", "map", "set", "string", "v", "x", "b") );
+		assertEquals( sm.fields, Mapper.treeSet( "b", "bd", "int", "list", "map", "set", "string", "v", "x", "b") );
 		
 	}
 	

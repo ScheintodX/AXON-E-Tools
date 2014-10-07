@@ -14,7 +14,7 @@ import org.testng.annotations.Test;
 
 import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.TestRealm;
-import de.axone.tools.Sets;
+import de.axone.tools.Mapper;
 
 @Test( groups="cacheng.twostep" )
 public class CacheNGTest_AutomaticTwoStepClient {
@@ -45,7 +45,7 @@ public class CacheNGTest_AutomaticTwoStepClient {
 	public void stringToListBasicOperations(){
 		
 		CacheNG.AutomaticClient<String, List<Aid>> aidListForString =
-				new AutomaticClientImpl<>( new TestRealm<String,List<Aid>>( "S->L:S" ) );
+				new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:S" ) ) );
 		
 		assertThat( aidListForString ).hasNotCached( "A" );
 		
@@ -62,7 +62,7 @@ public class CacheNGTest_AutomaticTwoStepClient {
 	public void aidToStringBasicOperations(){
 		
 		CacheNG.AutomaticClient<Aid, String> stringForAid =
-				new AutomaticClientImpl<>( new TestRealm<Aid,String>( "S->S" ) );
+				new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "S->S" ) ) );
 				
 		assertThat( stringForAid ).hasNotCached( aid("a1" ) );
 		
@@ -78,10 +78,10 @@ public class CacheNGTest_AutomaticTwoStepClient {
 	public void combinedOperationsHaveCorrectResult(){
 	
 		CacheNG.AutomaticClient<String, List<Aid>> aidListForString =
-				spy( new AutomaticClientImpl<>( new TestRealm<String,List<Aid>>( "S->L:S" ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:S" ) ) ) );
 				
 		CacheNG.AutomaticClient<Aid, String> stringForAid =
-				spy( new AutomaticClientImpl<>( new TestRealm<Aid,String>( "S->S" ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "S->S" ) ) ) );
 		
 		AutomaticTwoStepCache<String, Aid, String> atsc =
 				new AutomaticTwoStepCache<>( aidListForString, stringForAid );
@@ -112,10 +112,10 @@ public class CacheNGTest_AutomaticTwoStepClient {
 	public void combinedOperationsUseTheRightCaches(){
 		
 		CacheNG.AutomaticClient<String, List<Aid>> aidListForString =
-				spy( new AutomaticClientImpl<>( new TestRealm<String,List<Aid>>( "S->L:S" ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:S" ) ) ) );
 				
 		CacheNG.AutomaticClient<Aid, String> stringForAid =
-				spy( new AutomaticClientImpl<>( new TestRealm<Aid,String>( "S->S" ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "S->S" ) ) ) );
 		
 		AutomaticTwoStepCache<String, Aid, String> atsc =
 				new AutomaticTwoStepCache<>( aidListForString, stringForAid );
@@ -135,10 +135,10 @@ public class CacheNGTest_AutomaticTwoStepClient {
 	public void combinedOperationsAndAccessorUsage(){
 		
 		CacheNG.AutomaticClient<String, List<Aid>> aidListForString =
-				spy( new AutomaticClientImpl<>( new TestRealm<String,List<Aid>>( "S->L:S" ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:S" ) ) ) );
 				
 		CacheNG.AutomaticClient<Aid, String> stringForAid =
-				spy( new AutomaticClientImpl<>( new TestRealm<Aid,String>( "S->S" ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "S->S" ) ) ) );
 		
 		CacheNG.UniversalAccessor<String,List<Aid>> string2AidList = spy( String2AidList );
 		
@@ -157,7 +157,7 @@ public class CacheNGTest_AutomaticTwoStepClient {
 		verify( aidListForString, times( 1 ) ).fetch( "A", string2AidList );
 		verify( stringForAid, times( 1 ) ).fetch( Arrays.asList( aid( "a1" ), aid( "a2" ) ), aid2String );
 		verify( string2AidList, times( 1 ) ).fetch( "A" );
-		verify( aid2String, times( 1 ) ).fetch( Sets.hashSetOf( aid( "a1" ), aid( "a2" ) ) );
+		verify( aid2String, times( 1 ) ).fetch( Mapper.hashSet( aid( "a1" ), aid( "a2" ) ) );
 		
 		atsc.fetch( "A", string2AidList, aid2String );
 			
@@ -165,14 +165,14 @@ public class CacheNGTest_AutomaticTwoStepClient {
 		verify( aidListForString, times( 2 ) ).fetch( "A", string2AidList );
 		verify( stringForAid, times( 2 ) ).fetch( Arrays.asList( aid( "a1" ), aid( "a2" ) ), aid2String );
 		verify( string2AidList, times( 1 ) ).fetch( "A" );
-		verify( aid2String, times( 1 ) ).fetch( Sets.hashSetOf( aid( "a1" ), aid( "a2" ) ) );
+		verify( aid2String, times( 1 ) ).fetch( Mapper.hashSet( aid( "a1" ), aid( "a2" ) ) );
 		
 		atsc.fetch( "B", string2AidList, aid2String );
 		
 		verify( aidListForString, times( 1 ) ).fetch( "B", string2AidList );
 		verify( stringForAid, times( 1 ) ).fetch( Arrays.asList( aid( "b1" ), aid( "b2" ) ), aid2String );
 		verify( string2AidList, times( 1 ) ).fetch( "B" );
-		verify( aid2String, times( 1 ) ).fetch( Sets.hashSetOf( aid( "b1" ), aid( "b2" ) ) );
+		verify( aid2String, times( 1 ) ).fetch( Mapper.hashSet( aid( "b1" ), aid( "b2" ) ) );
 	}
 		
 }

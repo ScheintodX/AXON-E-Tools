@@ -34,7 +34,7 @@ public abstract class Assert {
 	// ! Empty String
 	public static void notEmpty( Object o, String name ){
 		if( o == null ) return;
-		if( o.toString().length() == 0 ) throw Ex.up( new ArgumentNullException( name ) );
+		if( o.toString().length() == 0 ) throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' is empty" ) );
 	}
 	
 	// ! Empty Collection
@@ -206,6 +206,11 @@ public abstract class Assert {
 		if( o == null ) return null;
 		if( ! o.getClass().isInstance( clz ) ) throw Ex.up( new ArgumentInstanceException( name, clz ) );
 		return (T)o;
+	}
+	public static void notClass( Object o, String name, Class<?> clz ) {
+		
+		if( o == null ) return;
+		if( o.getClass() == clz ) throw Ex.up( new ArgumentInstanceException( name, clz ) );
 	}
 	// class --------------------
 	@SuppressWarnings( "unchecked" )

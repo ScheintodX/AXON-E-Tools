@@ -8,10 +8,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
+import org.testng.annotations.Test;
+
 import de.axone.cache.ng.CacheNG.Realm;
 import de.axone.cache.ng.CacheNGTest_ArticleListForSearchQuery.TestSearchQuery;
 import de.axone.cache.ng.CacheNGTest_ArticleListForTop.Top;
 
+@Test( groups="cacheng.timeoutall" )
 public class CacheNGTestHelpers {
 	
 	static abstract class RN {
@@ -55,6 +58,11 @@ public class CacheNGTestHelpers {
 		}
 		
 		@Override
+		public String realm() {
+			return name;
+		}
+		
+		@Override
 		public String [] config() {
 			return new String []{ client, name, suffix };
 		}
@@ -68,6 +76,7 @@ public class CacheNGTestHelpers {
 		public int compareTo( Realm<?, ?> o ) {
 			return 0; // We don't need this here
 		}
+
 
 	}
 	

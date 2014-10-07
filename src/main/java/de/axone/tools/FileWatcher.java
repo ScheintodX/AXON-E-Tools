@@ -54,7 +54,7 @@ public class FileWatcher implements Watcher, Serializable {
 	}
 
 	@Override
-	public boolean hasChanged(){
+	public boolean haveChanged(){
 
 		boolean result = false;
 

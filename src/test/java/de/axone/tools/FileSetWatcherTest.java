@@ -42,31 +42,31 @@ public class FileSetWatcherTest {
 		
 		sleep( 1100 ); // Wait for filesystems 1s
 		
-		FileSetWatcher watcher = new FileSetWatcher( 100, tmp, tmp2 );
+		FileSetWatcher watcher = new FileSetWatcher( 100, Mapper.hashSet( tmp, tmp2 ) );
 
-		assertTrue( watcher.hasChanged() );
-		assertFalse( watcher.hasChanged() );
+		assertTrue( watcher.haveChanged() );
+		assertFalse( watcher.haveChanged() );
 		
 		sleep( 1100 );
 
 		// no change even after long wait
-		assertFalse( watcher.hasChanged() );
+		assertFalse( watcher.haveChanged() );
 		
 		// Touch --------------------------------------------------
 		touch( tmp );
 		
 		// no direct change. have to wait a little
-		assertFalse( watcher.hasChanged() );
+		assertFalse( watcher.haveChanged() );
 
 		sleep( 110 );
 
 		// changed after time > 100
-		assertTrue( watcher.hasChanged() );
+		assertTrue( watcher.haveChanged() );
 
 		sleep( 1100 );
 
 		// no change even after long wait
-		assertFalse( watcher.hasChanged() );
+		assertFalse( watcher.haveChanged() );
 
 		/*
 		E.rr( "delete" );
@@ -86,11 +86,11 @@ public class FileSetWatcherTest {
 		*/
 
 		// Touch2 --------------------------------------------------
-		assertFalse( watcher.hasChanged() );
+		assertFalse( watcher.haveChanged() );
 		touch( tmp2 );
 		
 		// no direct change
-		assertFalse( watcher.hasChanged() );
+		assertFalse( watcher.haveChanged() );
 
 		/*
 		synchronized( this ){
@@ -101,7 +101,7 @@ public class FileSetWatcherTest {
 		sleep( 110 );
 
 		// but after wait > 100ms
-		assertTrue( watcher.hasChanged() );
+		assertTrue( watcher.haveChanged() );
 
 		/*
 		synchronized( this ){
@@ -112,12 +112,12 @@ public class FileSetWatcherTest {
 		sleep( 1100 );
 
 		// still not after another wait time
-		assertFalse( watcher.hasChanged() );
+		assertFalse( watcher.haveChanged() );
 
 		boolean ok = tmp2.delete();
 		assertTrue( ok );
 		// not direct 
-		assertFalse( watcher.hasChanged() );
+		assertFalse( watcher.haveChanged() );
 		
 		/*
 		synchronized( this ){
@@ -128,8 +128,8 @@ public class FileSetWatcherTest {
 		sleep( 110 );
 
 		// but after wait
-		assertTrue( watcher.hasChanged() );
-		assertFalse( watcher.hasChanged() );
+		assertTrue( watcher.haveChanged() );
+		assertFalse( watcher.haveChanged() );
 
 	}
 }

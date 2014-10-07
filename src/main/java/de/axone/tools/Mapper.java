@@ -3,9 +3,11 @@ package de.axone.tools;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -185,6 +187,12 @@ public abstract class Mapper {
 		HashSet<T> result = new HashSet<T>( Arrays.asList( values ));
 		return result;
 	}
+	@SafeVarargs
+	public static <T> HashSet<T> linkedHashSet( T ... values ){
+
+		HashSet<T> result = new LinkedHashSet<T>( Arrays.asList( values ));
+		return result;
+	}
 	
 	@SafeVarargs
 	public static <T> TreeSet<T> treeSet( T ... values ){
@@ -332,5 +340,46 @@ public abstract class Mapper {
 	}
 	public interface KeyExtractor<K,O> {
 		public K extract( O object );
+	}
+	
+	
+	public static <T> Set<T> asSetOrNull( T item ) {
+		if( item == null ) return null;
+		return immutableSet( item );
+	}
+	
+	@SuppressWarnings( "unchecked" )
+	public static <T> Set<T> asSet( T ... items ) {
+		if( items == null ) return null;
+		if( items.length == 0 ) return Collections.emptySet();
+		if( items.length == 1 ) return asSetOrNull( items[ 0 ] );
+		return new HashSet<>( Arrays.asList( items ) );
+	}
+	/**
+	 * @return collection as set. either a new one or the old one if it's already a set.
+	 * 
+	 * @param items
+	 */
+	public static <T> Set<T> asSet( Iterable<T> items ) {
+		if( items == null ) return null;
+		if( items instanceof Set ) return (Set<T>)items;
+		if( items instanceof Collection ) return new HashSet<>( (Collection<T>) items );
+		HashSet<T> result = new HashSet<>();
+		for( T t : items ) result.add( t );
+		return result;
+	}
+	
+	/**
+	 * @return collection as list. either a new one or the old one if it's already a list.
+	 * 
+	 * @param items
+	 */
+	public static <T> List<T> asList( Iterable<T> items ) {
+		if( items == null ) return null;
+		if( items instanceof List ) return (List<T>)items;
+		if( items instanceof Collection ) return new ArrayList<>( (Collection<T>) items );
+		ArrayList<T> result = new ArrayList<>();
+		for( T t : items ) result.add( t );
+		return result;
 	}
 }

@@ -1,22 +1,10 @@
 package de.axone.tools;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class Sets {
 	
-	@SafeVarargs
-	public static <T> HashSet<T> hashSetOf( T ... members ){
-		return new HashSet<>( Arrays.asList( members ) );
-	}
-	
-	@SafeVarargs
-	public static <T> TreeSet<T> treeSetOf( T ... members ){
-		return new TreeSet<>( Arrays.asList( members ) );
-	}
-
 	public static <T> Set<T> union( Set<T> a, Set<T> b ){
 		
 		HashSet<T> result = new HashSet<T>( a );

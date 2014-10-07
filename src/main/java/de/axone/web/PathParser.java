@@ -14,15 +14,13 @@ public class PathParser {
 		
 		for( int i = 0; i < args.length && i < path.length(); i++ ){
 			
-			values.put(
-				args[ i ],
-    			path.get( i )
-			);
+			values.put( args[ i ], path.get( i ) );
 		}
 		
 	}
 	
 	public int size(){
+		
 		return values.size();
 	}
 	

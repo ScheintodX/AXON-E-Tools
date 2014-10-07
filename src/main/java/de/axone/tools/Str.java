@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import de.axone.refactor.NotTested;
 
@@ -156,11 +157,14 @@ public class Str {
 	}
 	
 	// --- J o i n e r --------------------------------------------------
+	@FunctionalInterface
 	public interface Joiner<T> {
 
-		public String getSeparator();
 		public String toString( T object, int index );
+		
+		default public String getSeparator(){ return ", "; }
 	}
+	
 	public static class SimpleJoiner<T> implements Joiner<T> {
 
 		private String separator;
@@ -341,6 +345,30 @@ public class Str {
 		
 		if( len>=last ){
 			result.add( s.substring( last ) );
+		}
+		
+		return result;
+	}
+	
+	public static List<String> splitFastToListAndProcess( String s, char split, Function<String,String> processor ){
+		
+		List<String> result = new ArrayList<>( 8 );
+		
+		final int len = s.length();
+		
+		int i, last=0;
+		for( i=0; i<len; i++ ){
+			
+			if( split == s.charAt( i ) ){
+				
+				result.add( processor.apply( s.substring( last, i ) ) );
+				
+				last = i+1;
+			};
+		}
+		
+		if( len>=last ){
+			result.add( processor.apply( s.substring( last ) ) );
 		}
 		
 		return result;

@@ -164,4 +164,29 @@ public abstract class SA {
 		return v;
 	}
 	
+	// == Instances =====
+	/*
+	public static <T> T getNewInstance( String value, Class<T> clazz, String name ) throws InstantiationException, IllegalAccessException{
+		String v = get( value, name );
+		if( v == null ) return null;
+		return clazz.newInstance();
+	}
+	public static <T> T getNewInstance( String value, Class<T> clazz, String name, Class<T> defaultValue ) throws InstantiationException, IllegalAccessException{
+		T v = getNewInstance( value, clazz, name );
+		if( v == null ) return defaultValue;
+		return v;
+	}
+	public static <T> T getNewInstanceRequired( String value, Class<T> clazz, String name ) throws InstantiationException, IllegalAccessException{
+		T v = getNewInstance( value, clazz, name );
+		if( v == null ) throw new NoSuchElementException( name );
+		return v;
+	}
+	public static <T> T getNewInstanceRequired( String value, Class<T> clazz, String name, T defaultValue ) throws InstantiationException, IllegalAccessException{
+		T v = getNewInstance( value, clazz, name );
+		if( v == null ) v = defaultValue;
+		if( v == null ) throw new NoSuchElementException( name );
+		return v;
+	}
+	*/
+	
 }

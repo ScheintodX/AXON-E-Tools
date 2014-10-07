@@ -25,7 +25,47 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 	
 	@Override
 	protected boolean removeEldestEntry( Map.Entry<K, V> eldest ) {
-
+		
 		return size() > capacity;
+		/*
+		boolean removeMe = size() > capacity;
+		
+		if( removeMe ){
+			
+			if( eldest instanceof CacheRemoveListener ){
+				((CacheEventListener<?>) eldest).invalidateAllEvent( true );
+			}
+		}
+		
+		return removeMe;
+		*/
 	}
+
+	/*
+	@Override
+	public void clear() {
+		
+		for( V value : this.values() ) {
+			if( value instanceof CacheRemoveListener ){
+				((CacheEventListener<?>) value).invalidateAllEvent( true );
+			}
+		}
+		
+		super.clear();
+	}
+
+	@Override
+	public V remove( Object key ) {
+		
+		V value = get( key );
+		
+		if( value != null && value instanceof CacheRemoveListener ){
+			((CacheEventListener<?>) value).invalidateAllEvent( true );
+		}
+		
+		return super.remove( key );
+	}
+	*/
+	
+	
 }

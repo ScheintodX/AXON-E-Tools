@@ -604,6 +604,11 @@ public class SuperURLBuilders {
 		
 		private SuperURL.Path result = new SuperURL.Path();
 		
+		public PathBuilder of( String ... part ){
+			result.addAll( part );
+			return this;
+		}
+		
 		public PathBuilder parse( String parseMe ){
 			return parse( parseMe, true );
 		}

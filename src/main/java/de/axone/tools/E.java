@@ -6,37 +6,38 @@ import de.axone.exception.Ex;
 
 public abstract class E {
 	
-	protected static void printPos( PrintStream out, int depth ){
+	private static void printPos( PrintStream out, int depth ){
 		
 		String clazz = Ex.me( depth+1 );
 		
-		out.printf( ">>> (%s) ", clazz );
+		out.append( ">>> (" + String.valueOf( clazz ) + ") " );
 	}
 	
-	protected static void echo( PrintStream out, int depth, boolean lino, boolean nl, Object ... os ){
+	private static void echo( PrintStream out, int depth, boolean lino, boolean nl, Object ... os ){
 		
 		if( lino ) printPos( out, depth );
 		
 		if( os == null ){
-			out.print( F.ormat( null ) );
+			F.ormatB( out, null );
+			//out.print( F.ormat( null ) );
 		} else if( os.length == 0 ){
-			out.print( "- [] -" );
+			out.append( "- [] -" );
 		} else {
 			boolean first = true;
     		for( Object o : os ){
     			
     			if( first ) first = false;
-    			else out.print( ", " );
+    			else out.append( ", " );
     			
-    			out.print( F.ormat( o ) );
+    			F.ormatB( out, o );
     		}
 		}
 		
-		if( nl ) out.println();
+		if( nl ) out.append( '\n' );
 		out.flush();
 	}
 	
-	protected static void printf( PrintStream out, boolean lino, boolean nl, String format, Object ... args ){
+	private static void printf( PrintStream out, boolean lino, boolean nl, String format, Object ... args ){
 		
 		if( lino ) printPos( out, 2 );
 		
@@ -44,7 +45,7 @@ public abstract class E {
 		if( nl ) out.println();
 	}
 	
-	protected static void log( PrintStream out, boolean lino, boolean nl, String format, Object ...args ){
+	private static void log( PrintStream out, boolean lino, boolean nl, String format, Object ...args ){
 		
 		if( lino ) printPos( out, 2 );
 		
@@ -57,7 +58,7 @@ public abstract class E {
 		if( nl ) out.println();
 	}
 	
-	protected static void echo( PrintStream out, boolean lino, boolean nl, Object ... os ){
+	private static void echo( PrintStream out, boolean lino, boolean nl, Object ... os ){
 		echo( out, 3, lino, nl, os );
 	}
 	
@@ -197,8 +198,8 @@ public abstract class E {
 	}
 	
 	/* === EXIT =========================================================== */
-	protected static final int EXIT_UP = 3;
-	protected static void exit( String message, int code ){
+	private static final int EXIT_UP = 3;
+	private static void exit( String message, int code ){
 		
 		StringBuilder text = new StringBuilder();
 		
@@ -243,9 +244,9 @@ public abstract class E {
 	
 	/* === EX =========================================================== */
 	
-	protected static final int EX_DEFAULT_DEPTH = 5;
-	protected static final int EX_UP = 4;
-	protected static final String EX_MARK = "MARK";
+	private static final int EX_DEFAULT_DEPTH = 5;
+	private static final int EX_UP = 4;
+	private static final String EX_MARK = "MARK";
 	
 	/**
 	 * Print a mark and a simplified stacktrace
@@ -267,7 +268,7 @@ public abstract class E {
 	static void _x( int depth, String message ){
 		ex( System.out, new Throwable(), EX_UP, depth, message );
 	}
-	protected static void ex( PrintStream out, Throwable t, int start, int depth, String message ){
+	private static void ex( PrintStream out, Throwable t, int start, int depth, String message ){
 		
 		StringBuilder result = new StringBuilder( depth*16 );
 		

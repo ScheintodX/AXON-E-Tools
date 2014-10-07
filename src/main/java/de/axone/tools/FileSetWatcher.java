@@ -1,12 +1,10 @@
 package de.axone.tools;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.axone.tools.Str.Joiner;
 
 /**
  * Watches a set of Files for a change to any of them
@@ -26,7 +24,7 @@ public class FileSetWatcher implements Watcher {
 
 	private static final double TIMEOUT = 2000; //2 s
 
-	private File [] files;
+	private Set<File> files;
 
 	private double lastModifiedTime = -1;
 	private double lastCheckTime = -1;
@@ -40,7 +38,7 @@ public class FileSetWatcher implements Watcher {
 	 * @param files to watch
 	 * @param timeout which has to pass until a new check is done
 	 */
-	public FileSetWatcher( double timeout, File ... files ){
+	public FileSetWatcher( double timeout, Set<File> files ){
 
 		this.timeout = timeout;
 		this.files = files;
@@ -51,13 +49,13 @@ public class FileSetWatcher implements Watcher {
 	 *
 	 * @param files
 	 */
-	public FileSetWatcher( File ... files ){
+	public FileSetWatcher( Set<File> files ){
 
 		this( TIMEOUT, files );
 	}
 
 	@Override
-	public boolean hasChanged(){
+	public boolean haveChanged(){
 
 		boolean result = false;
 
@@ -100,7 +98,7 @@ public class FileSetWatcher implements Watcher {
 		return result;
 	}
 
-	public File[] getFiles(){
+	public Set<File> getFiles(){
 		return files;
 	}
 
@@ -108,38 +106,35 @@ public class FileSetWatcher implements Watcher {
 	public String toString() {
 
 		return
-			"FileSetWatcher for: " + Str.join( PATH_JOINER, files )+
+			"FileSetWatcher for: " + Str.join( (file,i) -> file.getAbsolutePath(), files )+
 			" timeout: " + timeout +
 			" Last modified: " + lastModifiedTime +
 			" Last check: + " + lastCheckTime;
 	}
 
-	/* STATIC METHODS for persistent Watchers */
-	private static HashMap<String, FileSetWatcher> staticWatchers = new HashMap<String, FileSetWatcher>();
-	public synchronized static Watcher staticWatcher( double timeout, File ... files ){
-
-		String key = Str.join( PATH_JOINER, files ) + "/" + timeout;
-
-		if( ! staticWatchers.containsKey( key ) ){
-			staticWatchers.put( key, new FileSetWatcher( timeout, files ) );
-		}
-		return staticWatchers.get( key );
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ( ( files == null ) ? 0 : files.hashCode() );
+		return result;
 	}
-	public static Watcher staticWatcher( File files ){
-		return staticWatcher( TIMEOUT, files );
+
+	@Override
+	public boolean equals( Object obj ) {
+		if( this == obj )
+			return true;
+		if( obj == null )
+			return false;
+		if( !( obj instanceof FileSetWatcher ) )
+			return false;
+		FileSetWatcher other = (FileSetWatcher) obj;
+		if( files == null ) {
+			if( other.files != null )
+				return false;
+		} else if( !files.equals( other.files ) )
+			return false;
+		return true;
 	}
-	
-	static final Joiner<File> PATH_JOINER = new Joiner<File>(){
 
-		@Override
-		public String getSeparator() {
-			return ";";
-		}
-
-		@Override
-		public String toString( File files, int index ) {
-			return files.getAbsolutePath();
-		}
-	};
-	
 }

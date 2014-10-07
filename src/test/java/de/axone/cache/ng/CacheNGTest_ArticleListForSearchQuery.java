@@ -66,13 +66,13 @@ public class CacheNGTest_ArticleListForSearchQuery {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
-				new AutomaticClientImpl<>( RN.TID_LARTICLE );
+				new AutomaticClientImpl<>( new CacheHashMap<>( RN.TID_LARTICLE ) );
 		
 		TestAccessor_ArticleForQuery forQuery =
 				new TestAccessor_ArticleForQuery( autoForTid, forTid );
 		
 		CacheNG.AutomaticClient<TestSearchQuery, List<TArticle>> autoForQuery =
-				new AutomaticClientImpl<>( RN.SQTID_LARTICLE );
+				new AutomaticClientImpl<>( new CacheHashMap<>( RN.SQTID_LARTICLE ) );
 		
 		TestSearchQuery_Tid q = new TestSearchQuery_Tid( T123 );
 		

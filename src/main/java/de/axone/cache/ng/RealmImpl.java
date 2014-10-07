@@ -21,6 +21,10 @@ public class RealmImpl<K,O> implements CacheNG.Realm<K,O>, Serializable {
 		return realm;
 	}
 	@Override
+	public String realm() {
+		return realm;
+	}
+	@Override
 	public String [] config() {
 		return new String[]{ realm };
 	}

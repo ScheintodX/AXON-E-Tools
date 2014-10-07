@@ -45,7 +45,7 @@ public class CacheNGTest_ArticleForId {
 				new TestAccessor_ArticleForAid();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				new AutomaticClientImpl<>( RN.AID_ARTICLE );
+				new AutomaticClientImpl<>( new CacheHashMap<>( RN.AID_ARTICLE ) );
 		
 		assertFalse( auto.isCached( A12345 ) );
 		

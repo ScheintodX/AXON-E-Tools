@@ -11,8 +11,10 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import de.axone.exception.Assert;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -389,6 +391,7 @@ public class SuperProperties {
 	}
 
 	public SuperProperties subset( String prefix ) {
+		Assert.notNull( prefix, "prefix" );
 		if( this.prefix == null ){
 			return new SuperProperties( prefix, this.backend, this.rootDir );
 		} else {
@@ -411,11 +414,11 @@ public class SuperProperties {
 				.append( "\n    Data: " );
 		;
 		
-		for( Object key : backend.keySet() ){
-			String keyS = (String) key;
-			if( keyS.startsWith( prefix ) ){
+		for( Map.Entry<Object,Object>entry : backend.entrySet() ){
+			String keyS = (String) entry.getKey();
+			if( prefix == null || keyS.startsWith( prefix ) ){
 				result	.append( "\n        " ).append( keyS )
-						.append( ": " ).append( backend.get( keyS ) );
+						.append( ": " ).append( entry.getValue() );
 			}
 		}
 		

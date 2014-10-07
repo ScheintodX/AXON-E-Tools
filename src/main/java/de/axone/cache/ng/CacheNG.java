@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 /**
  * Mögliche Cache-Arten nach Key
  * 
@@ -149,6 +151,11 @@ public abstract class CacheNG {
 		 */
 		public String[] config();
 		
+		/**
+		 * @return the basic realm without client
+		 */
+		public String realm();
+		
 	}
 	
 	
@@ -212,9 +219,8 @@ public abstract class CacheNG {
 		/**
 		 * Clear the complete cache
 		 * 
-		 * TODO: What does 'force' do?
-		 * 
-		 * @param force 
+		 * @param force set to <tt>true</tt> to invalidate immediately, circumventing
+		 *        any possible invalidation delay
 		 */
 		public void invalidateAll( boolean force );
 		
@@ -507,6 +513,11 @@ public abstract class CacheNG {
 		public void invalidateAllEvent( boolean force );
 	}
 	
+	public interface CacheRemoveListener {
+		
+		public void goingToRemove();
+	}
+	
 	/**
 	 * Connects two caches and translates invalidation events
 	 * 
@@ -557,10 +568,20 @@ public abstract class CacheNG {
 	 * @author flo
 	 */
 	public interface HasCacheKey {
+		
 		/**
-		 * @return an object which will be used as cache key. Note that this object must fullfill the contract from 'CacheKey'
+		 * Return an object which will be used as cache key.
+		 * Note that this object must fullfill the contract from 'CacheKey'
+		 * 
+		 * The return value is object because everything which could validly
+		 * be used as cache key can be returned here.
+		 * 
+		 * This is particularily useful for returning something like <tt>HashMap<String></tt>
+		 * which in turn will do the equals / hashcode calculation.
+		 * 
+		 * @return the object
 		 */
-		public Object cacheKey();
+		public @Nonnull Object cacheKey();
 	}
 	
 	/**
