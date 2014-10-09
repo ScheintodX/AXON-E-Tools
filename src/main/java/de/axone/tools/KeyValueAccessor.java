@@ -10,6 +10,10 @@ public interface KeyValueAccessor<K,V> extends KeyValueStore<K,V> {
 	@Override
 	public V access( K key );
 	
+	public default boolean has( K key ){
+		return access( key ) != null;
+	}
+	
 	public default V get( K key ){
 		return access( key );
 	}

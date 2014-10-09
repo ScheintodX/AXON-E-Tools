@@ -4,16 +4,16 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
-import de.axone.tools.AbstractStringAccessor;
 import de.axone.tools.S;
 import de.axone.tools.Str;
+import de.axone.tools.StringValueAccessor;
 
 /**
  * Helper class for accessing information stored in a request
  * 
  * @author flo
  */
-public class RequestUtil extends AbstractStringAccessor {
+public class RequestUtil implements StringValueAccessor {
 	
 	private HttpServletRequest request;
 	
@@ -22,7 +22,7 @@ public class RequestUtil extends AbstractStringAccessor {
 	}
 	
 	@Override
-	public String doGet( String value ) {
+	public String access( String value ) {
 		return request.getParameter( value );
 	}
 		
