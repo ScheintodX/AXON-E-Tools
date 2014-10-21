@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
+import de.axone.data.Charsets;
 import de.axone.data.Label;
 import de.axone.exception.Assert;
 import de.axone.tools.Str;
@@ -57,8 +58,6 @@ import de.axone.web.SuperURLBuilders.SuperURLBuilder_URI;
  */
 public final class SuperURL {
 	
-	private static final String UTF8 = "utf-8";
-
 	public enum Part {
 		Scheme, UserInfo, Host, Port, Path, Query, Fragment;
 		
@@ -344,7 +343,7 @@ public final class SuperURL {
 		if( value == null ) return null;
 		
 		try {
-			return URLDecoder.decode( value, UTF8 );
+			return URLDecoder.decode( value, Charsets.utf8 );
 		} catch( UnsupportedEncodingException e ) {
 			throw new IllegalArgumentException( "Undecodeable: '" + value + "'" );
 		}

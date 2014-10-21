@@ -7,6 +7,8 @@ import java.util.Map;
 import org.testng.annotations.Test;
 
 import de.axone.data.MapProxy.Mapping;
+import de.axone.data.tupple.PairMap;
+import de.axone.data.tupple.TrippleMap;
 
 @Test( groups="tools.pairkey" )
 public class TrippleMapTest {

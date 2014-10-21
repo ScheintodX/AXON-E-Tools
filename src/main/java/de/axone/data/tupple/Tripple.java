@@ -1,4 +1,4 @@
-package de.axone.data;
+package de.axone.data.tupple;
 
 public class Tripple<A, B, C> implements Comparable<Tripple<A, B, C>>{
 	 

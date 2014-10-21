@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import de.axone.data.Charsets;
+
 public class UrlParser {
 
 	private boolean startsWithSlash;
@@ -211,7 +213,7 @@ public class UrlParser {
 		if( contentType == null ) return null;
 		
 		if( contentType.matches( "text.*" ) ){
-				return "utf-8";
+				return Charsets.utf8;
 		}
 		return null;
 	}

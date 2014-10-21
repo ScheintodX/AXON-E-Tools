@@ -1,38 +1,21 @@
-package de.axone.data;
+package de.axone.data.weighted;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.stream.Collector;
 
-import de.axone.data.WeightedCollectionContained.Container;
+import de.axone.data.weighted.WeightedCollectionContained.Container;
 
 public class WeightedCollectionContained<T>
-extends WeightedCollectionAbstract<WeightedCollectionContained<T>, Container<T>>
+extends AbstractWeightedCollection<WeightedCollectionContained<T>, Container<T>>
 implements Serializable {
 	
-	public WeightedCollectionContained() {
-		super();
+	public WeightedCollectionContained(){
+		super( WeightedCollectionContained::new,
+				item -> item.weight,
+				(item, newWeight) -> new Container<T>( item.contained, newWeight )
+		);
 	}
 
-	public WeightedCollectionContained( Collection<Container<T>> items ) {
-		super( items );
-	}
-
-	@Override
-	protected double weight( Container<T> item ) {
-		return item.weight;
-	}
-
-	@Override
-	protected Container<T> clone( Container<T> item, double newWeight ) {
-		return new Container<T>( item.contained, newWeight );
-	}
-
-	@Override
-	protected WeightedCollectionContained<T> create() {
-		return new WeightedCollectionContained<>();
-	}
-	
 	public WeightedCollectionContained<T> add( T item, double weight ){
 		
 		return add( new Container<>( item, weight ) );

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.axone.data.Charsets;
 import de.axone.web.encoding.Encoder_Amp;
 import de.axone.web.encoding.Encoder_Html;
 
@@ -64,7 +65,7 @@ public abstract class Urlifier {
 		String result = urlifyPlain( plain );
 		
 		try {
-			result = java.net.URLEncoder.encode( result, "utf-8" );
+			result = java.net.URLEncoder.encode( result, Charsets.utf8 );
 		} catch( UnsupportedEncodingException e ) {
 			
 			log.error( "Cannot urlify: " + plain );
@@ -194,7 +195,7 @@ public abstract class Urlifier {
 		if( plain == null ) return null;
 		
 		try {
-			String result = java.net.URLEncoder.encode( plain, "utf-8" );
+			String result = java.net.URLEncoder.encode( plain, Charsets.utf8 );
 			return result;
 		} catch( UnsupportedEncodingException e ) {
 			
@@ -217,7 +218,7 @@ public abstract class Urlifier {
 		
 		String decoded = null;
 		try {
-			decoded = java.net.URLDecoder.decode( encoded, "utf-8" );
+			decoded = java.net.URLDecoder.decode( encoded, Charsets.utf8 );
 		} catch( UnsupportedEncodingException e ) {
 			e.printStackTrace();
 		}

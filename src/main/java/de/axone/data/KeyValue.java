@@ -1,5 +1,7 @@
 package de.axone.data;
 
+import de.axone.data.tupple.Pair;
+
 public class KeyValue<K,V> extends Pair<K,V> {
 
 	public KeyValue( K left, V right ) {

@@ -1,6 +1,8 @@
-package de.axone.data;
+package de.axone.data.tupple;
 
 import java.util.Map;
+
+import de.axone.data.MapProxy;
 
 
 public class PairMap<L,R,V> extends MapProxy<Pair<L,R>,V>{

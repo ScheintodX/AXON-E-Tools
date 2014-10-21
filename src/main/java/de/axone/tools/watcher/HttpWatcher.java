@@ -1,4 +1,4 @@
-package de.axone.tools;
+package de.axone.tools.watcher;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -9,6 +9,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.axone.tools.HttpUtil;
 import de.axone.tools.HttpUtil.HttpUtilResponse;
 import de.axone.web.SuperURL;
 
@@ -23,7 +24,7 @@ import de.axone.web.SuperURL;
  * 
  * This class is similar in use to FileWatcher
  * 
- * @see de.axone.tools.FileWatcher
+ * @see de.axone.tools.watcher.FileWatcher
  *
  * @author flo
  */

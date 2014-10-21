@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import de.axone.data.Charsets;
+import de.axone.data.Mime.MimeTypes;
 import de.axone.web.Method;
 import de.axone.web.SuperURL;
 
@@ -86,8 +88,8 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 	public void run( DATA data, Method method, Map<String,String> parameters,
 			SuperURL url, PrintWriter out, REQUEST req, HttpServletResponse resp ) throws Exception {
 		
-		resp.setContentType( "application/json" );
-		resp.setCharacterEncoding( "utf-8" );
+		resp.setCharacterEncoding( Charsets.utf8 );
+		resp.setContentType( MimeTypes.JSON.text() );
 
 		doRun( data, method, parameters, url, out, req, resp );
 	}

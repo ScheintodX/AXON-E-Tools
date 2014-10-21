@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.axone.data.Charsets;
+import de.axone.data.Mime.MimeTypes;
 import de.axone.exception.IllegalNamedArgumentException;
 import de.axone.web.Method;
 import de.axone.web.SuperURL;
@@ -132,8 +134,8 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
 	private void renderHelp( RestRequest req, HttpServletResponse resp, String message, boolean detailed )
 	throws Exception {
 
-		resp.setContentType( "text/html" );
-		resp.setCharacterEncoding( "utf-8" );
+		resp.setCharacterEncoding( Charsets.utf8 );
+		resp.setContentType( MimeTypes.HTML.text() );
 
 		try( PrintWriter out = resp.getWriter(); ){
 					

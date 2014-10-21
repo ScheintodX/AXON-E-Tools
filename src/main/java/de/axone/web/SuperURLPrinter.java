@@ -10,6 +10,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Set;
 
+import de.axone.data.Charsets;
 import de.axone.tools.A;
 import de.axone.web.SuperURL.Encode;
 import de.axone.web.SuperURL.FinalEncoding;
@@ -448,13 +449,11 @@ public abstract class SuperURLPrinter implements Serializable {
 		
 		private static final long serialVersionUID = 1L;
 	
-		private static final String UTF_8 = "utf-8";
-
 		@Override
 		protected String encode( String value ){
 			
 			try {
-				return URLEncoder.encode( value, UTF_8 );
+				return URLEncoder.encode( value, Charsets.utf8 );
 			} catch( UnsupportedEncodingException e ) {
 				throw new RuntimeException( "SNAFU encoding", e );
 			}

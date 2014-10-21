@@ -1,9 +1,9 @@
-package de.axone.data;
+package de.axone.data.weighted;
 
 import org.assertj.core.api.AbstractIterableAssert;
 import org.testng.annotations.Test;
 
-public class WeightedItemsTest {
+public class WeightedCollectionTest {
 	
 	private TestItem id1_10 = item( 1, 10.0 ),
 	                 id1_20 = item( 1, 20.0 ),
@@ -203,26 +203,12 @@ public class WeightedItemsTest {
 	}
 	
 	
-	private static class WeightedTestItems extends WeightedCollectionAbstract<WeightedTestItems, TestItem> {
+	private static class WeightedTestItems extends AbstractWeightedCollection<WeightedTestItems, TestItem> {
 
-		@Override
-		protected double weight( TestItem item ) {
-			
-			return item.weight;
+		public WeightedTestItems(){
+			super( WeightedTestItems::new, item -> item.weight, (item,newWeight) -> new TestItem( item.name, newWeight ) );
 		}
 
-		@Override
-		protected WeightedTestItems create() {
-			
-			return new WeightedTestItems();
-		}
-
-		@Override
-		protected TestItem clone( TestItem item, double newWeight ) {
-			
-			return new TestItem( item.name, newWeight );
-		}
-		
 	}
 	
 	private static final TestItem item( int name, double weight ){
@@ -278,7 +264,7 @@ public class WeightedItemsTest {
 	}
 	
 
-	public static class WeightedCollectionAsssert<T, W extends WeightedCollectionAbstract<W,T>>
+	public static class WeightedCollectionAsssert<T, W extends AbstractWeightedCollection<W,T>>
 	extends AbstractIterableAssert<WeightedCollectionAsssert<T,W>, W, T> {
 
 		protected WeightedCollectionAsssert( W actual ) {
@@ -304,7 +290,7 @@ public class WeightedItemsTest {
 			
 			for( T it : actual ){
 				
-				if( it.equals( item ) && actual.weight( it ) == actual.weight( item ) )
+				if( it.equals( item ) && actual.weighter().weight( it ) == actual.weighter().weight( item ) )
 						 return this;
 				
 			}
@@ -318,7 +304,7 @@ public class WeightedItemsTest {
 			
 			for( T it : actual ){
 				
-				if( it.equals( item ) && actual.weight( it ) == actual.weight( item ) )
+				if( it.equals( item ) && actual.weighter().weight( it ) == actual.weighter().weight( item ) )
 						failWithMessage( "<%s> contains <%s>", actual.asList(), item );
 				
 			}
@@ -328,10 +314,21 @@ public class WeightedItemsTest {
 		
 	}
 	
-	
-	public static <T, W extends WeightedCollectionAbstract<W,T>> WeightedCollectionAsssert<T,W> assertThat( W list ){
+	public static <T, W extends AbstractWeightedCollection<W,T>> WeightedCollectionAsssert<T,W> assertThat( W list ){
 		
 		return new WeightedCollectionAsssert<T,W>( list );
 	}
+	
+	/*
+	public static class WeightedStringsAssert<S extends WeightedString, L extends WeightedStrings<L,S>>
+	extends WeightedCollectionAsssert<S,L> {
+	}
+	
+	
+	public static <L extends WeightedStrings<L,S>, S extends WeightedString> WeightedCollectionAsssert<S,L> assertThat( L list ){
+		
+		return new WeightedStringsAssert<S,L>( list );
+	}
+	*/
 	
 }

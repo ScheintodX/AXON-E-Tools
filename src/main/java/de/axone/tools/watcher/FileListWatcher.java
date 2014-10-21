@@ -1,10 +1,12 @@
-package de.axone.tools;
+package de.axone.tools.watcher;
 
 import java.io.File;
-import java.util.Set;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.axone.tools.Str;
 
 /**
  * Watches a set of Files for a change to any of them
@@ -17,14 +19,14 @@ import org.slf4j.LoggerFactory;
  * 
  * @author flo
  */
-public class FileSetWatcher implements Watcher {
+public class FileListWatcher implements Watcher<List<File>> {
 
 	public static final Logger log =
-			LoggerFactory.getLogger( FileSetWatcher.class );
+			LoggerFactory.getLogger( FileListWatcher.class );
 
 	private static final double TIMEOUT = 2000; //2 s
 
-	private Set<File> files;
+	private List<File> files;
 
 	private double lastModifiedTime = -1;
 	private double lastCheckTime = -1;
@@ -38,7 +40,7 @@ public class FileSetWatcher implements Watcher {
 	 * @param files to watch
 	 * @param timeout which has to pass until a new check is done
 	 */
-	public FileSetWatcher( double timeout, Set<File> files ){
+	public FileListWatcher( double timeout, List<File> files ){
 
 		this.timeout = timeout;
 		this.files = files;
@@ -49,7 +51,7 @@ public class FileSetWatcher implements Watcher {
 	 *
 	 * @param files
 	 */
-	public FileSetWatcher( Set<File> files ){
+	public FileListWatcher( List<File> files ){
 
 		this( TIMEOUT, files );
 	}
@@ -98,7 +100,8 @@ public class FileSetWatcher implements Watcher {
 		return result;
 	}
 
-	public Set<File> getFiles(){
+	@Override
+	public List<File> getWatched(){
 		return files;
 	}
 
@@ -126,9 +129,9 @@ public class FileSetWatcher implements Watcher {
 			return true;
 		if( obj == null )
 			return false;
-		if( !( obj instanceof FileSetWatcher ) )
+		if( !( obj instanceof FileListWatcher ) )
 			return false;
-		FileSetWatcher other = (FileSetWatcher) obj;
+		FileListWatcher other = (FileListWatcher) obj;
 		if( files == null ) {
 			if( other.files != null )
 				return false;

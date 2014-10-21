@@ -9,6 +9,8 @@ import java.util.NoSuchElementException;
 
 import org.testng.annotations.Test;
 
+import de.axone.data.collections.SingleImmutableSet;
+
 @Test( groups="tools.singleimmutableset" )
 public class SingleImmutableSetTest {
 

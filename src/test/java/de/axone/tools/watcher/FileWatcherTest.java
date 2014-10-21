@@ -1,4 +1,4 @@
-package de.axone.tools;
+package de.axone.tools.watcher;
 
 import static org.testng.Assert.*;
 
@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import org.testng.annotations.Test;
+
+import de.axone.tools.watcher.FileWatcher;
 
 @Test( groups="tools.filewatcher" )
 public class FileWatcherTest {

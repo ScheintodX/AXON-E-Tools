@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.axone.data.Tripple;
+import de.axone.data.tupple.Tripple;
 import de.axone.exception.Assert;
 import de.axone.tools.S;
 

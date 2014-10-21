@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.axone.data.Charsets;
+import de.axone.data.Mime.MimeTypes;
 import de.axone.web.SuperURL;
 import de.axone.web.SuperURLBuilders;
 
@@ -34,8 +36,8 @@ public abstract class AbstractRestServlet<DATA, REQUEST extends RestRequest> ext
 			log.trace( "Request for: {}", u.toDebug() );
 		}
 		
-		resp.setCharacterEncoding( "utf-8" );
-		resp.setContentType( "application/json" );
+		resp.setCharacterEncoding( Charsets.utf8 );
+		resp.setContentType( MimeTypes.JSON.text() );
 		
 		REQUEST request = makeRequest( req, resp );
 		

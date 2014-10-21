@@ -1,4 +1,4 @@
-package de.axone.tools;
+package de.axone.tools.watcher;
 
 import java.io.Serializable;
 

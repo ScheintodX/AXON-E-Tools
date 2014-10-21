@@ -1,6 +1,5 @@
-package de.axone.tools;
+package de.axone.tools.watcher;
 
-import java.io.File;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import de.axone.cache.ng.CacheNG.SingleValueAccessor;
@@ -13,21 +12,24 @@ import de.axone.cache.ng.CacheNG.SingleValueAccessor;
  * @author flo
  *
  * @param <T> Data-Type
+ * @param <W> Watched Type as provided by Http/File Watcher
  */
-public class AutomaticFileWatcher<T> {
+public class AutomaticWatcher<W,T> {
 
-	final FileDataWatcher<T> backend;
+	final Watcher<W> backend;
+	final DataStore<T> store;
 	
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-	public AutomaticFileWatcher( FileDataWatcher<T> backend ){
+	public AutomaticWatcher( Watcher<W> backend ){
 		assert backend != null;
 		this.backend = backend;
+		this.store = new DataStoreImpl<>();
 	}
+	
+	public T getData( SingleValueAccessor<W,T> processor ) {
 
-	public T getData( SingleValueAccessor<File,T> accessor ) {
-
-		assert accessor != null;
+		assert processor != null;
 
 		// First try to get from cache
 		boolean hasChanged;
@@ -40,7 +42,7 @@ public class AutomaticFileWatcher<T> {
 		T result;
 		if( ! hasChanged ){
 
-			result = backend.getData();
+			result = store.getData();
 			
 		} else {
 
@@ -48,9 +50,9 @@ public class AutomaticFileWatcher<T> {
 				lock.writeLock().lock();
 				
 				// Use Accessor to fetch
-				result = accessor.fetch( backend.getFile() );
+				result = processor.fetch( backend.getWatched() );
 
-				backend.setData( result );
+				store.setData( result );
 				
 			} finally {
 

@@ -1,4 +1,4 @@
-package de.axone.tools;
+package de.axone.tools.watcher;
 
 import static org.testng.Assert.*;
 
@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 
 import org.testng.annotations.Test;
 
@@ -42,7 +43,7 @@ public class FileSetWatcherTest {
 		
 		sleep( 1100 ); // Wait for filesystems 1s
 		
-		FileSetWatcher watcher = new FileSetWatcher( 100, Mapper.hashSet( tmp, tmp2 ) );
+		FileListWatcher watcher = new FileListWatcher( 100, Arrays.asList( tmp, tmp2 ) );
 
 		assertTrue( watcher.haveChanged() );
 		assertFalse( watcher.haveChanged() );

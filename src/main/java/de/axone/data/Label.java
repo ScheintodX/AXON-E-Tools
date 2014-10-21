@@ -6,7 +6,7 @@ package de.axone.data;
  * This is used in class which support Label as parameters to use {@link Label#label()}
  * instead of {@link Object#toString()}
  * 
- * E.g. SuperURL uses this for creation of links ot DataHolder uses this
+ * E.g. SuperURL uses this for creation of links or DataHolder uses this
  * for ease of use.
  * 
  * @author flo

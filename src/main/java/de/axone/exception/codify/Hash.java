@@ -1,12 +1,9 @@
 package de.axone.exception.codify;
 
-import java.nio.charset.Charset;
-
+import de.axone.data.Charsets;
 import de.axone.external.SipHash_2_4;
 
 public class Hash {
-	
-	private static final Charset UTF8 = Charset.forName( "utf-8" );
 	
 	//private static final long k0=0x1234567890abcdefL;
 	//private static final long k1=0xfedcba0987654321L;
@@ -49,7 +46,7 @@ public class Hash {
 		
 		if( data == null ) return 0;
 		//return (int)(SipHashInline.hash24( k0, k1, data.getBytes( UTF8 ) )&0xffffffff);
-		return (int) hash.hash( k, data.getBytes( UTF8 ) );
+		return (int) hash.hash( k, data.getBytes( Charsets.UTF8 ) );
 	}
 	/*
 	private static int hash( Object data ){

@@ -12,6 +12,7 @@ import java.net.URLEncoder;
 
 import org.testng.annotations.Test;
 
+import de.axone.data.Charsets;
 import de.axone.tools.E;
 import de.axone.web.SuperURL.Encode;
 import de.axone.web.SuperURL.FinalEncoding;
@@ -20,15 +21,13 @@ import de.axone.web.SuperURL.Query.QueryPart;
 @Test( groups="web.superurl" )
 public class SuperURLTest {
 	
-	private static final String UTF8 = "utf-8";
-	
 	private static final String AE, UE, EQ, AMP;
 	static {
 		try {
-			AE = URLEncoder.encode( "Ä", UTF8 );
-			UE = URLEncoder.encode( "Ü", UTF8 );
-			EQ = URLEncoder.encode( "=", UTF8 );
-			AMP = URLEncoder.encode( "&", UTF8 );
+			AE = URLEncoder.encode( "Ä", Charsets.utf8 );
+			UE = URLEncoder.encode( "Ü", Charsets.utf8 );
+			EQ = URLEncoder.encode( "=", Charsets.utf8 );
+			AMP = URLEncoder.encode( "&", Charsets.utf8 );
 		} catch( UnsupportedEncodingException e ) {
 			throw new RuntimeException( "Cannot encode", e );
 		}
@@ -50,7 +49,7 @@ public class SuperURLTest {
 	}
 	
 	private String ec8( String value ) throws Exception {
-		return URLEncoder.encode( value, "utf8" );
+		return URLEncoder.encode( value, Charsets.utf8 );
 	}
 	
 	private String ec1( String value ) throws Exception {
@@ -106,7 +105,7 @@ public class SuperURLTest {
 			org.testng.Assert.fail( "Should throw exception" );
 		} catch( URISyntaxException e ){}
 		
-		assertEquals( new URI( URLEncoder.encode( "[foo]", "utf-8" ) ).getPath(), "[foo]" );
+		assertEquals( new URI( URLEncoder.encode( "[foo]", Charsets.utf8 ) ).getPath(), "[foo]" );
 		
 	}
 	

@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.nio.charset.Charset;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+
+import de.axone.data.Charsets;
 
 public class FeatureHttpServletResponseWrapper extends HttpServletResponseWrapper {
 	
@@ -27,7 +28,7 @@ public class FeatureHttpServletResponseWrapper extends HttpServletResponseWrappe
 		if( useGzip ){
 			gOut = new GZIPOutputStream( resp.getOutputStream() );
     		out = new ServletOutputStreamImpl( gOut );
-    		writer = new PrintWriter( new OutputStreamWriter( gOut, Charset.forName( "UTF-8" ) ) );
+    		writer = new PrintWriter( new OutputStreamWriter( gOut, Charsets.UTF8 ) );
 			setHeader( "Content-Encoding", "gzip" );
 		}
 	}

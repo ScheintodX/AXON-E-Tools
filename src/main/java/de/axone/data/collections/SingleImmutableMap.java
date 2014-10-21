@@ -1,4 +1,4 @@
-package de.axone.data;
+package de.axone.data.collections;
 
 import java.util.Collection;
 import java.util.Map;

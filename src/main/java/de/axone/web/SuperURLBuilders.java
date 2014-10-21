@@ -71,8 +71,6 @@ public class SuperURLBuilders {
 		protected Set<Part> using = EnumSet.allOf( Part.class );
 		protected S myself;
 		
-		//private Charset charset = Charset.forName( "utf8" );
-		
 		@SuppressWarnings( "unchecked" )
 		SuperURLBuilder() {
 			myself = (S)this;

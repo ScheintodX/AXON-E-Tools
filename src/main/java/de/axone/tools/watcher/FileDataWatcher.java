@@ -1,8 +1,8 @@
-package de.axone.tools;
+package de.axone.tools.watcher;
 
 import java.io.File;
 
-public class FileDataWatcher<T> extends FileWatcher {
+public class FileDataWatcher<T> extends FileWatcher implements DataStore<T> {
 	
 	private static final long serialVersionUID = 2L;
 	
@@ -16,8 +16,10 @@ public class FileDataWatcher<T> extends FileWatcher {
 		this.data = data;
 	}
 	
+	@Override
 	public T getData(){ return data; }
 	
+	@Override
 	public void setData( T data ){ this.data = data; }
 
 }

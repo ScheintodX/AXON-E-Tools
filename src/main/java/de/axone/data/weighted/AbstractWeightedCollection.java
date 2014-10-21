@@ -1,4 +1,4 @@
-package de.axone.data;
+package de.axone.data.weighted;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
-public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbstract<W, T>, T>
+public abstract class AbstractWeightedCollection<W extends WeightedCollection<W, T>, T>
 		implements WeightedCollection<W, T> {
 	
 	private final W self;
@@ -30,24 +30,37 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 	private static final int CONSTANT_SEED =
 			(new Random()).nextInt();
 	
-	private final ItemCollector<T,W> collector
-			= new ItemCollector<>( () -> create() );
+	private final Supplier<W> supplier;
+	private final Weighter<T> weighter;
+	private final Cloner<T> cloner;
+	private final Merger<T> merger;
+	private final ItemCollector<T,W> collector;
 	
 	@SuppressWarnings( "unchecked" )
-	public WeightedCollectionAbstract(){
-		self = (W) this;
-	}
-	public WeightedCollectionAbstract( Collection<T> items ){
-		this();
-		addAll( items );
+	public AbstractWeightedCollection( Supplier<W> supplier, Weighter<T> weighter, Cloner<T> cloner, Merger<T> merger ){
+		this.self = (W) this;
+		this.supplier = supplier;
+		this.weighter = weighter;
+		this.cloner = cloner;
+		this.collector = new ItemCollector<>( supplier );
+		this.merger = merger;
+	
 	}
 	
+	public AbstractWeightedCollection( Supplier<W> supplier, Weighter<T> weighter, Cloner<T> cloner ){
+		
+		this( supplier, weighter, cloner,
+			(t1,t2) -> cloner.clone( t1, weighter.weight( t1 ) + weighter.weight( t2 ) ) );
+	}
+	
+	/*
 	protected abstract double weight( T item );
 	protected abstract T clone( T item, double newWeight );
 	protected abstract W create();
+	*/
 	
-	public Supplier<W> supplier(){
-		return () -> create();
+	protected Supplier<W> supplier(){
+		return supplier;
 	}
 	
 	public Collector<T,W,W> collector(){
@@ -55,24 +68,18 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 	}
 	
 	public Weighter<T> weighter(){
-		return this::weight;
+		return weighter;
 	}
 	
-	protected T merge( T t1, T t2 ) {
-		
-		return clone( t1, weight( t1 ) + weight( t2 ) );
+	public Cloner<T> cloner(){
+		return cloner;
+	}
+	
+	public Merger<T> merger(){
+		return merger;
 	}
 	
 	@Override
-	public W copy(){
-		
-		W result = create();
-		
-		result.addAll( map.keySet() );
-		
-		return result;
-	}
-
 	public W add( T item ) {
 		
 		if( item == null ) return self;
@@ -83,7 +90,7 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 			
 			map.remove( old );
 			
-			T merged = merge( old, item );
+			T merged = merger.merge( old, item );
 			
 			map.put( merged, merged );
 			
@@ -95,6 +102,15 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 		return self;
 	}
 	
+	@Override
+	public W copy(){
+		
+		W result = supplier.get();
+		
+		result.addAll( map.keySet() );
+		
+		return result;
+	}
 	
 	@SuppressWarnings( "unchecked" )
 	public W addAll( T ... items ) {
@@ -103,46 +119,28 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 		return self;
 	}
 	
+	@Override
 	public W addAll( Collection<? extends T> items ){
 		if( items == null || ! items.iterator().hasNext() ) return self;
 		for( T item : items ) add( item );
 		return self;
 	}
 	
+	@Override
 	public W addAll( W items ){
 		if( items == null || ! items.iterator().hasNext() ) return self;
 		for( T item : items ) add( item );
 		return self;
 	}
 	
-	public W remove( Object item ){
-		if( item == null ) return self;
-		map.remove( item );
-		return self;
-	}
-	
-	public W removeAll( Collection<?> items ) {
-		if( items == null || ! items.iterator().hasNext() ) return self;
-		for( Object item : items ) map.remove( item );
-		return self;
-	}
-	
+	@Override
 	public W removeAll( W items ) {
 		if( items == null || ! items.iterator().hasNext() ) return self;
 		for( Object item : items ) map.remove( item );
 		return self;
 	}
 	
-	public W retainAll( Collection<?> items ) {
-		for( Iterator<T> it = iterator(); it.hasNext(); ){
-			T item = it.next();
-			if( ! items.contains( item ) ){
-				it.remove();
-			}
-		}
-		return self;
-	}
-	
+	@Override
 	public W retainAll( W items ) {
 		for( Iterator<T> it = iterator(); it.hasNext(); ){
 			T item = it.next();
@@ -151,14 +149,17 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 		return self;
 	}
 
+	@Override
 	public int size() {
 		return map.size();
 	}
 	
+	@Override
 	public boolean contains( Object item ) {
 		return map.containsKey( item );
 	}
 	
+	@Override
 	public Stream<T> stream(){
 		return map.keySet().stream();
 	}
@@ -167,7 +168,7 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 	public double maxWeight(){
 		
 		return stream()
-				.mapToDouble( this::weight )
+				.mapToDouble( weighter::weight )
 				.max()
 				.getAsDouble()
 				;
@@ -177,7 +178,7 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 	public double weight(){ 
 		
 		return stream()
-				.mapToDouble( this::weight )
+				.mapToDouble( weighter::weight )
 				.sum()
 				;
 	}
@@ -186,7 +187,7 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 	public double avgWeight(){ 
 		
 		return stream()
-				.mapToDouble( this::weight )
+				.mapToDouble( weighter::weight )
 				.average()
 				.getAsDouble()
 				;
@@ -203,10 +204,10 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 		
 		if( this == obj ) return true;
 		if( obj == null ) return false;
-		if( !( obj instanceof WeightedCollectionAbstract ) ) return false;
+		if( !( obj instanceof AbstractWeightedCollection ) ) return false;
 		
 		@SuppressWarnings( "rawtypes" )
-		WeightedCollectionAbstract other = (WeightedCollectionAbstract) obj;
+		AbstractWeightedCollection other = (AbstractWeightedCollection) obj;
 		
 		return map.equals( other.map );
 	}
@@ -219,6 +220,13 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 	@Override
 	public List<T> asList() {
 		return new ArrayList<T>( map.keySet() );
+	}
+	
+	@Override
+	public List<T> sorted() {
+		List<T> result = asList();
+		Collections.sort( result, new WeightComparator<>( weighter ) );
+		return result;
 	}
 	
 	@Override
@@ -240,6 +248,17 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 		return map.keySet();
 	}
 	
+	/*
+	public static <T> Stream<T> best( Stream<T> stream, int maxAmount, Predicate<T> filter ) {
+		
+		return stream
+				.sorted( new WeightComparator( this::weight ) )
+				.filter( filter )
+				.limit( maxAmount )
+				;
+	}
+	*/
+	
 	@Override
 	public W filter( Predicate<T> filter ) {
 		
@@ -257,10 +276,10 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 		
 		if( size() == 0 ) return self;
 		
-		if( maxAmount == 0 ) return create();
+		if( maxAmount == 0 ) return supplier.get();
 		
 		return stream()
-				.sorted( new WeightComparator() )
+				.sorted( new WeightComparator<>( weighter::weight ) )
 				.filter( filter )
 				.limit( maxAmount )
 				.collect( collector() )
@@ -273,10 +292,10 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 		
 		if( size() == 0 ) return self;
 		
-		if( maxAmount == 0 ) return create();
+		if( maxAmount == 0 ) return supplier.get();
 		
 		return stream()
-				.sorted( new WeightComparator() )
+				.sorted( new WeightComparator<>( weighter::weight ) )
 				.limit( maxAmount )
 				.collect( collector() )
 				;
@@ -291,7 +310,7 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 		double max = maxWeight();
 		
 		return stream()
-				.map( (item) -> clone( item, weight( item ) / max ) )
+				.map( (item) -> cloner.clone( item, weighter.weight( item ) / max ) )
 				.collect( collector() )
 				;
 						
@@ -304,12 +323,12 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 	 * @param b Second list to combine
 	 * @return A ∪ B
 	 */
-	public static <T, W extends WeightedCollectionAbstract<W,T>> W join( W a, W b ){
+	public static <T, W extends AbstractWeightedCollection<W,T>> W join( W a, W b ){
 		
 		if( a == null ) return b;
 		if( b == null ) return a;
 		
-		W result = a.create();
+		W result = a.supplier().get();
 		
 		result.addAll( a );
 		result.addAll( b );
@@ -324,12 +343,12 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 	 * @param b Second list to combine
 	 * @return A ∪ B
 	 */
-	public static <T, W extends WeightedCollectionAbstract<W,T>> W override( W a, W b ){
+	public static <T, W extends AbstractWeightedCollection<W,T>> W override( W a, W b ){
 		
 		if( a == null ) return b;
 		if( b == null ) return a;
 		
-		W result = a.create();
+		W result = a.supplier().get();
 		
 		result.addAll( a );
 		result.removeAll( b );
@@ -347,12 +366,12 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 	 * @param b Second list to combine
 	 * @return A ∩ B
 	 */
-	public static <T, W extends WeightedCollectionAbstract<W,T>> W intersection( W a, W b ){
+	public static <T, W extends AbstractWeightedCollection<W,T>> W intersection( W a, W b ){
 		
 		if( a == null ) return null;
 		if( b == null ) return null;
 		
-		W result = a.create();
+		W result = a.supplier().get();
 		                           
 		result.addAll( a );
 		result.retainAll( b );
@@ -369,12 +388,12 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 	 * @param b Second list to combine
 	 * @return A \ B
 	 */
-	public static <T, W extends WeightedCollectionAbstract<W,T>> W  complement( W a, W b ){
+	public static <T, W extends AbstractWeightedCollection<W,T>> W  complement( W a, W b ){
 		
 		if( a == null ) return null;
 		if( b == null ) return a;
 		
-		W result = a.create();
+		W result = a.supplier().get();
 		
 		result.addAll( a );
 		result.removeAll( b );
@@ -382,18 +401,24 @@ public abstract class WeightedCollectionAbstract<W extends WeightedCollectionAbs
 		return result;
 	}
 	
-	public class WeightComparator 
+	public static class WeightComparator<T>
 			implements Comparator<T>, Serializable {
+		
+		private final Weighter<T> weighter;
+		
+		public WeightComparator( Weighter<T> weighter ){
+			this.weighter = weighter;
+		}
 
 		@Override
 		public int compare( T o1, T o2 ) {
-			double diff = weight( o2 ) - weight( o1 );
+			double diff = weighter.weight( o2 ) - weighter.weight( o1 );
 			return (diff > 0) ? 1 : ((diff < 0) ? -1 : 0);
 		}
 		
 	}
 
-	public static class ItemCollector<T,W extends WeightedCollectionAbstract<W,T>>
+	public static class ItemCollector<T,W extends WeightedCollection<W,T>>
 	implements Collector<T, W, W>, Serializable {
 		
 		private final Supplier<W> supplier;

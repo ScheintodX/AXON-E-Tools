@@ -2,7 +2,7 @@ package de.axone.tools;
 
 import org.testng.annotations.Test;
 
-import de.axone.data.Pair;
+import de.axone.data.tupple.Pair;
 
 @Test( groups="tools.pairs" )
 public class PairTest {

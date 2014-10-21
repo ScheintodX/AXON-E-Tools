@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import de.axone.data.Charsets;
+
 public class Encodings {
 	
 	public static boolean isWrongEncodedUtf8( String string ){
@@ -43,7 +45,7 @@ public class Encodings {
 			}
 			
 			ByteArrayInputStream bIn = new ByteArrayInputStream( buffer );
-			Reader rIn = new InputStreamReader( bIn, "utf-8" );
+			Reader rIn = new InputStreamReader( bIn, Charsets.UTF8 );
 			
 			char [] cBuf = new char[ string.length() ];
 			int l = rIn.read( cBuf );

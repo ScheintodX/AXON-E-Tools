@@ -32,10 +32,11 @@ import de.axone.cache.ng.CacheNG;
 import de.axone.cache.ng.CacheNG.Cache;
 import de.axone.cache.ng.CacheNG.Realm;
 import de.axone.cache.ng.RealmImpl;
+import de.axone.data.Charsets;
 import de.axone.tools.EasyParser;
-import de.axone.tools.FileWatcher;
 import de.axone.tools.Str;
 import de.axone.tools.UrlParser;
+import de.axone.tools.watcher.FileWatcher;
 import de.axone.web.CssColorRotator;
 import de.axone.web.Header;
 import de.axone.web.ImgColorRotator;
@@ -123,7 +124,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 			boolean doYui = !EasyParser.isNo( pYui );
 			
 			String pNc = request.getParameter( P_NO_CACHE );
-			boolean doNotCache = pNc != null;
+			boolean doNotCache = pNc != null && pNc.length() == 0;
 
 			HttpDataHolder httpData = null;
 			
@@ -252,7 +253,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 	    					
 	    					if( ( isCss || isJs ) && doYui ){
 	    						
-	    						String dataAsString = new String( plainData, "utf-8" );
+	    						String dataAsString = new String( plainData, Charsets.utf8 );
 	    						
 	    						if( isCss && rotCss != null ){
 	    							
@@ -412,7 +413,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 				e.printStackTrace( o2 );
 			} catch( IllegalStateException ise ){
 				ServletOutputStream sout = resp.getOutputStream();
-				try ( PrintStream otherOut = new PrintStream( sout, true, "utf-8" ); ){
+				try ( PrintStream otherOut = new PrintStream( sout, true, Charsets.utf8 ); ){
 					e.printStackTrace( otherOut );
 				}
 			}

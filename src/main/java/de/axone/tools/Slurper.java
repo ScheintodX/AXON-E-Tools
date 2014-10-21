@@ -11,7 +11,10 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 import java.nio.file.StandardOpenOption;
+
+import de.axone.data.Charsets;
 
 /**
  * Slurps data from inputs until all data is read.
@@ -40,12 +43,12 @@ public class Slurper {
 	//private static final byte [] EMPTY_ARRAY = new byte[]{};
 	private static final ByteBuffer EMPTY_BUFFER = ByteBuffer.allocate(0);
 	
-	private static final String DEFAULT_CHARSET = "utf8";
+	private static final Charset DEFAULT_CHARSET = Charsets.UTF8;
 	
 	public static String slurpString( File in ) throws IOException {
 		return slurpString( in, DEFAULT_CHARSET );
 	}
-	public static String slurpString( File in, String charset ) throws IOException {
+	public static String slurpString( File in, Charset charset ) throws IOException {
 		try( FileInputStream fin = new FileInputStream( in ) ){
 			return slurpString( fin, charset );
 		}
@@ -60,13 +63,13 @@ public class Slurper {
 		return slurpString( in, DEFAULT_CHARSET, startsize, extendsize );
 	}
 	
-	public static String slurpString( InputStream in, String charsetName ) throws IOException {
+	public static String slurpString( InputStream in, Charset charsetName ) throws IOException {
 		return new String( slurp( in ), charsetName );
 	}
-	public static String slurpString( InputStream in, String charsetName, int startsize ) throws IOException {
+	public static String slurpString( InputStream in, Charset charsetName, int startsize ) throws IOException {
 		return new String( slurp( in, startsize ), charsetName );
 	}
-	public static String slurpString( InputStream in, String charsetName, int startsize, int extendsize ) throws IOException {
+	public static String slurpString( InputStream in, Charset charsetName, int startsize, int extendsize ) throws IOException {
 		return new String( slurp( in, startsize, extendsize ), charsetName );
 	}
 	

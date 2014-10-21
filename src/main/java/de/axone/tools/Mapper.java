@@ -1,5 +1,6 @@
 package de.axone.tools;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,11 +16,11 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import de.axone.data.DoubleImmutableSet;
-import de.axone.data.Pair;
-import de.axone.data.SingleImmutableList;
-import de.axone.data.SingleImmutableMap;
-import de.axone.data.SingleImmutableSet;
+import de.axone.data.collections.DoubleImmutableSet;
+import de.axone.data.collections.SingleImmutableList;
+import de.axone.data.collections.SingleImmutableMap;
+import de.axone.data.collections.SingleImmutableSet;
+import de.axone.data.tupple.Pair;
 import de.axone.exception.Assert;
 
 public abstract class Mapper {
@@ -380,6 +381,16 @@ public abstract class Mapper {
 		if( items instanceof Collection ) return new ArrayList<>( (Collection<T>) items );
 		ArrayList<T> result = new ArrayList<>();
 		for( T t : items ) result.add( t );
+		return result;
+	}
+
+	public static <T> T[] asArray( Class<T> clazz, Collection<T> aids ) {
+		
+		@SuppressWarnings( "unchecked" )
+		T [] result = (T[]) Array.newInstance( clazz, aids.size() );
+		
+		result = aids.toArray( result );
+		
 		return result;
 	}
 }

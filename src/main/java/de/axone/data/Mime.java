@@ -99,9 +99,14 @@ public class Mime {
 		
 		// code
 		JAVASCRIPT( MG.application, "javascript", "js" ),
+		JSON( MG.application, "json" ),
+		XML( MG.application, "xml" ),
 		
 		// binary
 		BIN( MG.application, "octect-stream" ),
+		
+		// X
+		GZIP( MG.application, "x-gzip" )
 		;
 		
 		
@@ -130,15 +135,18 @@ public class Mime {
 		}
 		
 		@Override
-		public String toString(){ return getGroup() + "/" + getType(); }
-		
-		@Override
 		public String getGroup() { return group.name(); }
 		@Override
 		public String getType() { return type; }
 		@Override
 		@JsonIgnore
 		public String[] getExtensions() { return ext; }
+		
+		public String text(){ return getGroup() + "/" + getType(); }
+		
+		@Override
+		public String toString(){ return text(); }
+		
 	}
 	
 	public static class MimeTypeImpl implements MimeType {

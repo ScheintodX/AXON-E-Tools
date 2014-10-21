@@ -1,4 +1,4 @@
-package de.axone.tools;
+package de.axone.tools.watcher;
 
 import java.io.File;
 import java.io.Serializable;
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author flo
  */
-public class FileWatcher implements Watcher, Serializable {
+public class FileWatcher implements Watcher<File>, Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -93,7 +93,8 @@ public class FileWatcher implements Watcher, Serializable {
 		return result;
 	}
 
-	public File getFile(){
+	@Override
+	public File getWatched(){
 		return file;
 	}
 

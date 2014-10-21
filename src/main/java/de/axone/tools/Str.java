@@ -2,10 +2,18 @@ package de.axone.tools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Stream;
 
 import de.axone.refactor.NotTested;
 
@@ -41,11 +49,17 @@ public class Str {
 	public static <T> String join( String joinWith, Iterable<T> objects ){
 		return joinB( joinWith, objects ).toString();
 	}
+	public static <T> String join( String joinWith, Stream<T> objects ){
+		return joinB( joinWith, objects ).toString();
+	}
 	@SafeVarargs
 	public static <T> String joinIgnoreEmpty( String joinWith, T ... objects ){
 		return joinIgnoreEmptyB( joinWith, Arrays.asList( objects ) ).toString();
 	}
 	public static <T> String joinIgnoreEmpty( String joinWith, Iterable<T> objects ){
+		return joinIgnoreEmptyB( joinWith, objects ).toString();
+	}
+	public static <T> String joinIgnoreEmpty( String joinWith, Stream<T> objects ){
 		return joinIgnoreEmptyB( joinWith, objects ).toString();
 	}
 	@SafeVarargs
@@ -55,6 +69,9 @@ public class Str {
 	public static <T, U extends T> String join( Joiner<T> joiner, Iterable<U> objects ){
 		return joinB( joiner, objects ).toString();
 	}
+	public static <T, U extends T> String join( Joiner<T> joiner, Stream<U> objects ){
+		return joinB( joiner, objects ).toString();
+	}
 	@SafeVarargs
 	public static <T, U extends T> String joinIgnoreEmpty( Joiner<T> joiner, U ... objects ){
 		return joinIgnoreEmptyB( joiner, Arrays.asList( objects ) ).toString();
@@ -62,12 +79,21 @@ public class Str {
 	public static <T, U extends T> String joinIgnoreEmpty( Joiner<T> joiner, Iterable<U> objects ){
 		return joinIgnoreEmptyB( joiner, objects ).toString();
 	}
+	public static <T, U extends T> String joinIgnoreEmpty( Joiner<T> joiner, Stream<U> objects ){
+		return joinIgnoreEmptyB( joiner, objects ).toString();
+	}
 	
 	// joinB 
 	public static <T> StringBuilder joinB( String joinWith, Iterable<T> objects ){
 		return joinBB( new StringBuilder(), joinWith, false, objects );
 	}
+	public static <T> StringBuilder joinB( String joinWith, Stream<T> objects ){
+		return joinBB( new StringBuilder(), joinWith, false, objects );
+	}
 	public static <T, U extends T> StringBuilder joinB( Joiner<T> joiner, Iterable<U> objects ){
+		return joinBB( new StringBuilder(), joiner, false, objects );
+	}
+	public static <T, U extends T> StringBuilder joinB( Joiner<T> joiner, Stream<U> objects ){
 		return joinBB( new StringBuilder(), joiner, false, objects );
 	}
 	public static <M,N> StringBuilder joinB( MapJoiner<M,N> joiner, Map<M,N> objects ){
@@ -76,7 +102,13 @@ public class Str {
 	public static <T, U extends T> StringBuilder joinIgnoreEmptyB( String joinWith, Iterable<U> objects ){
 		return joinBB( new StringBuilder(), joinWith, true, objects );
 	}
+	public static <T, U extends T> StringBuilder joinIgnoreEmptyB( String joinWith, Stream<U> objects ){
+		return joinBB( new StringBuilder(), joinWith, true, objects );
+	}
 	public static <T, U extends T> StringBuilder joinIgnoreEmptyB( Joiner<T> joiner, Iterable<U> objects ){
+		return joinBB( new StringBuilder(), joiner, true, objects );
+	}
+	public static <T, U extends T> StringBuilder joinIgnoreEmptyB( Joiner<T> joiner, Stream<U> objects ){
 		return joinBB( new StringBuilder(), joiner, true, objects );
 	}
 	public static <M,N> StringBuilder joinIgnoreEmptyB( MapJoiner<M,N> joiner, Map<M,N> objects ){
@@ -89,6 +121,9 @@ public class Str {
 		return joinBB( result, new SimpleJoiner<T>( joinWith ), ignoreEmpty, Arrays.asList( objects ) );
 	}
 	public static <T, U extends T> StringBuilder joinBB( StringBuilder result, String joinWith, boolean ignoreEmpty, Iterable<U> objects ){
+		return joinBB( result, new SimpleJoiner<T>( joinWith ), ignoreEmpty, objects );
+	}
+	public static <T, U extends T> StringBuilder joinBB( StringBuilder result, String joinWith, boolean ignoreEmpty, Stream<U> objects ){
 		return joinBB( result, new SimpleJoiner<T>( joinWith ), ignoreEmpty, objects );
 	}
 	public static <T, U extends T> StringBuilder joinBB( StringBuilder result, Joiner<T> joiner, boolean ignoreEmpty, Iterable<U> objects ){
@@ -106,7 +141,48 @@ public class Str {
 		}
 		return result;
 	}
+	
+	public static <T, U extends T> StringBuilder joinBB( StringBuilder result, Joiner<T> joiner, boolean ignoreEmpty, Stream<U> objects ){
+		
+		return result.append( objects
+				.collect( new StringCollector<T>( joiner ) )
+				) ;
+	}
+	
+	private static class StringCollector<T> implements Collector<T,StringJoiner,String>{
+		
+		private final Joiner<T> joiner;
+		
+		StringCollector( Joiner<T> joiner ){
+			this.joiner = joiner;
+		}
 
+		@Override
+		public Supplier<StringJoiner> supplier() {
+			return () -> new StringJoiner( joiner.getSeparator(), "", "" );
+		}
+
+		@Override
+		public BiConsumer<StringJoiner, T> accumulator() {
+			return (sj, item) -> sj.add( joiner.toString( item, 0 ) ); //<- We can't use indexes here
+		}
+
+		@Override
+		public BinaryOperator<StringJoiner> combiner() {
+			return StringJoiner::merge;
+		}
+
+		@Override
+		public Function<StringJoiner, String> finisher() {
+			return StringJoiner::toString;
+		}
+
+		@Override
+		public Set<java.util.stream.Collector.Characteristics> characteristics() {
+			return Collections.emptySet();
+		}
+	};
+	
 	// Map
 	public static <M,N> String join( MapJoiner<M,N> joiner, Map<M,N> objects ){
 		return joinB( joiner, objects ).toString();
@@ -592,6 +668,13 @@ public class Str {
 			}
 		}
 		return false;
+	}
+	public static String replaceFast( String value, String replace, String with ) {
+		
+		if( ! value.contains( replace ) ) return value;
+		
+		// TODO: Make fast
+		return value.replace( replace, with );
 	}
 	
 }

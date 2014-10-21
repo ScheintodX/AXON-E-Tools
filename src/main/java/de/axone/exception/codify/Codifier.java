@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.axone.data.Charsets;
 import de.axone.tools.Mapper;
 import de.axone.tools.S;
 import de.axone.tools.Str;
@@ -30,8 +31,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public abstract class Codifier {
 	
 	private static final Logger log = LoggerFactory.getLogger( Codifier.class );
-	
-	private static final String ENCODING = "utf-8";
 	
 	private static volatile String baseUrl = "http://codify.axon-e.de/codify.php/";
 	private static volatile boolean includeLink = false;
@@ -81,7 +80,7 @@ public abstract class Codifier {
 		con.setRequestProperty( "User-Agent", "Codify/1.0" );
 		con.setInstanceFollowRedirects( false );
 
-		try( OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream(), ENCODING ) ){
+		try( OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream(), Charsets.UTF8 ) ){
 		
 			writer.write(parameters);
 			writer.flush();
@@ -121,7 +120,7 @@ public abstract class Codifier {
 		@Override
 		public String keyToString( String nameField, int index ) {
 			try {
-				return URLEncoder.encode( nameField, ENCODING );
+				return URLEncoder.encode( nameField, Charsets.utf8 );
 			} catch( UnsupportedEncodingException e ) {
 				return "CANNOT_ENCODE_NAME";
 			}
@@ -131,7 +130,7 @@ public abstract class Codifier {
 		public String valueToString( String valueField, int index ) {
 			if( valueField == null ) return S.NULL;
 			try {
-				return URLEncoder.encode( valueField, ENCODING );
+				return URLEncoder.encode( valueField, Charsets.utf8 );
 			} catch( UnsupportedEncodingException e ) {
 				return "CANNOT_ENCODE_VALUE";
 			}
