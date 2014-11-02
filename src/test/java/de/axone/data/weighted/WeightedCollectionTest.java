@@ -3,6 +3,7 @@ package de.axone.data.weighted;
 import org.assertj.core.api.AbstractIterableAssert;
 import org.testng.annotations.Test;
 
+@Test( groups="helper.weighted_collection" )
 public class WeightedCollectionTest {
 	
 	private TestItem id1_10 = item( 1, 10.0 ),
@@ -15,7 +16,6 @@ public class WeightedCollectionTest {
 	                 id4_40 = item( 4, 40.0 )
 	                 ;
 	
-	@Test
 	public void testOneItem() {
 		
 		WeightedTestItems list = new WeightedTestItems();
@@ -27,8 +27,8 @@ public class WeightedCollectionTest {
 				.contains( id1_10 )
 				.contains( id1_20 )
 				.contains( id1_30 )
-				.reallyContains( id1_10 )
-				.reallyDoesNotContain( id1_20 ) // Tests just the tests
+				.containsPrecisely( id1_10 )
+				.doesNotContainPrecisely( id1_20 ) // Tests just the tests
 				.hasWeight( 10.0 )
 				.hasMaxWeight( 10.0 )
 				.hasAvgWeight( 10.0 )
@@ -36,7 +36,6 @@ public class WeightedCollectionTest {
 		
 	}
 		
-	@Test
 	public void testDifferentItems() {
 		
 		WeightedTestItems list = new WeightedTestItems();
@@ -46,10 +45,10 @@ public class WeightedCollectionTest {
 		
 		assertThat( list )
 				.hasSize( 2 )
-				.reallyContains( id1_10 )
+				.containsPrecisely( id1_10 )
 				.contains( id1_20 )
 				.contains( id1_30 )
-				.reallyContains( id2_10 )
+				.containsPrecisely( id2_10 )
 				.contains( id2_20 )
 				.contains( id2_30 )
 				.hasWeight( 20.0 )
@@ -58,7 +57,6 @@ public class WeightedCollectionTest {
 				;
 	}
 	
-	@Test
 	public void testSameItems() {
 		
 		WeightedTestItems list = new WeightedTestItems();
@@ -71,17 +69,16 @@ public class WeightedCollectionTest {
 				.contains( id1_10 )
 				.contains( id1_20 )
 				.contains( id1_30 )
-				.reallyContains( id1_30 )
-				.reallyDoesNotContain( id1_10 )
-				.reallyDoesNotContain( id1_20 )
+				.containsPrecisely( id1_30 )
+				.doesNotContainPrecisely( id1_10 )
+				.doesNotContainPrecisely( id1_20 )
 				.hasWeight( 30.0 )
-				.hasMaxWeight( 20.0 )
-				.hasAvgWeight( 15.0 )
+				.hasMaxWeight( 30.0 )
+				.hasAvgWeight( 30.0 )
 				;
 		
 	}
 	
-	@Test
 	public void testMixedItems() {
 		
 		WeightedTestItems list = new WeightedTestItems();
@@ -94,19 +91,19 @@ public class WeightedCollectionTest {
 				.hasSize( 2 )
 				.contains( id1_10 )
 				.contains( id1_20 )
-				.reallyDoesNotContain( id1_10 )
-				.reallyDoesNotContain( id1_20 )
-				.reallyContains( id1_30 )
+				.doesNotContainPrecisely( id1_10 )
+				.doesNotContainPrecisely( id1_20 )
+				.containsPrecisely( id1_30 )
 				.contains( id2_10 )
-				.reallyContains( id2_20 )
+				.containsPrecisely( id2_20 )
 				.contains( id2_30 )
 				.hasWeight( 50.0 )
-				.hasMaxWeight( 20.0 )
+				.hasMaxWeight( 30.0 )
 				.hasAvgWeight( 25.0 )
 				;
 	}
 	
-	@Test
+	@SuppressWarnings( "deprecation" )
 	public void testSublists() {
 		
 		WeightedTestItems list = new WeightedTestItems();
@@ -130,7 +127,7 @@ public class WeightedCollectionTest {
 		
 		assertThat( list.best( 1 ) )
 				.hasSize( 1 )
-				.reallyContains( id4_40 )
+				.containsPrecisely( id4_40 )
 				.hasWeight( 40.0 )
 				.hasMaxWeight( 40.0 )
 				.hasAvgWeight( 40.0 )
@@ -139,8 +136,8 @@ public class WeightedCollectionTest {
 		
 		assertThat( list.best( 2 ) )
 				.hasSize( 2 )
-				.reallyContains( id4_40 )
-				.reallyContains( id3_30 )
+				.containsPrecisely( id4_40 )
+				.containsPrecisely( id3_30 )
 				.hasWeight( 70.0 )
 				.hasMaxWeight( 40.0 )
 				.hasAvgWeight( 35.0 )
@@ -149,9 +146,9 @@ public class WeightedCollectionTest {
 		
 		assertThat( list.best( 3 ) )
 				.hasSize( 3 )
-				.reallyContains( id4_40 )
-				.reallyContains( id3_30 )
-				.reallyContains( id2_20 )
+				.containsPrecisely( id4_40 )
+				.containsPrecisely( id3_30 )
+				.containsPrecisely( id2_20 )
 				.hasWeight( 90.0 )
 				.hasMaxWeight( 40.0 )
 				.hasAvgWeight( 30.0 )
@@ -160,10 +157,10 @@ public class WeightedCollectionTest {
 		
 		assertThat( list.best( 4 ) )
 				.hasSize( 4 )
-				.reallyContains( id4_40 )
-				.reallyContains( id3_30 )
-				.reallyContains( id2_20 )
-				.reallyContains( id1_10 )
+				.containsPrecisely( id4_40 )
+				.containsPrecisely( id3_30 )
+				.containsPrecisely( id2_20 )
+				.containsPrecisely( id1_10 )
 				.hasWeight( 100.0 )
 				.hasMaxWeight( 40.0 )
 				.hasAvgWeight( 25.0 )
@@ -176,7 +173,7 @@ public class WeightedCollectionTest {
 		
 	}
 	
-	@Test
+	@SuppressWarnings( "deprecation" )
 	public void testNormalize() {
 		
 		WeightedTestItems list = new WeightedTestItems();
@@ -189,15 +186,17 @@ public class WeightedCollectionTest {
 		
 		assertThat( list )
 				.hasSize( 4 )
-				.hasAvgWeight( 100.0 )
+				.hasWeight( 100.0 )
+				.hasAvgWeight( 25.0 )
+				.hasMaxWeight( 40.0 )
 				;
 		
 		assertThat( list.normalized() )
 				.hasSize( 4 )
-				.reallyContains( item( 1, 0.25 ) )
-				.reallyContains( item( 2, 0.5 ) )
-				.reallyContains( item( 3, 0.75 ) )
-				.reallyContains( item( 4, 1.0 ) )
+				.containsPrecisely( item( 1, 0.25 ) )
+				.containsPrecisely( item( 2, 0.5 ) )
+				.containsPrecisely( item( 3, 0.75 ) )
+				.containsPrecisely( item( 4, 1.0 ) )
 				;
 		
 	}
@@ -264,48 +263,68 @@ public class WeightedCollectionTest {
 	}
 	
 
-	public static class WeightedCollectionAsssert<T, W extends AbstractWeightedCollection<W,T>>
-	extends AbstractIterableAssert<WeightedCollectionAsssert<T,W>, W, T> {
+	public static class WeightedCollectionAssert<T, W extends AbstractWeightedCollection<W,T>>
+	extends AbstractIterableAssert<WeightedCollectionAssert<T,W>, W, T> {
 
-		protected WeightedCollectionAsssert( W actual ) {
-			super( actual, WeightedCollectionAsssert.class );
+		protected WeightedCollectionAssert( W actual ) {
+			super( actual, WeightedCollectionAssert.class );
 		}
 		
 		protected WeightedTestItems actual(){ return (WeightedTestItems) actual; }
 		
-		public WeightedCollectionAsssert<T,W> hasWeight( double weight ){
-			org.assertj.core.api.Assertions.assertThat( actual().weight() );
+		public WeightedCollectionAssert<T,W> hasWeight( double weight ){
+			org.assertj.core.api.Assertions.assertThat( actual().weight() )
+					.isEqualTo( weight )
+					;
 			return this;
 		}
-		public WeightedCollectionAsssert<T,W> hasMaxWeight( double weight ){
-			org.assertj.core.api.Assertions.assertThat( actual().maxWeight() );
+		public WeightedCollectionAssert<T,W> hasMaxWeight( double weight ){
+			org.assertj.core.api.Assertions.assertThat( actual().maxWeight() )
+					.isEqualTo( weight )
+					;
 			return this;
 		}
-		public WeightedCollectionAsssert<T,W> hasAvgWeight( double weight ){
-			org.assertj.core.api.Assertions.assertThat( actual().avgWeight() );
+		public WeightedCollectionAssert<T,W> hasAvgWeight( double weight ){
+			org.assertj.core.api.Assertions.assertThat( actual().avgWeight() )
+					.isEqualTo( weight )
+					;
 			return this;
 		}
 		
-		public WeightedCollectionAsssert<T,W> reallyContains( T item ){
+		@SuppressWarnings( "unchecked" )
+		public WeightedCollectionAssert<T,W> containsPrecisely( T ... items ){
+			for( T item : items ) containsPrecisely( item );
+			return this;
+		}
+		
+		public WeightedCollectionAssert<T,W> containsPrecisely( T item ){
 			
 			for( T it : actual ){
 				
-				if( it.equals( item ) && actual.weighter().weight( it ) == actual.weighter().weight( item ) )
-						 return this;
+				try {
+					org.assertj.core.api.Assertions.assertThat( it )
+							.isEqualToComparingFieldByField( item );
+					return this;
+				} catch( AssertionError e ){}
 				
 			}
 			
-			failWithMessage( "<%s> does not contain <%s>", actual.asList(), item );
+			failWithMessage( "\nExpected: <%s>\nto be contained in:\n<%s>\nbut it was not", item, actual.asList() );
 			
 			return this;
 		}
 		
-		public WeightedCollectionAsssert<T,W> reallyDoesNotContain( T item ){
+		public WeightedCollectionAssert<T,W> doesNotContainPrecisely( T item ){
 			
 			for( T it : actual ){
 				
-				if( it.equals( item ) && actual.weighter().weight( it ) == actual.weighter().weight( item ) )
-						failWithMessage( "<%s> contains <%s>", actual.asList(), item );
+				try {
+						org.assertj.core.api.Assertions.assertThat( it )
+								.isEqualToComparingFieldByField( item );
+						
+						failWithMessage( "\nExpected: <%s>\nto NOT be contained in:\n<%s>\nbut it was", item, actual.asList() );
+						
+				} catch( AssertionError e ){}
 				
 			}
 			
@@ -314,21 +333,9 @@ public class WeightedCollectionTest {
 		
 	}
 	
-	public static <T, W extends AbstractWeightedCollection<W,T>> WeightedCollectionAsssert<T,W> assertThat( W list ){
+	public static <T, W extends AbstractWeightedCollection<W,T>> WeightedCollectionAssert<T,W> assertThat( W list ){
 		
-		return new WeightedCollectionAsssert<T,W>( list );
+		return new WeightedCollectionAssert<T,W>( list );
 	}
-	
-	/*
-	public static class WeightedStringsAssert<S extends WeightedString, L extends WeightedStrings<L,S>>
-	extends WeightedCollectionAsssert<S,L> {
-	}
-	
-	
-	public static <L extends WeightedStrings<L,S>, S extends WeightedString> WeightedCollectionAsssert<S,L> assertThat( L list ){
-		
-		return new WeightedStringsAssert<S,L>( list );
-	}
-	*/
 	
 }

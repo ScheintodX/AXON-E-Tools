@@ -22,4 +22,14 @@ public abstract class WeightedStrings<L extends WeightedStrings<L,S>, S extends 
 		
 	};
 	
+	public static Comparator<WeightedString> TextComparator = new Comparator<WeightedString>() {
+
+		@Override
+		public int compare( WeightedString o1, WeightedString o2 ) {
+			
+			return o1.text().compareTo( o2.text() );
+		}
+		
+	};
+	
 }

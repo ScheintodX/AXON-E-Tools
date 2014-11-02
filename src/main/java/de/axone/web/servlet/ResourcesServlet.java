@@ -75,10 +75,12 @@ public abstract class ResourcesServlet extends HttpServlet {
 			uri = favicon( req, resp, uri );
 		}
 		
+		/*
 		String prefix = uriPrefix();
 		if( uri.startsWith( prefix ) ){
 			uri = uri.substring( prefix.length() );
 		}
+		*/
 		
 		uri = DEPLENK.matcher( uri ).replaceAll( ":" );
 			
@@ -109,6 +111,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 		try {
 			// Get settings
 			File basedir = basedir();
+			File subdir = null;
 			long cachetime = cachetime();
 			
 			String requestUri = request.getRequestURI();
@@ -198,16 +201,23 @@ public abstract class ResourcesServlet extends HttpServlet {
 						
 						// For first save Path. All others will be relative
 						File file;
-						if( basePath == null ){
+						if( uriPart.charAt( 0 ) == '/' ){
+							
+							if( uriPart.startsWith( uriPrefix() ) ){
+								uriPart = uriPart.substring( uriPrefix().length() );
+							}
 							
 							File uriFile = new File( uriPart );
 							basePath = uriFile.getParent();
 						
 							file = new File( basedir, uriPart );
-							basedir = new File( basedir, basePath );
+							
+							subdir = new File( basedir, basePath );
 							
 						} else {
-							file = new File( basedir, uriPart );
+							if( subdir == null )
+									throw new IllegalArgumentException( "Missing basedir" );
+							file = new File( subdir, uriPart );
 						}
 						
 						FileWatcher watcher = new FileWatcher( file );

@@ -383,6 +383,21 @@ public abstract class Mapper {
 		for( T t : items ) result.add( t );
 		return result;
 	}
+	
+	@SuppressWarnings( "unchecked" )
+	public static <T> LinkedList<T> asLinkedList( T ... items ){
+		if( items == null ) return null;
+		LinkedList<T> result = new LinkedList<>();
+		for( T item : items ) result.add( item );
+		return result;
+	}
+	@SuppressWarnings( "unchecked" )
+	public static <T> ArrayList<T> asArrayList( T ... items ){
+		if( items == null ) return null;
+		ArrayList<T> result = new ArrayList<>();
+		for( T item : items ) result.add( item );
+		return result;
+	}
 
 	public static <T> T[] asArray( Class<T> clazz, Collection<T> aids ) {
 		

@@ -53,12 +53,6 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 			(t1,t2) -> cloner.clone( t1, weighter.weight( t1 ) + weighter.weight( t2 ) ) );
 	}
 	
-	/*
-	protected abstract double weight( T item );
-	protected abstract T clone( T item, double newWeight );
-	protected abstract W create();
-	*/
-	
 	protected Supplier<W> supplier(){
 		return supplier;
 	}
@@ -121,32 +115,42 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	
 	@Override
 	public W addAll( Collection<? extends T> items ){
-		if( items == null || ! items.iterator().hasNext() ) return self;
+		if( items == null || items.size() == 0 ) return self;
 		for( T item : items ) add( item );
 		return self;
 	}
 	
 	@Override
 	public W addAll( W items ){
-		if( items == null || ! items.iterator().hasNext() ) return self;
+		if( items == null || items.size() == 0 ) return self;
 		for( T item : items ) add( item );
 		return self;
 	}
 	
 	@Override
 	public W removeAll( W items ) {
-		if( items == null || ! items.iterator().hasNext() ) return self;
+		if( items == null || items.size() == 0 ) return self;
 		for( Object item : items ) map.remove( item );
 		return self;
 	}
 	
 	@Override
 	public W retainAll( W items ) {
+		if( items == null || items.size() == 0 ) return supplier.get();
 		for( Iterator<T> it = iterator(); it.hasNext(); ){
 			T item = it.next();
 			if( ! items.contains( item ) ) it.remove();
 		}
 		return self;
+	}
+	
+	/**
+	 * @return the stored version of the given item
+	 * @param item
+	 */
+	public T get( T item ){
+		
+		return map.get( item );
 	}
 
 	@Override
@@ -248,69 +252,86 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 		return map.keySet();
 	}
 	
-	/*
-	public static <T> Stream<T> best( Stream<T> stream, int maxAmount, Predicate<T> filter ) {
+	
+	@Override
+	public Stream<T> bestStream( int maxAmount, Predicate<T> filter ) {
 		
-		return stream
-				.sorted( new WeightComparator( this::weight ) )
+		if( size() == 0 || maxAmount <= 0 ) return Stream.empty();
+		
+		return stream()
+				.sorted( new WeightComparator<>( weighter::weight ) )
 				.filter( filter )
 				.limit( maxAmount )
 				;
 	}
-	*/
 	
 	@Override
-	public W filter( Predicate<T> filter ) {
-		
-		if( size() == 0 ) return self;
-		
-		return stream()
-				.filter( filter )
-				.collect( collector() )
-				;
-		
-	}
-
-	@Override
+	@Deprecated
 	public W best( int maxAmount, Predicate<T> filter ){
 		
-		if( size() == 0 ) return self;
-		
-		if( maxAmount == 0 ) return supplier.get();
-		
-		return stream()
-				.sorted( new WeightComparator<>( weighter::weight ) )
-				.filter( filter )
-				.limit( maxAmount )
+		return bestStream( maxAmount, filter )
 				.collect( collector() )
 				;
-		
 	}
 	
 	@Override
+	public Stream<T> bestStream( int maxAmount ) {
+		
+		if( size() == 0 || maxAmount <= 0 ) return Stream.empty();
+		
+		return stream()
+				.sorted( new WeightComparator<>( weighter::weight ) )
+				.limit( maxAmount )
+				;
+	}
+	
+	@Override
+	@Deprecated
 	public W best( int maxAmount ){
 		
-		if( size() == 0 ) return self;
-		
-		if( maxAmount == 0 ) return supplier.get();
-		
-		return stream()
-				.sorted( new WeightComparator<>( weighter::weight ) )
-				.limit( maxAmount )
+		return bestStream( maxAmount )
 				.collect( collector() )
 				;
-		
 	}
 	
 	@Override
-	public W normalized(){
+	public Stream<T> filteredStream( Predicate<T> filter ) {
 		
-		if( size() == 0 ) return self;
+		if( size() == 0 ) return Stream.empty();
+		
+		return stream()
+				.filter( filter )
+				;
+	}
+	
+	@Override
+	@Deprecated
+	public W filter( Predicate<T> filter ) {
+		
+		return filteredStream( filter )
+				.collect( collector() )
+				;
+	}
+
+	
+	@Override
+	public Stream<T> normalizedStream() {
+		
+		if( size() == 0 ) return Stream.empty();
 		
 		double max = maxWeight();
 		
 		return stream()
 				.map( (item) -> cloner.clone( item, weighter.weight( item ) / max ) )
+				;
+	}
+	
+	
+	@Override
+	@Deprecated
+	public W normalized(){
+		
+		return normalizedStream()
 				.collect( collector() )
 				;
 						
@@ -401,6 +422,15 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 		return result;
 	}
 	
+	@Override
+	public String toString(){
+		return map.keySet().toString();
+	}
+	
+	public WeightComparator<T> weightComparator(){
+		return new WeightComparator<>( this.weighter );
+	}
+	
 	public static class WeightComparator<T>
 			implements Comparator<T>, Serializable {
 		
@@ -449,7 +479,9 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 
 		@Override
 		public Set<java.util.stream.Collector.Characteristics> characteristics() {
-			return EnumSet.of( Characteristics.IDENTITY_FINISH );
+			return EnumSet.of(
+					Characteristics.UNORDERED,
+					Characteristics.IDENTITY_FINISH );
 		}
 		
 	}

@@ -351,16 +351,22 @@ public class Str {
 	
 	public static String [] splitFast( String s, char fs ){
 		
-		int n=1;
-		for( int i=0; i<s.length(); i++ ){
-			if( s.charAt( i ) == fs ){
-				n++;
-			}
-		}
+		int n = count( s, fs ) + 1;
 		
 		if( n == 1 ) return new String[]{ s };
 		
 		return splitFastLimited( s, fs, n );
+	}
+	
+	public static String [] splitFastAndTrim( String s, char fs ){
+		
+		String [] result = splitFast( s, fs );
+		
+		for( int i=0; i < result.length; i++ ){
+			result [ i ] = result[ i ].trim();
+		}
+		
+		return result;
 	}
 	
 	
@@ -482,15 +488,51 @@ public class Str {
 	 * 
 	 * @param s
 	 * @param split
-	 * @return the splitted values in a string array
+	 * @return the split values in a string array
 	 */
 	public static String [] splitFastOnce( String s, char split ){
 		
 		int pos = s.indexOf( split );
 		
 		if( pos >= 0 ){
-			
 			return new String[]{ s.substring( 0, pos ), s.substring( pos+1 ) };
+		} else {
+			return new String[]{ s };
+		}
+	}
+	
+	/**
+	 * Split s one time starting at index
+	 * 
+	 * @param s
+	 * @param split
+	 * @param startAt 
+	 * @return the split values in a string array
+	 */
+	public static String [] splitFastOnce( String s, char split, int startAt ){
+		
+		int pos = s.indexOf( split, startAt );
+		
+		if( pos >= 0 ){
+			return new String[]{ s.substring( 0, pos ), s.substring( pos+1 ) };
+		} else {
+			return new String[]{ s };
+		}
+	}
+	
+	/**
+	 * Split s one time
+	 * 
+	 * @param s
+	 * @param split
+	 * @return the split values in a string array
+	 */
+	public static String [] splitFastOnce( String s, String split ){
+		
+		int pos = s.indexOf( split );
+		
+		if( pos >= 0 ){
+			return new String[]{ s.substring( 0, pos ), s.substring( pos+split.length() ) };
 		} else {
 			return new String[]{ s };
 		}
@@ -652,6 +694,15 @@ public class Str {
 	public static final boolean contains( String value, char ch ){
 		
 		return value.indexOf( ch ) >= 0;
+	}
+	
+	public static int count( String text, char rs ) {
+		
+		int result = 0;
+		for( int i=0; i<text.length(); i++ ){
+			if( text.charAt( i ) == rs ) result++;
+		}
+		return result;
 	}
 	
 	public static final boolean containsOneOf( String value, char [] chars ){

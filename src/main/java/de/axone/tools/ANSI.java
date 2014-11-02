@@ -38,6 +38,6 @@ public enum ANSI {
 	
 	@Override
 	public String toString(){
-		return S.ESC + code();
+		return S.esc + code();
 	}
 }
