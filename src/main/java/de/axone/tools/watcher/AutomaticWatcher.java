@@ -11,8 +11,8 @@ import de.axone.cache.ng.CacheNG.SingleValueAccessor;
  * 
  * @author flo
  *
- * @param <T> Data-Type
  * @param <W> Watched Type as provided by Http/File Watcher
+ * @param <T> Data-Type
  */
 public class AutomaticWatcher<W,T> {
 

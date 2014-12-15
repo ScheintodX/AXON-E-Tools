@@ -83,4 +83,9 @@ public final class CacheKeyBuilder implements CacheKey, Serializable, HasCacheKe
 	public Object cacheKey() {
 		return theKey;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format( "[0x%08x]", theKey.hashCode() );
+	}
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.DoubleSummaryStatistics;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,10 +19,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class AbstractWeightedCollection<W extends WeightedCollection<W, T>, T>
-		implements WeightedCollection<W, T> {
+		implements WeightedCollection<W, T>, Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private final W self;
 	
@@ -169,13 +173,11 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	}
 	
 	@Override
-	public double maxWeight(){
+	public DoubleSummaryStatistics metrics(){
 		
 		return stream()
 				.mapToDouble( weighter::weight )
-				.max()
-				.getAsDouble()
-				;
+				.summaryStatistics();
 	}
 	
 	@Override
@@ -188,7 +190,21 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	}
 		
 	@Override
+	public double maxWeight(){
+		
+		if( map.size() == 0 ) return 1;
+		
+		return stream()
+				.mapToDouble( weighter::weight )
+				.max()
+				.getAsDouble()
+				;
+	}
+	
+	@Override
 	public double avgWeight(){ 
+		
+		if( map.size() == 0 ) return 1;
 		
 		return stream()
 				.mapToDouble( weighter::weight )
@@ -233,17 +249,24 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 		return result;
 	}
 	
+	protected static void shuffle( List<?> list ){
+		Collections.shuffle( list );
+	}
+	protected static void shuffleStable( List<?> list ){
+		Collections.shuffle( list, new Random( CONSTANT_SEED ) );
+	}
+	
 	@Override
 	public List<T> shuffled() {
 		List<T> result = asList();
-		Collections.shuffle( result );
+		shuffle( result );
 		return result;
 	}
 	
 	@Override
 	public List<T> shuffledStable() {
 		List<T> result = asList();
-		Collections.shuffle( result, new Random( CONSTANT_SEED ) );
+		shuffleStable( result );
 		return result;
 	}
 	
@@ -252,6 +275,30 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 		return map.keySet();
 	}
 	
+	@Override
+	public Stream<T> sortedStream() {
+		
+		return stream()
+				.sorted( new WeightComparator<>( weighter ) )
+				;
+	}
+	
+	public Stream<T> normalizedBestStream( int maxAmount ){
+		
+		if( size() == 0 || maxAmount <= 0 ) return Stream.empty();
+		
+		return normalizedStream()
+				.sorted( new WeightComparator<>( weighter ) )
+				.limit( maxAmount )
+				;
+	}
+	
+	public List<T> normalizedBest( int maxAmount ){
+		
+		return normalizedBestStream( maxAmount )
+				.collect( Collectors.toList() )
+				;
+	}
 	
 	@Override
 	public Stream<T> bestStream( int maxAmount, Predicate<T> filter ) {
@@ -266,7 +313,6 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	}
 	
 	@Override
-	@Deprecated
 	public W best( int maxAmount, Predicate<T> filter ){
 		
 		return bestStream( maxAmount, filter )
@@ -286,7 +332,6 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	}
 	
 	@Override
-	@Deprecated
 	public W best( int maxAmount ){
 		
 		return bestStream( maxAmount )
@@ -305,7 +350,6 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	}
 	
 	@Override
-	@Deprecated
 	public W filter( Predicate<T> filter ) {
 		
 		return filteredStream( filter )
@@ -319,16 +363,43 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 		
 		if( size() == 0 ) return Stream.empty();
 		
-		double max = maxWeight();
+		DoubleSummaryStatistics metrics = metrics();
+		
+		double max = metrics.getMax();
+		double avg = metrics.getAverage();
 		
 		return stream()
-				.map( (item) -> cloner.clone( item, weighter.weight( item ) / max ) )
+				.map( (item) -> cloner.clone( item, normalize( item, max, avg ) ) )
 				;
+	}
+	
+	/**
+	 * Normalize so that values near the average value end up
+	 * with a 0.5 value.
+	 * 
+	 * This prevents that eg. 1,2,5,7,100
+	 * 
+	 * @param item
+	 * @param max
+	 * @param avg
+	 * @return
+	 */
+	private double normalize( T item, double max, double avg ){
+		
+		double weight = weighter.weight( item ),
+		       result;
+		
+		if( weight <= avg ){
+			result = (weight/avg) / 2.0;
+		} else {
+			result = weight/max;
+		}
+		
+		return result;
 	}
 	
 	
 	@Override
-	@Deprecated
 	public W normalized(){
 		
 		return normalizedStream()

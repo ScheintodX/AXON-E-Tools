@@ -103,7 +103,6 @@ public class WeightedCollectionTest {
 				;
 	}
 	
-	@SuppressWarnings( "deprecation" )
 	public void testSublists() {
 		
 		WeightedTestItems list = new WeightedTestItems();
@@ -173,7 +172,6 @@ public class WeightedCollectionTest {
 		
 	}
 	
-	@SuppressWarnings( "deprecation" )
 	public void testNormalize() {
 		
 		WeightedTestItems list = new WeightedTestItems();

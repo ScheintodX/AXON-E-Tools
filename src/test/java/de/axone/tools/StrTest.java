@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.testng.annotations.Test;
 
+import com.google.common.base.Splitter;
+
 @Test( groups="tools.str" )
 public class StrTest {
 
@@ -148,7 +150,6 @@ public class StrTest {
 		
 	}
 	
-	
 	public void timing(){
 		
 		long start, end;
@@ -226,7 +227,7 @@ public class StrTest {
 		end = System.currentTimeMillis();
 		E.rr( "Pattern Took " + (end-start) + " ms" );
 		
-		// Pattern
+		// Fast Spaces
 		for( int i=0; i<10_000_000; i++ ){
 			Str.splitFastAtSpacesToList( test2 );
 		}
@@ -236,6 +237,41 @@ public class StrTest {
 		}
 		end = System.currentTimeMillis();
 		E.rr( "FastSpaces Took " + (end-start) + " ms" );
+		
+		
+		// Guava
+		Splitter s = Splitter.on( ';' );
+		for( int i=0; i<10_000_000; i++ ){
+			s.splitToList( test );
+		}
+		start = System.currentTimeMillis();
+		for( int i=0; i<10_000_000; i++ ){
+			s.splitToList( test );
+		}
+		end = System.currentTimeMillis();
+		E.rr( "Guava Took " + (end-start) + " ms" );
+		
+		// Guava Once
+		Splitter s2 = Splitter.on( ';' ).limit( 1 );
+		for( int i=0; i<10_000_000; i++ ){
+			s2.splitToList( test );
+		}
+		start = System.currentTimeMillis();
+		for( int i=0; i<10_000_000; i++ ){
+			s2.splitToList( test );
+		}
+		end = System.currentTimeMillis();
+		E.rr( "Guava Once Took " + (end-start) + " ms" );
+		
+	}
+	
+	public void testGuavaSplitter() {
+		
+		Splitter s = Splitter.on( ';' );
+		
+		String test = "abc;def;hij";
+		
+		E.rr( s.splitToList( test ) );
 		
 	}
 	

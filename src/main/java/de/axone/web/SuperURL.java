@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.function.Function;
 
 import javax.servlet.http.HttpServletRequest;
 
 import de.axone.data.Charsets;
 import de.axone.data.Label;
-import de.axone.exception.Assert;
 import de.axone.tools.Str;
 import de.axone.web.SuperURLBuilders.SuperURLBuilder_Copy;
 import de.axone.web.SuperURLBuilders.SuperURLBuilder_Request;
@@ -547,6 +547,18 @@ public final class SuperURL {
 			return result;
 		}
 		
+		public Path map( Function<String,String> mapper ){
+			
+			Path result = new Path();
+			
+			for( String part : path ){
+				result.addLast( mapper.apply( part ) );
+			}
+			result.endsWithSlash = endsWithSlash;
+			result.startsWithSlash = startsWithSlash;
+			return result;
+		}
+		
 		public int length(){
 			return path.size();
 		}
@@ -578,19 +590,28 @@ public final class SuperURL {
 			return !isAbsolute();
 		}
 		
+		public String getParent(){
+			if( path != null && path.size() > 1 ) return path.get( path.size()-2 );
+			return null;
+		}
+		
 		public String getLast(){
 			if( path != null && path.size() > 0 ) return path.getLast();
 			return null;
 		}
 		public Path replaceLast( String part ){
-			Assert.notNull( part, "part" );
-			Assert.notEmpty( part, "part" );
-			if( path != null && path.size() > 0 ) path.set( path.size()-1, part );
+			
+			if( path != null && path.size() > 0 ){
+				if( part == null || part.length() == 0 ){
+					path.removeLast();
+				} else {
+					path.set( path.size()-1, part );
+				}
+			}
 			return this;
 		}
 		public Path addLast( String part ){
-			Assert.notNull( part, "part" );
-			Assert.notEmpty( part, "part" );
+			if( part == null || part.length() == 0 ) return this;
 			if( path == null ) path = new LinkedList<String>();
 			path.addLast( part );
 			return this;
@@ -618,14 +639,18 @@ public final class SuperURL {
 			return null;
 		}
 		public Path replaceFirst( String part ){
-			Assert.notNull( part, "part" );
-			Assert.notEmpty( part, "part" );
-			if( path != null && path.size() > 0 ) path.set( 0, part );
+			
+			if( path != null && path.size() > 0 ){
+				if( part != null && part.length() > 0 ){
+					path.set( 0, part );
+				} else {
+					path.removeFirst();
+				}
+			}
 			return this;
 		}
 		public Path addFirst( String part ){
-			Assert.notNull( part, "part" );
-			Assert.notEmpty( part, "part" );
+			if( part == null || part.length() == 0 ) return this;
 			if( path == null ) path = new LinkedList<String>();
 			path.addFirst( part );
 			return this;
@@ -790,6 +815,7 @@ public final class SuperURL {
 			
 			return true;
 		}
+		
 		
 	}
 	

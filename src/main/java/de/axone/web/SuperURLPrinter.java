@@ -12,6 +12,7 @@ import java.util.Set;
 
 import de.axone.data.Charsets;
 import de.axone.tools.A;
+import de.axone.tools.Str;
 import de.axone.web.SuperURL.Encode;
 import de.axone.web.SuperURL.FinalEncoding;
 import de.axone.web.SuperURL.Host;
@@ -32,6 +33,10 @@ public abstract class SuperURLPrinter implements Serializable {
 	public static SuperURLPrinter Plain = new FastPlain();
 	public static SuperURLPrinter MinimalEncoded = new FastMinimalEncoded();
 	public static SuperURLPrinter FullEncoded = new FastFullEncoded();
+	
+	public static SuperURLPrinter ForAttribute = MinimalEncoded
+			.finishFor( FinalEncoding.Attribute );
+	public static SuperURLPrinter ForRedirect = MinimalEncoded;
 	
 	public abstract String toString( SuperURL url );
 	public abstract String toString( SuperURL.UserInfo userInfo );
@@ -453,7 +458,7 @@ public abstract class SuperURLPrinter implements Serializable {
 		protected String encode( String value ){
 			
 			try {
-				return URLEncoder.encode( value, Charsets.utf8 );
+				return Str.translate( URLEncoder.encode( value, Charsets.utf8 ), '+', "%20" );
 			} catch( UnsupportedEncodingException e ) {
 				throw new RuntimeException( "SNAFU encoding", e );
 			}
@@ -469,19 +474,22 @@ public abstract class SuperURLPrinter implements Serializable {
 		
 		private static final long serialVersionUID = 1L;
 		
-		private static final char [] gen_delims = new char [] { '%', ':', '/', '?', '#', '[', ']', '@' };
+		private static final char [] gen_delims = new char [] { '%', ':', '/', '?', '#', '[', ']', '@', '+', ' ' };
 		
 		private static final Encoder DEFAULT =
-							buildEncoder( gen_delims );
+							buildEncoder( gen_delims );//, SpaceAs.percent );
+		
+		private static final Encoder DEFAULT_plus_path =
+							buildEncoder( gen_delims );//, SpaceAs.keep );
 		
 		private static final Encoder DEFAULT_plus_query_key =
-							buildEncoder( A.union( gen_delims, '&', '=' ) );
+							buildEncoder( A.union( gen_delims, '&', '=' ) );//, SpaceAs.plus );
 		
 		private static final Encoder DEFAULT_plus_query_value =
-							buildEncoder( A.union( gen_delims, '&' ) );
+							buildEncoder( A.union( gen_delims, '&' ) );//, SpaceAs.plus );
 		
 		private static final Encoder DEFAULT_plus_host =
-							buildEncoder( A.union( gen_delims, '.' ) );
+							buildEncoder( A.union( gen_delims, '.' ) );//, SpaceAs.percent );
 		
 		@Override
 		protected String encodeUserInfo( String value ) {
@@ -515,7 +523,7 @@ public abstract class SuperURLPrinter implements Serializable {
 
 		@Override
 		protected String encodePath( String value ) {
-			return DEFAULT.encode( value );
+			return DEFAULT_plus_path.encode( value );
 		}
 
 		@Override
@@ -525,7 +533,13 @@ public abstract class SuperURLPrinter implements Serializable {
 		
 	}
 	
-	private static TranslatingEncoder buildEncoder( char ... chars ){
+	/*
+	private enum SpaceAs{
+		keep, plus, percent;
+	}
+	*/
+	
+	private static TranslatingEncoder buildEncoder( char [] chars ){
 		
 		char [] src = new char[ chars.length +1 ];
 		String [] target = new String[ chars.length +1 ];
@@ -537,8 +551,18 @@ public abstract class SuperURLPrinter implements Serializable {
 			target[ i ] = String.format( "%%%02x", (int)c );
 		}
 		
-		src[ src.length-1 ] = ' ';
-		target[ target.length-1 ] = "+";
+		/*
+		switch( spaceAs ){
+		case keep: break;
+		case plus:
+			src[ src.length-1 ] = ' ';
+			target[ target.length-1 ] = "+";
+			break;
+		case percent:
+			src[ src.length-1 ] = ' ';
+			target[ target.length-1 ] = "%20";
+		}
+		*/
 		
 		return new TranslatingEncoder( src, target );
 	}

@@ -45,6 +45,7 @@ public interface S {
 	public static final String
 			HTML_NBSP = "&nbsp;",
 			HTML_THINSP = "&thinsp;",
+			HTML_THIN_NBSP = "&nnbsp;",
 			HTML_EN_DASH = "&ndash;",
 			HTML_EM_DASH = "&mdash;"
 			;

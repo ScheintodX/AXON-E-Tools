@@ -18,6 +18,21 @@ import java.util.stream.Stream;
 import de.axone.refactor.NotTested;
 
 public class Str {
+	
+	public static final Joiner<Object> TO_STRING_KOMMA =
+			new Joiner<Object>() {
+				@Override
+				public String toString( Object object, int index ) {
+					return object.toString();
+				}
+	};
+	public static final Joiner<String> IS_STRING_KOMMA =
+			new Joiner<String>() {
+				@Override
+				public String toString( String object, int index ) {
+					return object;
+				}
+	};
 
 	// --- J o i n ------------------------------------------------------
 	public static String join( String joinWith, boolean [] ints ){
@@ -69,7 +84,7 @@ public class Str {
 	public static <T, U extends T> String join( Joiner<T> joiner, Iterable<U> objects ){
 		return joinB( joiner, objects ).toString();
 	}
-	public static <T, U extends T> String join( Joiner<T> joiner, Stream<U> objects ){
+	public static <T, U extends T> String join( StreamJoiner<T> joiner, Stream<U> objects ){
 		return joinB( joiner, objects ).toString();
 	}
 	@SafeVarargs
@@ -79,7 +94,7 @@ public class Str {
 	public static <T, U extends T> String joinIgnoreEmpty( Joiner<T> joiner, Iterable<U> objects ){
 		return joinIgnoreEmptyB( joiner, objects ).toString();
 	}
-	public static <T, U extends T> String joinIgnoreEmpty( Joiner<T> joiner, Stream<U> objects ){
+	public static <T, U extends T> String joinIgnoreEmpty( StreamJoiner<T> joiner, Stream<U> objects ){
 		return joinIgnoreEmptyB( joiner, objects ).toString();
 	}
 	
@@ -93,7 +108,7 @@ public class Str {
 	public static <T, U extends T> StringBuilder joinB( Joiner<T> joiner, Iterable<U> objects ){
 		return joinBB( new StringBuilder(), joiner, false, objects );
 	}
-	public static <T, U extends T> StringBuilder joinB( Joiner<T> joiner, Stream<U> objects ){
+	public static <T, U extends T> StringBuilder joinB( StreamJoiner<T> joiner, Stream<U> objects ){
 		return joinBB( new StringBuilder(), joiner, false, objects );
 	}
 	public static <M,N> StringBuilder joinB( MapJoiner<M,N> joiner, Map<M,N> objects ){
@@ -108,7 +123,7 @@ public class Str {
 	public static <T, U extends T> StringBuilder joinIgnoreEmptyB( Joiner<T> joiner, Iterable<U> objects ){
 		return joinBB( new StringBuilder(), joiner, true, objects );
 	}
-	public static <T, U extends T> StringBuilder joinIgnoreEmptyB( Joiner<T> joiner, Stream<U> objects ){
+	public static <T, U extends T> StringBuilder joinIgnoreEmptyB( StreamJoiner<T> joiner, Stream<U> objects ){
 		return joinBB( new StringBuilder(), joiner, true, objects );
 	}
 	public static <M,N> StringBuilder joinIgnoreEmptyB( MapJoiner<M,N> joiner, Map<M,N> objects ){
@@ -124,7 +139,7 @@ public class Str {
 		return joinBB( result, new SimpleJoiner<T>( joinWith ), ignoreEmpty, objects );
 	}
 	public static <T, U extends T> StringBuilder joinBB( StringBuilder result, String joinWith, boolean ignoreEmpty, Stream<U> objects ){
-		return joinBB( result, new SimpleJoiner<T>( joinWith ), ignoreEmpty, objects );
+		return joinBB( result, new SimpleStreamJoiner<T>( joinWith ), ignoreEmpty, objects );
 	}
 	public static <T, U extends T> StringBuilder joinBB( StringBuilder result, Joiner<T> joiner, boolean ignoreEmpty, Iterable<U> objects ){
 
@@ -142,7 +157,7 @@ public class Str {
 		return result;
 	}
 	
-	public static <T, U extends T> StringBuilder joinBB( StringBuilder result, Joiner<T> joiner, boolean ignoreEmpty, Stream<U> objects ){
+	public static <T, U extends T> StringBuilder joinBB( StringBuilder result, StreamJoiner<T> joiner, boolean ignoreEmpty, Stream<U> objects ){
 		
 		return result.append( objects
 				.collect( new StringCollector<T>( joiner ) )
@@ -151,9 +166,9 @@ public class Str {
 	
 	private static class StringCollector<T> implements Collector<T,StringJoiner,String>{
 		
-		private final Joiner<T> joiner;
+		private final StreamJoiner<T> joiner;
 		
-		StringCollector( Joiner<T> joiner ){
+		StringCollector( StreamJoiner<T> joiner ){
 			this.joiner = joiner;
 		}
 
@@ -164,7 +179,7 @@ public class Str {
 
 		@Override
 		public BiConsumer<StringJoiner, T> accumulator() {
-			return (sj, item) -> sj.add( joiner.toString( item, 0 ) ); //<- We can't use indexes here
+			return (sj, item) -> sj.add( joiner.toString( item ) );
 		}
 
 		@Override
@@ -238,7 +253,16 @@ public class Str {
 
 		public String toString( T object, int index );
 		
-		default public String getSeparator(){ return ", "; }
+		public default String getSeparator(){ return ", "; }
+	}
+	
+	@FunctionalInterface
+	public interface StreamJoiner<T> {
+		
+		public String toString( T object ); //<- We can't use indexes here
+		
+		public default String getSeparator(){ return ", "; }
+		
 	}
 	
 	public static class SimpleJoiner<T> implements Joiner<T> {
@@ -257,6 +281,25 @@ public class Str {
 			return object.toString();
 		}
 	}
+	
+	public static class SimpleStreamJoiner<T> implements StreamJoiner<T> {
+
+		private String separator;
+		public SimpleStreamJoiner( String separator ){
+			this.separator = separator;
+		}
+		@Override
+		public String getSeparator(){
+			return separator;
+		}
+		@Override
+		public String toString( T object ){
+			if( object == null ) return null;
+			return object.toString();
+		}
+	}
+	
+	
 	public static final Joiner<String> CSVJOINER = new Joiner<String>() {
 
 		@Override
@@ -728,4 +771,51 @@ public class Str {
 		return value.replace( replace, with );
 	}
 	
+	@FunctionalInterface
+	public interface ReplacementProvider {
+		public String getReplacementFor( String key );
+	}
+	
+	public static String replaceFast( final String text, final String prefix, final String suffix, ReplacementProvider provider ){
+		
+		int pLength = prefix.length(),
+		    sLength = suffix.length();
+		
+		int idxStart = 0, idxEnd = -pLength;
+		
+		StringBuilder result = new StringBuilder();
+		
+		// Go through looking for "--("
+		while( (idxStart = text.indexOf( prefix, idxEnd )) > -1 ){
+			
+			result.append( text.substring( idxEnd+sLength, idxStart ) );
+			
+			idxEnd = text.indexOf( suffix, idxStart );
+			
+			if( idxEnd < 0 ) break; // <-- Error is silently ignored here
+			
+			String val = text.substring( idxStart+pLength, idxEnd ).trim();
+			if( val.length() > 0 ){
+				val = val.toLowerCase();
+				String txt = provider.getReplacementFor( val );
+				if( txt == null ) txt = prefix + "missing: " + val + suffix;
+				result.append( txt );
+			} else {
+				// Keep empty --()-- because they are processed later on and
+				// mean "inherit text from parent/child"
+				result.append( prefix + suffix );
+			}
+			
+			idxStart = idxEnd;
+		};
+		
+		if( idxEnd < 0 ){
+			// Nothing to replace or error happend
+			return text;
+		} else{
+			result.append( text.substring( idxEnd+pLength ) );
+			return result.toString();
+		}
+		
+	}
 }

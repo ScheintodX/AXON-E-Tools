@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse-wtp'
 
-version = '1.0.0'
+//version = '1.0.0'
 
 repositories {
 	mavenCentral()
@@ -68,6 +68,8 @@ dependencies {
 	}
 
 	compile 'com.google.code.findbugs:annotations:2.0.3'
+
+	compile 'com.google.guava:guava:18+'
 
 	// =======================================
 

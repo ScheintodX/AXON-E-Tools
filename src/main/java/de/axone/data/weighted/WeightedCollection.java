@@ -1,6 +1,7 @@
 package de.axone.data.weighted;
 
 import java.util.Collection;
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -11,6 +12,7 @@ public interface WeightedCollection<W extends WeightedCollection<W, T>, T> exten
 	public double weight();
 	public double maxWeight();
 	public double avgWeight();
+	public DoubleSummaryStatistics metrics();
 		
 	public Set<T> asSet();
 	public List<T> asList();
@@ -19,22 +21,20 @@ public interface WeightedCollection<W extends WeightedCollection<W, T>, T> exten
 	public List<T> shuffled();
 	public List<T> shuffledStable();
 	
+	public W copy();
+	
+	public W best( int amount, Predicate<T> filter );
+	public W best( int amount );
+	public W filter( Predicate<T> filter );
+	public W normalized();
+	
 	public Stream<T> stream();
 	
+	public Stream<T> sortedStream();
 	public Stream<T> bestStream( int amount, Predicate<T> filter );
 	public Stream<T> bestStream( int amount );
 	public Stream<T> filteredStream( Predicate<T> filter );
 	public Stream<T> normalizedStream();
-	
-	public W copy();
-	@Deprecated
-	public W best( int amount, Predicate<T> filter );
-	@Deprecated
-	public W best( int amount );
-	@Deprecated
-	public W filter( Predicate<T> filter );
-	@Deprecated
-	public W normalized();
 	
 	public W add( T item );
 	public W addAll( W items );
@@ -60,4 +60,10 @@ public interface WeightedCollection<W extends WeightedCollection<W, T>, T> exten
 		public T merge( T item1, T item2 );
 	}
 
+	public interface Metrics {
+		
+		public double weight();
+		public double max();
+		public double avg();
+	}
 }

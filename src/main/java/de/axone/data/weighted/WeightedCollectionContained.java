@@ -9,7 +9,10 @@ public class WeightedCollectionContained<T>
 extends AbstractWeightedCollection<WeightedCollectionContained<T>, Container<T>>
 implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+	
 	public WeightedCollectionContained(){
+		
 		super( WeightedCollectionContained::new,
 				item -> item.weight,
 				(item, newWeight) -> new Container<T>( item.contained, newWeight )

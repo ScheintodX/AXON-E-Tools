@@ -391,6 +391,7 @@ public abstract class Mapper {
 		for( T item : items ) result.add( item );
 		return result;
 	}
+	
 	@SuppressWarnings( "unchecked" )
 	public static <T> ArrayList<T> asArrayList( T ... items ){
 		if( items == null ) return null;
