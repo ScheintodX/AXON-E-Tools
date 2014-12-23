@@ -65,6 +65,4 @@ public class CacheWrapperWatched<K,O> extends CacheWrapper<K,O> {
 		return super.info() + String.format( ", Hits: %d/%d = %.2f%%", 
 				 hits(), accesses(), Math.round( ratio() *1000 )/10.0 );
 	}
-	
-
 }

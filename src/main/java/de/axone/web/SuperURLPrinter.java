@@ -474,7 +474,7 @@ public abstract class SuperURLPrinter implements Serializable {
 		
 		private static final long serialVersionUID = 1L;
 		
-		private static final char [] gen_delims = new char [] { '%', ':', '/', '?', '#', '[', ']', '@', '+', ' ' };
+		private static final char [] gen_delims = new char [] { '%', ':', '/', '?', '#', '[', ']', '@', '+', ' ', '"' };
 		
 		private static final Encoder DEFAULT =
 							buildEncoder( gen_delims );//, SpaceAs.percent );
