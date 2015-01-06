@@ -2,9 +2,9 @@ package de.axone.cache.ng;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import de.axone.cache.ng.CacheNG.Cache;
@@ -26,6 +26,8 @@ import de.axone.cache.ng.CacheNG.SingleValueAccessor;
  * 
  * Normally you would want to use this cache in connections with an CacheLRUMap
  * or CacheEHCache so that it has a limited size but fills automatically.
+ * 
+ * NOTE: @link AutomaticWatcher has a copy of this. 
  *
  * @author flo
  *
@@ -52,7 +54,7 @@ public class AutomaticClientImpl<K,O>
 		assert keys != null && accessor != null;
 
 		HashMap<K,O> result = new HashMap<K,O>();
-		Set<K> missed = null;
+		List<K> missed = null;
 
 		try{
 			lock.readLock().lock();
@@ -63,11 +65,11 @@ public class AutomaticClientImpl<K,O>
     			if( found == null ){
     				
     				stats.miss();
-    				if( missed == null ) missed = new HashSet<K>();
+    				if( missed == null ) missed = new LinkedList<K>();
     				missed.add( key );
     			} else {
     				stats.hit();
-    				if( found.data() != null ) result.put( key, found.data() );
+    				result.put( key, found.data() );
     			}
     		}
 		} finally {
@@ -76,12 +78,26 @@ public class AutomaticClientImpl<K,O>
 
 		if( missed != null ){
 
-			Map<K,O> fetched = accessor.fetch( missed );
-
 			try {
+				
+				List<K> reallyMissed = new LinkedList<>();
+				
 				lock.writeLock().lock();
-
+				
+				// re-check in case someone else loaded something meanwhile
 				for( K key : missed ){
+	    			Cache.Entry<O> found = backend.fetchEntry( key );
+	    			
+	    			if( found == null ) {
+	    				reallyMissed.add( key );
+	    			} else {
+	    				result.put( key, found.data() );
+	    			}
+				}
+
+				Map<K,O> fetched = accessor.fetch( reallyMissed );
+				
+				for( K key : reallyMissed ){
 					
 					O value = fetched.get( key );
 					
@@ -111,10 +127,13 @@ public class AutomaticClientImpl<K,O>
 
 		// First try to get from cache
 		Cache.Entry<O> entry = null;
+		
+		lock.readLock().lock();
 		try{
-			lock.readLock().lock();
 			entry = backend.fetchEntry( key );
-		} finally { lock.readLock().unlock(); }
+		} finally {
+			lock.readLock().unlock();
+		}
 		
 		O result;
 		if( entry != null ){
@@ -128,16 +147,23 @@ public class AutomaticClientImpl<K,O>
 			// Else mark miss
 			stats.miss();
 
-			// Use Accessor to fetch
-			result = accessor.fetch( key );
-
+			lock.writeLock().lock();
 			try {
-				lock.writeLock().lock();
 				
-				backend.put( key, result );
+				// Try again in case another process has gotten it meanwhile
+				entry = backend.fetchEntry( key );
+				
+				if( entry != null ) result = entry.data();
+				
+				else {
+				
+					// Use Accessor to fetch
+					result = accessor.fetch( key );
+	
+					backend.put( key, result );
+				}
 				
 			} finally {
-
 				lock.writeLock().unlock();
 			}
 		}
@@ -147,8 +173,9 @@ public class AutomaticClientImpl<K,O>
 	
 	@Override
 	public int size(){
+		
+		lock.readLock().lock();
 		try {
-			lock.readLock().lock();
 			return backend.size();
 		} finally {
 			lock.readLock().unlock();
@@ -157,8 +184,9 @@ public class AutomaticClientImpl<K,O>
 	
 	@Override
 	public int capacity() {
+		
+		lock.readLock().lock();
 		try {
-			lock.readLock().lock();
 			return backend.capacity();
 		} finally {
 			lock.readLock().unlock();
@@ -171,8 +199,8 @@ public class AutomaticClientImpl<K,O>
 		
 		assert key != null;
 		
+		lock.writeLock().lock();
 		try {
-			lock.writeLock().lock();
 			backend.invalidate( key );
 		} finally {
 			lock.writeLock().unlock();
@@ -183,8 +211,8 @@ public class AutomaticClientImpl<K,O>
 	public void invalidateAll( boolean force ) {
 		
 		// Clear cache
+		lock.writeLock().lock();
 		try {
-			lock.writeLock().lock();
     		backend.invalidateAll( force );
 		} finally {
 			lock.writeLock().unlock();
@@ -198,7 +226,14 @@ public class AutomaticClientImpl<K,O>
 
 	@Override
 	public boolean isCached( K key ) {
-		return backend.isCached( key );
+		
+		lock.readLock().lock();
+		try {
+			return backend.isCached( key );
+		} finally {
+			lock.readLock().unlock();
+		}
+		
 	}
 	
 }

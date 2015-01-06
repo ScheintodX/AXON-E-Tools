@@ -13,7 +13,15 @@ public abstract class E {
 		out.append( ">>> (" + String.valueOf( clazz ) + ") " );
 	}
 	
-	private static void echo( PrintStream out, int depth, boolean lino, boolean nl, Object ... os ){
+	private static void printThreadName( PrintStream out ){
+		out.append( '[' )
+				.append( Thread.currentThread().getName() )
+				.append( ']' );
+	}
+	
+	private static void echo( PrintStream out, int depth, boolean lino, boolean nl, boolean tn, Object ... os ){
+		
+		if( tn ) printThreadName( out );
 		
 		if( lino ) printPos( out, depth );
 		
@@ -58,71 +66,71 @@ public abstract class E {
 		if( nl ) out.println();
 	}
 	
-	private static void echo( PrintStream out, boolean lino, boolean nl, Object ... os ){
-		echo( out, 3, lino, nl, os );
+	private static void echo( PrintStream out, boolean lino, boolean nl, boolean tn, Object ... os ){
+		echo( out, 3, lino, nl, tn, os );
 	}
 	
 	public static void banner( String text ){
-		echo( System.out, 2, true, true, Text.banner( text.charAt( 0 ), text ) );
+		echo( System.out, 2, true, true, false, Text.banner( text.charAt( 0 ), text ) );
 	}
 	
 	public static void banner( char border, String text ){
-		echo( System.out, 2, true, true, Text.banner( border, text ) );
+		echo( System.out, 2, true, true, false, Text.banner( border, text ) );
 	}
 	
 	public static void poster( String text ){
-		echo( System.out, 2, true, true, Text.poster( text.charAt( 0 ), text ) );
+		echo( System.out, 2, true, true, false, Text.poster( text.charAt( 0 ), text ) );
 	}
 	
 	public static void poster( char border, String text ){
-		echo( System.out, 2, true, true, Text.poster( border, text ) );
+		echo( System.out, 2, true, true, false, Text.poster( border, text ) );
 	}
 	
 	/**
 	 * Output file and line number and some text to STDERR
 	 */
 	public static void rr(){
-		echo( System.err, true, true, "" );
+		echo( System.err, true, true, false, "" );
 	}
 	
 	public static void rr( byte [] a ){
-		echo( System.err, true, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, false, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( char [] a ){
-		echo( System.err, true, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, false, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( short [] a ){
-		echo( System.err, true, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, false, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( int [] a ){
-		echo( System.err, true, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, false, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( long [] a ){
-		echo( System.err, true, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, false, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( float [] a ){
-		echo( System.err, true, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, false, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( double [] a ){
-		echo( System.err, true, true, (Object[])A.objects( a ) );
+		echo( System.err, true, true, false, (Object[])A.objects( a ) );
 	}
 	
 	public static void rr( boolean [] os ){
-		echo( System.err, true, true, os );
+		echo( System.err, true, true, false, os );
 	}
 	public static void rr( Object ... os ){
 		
-		echo( System.err, true, true, os );
+		echo( System.err, true, true, false, os );
 	}
 	public static void rr_( Object ... os ){
 		
-		echo( System.err, true, false, os );
+		echo( System.err, true, false, false, os );
 	}
 	public static void rrf( String format, Object ... args ){
 		
@@ -157,28 +165,37 @@ public abstract class E {
 		log( System.err, false, false, format, args );
 	}
 	
+	public synchronized static void rrt( Object ... os ){
+		
+		echo( System.err, true, true, true, os );
+	}
+	
+	public synchronized static void _rrt( Object ... os ){
+		
+		echo( System.err, false, true, true, os );
+	}
 	/**
 	 * Output file and line number and some text to STDOUT
 	 */
 	public static void cho(){
 		
-		echo( System.out, true, true, "" );
+		echo( System.out, true, true, false, "" );
 	}
 	public static void cho( Object ... os ){
 		
-		echo( System.out, true, true, os );
+		echo( System.out, true, true, false, os );
 	}
 	public static void cho_( Object ... os ){
 		
-		echo( System.out, true, false, os );
+		echo( System.out, true, false, false, os );
 	}
 	public static void _cho_( Object ... os ){
 		
-		echo( System.out, false, false, os );
+		echo( System.out, false, false, false, os );
 	}
 	public static void _cho( Object ... os ){
 		
-		echo( System.out, false, true, os );
+		echo( System.out, false, true, false, os );
 	}
 	public static void chof( String format, Object ... args ){
 		
@@ -211,10 +228,10 @@ public abstract class E {
 		
 		if( code == 0 ){
 			text.append( "OK" );
-    		echo( System.out, EXIT_UP, true, true, text.toString() );
+    		echo( System.out, EXIT_UP, true, true, false, text.toString() );
 		} else {
 			text.append( code );
-    		echo( System.err, EXIT_UP, true, true, text.toString() );
+    		echo( System.err, EXIT_UP, true, true, false, text.toString() );
 		}
 		System.exit( code );
 	}
@@ -276,7 +293,7 @@ public abstract class E {
 		
 		result.append( Ex.me( t, start, depth ) );
 		
-		echo( out, start-1, true, true, result.toString() );
+		echo( out, start-1, true, true, false, result.toString() );
 	}
 	public static void x( int depth, Throwable t ){
 		ex( System.err, t, EX_UP-1, depth, t.getMessage() );

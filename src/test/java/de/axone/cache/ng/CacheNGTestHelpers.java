@@ -24,6 +24,8 @@ public class CacheNGTestHelpers {
 		public static TestRealm<Top,List<TArticle>> TOP_LARTICLE = new TestRealm<>( "top->L:article" );
 		
 		public static TestRealm<TestSearchQuery,List<TArticle>> SQTID_LARTICLE = new TestRealm<>( "sqtid->L:article" );
+		
+		public static TestRealm<String,String> S_S = new TestRealm<>( "s->s" );
 	}
 	
 

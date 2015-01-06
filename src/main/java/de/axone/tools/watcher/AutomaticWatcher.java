@@ -33,11 +33,13 @@ public class AutomaticWatcher<W,T> {
 
 		// First try to get from cache
 		boolean hasChanged;
+		
+		lock.readLock().lock();
 		try{
-			lock.readLock().lock();
 			hasChanged = backend.haveChanged();
-			
-		} finally { lock.readLock().unlock(); }
+		} finally {
+			lock.readLock().unlock();
+		}
 		
 		T result;
 		if( ! hasChanged ){
@@ -46,16 +48,14 @@ public class AutomaticWatcher<W,T> {
 			
 		} else {
 
+			lock.writeLock().lock();
 			try {
-				lock.writeLock().lock();
-				
 				// Use Accessor to fetch
 				result = processor.fetch( backend.getWatched() );
 
 				store.setData( result );
 				
 			} finally {
-
 				lock.writeLock().unlock();
 			}
 		}
