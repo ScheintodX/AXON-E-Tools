@@ -56,8 +56,8 @@ public class AutomaticClientImpl<K,O>
 		HashMap<K,O> result = new HashMap<K,O>();
 		List<K> missed = null;
 
+		lock.readLock().lock();
 		try{
-			lock.readLock().lock();
     		for( K key : keys ){
     			
     			Cache.Entry<O> found = backend.fetchEntry( key );
@@ -78,11 +78,10 @@ public class AutomaticClientImpl<K,O>
 
 		if( missed != null ){
 
+			List<K> reallyMissed = new LinkedList<>();
+			
+			lock.writeLock().lock();
 			try {
-				
-				List<K> reallyMissed = new LinkedList<>();
-				
-				lock.writeLock().lock();
 				
 				// re-check in case someone else loaded something meanwhile
 				for( K key : missed ){
@@ -128,6 +127,7 @@ public class AutomaticClientImpl<K,O>
 		// First try to get from cache
 		Cache.Entry<O> entry = null;
 		
+		// deadlock #0
 		lock.readLock().lock();
 		try{
 			entry = backend.fetchEntry( key );
@@ -147,6 +147,7 @@ public class AutomaticClientImpl<K,O>
 			// Else mark miss
 			stats.miss();
 
+			// deadlock #1
 			lock.writeLock().lock();
 			try {
 				

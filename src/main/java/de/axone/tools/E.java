@@ -1,6 +1,7 @@
 package de.axone.tools;
 
 import java.io.PrintStream;
+import java.util.function.Consumer;
 
 import de.axone.exception.Ex;
 
@@ -302,4 +303,8 @@ public abstract class E {
 		ex( System.err, t, EX_UP-1, EX_DEFAULT_DEPTH, t.getMessage() );
 	}
 	
+	
+	public static <T> Consumer<T> peeker( String name ){
+		return what -> echo( System.err, 12, true, true, false, name, what );
+	}
 }

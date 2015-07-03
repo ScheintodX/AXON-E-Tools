@@ -9,6 +9,8 @@ import java.nio.channels.ReadableByteChannel;
 
 import org.testng.annotations.Test;
 
+import de.axone.file.Slurper;
+
 @Test( groups="tools.slurper" )
 public class SlurperTest {
 

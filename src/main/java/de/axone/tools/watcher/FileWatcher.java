@@ -21,7 +21,7 @@ public class FileWatcher implements Watcher<File>, Serializable {
 	public static final Logger log =
 			LoggerFactory.getLogger( FileWatcher.class );
 
-	private static final double TIMEOUT = 2000; //3 s
+	private static final double TIMEOUT = 2000; //2 s
 
 	private File file;
 

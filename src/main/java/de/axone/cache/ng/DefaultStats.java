@@ -25,14 +25,23 @@ public class DefaultStats implements CacheNG.AutomaticClient.Stats {
 	
 	@Override
 	public String toString(){
+		
 		StringBuilder result = new StringBuilder();
-		@SuppressWarnings( "resource" )
-		Formatter format = new Formatter( result );
-		long hits = this.hits.get();
-		long accesses = this.accesses.get();
-		format.format( "Ratio: %d/%d hits = %.1f%% | Full: %d/%d entries = %.1f%%",
-				hits, accesses, 100.0*hits/accesses,
-				cache.size(), cache.capacity(), 100.0*cache.size()/cache.capacity() );
-		return result.toString();
+		
+		try ( Formatter format = new Formatter( result ) ){
+			
+			long hits = this.hits.get();
+			long accesses = this.accesses.get();
+			
+			format.format( "Ratio: %d/%d hits = %.1f%%",
+					hits, accesses, 100.0*hits/accesses );
+			
+			if( cache.capacity() > 0 ){
+				format.format( " | Full: %d/%d entries = %.1f%%",
+						cache.size(), cache.capacity(), 100.0*cache.size()/cache.capacity() );
+			}
+			
+			return result.toString();
+		}
 	}
 }

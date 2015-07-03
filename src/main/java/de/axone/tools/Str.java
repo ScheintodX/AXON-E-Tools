@@ -378,6 +378,27 @@ public class Str {
 		}
 	}
 	
+	public static String[] splitAtWordBoundaryNear( String text, int len ) {
+		
+		assert text != null;
+		assert len >= 0;
+		
+		if( len >= text.length() )
+					return new String[]{ text, null };
+		
+		int i;
+		for( i=len-1; i>0; i-- ){
+			
+			if( Character.isWhitespace( text.charAt( i ) ) ) break;
+		}
+		
+		if( i > 0 ) {
+			return new String[]{ text.substring( 0, i ), text.substring( i+1 ) };
+		} else {
+			return new String[]{ null, text };
+		}
+	}
+	
 	// --- S p l i t ----------------------------------------------------
 	public static String splitAt( int position, String text ){
 		

@@ -27,7 +27,8 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 
 	public void testAutomaticClientParallelSingleOneByOneAccessor() throws InterruptedException {
 		
-		final AtomicInteger index = new AtomicInteger( 0 );
+		//final AtomicInteger index = new AtomicInteger( 0 );
+		final DelayedIndexProvider index = new DelayedIndexProvider();
 		
 		TestAccessor_Single accessor =
 				new TestAccessor_Single( index::getAndIncrement );
@@ -48,13 +49,14 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 		for( Thread t : ts ) t.start();
 		for( Thread t : ts ) t.join();
 		
-		assertEquals( index.get(), NUM_ENTRIES, "Amount of fetches" );
+		assertEquals( index.getAndIncrement(), NUM_ENTRIES, "Amount of fetches" );
 		
 	}
 	
 	public void testAutomaticClientParallelSingleManyAtOnceAccessor() throws InterruptedException {
 		
-		final AtomicInteger index = new AtomicInteger( 0 );
+		//final AtomicInteger index = new AtomicInteger( 0 );
+		final DelayedIndexProvider index = new DelayedIndexProvider();
 		
 		TestAccessor_Single accessor =
 				//new TestAccessor_Single( new PrintingIndexProvider( index ) );
@@ -77,13 +79,14 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 		for( Thread t : ts ) t.start();
 		for( Thread t : ts ) t.join();
 		
-		assertEquals( index.get(), NUM_ENTRIES, "Amount of fetches" );
+		assertEquals( index.getAndIncrement(), NUM_ENTRIES, "Amount of fetches" );
 		
 	}
 	
 	public void testAutomaticClientParallelMultiOneByOneAccessor() throws InterruptedException {
 		
-		final AtomicInteger index = new AtomicInteger( 0 );
+		//final AtomicInteger index = new AtomicInteger( 0 );
+		final DelayedIndexProvider index = new DelayedIndexProvider();
 		
 		TestAccessor_Multi accessor =
 				new TestAccessor_Multi( index::getAndIncrement );
@@ -104,13 +107,14 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 		for( Thread t : ts ) t.start();
 		for( Thread t : ts ) t.join();
 		
-		assertEquals( index.get(), NUM_ENTRIES, "Amount of fetches" );
+		assertEquals( index.getAndIncrement(), NUM_ENTRIES, "Amount of fetches" );
 		
 	}
 	
 	public void testAutomaticClientParallelMultiManyAtOnceAccessor() throws InterruptedException {
 		
-		final AtomicInteger index = new AtomicInteger( 0 );
+		//final AtomicInteger index = new AtomicInteger( 0 );
+		final DelayedIndexProvider index = new DelayedIndexProvider();
 		
 		TestAccessor_Multi accessor =
 				new TestAccessor_Multi( index::getAndIncrement );
@@ -131,7 +135,7 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 		for( Thread t : ts ) t.start();
 		for( Thread t : ts ) t.join();
 		
-		assertEquals( index.get(), NUM_ENTRIES, "Amount of fetches" );
+		assertEquals( index.getAndIncrement(), NUM_ENTRIES, "Amount of fetches" );
 		
 	}
 	
@@ -201,6 +205,7 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 	}
 	
 	
+	@FunctionalInterface
 	interface IndexProvider {
 		public int getAndIncrement();
 	}
@@ -219,7 +224,23 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 			print( "-->" + result );
 			return result;
 		}
+	}
+	
+	private static final class DelayedIndexProvider implements IndexProvider {
 		
+		private final AtomicInteger index = new AtomicInteger();
+		
+		@Override
+		public int getAndIncrement() {
+			
+			synchronized( this ){
+				try {
+					this.wait( THREAD_DELAY_MS );
+				} catch( InterruptedException e ) {}
+			}
+			
+			return index.getAndIncrement();
+		}
 	}
 	
 	class TestAccessor_Single
@@ -233,12 +254,6 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 		
 		@Override
 		public String fetch( String key ) {
-			
-			synchronized( this ){
-				try {
-					this.wait( THREAD_DELAY_MS );
-				} catch( InterruptedException e ) {}
-			}
 			
 			return key + index.getAndIncrement();
 		}
@@ -256,12 +271,6 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 		
 		@Override
 		public Map<String,String> fetch( Collection<String> keys ) {
-			
-			synchronized( this ){
-				try {
-					this.wait( THREAD_DELAY_MS );
-				} catch( InterruptedException e ) {}
-			}
 			
 			Map<String,String> result = new HashMap<>();
 			

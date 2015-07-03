@@ -130,6 +130,7 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 	public default <T extends Enum<T>> T getEnum( Class<T> clazz, String key ){
 		String v = get( key );
 		if( v == null ) return null;
+		if( v.length() == 0 ) return null;
 		return Enum.valueOf( clazz, v );
 	}
 	public default <T extends Enum<T>> T getEnum( Class<T> clazz, String key, T defaultValue ){

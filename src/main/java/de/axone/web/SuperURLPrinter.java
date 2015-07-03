@@ -127,7 +127,6 @@ public abstract class SuperURLPrinter implements Serializable {
 		public SuperURLPrinter include( Set<SuperURL.Part> parts ){
 			return new SuperURLPrinter.Custom().encode( encoding() ).include( parts );
 		}
-		
 	}
 	
 	public static class Custom extends Abstract {
@@ -210,8 +209,12 @@ public abstract class SuperURLPrinter implements Serializable {
 				throws IOException {
 			
 			if( url.scheme != null && isInclude( Part.Scheme ) ){
-				result.append( printer( Part.Scheme ).encodeScheme( url.scheme ) );
-				result.append( "://" );
+				if( url.scheme != SuperURL.NOSCHEME ){
+					result.append( printer( Part.Scheme ).encodeScheme( url.scheme ) );
+					result.append( "://" );
+				} else {
+					result.append( "//" );
+				}
 			}
 			
 			if( url.userInfo != null && isInclude( Part.UserInfo ) ){
@@ -550,19 +553,6 @@ public abstract class SuperURLPrinter implements Serializable {
 			src[ i ] = c;
 			target[ i ] = String.format( "%%%02x", (int)c );
 		}
-		
-		/*
-		switch( spaceAs ){
-		case keep: break;
-		case plus:
-			src[ src.length-1 ] = ' ';
-			target[ target.length-1 ] = "+";
-			break;
-		case percent:
-			src[ src.length-1 ] = ' ';
-			target[ target.length-1 ] = "%20";
-		}
-		*/
 		
 		return new TranslatingEncoder( src, target );
 	}

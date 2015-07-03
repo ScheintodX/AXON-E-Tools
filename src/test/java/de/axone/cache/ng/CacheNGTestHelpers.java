@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +27,7 @@ public class CacheNGTestHelpers {
 		public static TestRealm<TestSearchQuery,List<TArticle>> SQTID_LARTICLE = new TestRealm<>( "sqtid->L:article" );
 		
 		public static TestRealm<String,String> S_S = new TestRealm<>( "s->s" );
+		public static TestRealm<String,Collection<String>> S_SS = new TestRealm<>( "s->C:s" );
 	}
 	
 

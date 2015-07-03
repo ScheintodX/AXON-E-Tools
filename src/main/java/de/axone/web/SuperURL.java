@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -88,6 +89,7 @@ public final class SuperURL {
 	
 	private EnumSet<Part> include = EnumSet.allOf( Part.class );
 	
+	public static final String NOSCHEME = "NOSCHEME";
 	
 	String scheme;
 	UserInfo userInfo;
@@ -450,6 +452,10 @@ public final class SuperURL {
     	
     	public List<String> getParts(){
     		return parts;
+    	}
+    	public Host setParts( String ... parts ){
+    		this.parts = new LinkedList<>( Arrays.asList( parts ) );
+    		return this;
     	}
     	public Host setParts( LinkedList<String> parts ){
     		this.parts = parts;

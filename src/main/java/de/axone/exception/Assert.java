@@ -181,6 +181,17 @@ public abstract class Assert {
 		long n = number.longValue();
 		if( n >= bound ) throw Ex.up( new ArgumentRangeException( name, "<" + bound, n ) );
 	}
+	// zero or one
+	public static void zor1( Number number, String name ){
+		if( number == null ) return;
+		long n = number.longValue();
+		if( n < 0 || n > 1 ) throw Ex.up( new ArgumentRangeException( name, "!=(0,1)", n ) );
+	}
+	public static void one( Number number, String name ){
+		if( number == null ) return;
+		long n = number.longValue();
+		if( n != 1 ) throw Ex.up( new ArgumentRangeException( name, "!=1", n ) );
+	}
 	// eq --------------------
 	public static void equal( Object o1, String name, Object o2 ){
 		if( o1 == null ) return;
@@ -204,7 +215,7 @@ public abstract class Assert {
 	@SuppressWarnings( "unchecked" )
 	public static <T> T isInstance( Object o, String name, Class<T> clz ){
 		if( o == null ) return null;
-		if( ! o.getClass().isInstance( clz ) ) throw Ex.up( new ArgumentInstanceException( name, clz ) );
+		if( ! clz.isInstance( o ) ) throw Ex.up( new ArgumentInstanceException( name, clz ) );
 		return (T)o;
 	}
 	public static void notClass( Object o, String name, Class<?> clz ) {

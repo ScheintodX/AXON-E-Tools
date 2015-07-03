@@ -195,4 +195,21 @@ public abstract class Tag {
 		return linkBB( new StringBuilder(), target, text, clazz, args ).toString();
 	}
 	
+	public static String iframe( String src, String width, String height ){
+		return simple( "iframe", null, "src", src, "width", width, "height", height );
+	}
+	
+	public static String div( String content ){
+		return simple( "div", content, false );
+	}
+	public static String div( String id, String clazz, String content ){
+		return simple( "div", content, false, "id", id, "class", clazz );
+	}
+	public static String divId( String id, String content ){
+		return simple( "div", content, false, "id", id );
+	}
+	public static String divClass( String clazz, String content ){
+		return simple( "div", content, false, "class", clazz );
+	}
+	
 }

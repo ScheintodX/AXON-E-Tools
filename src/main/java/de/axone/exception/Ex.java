@@ -62,6 +62,7 @@ public abstract class Ex {
 	/* === HELPER === */
 
 	private static final Pattern NESTED_CLASS = Pattern.compile( "\\$[\\w_]+" );
+	
 	static String removeNestedClasses( String className ){
 		
 		return NESTED_CLASS.matcher( className ).replaceAll( "" );
@@ -73,10 +74,12 @@ public abstract class Ex {
 		int index=oldIndex;
 		
 		if( oldIndex > 0 ){
+			
 			while( ( index = className.indexOf( '.', index+1 ) ) > 0 ){
 				
 				oldIndex = index;
 			}
+			
 			return className.substring( oldIndex+1 );
 		} else {
 			return className;

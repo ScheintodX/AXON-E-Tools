@@ -1,8 +1,5 @@
 package de.axone.web;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -10,19 +7,13 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.FileImageOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.axone.async.ThreadQueue;
+import de.axone.gfx.ImageScaler;
 
 /**
  * Creates a watermarked picture and caches it
@@ -33,7 +24,7 @@ public class PictureBuilder {
 	
 	public static final Logger log = LoggerFactory.getLogger( PictureBuilder.class );
 	
-	private static final String imageioLock = "ImageIO read lock";
+	//private static final String imageioLock = "ImageIO read lock";
 
 	private final String mainDir;
 	private final File cacheDir;
@@ -58,13 +49,11 @@ public class PictureBuilder {
 		this.identifier = identifier;
 		this.hashLength = hashLength;
 		String main = findMain( cacheDir, identifier, index );
-		//E.rr( main );
 		if( main != null ){
 			this.main = new File( cacheDir, main );
 		} else {
 			this.main = null;
 		}
-		//E.rr( this.main );
 		this.index = index;
 	}
 
@@ -115,6 +104,7 @@ public class PictureBuilder {
 		//E.rr( found );
 		
 		if( !found ){
+			
 			File mainDir = new File( path, builder.toString() );
 			
 			//E.rr( mainDir.getAbsolutePath() );
@@ -146,16 +136,13 @@ public class PictureBuilder {
 		}
 	}
 
-	public static int fileCount( File path, String name ){
-		//TODO: Das passt so statisch nicht ...
-		return fileCount( path, name, 1 );
-	}
 	public static int fileCount( File path, String name, int hashLength ){
 
 		StringBuilder builder = new StringBuilder();
 		String hashDir = hashName( name, hashLength );
 
-		builder.append( "/main/" ).append( hashDir ).append( '/' )
+		builder.append( "/main/" )
+				.append( hashDir ).append( '/' )
 				.append( name );
 
 		File mainDir = new File( path, builder.toString() );
@@ -163,7 +150,6 @@ public class PictureBuilder {
 		File[] mainFiles = mainDir.listFiles( JPEG );
 
 		if( mainFiles != null ){
-
     		return mainFiles.length;
 		} else {
 			return 0;
@@ -226,87 +212,7 @@ public class PictureBuilder {
     					imageFile = main;
     				}
 
-    				// Read in
-    				BufferedImage inImage;
-    				try{
-    					synchronized( imageioLock ){ // Prevent problems with liblcms2-2
-		    				inImage = ImageIO.read( imageFile );
-    					}
-    				} catch( Throwable e ){
-    					throw new IOException( "Cannot read: " + imageFile.getAbsolutePath(), e );
-    				}
-
-    				// Make watermark
-    				if( watermark != null ) {
-
-    					BufferedImage watermarkImage;
-    					try {
-    						synchronized( imageioLock ){ // Prevent problems with liblcms2-2
-	        					watermarkImage = ImageIO.read( watermark );
-    						}
-        				} catch( IOException e ){
-        					throw new IOException( "Cannot read watermark: " + watermark.getAbsolutePath(), e );
-        				}
-
-
-    					int ww = watermarkImage.getWidth();
-    					int wh = watermarkImage.getHeight();
-
-    					int iw = inImage.getWidth();
-    					int ih = inImage.getHeight();
-
-    					Graphics2D drawGraphics = inImage.createGraphics();
-    					drawGraphics.drawImage( watermarkImage, iw - ww, ih - wh,
-    							ww, wh, null );
-    				}
-
-    				// Scale
-    				Dim d = mkOuterbox( size, inImage.getWidth(), inImage
-    						.getHeight() );
-
-    				BufferedImage resultImage = new BufferedImage( d.w, d.h,
-    						BufferedImage.TYPE_INT_RGB );
-
-    				Image scaled = inImage.getScaledInstance( d.w, d.h,
-    						Image.SCALE_SMOOTH );
-
-    				Graphics2D g2 = resultImage.createGraphics();
-
-    				g2.drawImage( scaled, 0, 0, d.w, d.h, null );
-
-    				// Quality can be higher for smaller images
-    				float quality;
-    				if( hq ) {
-    					quality = 1f;
-    				} else {
-    					if( size <= 200 ) {
-    						quality = .9f;
-    					} else if( size <= 400 ) {
-    						quality = .7f;
-    					} else if( size <= 700 ) {
-    						quality = .5f;
-    					} else {
-    						quality = .4f;
-    					}
-    				}
-
-    				// ImageIO.write( resultImage, "jpeg", cache );
-    				// Code from:
-    				// http://www.universalwebservices.net/web-programming-resources/java/adjust-jpeg-image-compression-quality-when-saving-images-in-java
-    				// Let you choose compression level
-    				Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName( "jpeg" );
-    				ImageWriter writer = iter.next();
-    				ImageWriteParam iwp = writer.getDefaultWriteParam();
-    				iwp.setCompressionMode( ImageWriteParam.MODE_EXPLICIT );
-    				iwp.setProgressiveMode( ImageWriteParam.MODE_DEFAULT );
-    				iwp.setCompressionQuality( quality );
-    				IIOImage image = new IIOImage( resultImage, null, null );
-    				try( FileImageOutputStream output = new FileImageOutputStream( cache ) ){
-	    				writer.setOutput( output );
-	    				synchronized( imageioLock ){ // Just in case writing is as buggy as reading
-		    				writer.write( null, image, iwp );
-	    				}
-    				}
+    				ImageScaler.instance().scale( cache, imageFile, watermark, size, hq );
     			}
     		} finally {
     			if( ! hq ) threadQueue.releaseLock( lock );
@@ -323,6 +229,7 @@ public class PictureBuilder {
 	 *
 	 * In words: Get the size so that the resulting image whould fit into
 	 */
+	/*
 	private Dim mkOuterbox( int size, int originalWidth, int originalHeight ) {
 
 		Dim res = new Dim();
@@ -335,6 +242,7 @@ public class PictureBuilder {
 
 		return res;
 	}
+	*/
 
 	private File getCacheFile( int size, File watermark ) throws IOException {
 
@@ -435,9 +343,11 @@ public class PictureBuilder {
 		}
 	}
 
+	/*
 	private static class Dim {
 		int w, h;
 	}
+	*/
 	
 	private class OldFilenameFilter implements FilenameFilter {
 
@@ -450,16 +360,12 @@ public class PictureBuilder {
 
 	public static final FilenameFilter JPEG = ( dir, name ) -> {
 
-		if( name.length() > 4
+		return name.length() > 4
 				&& ".jpg".equalsIgnoreCase( name
 						.substring( name.length() - 4 ) )
 				|| name.length() > 5
 				&& ".jpeg".equalsIgnoreCase( name
-						.substring( name.length() - 5 ) ) ) {
-			return true;
-		}
-
-		return false;
+						.substring( name.length() - 5 ) );
 	};
 
 	private static class JpegSorter implements Comparator<File>, Serializable {
