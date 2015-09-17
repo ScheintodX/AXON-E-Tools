@@ -17,13 +17,11 @@ public abstract class Assert {
 	public static void gt0( Number number, String name ){
 		if( number == null ) return;
 		if( number.doubleValue() <= 0 ) throw Ex.up( new ArgumentNullException( name ) );
-		
 	}
 	// eq 1
 	public static void eq1( Number number, String name ){
 		if( number == null ) return;
 		if( number.longValue() != 1 ) throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' is not 1" ) );
-		
 	}
 	
 	// Not null or empty
@@ -231,4 +229,11 @@ public abstract class Assert {
 		return (T)o;
 	}
 	
+	// composite rules
+	
+	// has some content
+	public static void existsWithContent( Iterable<?> list, String name ){
+		notNull( list, name );
+		isTrue( list.iterator().hasNext(), name + " content" );
+	}
 }

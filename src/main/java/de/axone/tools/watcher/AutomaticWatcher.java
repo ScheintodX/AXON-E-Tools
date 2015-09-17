@@ -27,9 +27,9 @@ public class AutomaticWatcher<W,T> {
 		this.store = new DataStoreImpl<>();
 	}
 	
-	public T getData( SingleValueAccessor<W,T> processor ) {
+	public T getData( SingleValueAccessor<W,T> accessor ) {
 
-		assert processor != null;
+		assert accessor != null;
 
 		// First try to get from cache
 		boolean hasChanged;
@@ -51,7 +51,7 @@ public class AutomaticWatcher<W,T> {
 			lock.writeLock().lock();
 			try {
 				// Use Accessor to fetch
-				result = processor.fetch( backend.getWatched() );
+				result = accessor.fetch( backend.getWatched() );
 
 				store.setData( result );
 				
@@ -63,4 +63,9 @@ public class AutomaticWatcher<W,T> {
     	return result;
 	}
 	
+	@Override
+	public String toString() {
+		
+		return "AutomaticWatcher: " + backend.toString();
+	}
 }

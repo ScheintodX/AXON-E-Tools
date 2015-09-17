@@ -3,6 +3,9 @@ package de.axone.data.weighted;
 import org.assertj.core.api.AbstractIterableAssert;
 import org.testng.annotations.Test;
 
+import de.axone.data.weighted.WeightedCollection.Weighter;
+import de.axone.tools.E;
+
 @Test( groups="helper.weighted_collection" )
 public class WeightedCollectionTest {
 	
@@ -295,17 +298,20 @@ public class WeightedCollectionTest {
 			return this;
 		}
 		
+		protected static <X,Y extends AbstractWeightedCollection<Y,X>> boolean _containsPrecisely( Y collection, X item ) {
+			
+			Weighter<X> weighter = collection.weighter();
+			
+			for( X it : collection ){
+				
+				if( it.equals( item ) && weighter.weight( it ) == weighter.weight( item ) ) return true;
+			}
+			return false;
+		}
+		
 		public WeightedCollectionAssert<T,W> containsPrecisely( T item ){
 			
-			for( T it : actual ){
-				
-				try {
-					org.assertj.core.api.Assertions.assertThat( it )
-							.isEqualToComparingFieldByField( item );
-					return this;
-				} catch( AssertionError e ){}
-				
-			}
+			if( _containsPrecisely( actual, item ) ) return this;
 			
 			failWithMessage( "\nExpected: <%s>\nto be contained in:\n<%s>\nbut it was not", item, actual.asList() );
 			
@@ -314,17 +320,23 @@ public class WeightedCollectionTest {
 		
 		public WeightedCollectionAssert<T,W> doesNotContainPrecisely( T item ){
 			
+			Weighter<T> weighter = actual.weighter();
+			
 			for( T it : actual ){
 				
-				try {
-						org.assertj.core.api.Assertions.assertThat( it )
-								.isEqualToComparingFieldByField( item );
-						
+				E.rr( it, item, weighter.weight( it ), weighter.weight( item ) );
+				
+				if( it.equals( item ) && weighter.weight( it ) == weighter.weight( item ) )
 						failWithMessage( "\nExpected: <%s>\nto NOT be contained in:\n<%s>\nbut it was", item, actual.asList() );
-						
-				} catch( AssertionError e ){}
 				
 			}
+			
+			return this;
+		}
+		
+		public WeightedCollectionAssert<T,W> print() {
+			
+			E.rr( actual );
 			
 			return this;
 		}

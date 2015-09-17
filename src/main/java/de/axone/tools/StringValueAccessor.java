@@ -22,6 +22,12 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 		if( v == null ) return defaultValue;
 		return v;
 	}
+	public default int getInteger( String key, IntegerValueProvider defaultValueProvider ){
+		
+		Integer v = getInteger( key );
+		if( v == null ) return defaultValueProvider.get();
+		return v;
+	}
 	public default int getIntegerRequired( String key ){
 		Integer v = getInteger( key );
 		if( v == null ) throw new NoSuchElementException( key );
@@ -32,6 +38,17 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 		if( v == null ) v=defaultValue;
 		if( v == null ) throw new NoSuchElementException( key );
 		return v;
+	}
+	public default int getIntegerRequired( String key, IntegerValueProvider defaultValueProvider ){
+		Integer v = getInteger( key );
+		if( v == null ) v=defaultValueProvider.get();
+		if( v == null ) throw new NoSuchElementException( key );
+		return v;
+	}
+	
+	@FunctionalInterface
+	public interface IntegerValueProvider {
+		public Integer get();
 	}
 	
 	// == Long =====
@@ -45,16 +62,32 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 		if( v == null ) return defaultValue;
 		return v;
 	}
+	public default long getLong( String key, LongValueProvider defaultValueProvider ){
+		Long v = getLong( key );
+		if( v == null ) return defaultValueProvider.get();
+		return v;
+	}
 	public default long getLongRequired( String key ){
 		Long v = getLong( key );
 		if( v == null ) throw new NoSuchElementException( key );
 		return v;
 	}
-	public default long getLongRequired( String key, Long defaultValue){
+	public default long getLongRequired( String key, Long defaultValue ){
 		Long v = getLong( key );
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw new NoSuchElementException( key );
 		return v;
+	}
+	public default long getLongRequired( String key, LongValueProvider defaultValueProvider ){
+		Long v = getLong( key );
+		if( v == null ) v = defaultValueProvider.get();
+		if( v == null ) throw new NoSuchElementException( key );
+		return v;
+	}
+	
+	@FunctionalInterface
+	public interface LongValueProvider {
+		public Long get();
 	}
 	
 	// == Double =====
@@ -68,6 +101,11 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 		if( v == null ) return defaultValue;
 		return v;
 	}
+	public default double getDouble( String key, DoubleValueProvider defaultValueProvider ){
+		Double v = getDouble( key );
+		if( v == null ) return defaultValueProvider.get();
+		return v;
+	}
 	public default double getDoubleRequired( String key ){
 		Double v = getDouble( key );
 		if( v == null ) throw new NoSuchElementException( key );
@@ -78,6 +116,17 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw new NoSuchElementException( key );
 		return v;
+	}
+	public default double getDoubleRequired( String key, DoubleValueProvider defaultValueProvider ){
+		Double v = getDouble( key );
+		if( v == null ) v = defaultValueProvider.get();
+		if( v == null ) throw new NoSuchElementException( key );
+		return v;
+	}
+	
+	@FunctionalInterface
+	public interface DoubleValueProvider {
+		public Double get();
 	}
 	
 	// == Boolean =====
@@ -92,6 +141,11 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 		if( v == null ) return defaultValue;
 		return v;
 	}
+	public default boolean getBoolean( String key, BooleanValueProvider defaultValueProvider ){
+		Boolean v = getBoolean( key );
+		if( v == null ) return defaultValueProvider.get();
+		return v;
+	}
 	public default boolean getBooleanRequired( String key ){
 		Boolean v = getBoolean( key );
 		if( v == null ) throw new NoSuchElementException( key );
@@ -101,6 +155,16 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 		Boolean v = getBoolean( key );
 		if( v == null ) v = defaultValue;
 		return v;
+	}
+	public default boolean getBooleanRequired( String key, BooleanValueProvider defaultValueProvider ){
+		Boolean v = getBoolean( key );
+		if( v == null ) v = defaultValueProvider.get();
+		return v;
+	}
+	
+	@FunctionalInterface
+	public interface BooleanValueProvider {
+		public Boolean get();
 	}
 	
 	// == BigDecimal =====
@@ -114,6 +178,11 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 		if( v == null ) return defaultValue;
 		return v;
 	}
+	public default BigDecimal getBigDecimal( String key, BigDecimalValueProvider defaultValueProvider ){
+		BigDecimal v = getBigDecimal( key );
+		if( v == null ) return defaultValueProvider.get();
+		return v;
+	}
 	public default BigDecimal getBigDecimalRequired( String key ){
 		BigDecimal v = getBigDecimal( key );
 		if( v == null ) throw new NoSuchElementException( key );
@@ -124,6 +193,17 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw new NoSuchElementException( key );
 		return v;
+	}
+	public default BigDecimal getBigDecimalRequired( String key, BigDecimalValueProvider defaultValueProvider ){
+		BigDecimal v = getBigDecimal( key );
+		if( v == null ) v = defaultValueProvider.get();
+		if( v == null ) throw new NoSuchElementException( key );
+		return v;
+	}
+	
+	@FunctionalInterface
+	public interface BigDecimalValueProvider {
+		public BigDecimal get();
 	}
 	
 	// == Enumeration =====
@@ -138,6 +218,11 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 		if( v == null ) return defaultValue;
 		return v;
 	}
+	public default <T extends Enum<T>> T getEnum( Class<T> clazz, String key, EnumValueProvider<T> defaultValueProvider ){
+		T v = getEnum( clazz, key );
+		if( v == null ) return defaultValueProvider.get();
+		return v;
+	}
 	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, String key ){
 		T v = getEnum( clazz, key );
 		if( v == null ) throw new NoSuchElementException( key );
@@ -149,7 +234,17 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 		if( v == null ) throw new NoSuchElementException( key );
 		return v;
 	}
+	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, String key, EnumValueProvider<T> defaultValueProvider ){
+		T v = getEnum( clazz, key );
+		if( v == null ) v = defaultValueProvider.get();
+		if( v == null ) throw new NoSuchElementException( key );
+		return v;
+	}
 	
+	@FunctionalInterface
+	public interface EnumValueProvider<T extends Enum<T>> {
+		public T get();
+	}
 	
 	// == Object instantiation =====
 	public default <T, T1 extends T> T getNewInstance( Class<T1> clazz, String key ) throws ReflectiveOperationException {
@@ -164,16 +259,27 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 		if( v == null ) return defaultValue != null ? defaultValue.newInstance() : null;
 		return v;
 	}
+	public default <T, T1 extends T, T2 extends T> T getNewInstance( Class<T1> clazz, String key, ObjectValueProvider<T2> defaultValueProvider ) throws ReflectiveOperationException {
+		T v = getNewInstance( clazz, key );
+		Class<T2> defaultValue = defaultValueProvider.get();
+		if( v == null ) return defaultValue != null ? defaultValue.newInstance() : null;
+		return v;
+	}
 	public default <T, T1 extends T> T getNewInstanceRequired( Class<T1> clazz, String key ) throws ReflectiveOperationException {
 		T v = getNewInstance( clazz, key );
 		if( v == null ) throw new NoSuchElementException( key );
 		return v;
 	}
-	public default <T, T1 extends T, T2 extends T> T getNewInstanceRequired( Class<T1> clazz, String key, Class<T2> defaultValue ) throws ReflectiveOperationException {
+	public default <T, T1 extends T, T2 extends T> T getNewInstanceRequired( Class<T1> clazz, String key, ObjectValueProvider<T2> defaultValueProvider ) throws ReflectiveOperationException {
 		T v = getNewInstance( clazz, key );
+		Class<T2> defaultValue = defaultValueProvider.get();
 		if( v == null ) v = defaultValue != null ? defaultValue.newInstance() : null;
 		if( v == null ) throw new NoSuchElementException( key );
 		return v;
 	}
 	
+	@FunctionalInterface
+	public interface ObjectValueProvider<T> {
+		public Class<T> get();
+	}
 }

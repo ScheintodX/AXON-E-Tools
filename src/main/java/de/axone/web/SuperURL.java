@@ -821,8 +821,6 @@ public final class SuperURL {
 			
 			return true;
 		}
-		
-		
 	}
 	
 	public static final class Query implements Iterable<Query.QueryPart> {

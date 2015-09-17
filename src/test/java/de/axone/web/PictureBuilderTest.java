@@ -8,26 +8,36 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import de.axone.file.Crusher;
-import de.axone.tools.E;
 
 @Test( groups="tools.picturebuilder" )
 public class PictureBuilderTest {
 
+	// ../Tools because cwd is different depending on how the test is run
+	Path home = Paths.get( "../Tools/src/test/resources/cache" );
+		
 	public void buildPictures() throws Exception {
 		
-		PictureBuilderBuilder b = PictureBuilderBuilder.instance( Paths.get( "cache" ) )
-				.watermark( "watermark" )
+		PictureBuilderBuilder b = PictureBuilderBuilder.instance( home )
+				.watermark( "watermark/test.png" )
 				;
 		
-		PictureBuilderNG builder = b.builder( "BLAH", 0 );
+		PictureBuilderNG builder = b.builder( "test001", 0 );
 		
-		E.rr( builder.exists() );
-		E.rr( builder.get( 100 ) );
-		
-		assertEquals( builder.get( 100 ), Paths.get( "cache/watermark/B/100/BLAH.jpg" ) );
+		Path p = assertThat( builder.get( 100 ) )
+				.as( "pic 100" )
+				.isNotNull()
+				.isPresent()
+				.get()
+				;
+		assertThat( p )
+				.startsWith( home.resolve( "testpng/t/test001/100/test001.jpg" ) )
+				;
+				
 	}
 	
 	public void hashNames() {
@@ -64,8 +74,6 @@ public class PictureBuilderTest {
 		while( !jpg12345_1.toFile().createNewFile() ) Thread.sleep( 10 );
 		
 		
-		E.rr( jpg12345.toFile().getAbsolutePath() );
-		
 		Optional<Path> p;
 		
 		p = PictureBuilderBuilderImpl.findFile( maindir, "1", "12345", 0 );
@@ -82,31 +90,43 @@ public class PictureBuilderTest {
 		Crusher.crushDir( tmp );
 	}
 	
-	public void realRun() throws Exception {
-		
-		Path home = Paths.get( "src/test/resources/cache" );
+	@BeforeClass
+	public void checkDependencies() {
 		
 		// check everything is there as needed now
-		assertTrue( Files.isDirectory( home.resolve( "main/t/test001" ) ) );
-		assertTrue( Files.isReadable( home.resolve( "main/t/test001/test001.jpg" ) ) );
+		assertThat( home.resolve( "main/t/test001" ) ).isDirectory()
+				.resolve( "test001.jpg" ).isFile()
+				;
+		assertThat( home.resolve( "watermark" ) )
+				.isDirectory()
+				.resolve( "test.png" )
+				.isFile()
+				;
 		
-		assertTrue( Files.isDirectory( home.resolve( "watermark" ) ) );
-		assertTrue( Files.isReadable( home.resolve( "watermark/test.png" ) ) );
+	}
+	
+	@BeforeClass
+	@AfterClass
+	public void cleanup() throws Exception {
 		
 		// remove files from old run
 		Crusher.crushDirIfExists( home.resolve( "plain" ) );
 		Crusher.crushDirIfExists( home.resolve( "testpng" ) );
 		
+	}
+	
+	public void realRun() throws Exception {
+		
 		PictureBuilderBuilder pbb = PictureBuilderBuilder.instance( home );
 		
 		PictureBuilderNG builder = pbb.builder( "test001", 0 );
 		assertTrue( builder.exists() );
-		assertEquals( builder.fileCount(), 1 );
+		assertEquals( builder.fileCount(), 10 );
 		Optional<Path> scaledImage = builder.get( 100 );
 		
 		assertThat( scaledImage ).isPresent();
 		assertThat( scaledImage.get() )
-				.isEqualTo( home.resolve( "plain/t/test001/100/test001.jpg" ) )
+				.startsWith( home.resolve( "plain/t/test001/100/test001.jpg" ) )
 				;
 		
 		assertThat( home )
@@ -114,23 +134,28 @@ public class PictureBuilderTest {
 				.resolve( "t" ).isDirectory()
 				.resolve( "test001" ).isDirectory()
 				.resolve( "100" ).isDirectory()
-				.resolve( "test001.jpg" ).isFile()
+				.find( "test001\\.jpg.*" ).isFile()
 				;
 		assertThat( home )
 				.resolve( "plain/t/test001/1000" ).isDirectory()
-				.resolve( "test001.jpg" ).isFile()
+				.find( "test001\\.jpg.*" ).isFile()
 				;
 		
 		
 		// Now with watermark:
-		pbb = pbb.watermark( "test.png" );
+		pbb = pbb.watermark( "watermark/test.png" );
 		
 		builder = pbb.builder( "test001", 0 );
 		scaledImage = builder.get( 100 );
 		
+		Path test001_testpng100 = assertThat( home.resolve( "testpng/t/test001/100" ) )
+				.find( "test001\\.jpg.*" )
+				.andReturn()
+				;
+		
 		assertThat( scaledImage ).isPresent();
 		assertThat( scaledImage.get() )
-				.isEqualTo( home.resolve( "testpng/t/test001/100/test001.jpg" ) )
+				.isEqualTo( test001_testpng100 )
 				;
 	}
 }

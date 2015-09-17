@@ -271,8 +271,10 @@ public class StrTest {
 		
 		String test = "abc;def;hij";
 		
-		E.rr( s.splitToList( test ) );
-		
+		assertThat( s.splitToList( test ) )
+				.hasSize( 3 )
+				.contains( "abc", "def", "hij" )
+				;
 	}
 	
 	public void cleanup_Whitespace(){

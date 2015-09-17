@@ -20,7 +20,7 @@ import de.axone.gfx.ImageScaler;
  *
  * @author flo
  */
-public class PictureBuilder {
+public abstract class PictureBuilder {
 	
 	public static final Logger log = LoggerFactory.getLogger( PictureBuilder.class );
 	

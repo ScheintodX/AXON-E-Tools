@@ -193,7 +193,7 @@ public class SuperProperties {
 		String value = null;
 		int i = 1;
 		do {
-			value = getProperty( key + "." + i );
+			value = getProperty( key + '.' + i );
 			if( value != null ) result.addLast( value );
 			i++;
 		} while( value != null );
@@ -395,7 +395,7 @@ public class SuperProperties {
 		if( this.prefix == null ){
 			return new SuperProperties( prefix, this.backend, this.rootDir );
 		} else {
-			return new SuperProperties( this.prefix + "." + prefix, this.backend, this.rootDir );
+			return new SuperProperties( this.prefix + '.' + prefix, this.backend, this.rootDir );
 		}
 	}
 	/*
@@ -434,7 +434,7 @@ public class SuperProperties {
 		if( prefix == null ){
 			result = key;
 		} else {
-			result = prefix + "." + key;
+			result = prefix + '.' + key;
 		}
 
 		return result;

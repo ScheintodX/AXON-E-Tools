@@ -20,7 +20,7 @@ public class EclipseRefactorProcessor extends AbstractProcessor {
         for (Element element : roundEnv.getElementsAnnotatedWith( Refactor.class )) {
             Refactor refactorAnnotation = element.getAnnotation( Refactor.class );
             String message = "The method " + element.getSimpleName()
-                       + " is marked as refactor: " + refactorAnnotation.toString() + ".";
+                       + " is marked as refactor: " + refactorAnnotation.toString() + '.';
             processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, message);
         }
         return true;

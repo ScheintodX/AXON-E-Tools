@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import de.axone.tools.E;
 import de.axone.tools.Str;
 
 public class ShellExec {
@@ -72,7 +71,7 @@ public class ShellExec {
 				
 				 // If nothing to do sleep some time and wait for output
 				if( !working ) Thread.sleep( 10 );
-				E._cho_( "." );
+				//E._cho_( "." );
 					
 			} while( line != null || stdoutReader.ready() || stderrReader.ready() || process.isAlive() );
 		}

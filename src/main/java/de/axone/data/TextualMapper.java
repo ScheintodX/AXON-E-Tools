@@ -15,11 +15,11 @@ public class TextualMapper {
 				
 				if( m.getParameterTypes().length != 0 )
 					throw new IllegalArgumentException( m.getClass().getSimpleName() +
-							"." + m.getName() + " must be an empty method" );
+							'.' + m.getName() + " must be an empty method" );
 				
 				if( m.getReturnType() != String.class )
 					throw new IllegalArgumentException( m.getClass().getSimpleName() +
-							"." + m.getName() + " must return string" );
+							'.' + m.getName() + " must return string" );
 				
 				try {
 					return (String) m.invoke( o );

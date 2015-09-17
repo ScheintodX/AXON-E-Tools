@@ -348,10 +348,10 @@ public abstract class Validator<T> {
 					) );
 					
 				} else if( value instanceof ValidatorResult ){
-					((ValidatorResult)value).writeInto( prefix + key + ".", list );
+					((ValidatorResult)value).writeInto( prefix + key + '.', list );
 					
 				} else if( value instanceof ValidatorResultList ){
-					((ValidatorResultList)value).writeInto( prefix + key + ".", list );
+					((ValidatorResultList)value).writeInto( prefix + key + '.', list );
 				}
 			}
 			
@@ -415,7 +415,7 @@ public abstract class Validator<T> {
 			
 			for( Map.Entry<Integer, ValidatorResult> entry : entrySet() ){
 				
-				entry.getValue().writeInto( prefix + entry.getKey() + ".", list );
+				entry.getValue().writeInto( prefix + entry.getKey() + '.', list );
 			}
 			
 		}

@@ -40,7 +40,7 @@ public class CacheEHCache<K,O>
 		Status status = newCache.getStatus();
 		if( status != Status.STATUS_ALIVE ){
 			
-			throw new IllegalStateException( realm.name() + " is not alive" );
+			throw new IllegalStateException( realm.name() + " is not alive (" + status + ")" );
 		}
 		return new CacheEHCache<I,J>( realm, newCache );
 	}

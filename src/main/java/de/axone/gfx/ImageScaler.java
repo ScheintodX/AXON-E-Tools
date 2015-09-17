@@ -3,6 +3,7 @@ package de.axone.gfx;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 public interface ImageScaler {
@@ -14,6 +15,7 @@ public interface ImageScaler {
 	}
 	
 	public static ImageScaler instance() {
-		return ImageScalerAWT.instance();
+		//return ImageScalerAWT.instance();
+		return new ImageScalerGM( Paths.get( "/usr/bin/gm" ) );
 	}
 }

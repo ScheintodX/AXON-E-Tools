@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import de.axone.exception.Assert;
+import de.axone.tools.Mapper;
 import de.axone.web.encoding.Encoder_Attribute;
 import de.axone.web.encoding.Encoder_Xml;
 
@@ -175,6 +176,12 @@ public abstract class Tag {
 	}
 	public static String a( String content, String href ){
 		return simple( "a", content, "href", href );
+	}
+	public static String javascript( String id, String content ){
+		return simple( "script",
+				"\n<!--\n\"use strict\";\n\n " + content + "\n-->\n",
+				false,
+				Mapper.hashMap( "id", id, "type", "text/javascript" ) );
 	}
 	
 	public static String button( String name, String value, String content ){

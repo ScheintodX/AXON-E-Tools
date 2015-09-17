@@ -554,8 +554,8 @@ public class SuperURLTest {
     	SuperURL url = SuperURLBuilders.fromString().build( "http://www.axon-e.de" );
     	url.getPath().addFirst( "I'm 100% yours" );
     	assertEquals( url.toStringEncode( Encode.Plain ), "http://www.axon-e.de/I'm 100% yours" );
-    	assertEquals( url.toStringEncode( Encode.Minimal ), "http://www.axon-e.de/I'm+100%25+yours" );
-    	assertEquals( url.toStringEncode( Encode.Full ), "http://www.axon-e.de/I%27m+100%25+yours" );
+    	assertEquals( url.toStringEncode( Encode.Minimal ), "http://www.axon-e.de/I'm%20100%25%20yours" );
+    	assertEquals( url.toStringEncode( Encode.Full ), "http://www.axon-e.de/I%27m%20100%25%20yours" );
     }
     
     public void canParseAmpInQuery() throws Exception {

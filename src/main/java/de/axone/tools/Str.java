@@ -268,6 +268,7 @@ public class Str {
 	public static class SimpleJoiner<T> implements Joiner<T> {
 
 		private String separator;
+		
 		public SimpleJoiner( String separator ){
 			this.separator = separator;
 		}

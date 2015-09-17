@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +17,13 @@ import org.slf4j.LoggerFactory;
 import de.axone.async.ThreadQueue;
 import de.axone.gfx.ImageScaler;
 import de.axone.thread.ThreadsafeContractor;
-import de.axone.tools.E;
 
 class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 	
 	public static final Logger log = LoggerFactory.getLogger( PictureBuilderNG.class );
 	
 	private static final String MAIN = "main",
-	                            PLAIN = "plain",
-	                            WATERMARK = "watermark"
+	                            PLAIN = "plain"
 	                            ;
 	
 	private final Path homedir,
@@ -33,7 +33,7 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 	
 	private final int hashLength;
 	
-	private Optional<String> watermark = Optional.empty();
+	private Optional<Path> watermark = Optional.empty();
 	
 	private static ThreadQueue threadQueue = new ThreadQueue( 4 );
 		
@@ -76,8 +76,6 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 		this.maindir = other.maindir;
 		this.cachedir = other.cachedir;
 		this.hashLength = other.hashLength;
-		
-		// this.watermark = other.watermark;
 	}
 	
 	@Override
@@ -85,7 +83,7 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 		
 		PictureBuilderBuilderImpl result = new PictureBuilderBuilderImpl( this );
 		
-		result.watermark = Optional.of( watermark );
+		result.watermark = watermark != null ? Optional.of( Paths.get( watermark ) ) : Optional.empty();
 		
 		return result;
 	}
@@ -107,8 +105,6 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 			this.index = index;
 			
 			this.hashName = hashLength > 0 ? hashName( identifier, hashLength ) : null;
-			
-			E.rr( this.identifier, this.index, this.hashName );
 		}
 
 		@Override
@@ -120,8 +116,9 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 			
 			int result;
 			
-			try {
-				result = (int) Files.list( dir )
+			try( Stream<Path> stream = Files.list( dir ) ) {
+				
+				result = (int) stream
 						.filter( JPEG )
 						.count();
 				
@@ -144,26 +141,11 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 		@Override
 		public Optional<Path> get( int size ) throws IOException {
 			
-			return get( size, watermark, true, false );
+			return get( size, watermarkFile(), true, false );
 		}
 		
 		private Path mainDir() {
 			return pathTo( maindir, hashName, identifier );
-		}
-		
-		private Optional<Path> watermarkDir;
-		private Optional<Path> watermarkDir() {
-			if( watermarkDir == null ) {
-				Optional<String> watermarkName = hashWatermark( watermark );
-				if( watermarkName.isPresent() ){
-					watermarkDir = Optional.of( maindir
-							.resolve( watermarkName.get() )
-							);
-				} else {
-					watermarkDir = Optional.empty();
-				}
-			}
-			return watermarkDir;
 		}
 		
 		private Optional<Path> watermarkFile() {
@@ -171,28 +153,29 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 			if( ! watermark.isPresent() ) return Optional.empty();
 			
 			return Optional.of( homedir
-					.resolve( WATERMARK )
 					.resolve( watermark.get() )
 			);
 		}
 		
-		private Optional<Path> cachedFile( int size, Optional<String> watermark ) throws IOException {
+		private Optional<Path> cachedFile( int size, Optional<Path> watermark ) throws IOException {
 			
 			Path fileCacheDir = createCacheDir( cachedir, identifier, size, hashName, watermark );
 			
-			Optional<Path> main = mainFile();
+			Optional<Path> mainResult = mainFile();
 			
-			if( !main.isPresent() ) return Optional.empty();
+			if( !mainResult.isPresent() ) return Optional.empty();
 			
-			Path mainPath = fileCacheDir.resolve( main.get().getFileName() );
+			Path main = mainResult.get();
+			
+			Path mainPath = fileCacheDir.resolve( main.getFileName().toString() + '_' + Files.getLastModifiedTime( main ).toMillis() + ".jpeg" );
 			
 			return Optional.of( mainPath );
 		}
 		
-		private Optional<Path> get( int size, Optional<String> watermark, boolean doPrescale, boolean hq )
+		private Optional<Path> get( int size, Optional<Path> watermark, boolean doPrescale, boolean hq )
 				throws IOException {
-	
-			if( ! exists() ) return null;
+			
+			if( ! exists() ) return Optional.empty();
 	
 			Optional<Path> cachedFileResult = cachedFile( size, watermark );
 			if( ! cachedFileResult.isPresent() ) return Optional.empty();
@@ -223,10 +206,14 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 	    				// Look for old version
 	    				Path cacheDir = cachedFile.getParent();
 	    				
-	    				List<Path> oldVersions = Files.list( cacheDir )
-	    						.filter( new OldVersionOf( cachedFile ) )
-	    						.collect( Collectors.toList() )
-	    						;
+	    				List<Path> oldVersions;
+	    				try( Stream<Path> stream = Files.list( cacheDir ) ) {
+		    				oldVersions = stream
+		    						.filter( new OldVersionOf( cachedFile ) )
+		    						.collect( Collectors.toList() )
+		    						;
+	    				}
+	    				
 	    				for( Path p : oldVersions ) {
 	    					
 	    					boolean ok = Files.deleteIfExists( p );
@@ -244,17 +231,22 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 	    				if( !imageFile.isPresent() )
 	    				return Optional.empty();
 	
-	    				ImageScaler.instance().scale( cachedFile, imageFile.get(), watermarkFile(), size, hq );
+	    				ImageScaler.instance().scale( cachedFile, imageFile.get(), watermark, size, hq );
 
 	    			}
 	    		} finally {
 	    			if( ! hq ) threadQueue.releaseLock( lock );
 	    			long dur = System.currentTimeMillis() - start;
-	    			log.info( "Rendered in {} ms", dur );
+	    			log.info( "{} Rendered in {} ms", cachedFile, dur );
 	    		}
 			}
 	
 			return Optional.of( cachedFile );
+		}
+		
+		@Override
+		public String toString() {
+			return identifier + '/' + index;
 		}
 		
 		private Optional<Path> mainFile;
@@ -286,16 +278,14 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 				return path.getFileName().toString().startsWith( mainFileName );
 			}
 			
-			
 		};
-		
 		
 	}
 	
 	private static ThreadsafeContractor cacheDirLocker8 =
 			new ThreadsafeContractor();
 	
-	private static Path createCacheDir( Path cachedir, String identifier, int size, String hashName, Optional<String> watermark ) throws IOException {
+	private static Path createCacheDir( Path cachedir, String identifier, int size, String hashName, Optional<Path> watermark ) throws IOException {
 		
 		// Pictures without watermark got in PLAIN dir.
 		Optional<String> hashedWatermark = hashWatermark( watermark );
@@ -337,11 +327,14 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 			}
 		}
 		
-		List<Path> files = Files.list( dir )
-				.filter( JPEG )
-				.sorted()
-				.collect( Collectors.toList() )
-				;
+		List<Path> files;
+		try( Stream<Path> stream = Files.list( dir ) ) {
+			files = stream
+					.filter( JPEG )
+					.sorted()
+					.collect( Collectors.toList() )
+					;
+		}
 		
 		if( files.size() <= index ) return Optional.empty();
 		
@@ -373,18 +366,15 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 		return name.substring( iNon0, iNon0+length ).toLowerCase();
 	}
 	
-	static Optional<String> hashWatermark( Optional<String> watermark ) {
+	static Optional<String> hashWatermark( Optional<Path> watermark ) {
 
 		if( ! watermark.isPresent() ) return Optional.empty();
-		return Optional.of( watermark.get().replaceAll( "\\W", "" ).toLowerCase() );
+		return Optional.of( watermark.get().getFileName().toString().replaceAll( "\\W", "" ).toLowerCase() );
 	}
 	
 	public static final Predicate<Path> JPEG = ( path ) -> {
 		
 		return path.toString().endsWith( ".jpg" );
 	};
-	
-	
-
 
 }

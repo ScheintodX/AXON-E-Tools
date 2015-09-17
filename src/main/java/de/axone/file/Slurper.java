@@ -12,6 +12,8 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import de.axone.data.Charsets;
@@ -85,6 +87,11 @@ public class Slurper {
 	
 	public static byte[] slurp( File in ) throws IOException {
 		try( FileInputStream fin = new FileInputStream( in ) ){
+			return slurp( fin );
+		}
+	}
+	public static byte[] slurp( Path in ) throws IOException {
+		try( InputStream fin = Files.newInputStream( in ) ){
 			return slurp( fin );
 		}
 	}
