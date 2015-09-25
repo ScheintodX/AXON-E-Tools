@@ -760,6 +760,10 @@ public class Str {
 		
 		return value.indexOf( ch ) >= 0;
 	}
+	public static final boolean contains( String haystack, String needle ) {
+		
+		return haystack.indexOf( needle ) >= 0;
+	}
 	
 	public static int count( String text, char rs ) {
 		
@@ -839,5 +843,36 @@ public class Str {
 			return result.toString();
 		}
 		
+	}
+	
+	public static String clean( String string ) {
+		
+		StringBuilder result = new StringBuilder();
+		
+		char [] chars = string.toCharArray();
+		
+		for( char c : chars ) {
+			
+			if( c >= 'a' && c <= 'z' || c >='A' && c <= 'Z' || c >= '0' && c <= '9' ) result.append( c );
+			else if( c == ' ' || c == '_' ) result.append( '_' );
+		}
+		
+		return result.toString();
+	}
+	
+	public static String cleanToLowerCase( String string ) {
+		
+		StringBuilder result = new StringBuilder();
+		
+		char [] chars = string.toCharArray();
+		
+		for( char c : chars ) {
+			
+			if( c >= 'a' && c <= 'z' || c >= '0' && c <= '9' ) result.append( c );
+			else if( c >='A' && c <= 'Z' ) result.append( (char)(c + ('a'-'A')) ); //(char) is needed to select the correct method because char + char is casted to int otherwise
+			else if( c == ' ' || c == '_' ) result.append( '_' );
+		}
+		
+		return result.toString();
 	}
 }

@@ -2,9 +2,18 @@ package de.axone.tools;
 
 public interface Speller {
 
+	
 	public String inWords( int number );
+	
+	
+	public static final Speller
+			DE = new SpellerDe(),
+			EN = new SpellerEn(),
+			CNT = new CounterEn()
+			;
 
-	public static class De implements Speller {
+	
+	public static class SpellerDe implements Speller {
 
 		private static String[] einer = { "Null", "Ein", "Zwei", "Drei",
 				"Vier", "Fünf", "Sechs", "Sieben", "Acht", "Neun", "Zehn",
@@ -59,8 +68,9 @@ public interface Speller {
 			}
 		}
 	}
-
-	public static class En implements Speller {
+	
+	
+	public static class SpellerEn implements Speller {
 
 		private static String[] oner = { "Zero", "One", "Two", "Three", "Four",
 				"Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven",
@@ -108,6 +118,24 @@ public interface Speller {
 
 			return "(E:" + Integer.toString( i ) + ")";
 		}
-
 	}
+	
+	
+	public static class CounterEn implements Speller {
+		
+		private static String [] words = { "First", "Second", "Third", "Fourth", "Fifth" };
+
+		@Override
+		public String inWords( int number ) {
+			
+			if( number < 1 ) throw new IllegalArgumentException( "Cannot count zero" );
+			
+			if( number >= 1 && number <=5 )
+					return words[ number-1 ];
+			
+			return Speller.EN.inWords( number ) + "th";
+		}
+	}
+
+	
 }

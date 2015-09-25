@@ -1,5 +1,6 @@
 package de.axone.web;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -17,8 +18,28 @@ public abstract class Tag {
 		return simpleBB( builder, name, content, true, args );
 	}
 	
+	public static <A extends Appendable> A simpleA( A builder,
+			String name, String content, String ...args) throws IOException {
+		
+		try {
+			return simpleA( builder, name, content, true, args );
+		} catch( IOException e ) {
+			throw new Error( "Cannot write to Stringbuilder?!?", e );
+		}
+	}
+	
 	public static StringBuilder simpleBB( StringBuilder builder,
-			String name, String content, boolean encodeContent , String ...args){
+			String name, String content, boolean encodeContent, String ...args){
+		
+		try {
+			return simpleA( builder, name, content, encodeContent, args );
+		} catch( IOException e ) {
+			throw new Error( "Cannot write to Stringbuilder?!?", e );
+		}
+	}
+	
+	public static <A extends Appendable> A simpleA( A builder,
+			String name, String content, boolean encodeContent , String ...args) throws IOException {
 		
 		Assert.notNull( builder, "builder" );
 		Assert.notNull( name, "name" );
@@ -66,7 +87,17 @@ public abstract class Tag {
 	}
 	
 	public static StringBuilder simpleBB( StringBuilder builder,
-			String name, String content, boolean encodeContent , Map<String,String> args ){
+			String name, String content, boolean encodeContent, Map<String,String> args ){
+		
+		try {
+			return simpleA( builder, name, content, encodeContent, args );
+		} catch( IOException e ) {
+			throw new Error( "Cannot write to Stringbuilder?!?", e );
+		}
+	}
+	
+	public static <A extends Appendable> A simpleA( A builder,
+			String name, String content, boolean encodeContent, Map<String,String> args ) throws IOException {
 
 		Assert.notNull( builder, "builder" );
 		Assert.notNull( name, "name" );
@@ -127,6 +158,15 @@ public abstract class Tag {
 	
 	public static StringBuilder linkBB( StringBuilder result, String target, String text, String clazz, String ... args ){
 		
+		try {
+			return linkA( result, target, text, clazz, args );
+		} catch( IOException e ) {
+			throw new Error( "Cannot write to Stringbuilder?!?", e );
+		}
+	}
+	public static <A extends Appendable> A linkA( A result, String target, String text, String clazz, String ... args )
+	throws IOException {
+		
 		if( args != null && args.length % 2 != 0 )
 			throw new IllegalArgumentException( "Arg count must be a multiple of 2" );
 		Assert.notNull( result, "result" );
@@ -158,7 +198,7 @@ public abstract class Tag {
 			tagArgs.add( "class" ); tagArgs.add( clazz );
 		}
 		
-		return simpleBB( result, "a", text, false, tagArgs.toArray( new String[ tagArgs.size() ] ) );
+		return simpleA( result, "a", text, false, tagArgs.toArray( new String[ tagArgs.size() ] ) );
 	}
 	
 	/*

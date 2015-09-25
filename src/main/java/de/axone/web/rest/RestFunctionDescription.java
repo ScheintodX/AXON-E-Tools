@@ -111,18 +111,22 @@ public class RestFunctionDescription {
 			returnValue = new Parameter( name, description );
 			return this;
 		}
+		
 		public Method addExample( Example example ) {
 			this.examples.add( example );
 			return this;
 		}
+		
 		public Method addExample( Example example, String explain ) {
 			example.setExplain( explain );
 			return addExample( example );
 		}
+		
 		public Method setHtml( String html ){
 			this.html = html;
 			return this;
 		}
+		
 		public String toHtml() {
 
 			StringBuilder result = new StringBuilder();

@@ -150,50 +150,55 @@ public class StrTest {
 		
 	}
 	
-	public void timing(){
+	private static int NUM_RUNS = 1_000_000;
+	
+	public void timing() throws InterruptedException{
 		
 		long start, end;
 		
 		String test = "abc;def;hij";
 		
+		// Regex split
 		Pattern pat = Pattern.compile( ";" );
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			pat.split( test );
 		}
 		start = System.currentTimeMillis();
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			pat.split( test );
 		}
 		end = System.currentTimeMillis();
 		E.rr( "Pattern.split Took " + (end-start) + " ms" );
 		
-		for( int i=0; i<10_000_000; i++ ){
+		// String split
+		for( int i=0; i<NUM_RUNS; i++ ){
 			test.split( ";" );
 		}
 		start = System.currentTimeMillis();
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			test.split( ";" );
 		}
 		end = System.currentTimeMillis();
 		E.rr( "String.split Took " + (end-start) + " ms" );
 		
+		
 		// splitFastLimited
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			Str.splitFastLimited( test, ';', 8 );
 		}
 		start = System.currentTimeMillis();
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			Str.splitFastLimited( test, ';', 8 );
 		}
 		end = System.currentTimeMillis();
 		E.rr( "Str Took " + (end-start) + " ms" );
 		
 		// splitFastOnce
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			Str.splitFastOnce( test, ';' );
 		}
 		start = System.currentTimeMillis();
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			Str.splitFastOnce( test, ';' );
 		}
 		end = System.currentTimeMillis();
@@ -201,11 +206,11 @@ public class StrTest {
 		
 		
 		// String utils
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			StringUtils.split( test, ';' );
 		}
 		start = System.currentTimeMillis();
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			StringUtils.split( test, ';' );
 		}
 		end = System.currentTimeMillis();
@@ -217,22 +222,22 @@ public class StrTest {
 		// Pattern
 		Pattern p = Pattern.compile( "\\s+" );
 		String test2 = "   a \tb  c ";
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			p.split( test2 );
 		}
 		start = System.currentTimeMillis();
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			p.split( test2 );
 		}
 		end = System.currentTimeMillis();
 		E.rr( "Pattern Took " + (end-start) + " ms" );
 		
 		// Fast Spaces
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			Str.splitFastAtSpacesToList( test2 );
 		}
 		start = System.currentTimeMillis();
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			Str.splitFastAtSpacesToList( test2 );
 		}
 		end = System.currentTimeMillis();
@@ -241,11 +246,11 @@ public class StrTest {
 		
 		// Guava
 		Splitter s = Splitter.on( ';' );
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			s.splitToList( test );
 		}
 		start = System.currentTimeMillis();
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			s.splitToList( test );
 		}
 		end = System.currentTimeMillis();
@@ -253,11 +258,11 @@ public class StrTest {
 		
 		// Guava Once
 		Splitter s2 = Splitter.on( ';' ).limit( 1 );
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			s2.splitToList( test );
 		}
 		start = System.currentTimeMillis();
-		for( int i=0; i<10_000_000; i++ ){
+		for( int i=0; i<NUM_RUNS; i++ ){
 			s2.splitToList( test );
 		}
 		end = System.currentTimeMillis();
@@ -293,6 +298,13 @@ public class StrTest {
 		assertEquals( Str.translate( "", from, to ), "" );
 		
 		assertEquals( Str.translate( "abcd", from, to ), "aBBCCd" );
+	}
+	
+	public void testClean() {
+		
+		assertEquals( Str.clean( "aBc 123" ), "aBc_123" );
+		assertEquals( Str.cleanToLowerCase( "aBc 123" ), "abc_123" );
+		
 	}
 	
 }

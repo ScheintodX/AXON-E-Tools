@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -48,7 +49,6 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 		this.cloner = cloner;
 		this.collector = new ItemCollector<>( supplier );
 		this.merger = merger;
-	
 	}
 	
 	public AbstractWeightedCollection( Supplier<W> supplier, Weighter<T> weighter, Cloner<T> cloner ){
@@ -170,6 +170,19 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	@Override
 	public Stream<T> stream(){
 		return map.keySet().stream();
+	}
+	
+	@Override
+	public Optional<T> findFirst( Predicate<? super T> predicate ){
+		return stream().filter( predicate )
+				.findFirst();
+	}
+	@Override
+	public Optional<T> findFirst( String name, Function<T, String> mapper ){
+		return stream()
+				.filter( t -> name.equals( mapper.apply( t ) ) )
+				.findFirst()
+				;
 	}
 	
 	@Override

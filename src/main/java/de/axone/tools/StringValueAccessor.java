@@ -1,5 +1,6 @@
 package de.axone.tools;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.NoSuchElementException;
 
@@ -166,6 +167,87 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 	public interface BooleanValueProvider {
 		public Boolean get();
 	}
+	
+	// == Files ==
+	public default File getFile( String key ){
+		String v = get( key );
+		if( v == null ) return null;
+		return new File( v );
+	}
+	public default File getFile( String key, File defaultValue ) {
+		File v = getFile( key );
+		if( v == null ) return defaultValue;
+		return v;
+	}
+	public default File getFile( String key, FileValueProvider defaultValueProvider ) {
+		File v = getFile( key );
+		if( v == null ) return defaultValueProvider.get();
+		return v;
+	}
+	public default File getFileRequired( String key ) {
+		File v = getFile( key );
+		if( v == null ) throw new NoSuchElementException( key );
+		return v;
+	}
+	public default File getFileRequired( String key, File defaultValue ) {
+		File v = getFile( key );
+		if( v == null ) v = defaultValue;
+		if( v == null ) throw new NoSuchElementException( key );
+		return v;
+	}
+	public default File getFileRequired( String key, FileValueProvider defaultValueProvider ) {
+		File v = getFile( key );
+		if( v == null ) v = defaultValueProvider.get();
+		if( v == null ) throw new NoSuchElementException( key );
+		return v;
+	}
+	
+	public default File absolute( File file, File optionalBasedir ) {
+		if( file == null ) return null;
+		if( file.isAbsolute() ) return file;
+		else {
+			if( optionalBasedir == null ) return file;
+			return new File( optionalBasedir, file.getPath() );
+		}
+	}
+	public default File absolute( File file, String optionalBasedirKey ) {
+		if( file == null ) return null;
+		if( file.isAbsolute() ) return file;
+		else {
+			File basedir = getFileRequired( optionalBasedirKey );
+			if( basedir == null ) return file;
+			return new File( basedir, file.getPath() );
+		}
+	}
+	public default File absolute( File file, FileValueProvider optionalBasedirProvider ) {
+		if( file == null ) return null;
+		if( file.isAbsolute() ) return file;
+		else {
+			File basedir =  optionalBasedirProvider.get();
+			if( basedir == null ) return file;
+			return new File( basedir, file.getPath() );
+		}
+	}
+	
+	public default File absoluteRequired( File file, String optionalBasedirKey ) {
+		File v = absolute( file, optionalBasedirKey );
+		if( v == null ) return null;
+		if( v.isAbsolute() ) return v;
+		else throw new IllegalArgumentException( "Resulting file '" + file.getPath() + "' is not absolute" );
+	}
+	
+	public default File absoluteRequired( File file, FileValueProvider optionalBasedirProvider ) {
+		File v = absolute( file, optionalBasedirProvider );
+		if( v == null ) return null;
+		if( v.isAbsolute() ) return v;
+		else throw new IllegalArgumentException( "Resulting file '" + file.getPath() + "' is not absolute" );
+	}
+	
+	@FunctionalInterface
+	public interface FileValueProvider {
+		public File get();
+	}
+	
 	
 	// == BigDecimal =====
 	public default BigDecimal getBigDecimal( String key ){

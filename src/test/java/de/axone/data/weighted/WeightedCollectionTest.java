@@ -324,8 +324,6 @@ public class WeightedCollectionTest {
 			
 			for( T it : actual ){
 				
-				E.rr( it, item, weighter.weight( it ), weighter.weight( item ) );
-				
 				if( it.equals( item ) && weighter.weight( it ) == weighter.weight( item ) )
 						failWithMessage( "\nExpected: <%s>\nto NOT be contained in:\n<%s>\nbut it was", item, actual.asList() );
 				

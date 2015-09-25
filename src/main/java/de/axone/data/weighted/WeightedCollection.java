@@ -3,7 +3,9 @@ package de.axone.data.weighted;
 import java.util.Collection;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -44,6 +46,9 @@ public interface WeightedCollection<W extends WeightedCollection<W, T>, T> exten
 
 	public boolean contains( T item );
 	public int size();
+	
+	public Optional<T> findFirst( Predicate<? super T> predicate );
+	public Optional<T> findFirst( String name, Function<T,String> namer );
 	
 	@FunctionalInterface
 	public interface Weighter<T> {
