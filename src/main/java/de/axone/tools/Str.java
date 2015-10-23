@@ -442,13 +442,13 @@ public class Str {
 	 *  even if the amount of found parts is smaller than n
 	 *  
 	 * @param s
-	 * @param n
+	 * @param n the limit. This is needed to prealocate the result array.
 	 * @param split
 	 * @return the splitted values in a string array
 	 */
 	public static String [] splitFastLimited( String s, char split, int n ){
 		
-		final String [] result = new String[n];
+		final String [] result = new String[ n ];
 		
 		final int len = s.length();
 		
@@ -711,6 +711,45 @@ public class Str {
 			if( value == null || value.length() == 0 || value.trim().length() == 0 ) it.remove();;
 		}
 		return list;
+	}
+	
+	public static String trimToNull( String string ) {
+		string = string.trim();
+		if( string.length() == 0 ) return null;
+		return string;
+	}
+	
+	
+	public static final String translate( String value, char from, char to ){
+		
+		if( value == null ) return null;
+		
+		int i, len = value.length();
+		
+		// First look if there is 'from' char anyway
+		for( i=0; i<len; i++ ) {
+			
+			if( value.charAt( i ) == from ) break;
+		}
+		
+		// Only do something of so
+		if( i < len ) {
+		
+			char [] asArray = value.toCharArray();
+			
+			// start with old i value because we know there is nothing before that
+			for( ; i<asArray.length; i++ ) {
+				
+				char c = asArray[ i ];
+				if( c == from ){
+					asArray[ i ] = to;
+				}
+			}
+			return new String( asArray );
+		} else {
+			return value;
+		}
+		
 	}
 	
 	public static final String translate( String value, char from, String to ){

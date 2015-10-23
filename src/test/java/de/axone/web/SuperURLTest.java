@@ -13,7 +13,6 @@ import java.net.URLEncoder;
 import org.testng.annotations.Test;
 
 import de.axone.data.Charsets;
-import de.axone.tools.E;
 import de.axone.web.SuperURL.Encode;
 import de.axone.web.SuperURL.FinalEncoding;
 import de.axone.web.SuperURL.Query.QueryPart;
@@ -686,11 +685,22 @@ public class SuperURLTest {
     	SuperURLPrinter p = SuperURLPrinter.Plain
     			.finishFor( FinalEncoding.Html );
     	
-    	E.rr( p.getClass() );
-    	
     	String encoded = p.toString( url );
     	
     	assertEquals( encoded, "http://www.axon-e.de?q&amp;a=b" );
     	
     }
+    
+    public void testIPV6() throws URISyntaxException {
+    	
+    	String ipv6 = "http://[::1]:8080/blah";
+    	
+    	SuperURL url = SuperURLBuilders.fromString().build( ipv6 );
+    	
+    	assertEquals( url.getPath().length(), 1 );
+    	assertEquals( url.getPath().get( 0 ), "blah" );
+    	assertEquals( url.getHost().toString(), "[::1]" );
+    }
+    
+    
 }

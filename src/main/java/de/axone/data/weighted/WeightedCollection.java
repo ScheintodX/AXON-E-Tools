@@ -1,7 +1,7 @@
 package de.axone.data.weighted;
 
 import java.util.Collection;
-import java.util.DoubleSummaryStatistics;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -14,12 +14,12 @@ public interface WeightedCollection<W extends WeightedCollection<W, T>, T> exten
 	public double weight();
 	public double maxWeight();
 	public double avgWeight();
-	public DoubleSummaryStatistics metrics();
 		
 	public Set<T> asSet();
 	public List<T> asList();
 	
 	public List<T> sorted();
+	public List<T> sorted( Comparator<T> comparator );
 	public List<T> shuffled();
 	public List<T> shuffledStable();
 	
@@ -39,10 +39,12 @@ public interface WeightedCollection<W extends WeightedCollection<W, T>, T> exten
 	public Stream<T> normalizedStream();
 	
 	public W add( T item );
+	public W addIf( T item, Predicate<T> condition );
 	public W addAll( W items );
 	public W addAll( Collection<? extends T> items );
 	public W removeAll( W items );
 	public W retainAll( W items );
+	public W distinct( W items );
 
 	public boolean contains( T item );
 	public int size();
@@ -61,8 +63,8 @@ public interface WeightedCollection<W extends WeightedCollection<W, T>, T> exten
 	}
 	
 	@FunctionalInterface
-	public interface Merger<T> {
-		public T merge( T item1, T item2 );
+	public interface Combiner<T> {
+		public T combine( T item1, T item2 );
 	}
 
 	public interface Metrics {
@@ -71,4 +73,5 @@ public interface WeightedCollection<W extends WeightedCollection<W, T>, T> exten
 		public double max();
 		public double avg();
 	}
+
 }

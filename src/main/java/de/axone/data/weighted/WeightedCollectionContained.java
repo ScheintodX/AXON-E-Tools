@@ -1,73 +1,169 @@
 package de.axone.data.weighted;
 
-import java.io.Serializable;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.Stream;
 
-import de.axone.data.weighted.WeightedCollectionContained.Container;
 
-public class WeightedCollectionContained<T>
-extends AbstractWeightedCollection<WeightedCollectionContained<T>, Container<T>>
-implements Serializable {
+public interface WeightedCollectionContained<W extends WeightedCollectionContained<W, T>, T>
+extends Iterable<WeightedCollectionContained.WeightedItem<T>>{
 	
-	private static final long serialVersionUID = 1L;
+	public W supply();
 	
-	public WeightedCollectionContained(){
+	public W add( T item, double weight );
+	public W addAll( Iterable<WeightedItem<T>> items );
+	public W addAll( Stream<WeightedItem<T>> items );
+	public W addAllIf( Iterable<WeightedItem<T>> items, Predicate<T> filter );
+	
+	public boolean contains( T item );
+	
+	public int size();
+	
+	public double weight();
+	public double maxWeight();
+	public double avgWeight();
+	
+	public Set<WeightedItem<T>> asSet();
+	public List<WeightedItem<T>> asList();
+	
+	public Stream<WeightedItem<T>> stream();
+	public Stream<WeightedItem<T>> sortedStream( Comparator<T> comparator );
+	public Stream<WeightedItem<T>> bestStream();
+	
+	public W best( int amount );
+	
+	public List<WeightedItem<T>> shuffled();
+	public List<WeightedItem<T>> shuffledStable();
+	
+	public W overrideBy( W other );
+	
+	public interface WeightedItem<I> {
 		
-		super( WeightedCollectionContained::new,
-				item -> item.weight,
-				(item, newWeight) -> new Container<T>( item.contained, newWeight )
-		);
-	}
-
-	public WeightedCollectionContained<T> add( T item, double weight ){
-		
-		return add( new Container<>( item, weight ) );
+		public I item();
+		public double weight();
+		public double normalized();
 	}
 	
-	public static <T> Collector<Container<T>,WeightedCollectionContained<T>, WeightedCollectionContained<T>> COLLECTOR(){
-		
-		return new ItemCollector<Container<T>, WeightedCollectionContained<T>>( WeightedCollectionContained::new );
-	}
+	public static class Impl<T> extends AbstractWeightedCollectionContained<Impl<T>,T> {
 
-	public static class Container<T> implements Serializable {
-		private final double weight;
-		private final T contained;
-		
-		public Container( T contained, double weight ) {
-			super();
-			this.contained = contained;
-			this.weight = weight;
+		public Impl( Supplier<Impl<T>> supplier ) {
+			super( supplier );
 		}
+	}
+	
+	public static class ItemCollector<T,X extends AbstractWeightedCollectionContained<X,T>>
+	implements Collector<WeightedItem<T>,List<WeightedItem<T>>,X> {
 		
-		public T contained(){ return contained; }
-		public double weight(){ return weight; }
-		
+		public ItemCollector( Supplier<X> supplier ) {
+			this.supplier = supplier;
+		}
+
+		private final Supplier<X> supplier;
+
 		@Override
-		public int hashCode() {
-			return contained != null ? contained.hashCode(): 0;
+		public Supplier<List<WeightedItem<T>>> supplier() {
+			return LinkedList::new;
 		}
 
 		@Override
-		public boolean equals( Object obj ) {
-			if( this == obj )
-				return true;
-			if( obj == null )
-				return false;
-			if( !( obj instanceof Container ) )
-				return false;
-			Container<?> other = (Container<?>) obj;
-			if( contained == null ) {
-				if( other.contained != null )
-					return false;
-			}
+		public BiConsumer<List<WeightedItem<T>>, WeightedItem<T>> accumulator() {
+			return Collection::add;
+		}
+
+		@Override
+		public BinaryOperator<List<WeightedItem<T>>> combiner() {
+			return (list1,list2) -> { list1.addAll( list2 ); return list1; };
+		}
+
+		@Override
+		public Function<List<WeightedItem<T>>, X> finisher() {
+			return list -> {
+				X impl = supplier.get();
+				impl.addAll( list );
+				return impl;
+			};
+		}
+
+		@Override
+		public Set<Collector.Characteristics> characteristics() {
+			return EnumSet.of( Collector.Characteristics.UNORDERED );
+		}
+	}
+	
+	/*
+	@FunctionalInterface
+	public interface WeightedItemSupplier<T> {
+		WeightedItem<T> get( T item, double value );
+	}
+	*/
+	
+	@FunctionalInterface
+	public interface Mapper<T,S> {
+		
+		public T map( S source );
+	}
+	
+	public class ConvertingWrapper<T, S> implements WeightedItem<T> {
+		
+		private final WeightedItem<S> source;
+		private final Mapper<T,S> mapper;
+		
+		public ConvertingWrapper( WeightedItem<S> source, Mapper<T,S> mapper ) {
 			
-			return contained.equals( other.contained );
+			this.source = source;
+			this.mapper = mapper;
 		}
 
 		@Override
-		public String toString() {
+		public T item() {
+			return mapper.map( source.item() );
+		}
+
+		@Override
+		public double weight() {
+			return source.weight();
+		}
+
+		@Override
+		public double normalized() {
+			return source.normalized();
+		}
+	}
+	
+	public class TransportWrapper<T, S> implements WeightedItem<T> {
+		
+		private final S source;
+		private final Mapper<T,S> mapper;
+		
+		public TransportWrapper( S source, Mapper<T,S> mapper ) {
 			
-			return String.format( "%s(%.2f)", contained, weight );
+			this.source = source;
+			this.mapper = mapper;
+		}
+
+		@Override
+		public T item() {
+			return mapper.map( source );
+		}
+
+		@Override
+		public double weight() {
+			return 1;
+		}
+
+		@Override
+		public double normalized() {
+			return 1;
 		}
 	}
 

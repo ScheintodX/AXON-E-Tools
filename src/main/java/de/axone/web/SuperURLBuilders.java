@@ -188,6 +188,7 @@ public class SuperURLBuilders {
 		// Chrome passes '[' and ']' in places where they not belong
 		private static String fixForChrome( String old ){
 			if( ! Str.containsOneOf( old, SQUARE_BRACETS ) ) return old;
+			if( Str.contains( old, "http://[" ) ) return old;// Ipv6 quickfix.
 			return Str.translate( old, SQUARE_BRACETS, SQUARE_BRACETS_ENCODED );
 		}
 		

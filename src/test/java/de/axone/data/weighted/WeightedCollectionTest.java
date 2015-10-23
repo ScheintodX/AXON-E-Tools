@@ -271,22 +271,20 @@ public class WeightedCollectionTest {
 			super( actual, WeightedCollectionAssert.class );
 		}
 		
-		protected WeightedTestItems actual(){ return (WeightedTestItems) actual; }
-		
 		public WeightedCollectionAssert<T,W> hasWeight( double weight ){
-			org.assertj.core.api.Assertions.assertThat( actual().weight() )
+			org.assertj.core.api.Assertions.assertThat( actual.weight() )
 					.isEqualTo( weight )
 					;
 			return this;
 		}
 		public WeightedCollectionAssert<T,W> hasMaxWeight( double weight ){
-			org.assertj.core.api.Assertions.assertThat( actual().maxWeight() )
+			org.assertj.core.api.Assertions.assertThat( actual.maxWeight() )
 					.isEqualTo( weight )
 					;
 			return this;
 		}
 		public WeightedCollectionAssert<T,W> hasAvgWeight( double weight ){
-			org.assertj.core.api.Assertions.assertThat( actual().avgWeight() )
+			org.assertj.core.api.Assertions.assertThat( actual.avgWeight() )
 					.isEqualTo( weight )
 					;
 			return this;

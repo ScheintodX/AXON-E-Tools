@@ -8,12 +8,12 @@ import java.util.Locale;
 import org.testng.annotations.Test;
 
 @Test( groups="tools.country" )
-public class CountryTest {
+public class StaticCountryTest {
 	
 	public void testDe() throws Exception {
 		
-		Country c = Country.DE;
-		assertEquals( c.commonName(), "Germany" );
+		StaticCountries c = StaticCountries.DE;
+		assertEquals( c.getCommonName(), "Germany" );
 		assertNotNull( c.locales() );
 		assertEquals( c.locales().length, 1 );
 		assertTrue( Arrays.asList( c.locales() ).contains( Locale.GERMAN ) );
@@ -21,8 +21,8 @@ public class CountryTest {
 	
 	public void testUs() throws Exception {
 		
-		Country c = Country.US;
-		assertEquals( c.commonName(), "United States" );
+		StaticCountries c = StaticCountries.US;
+		assertEquals( c.getCommonName(), "United States" );
 		assertNotNull( c.locales() );
 		assertEquals( c.locales().length, 1 );
 		assertTrue( Arrays.asList( c.locales() ).contains( Locale.ENGLISH ) );
@@ -30,20 +30,32 @@ public class CountryTest {
 	
 	public void testUk() throws Exception {
 		
-		Country c = Country.GB;
-		assertEquals( c.commonName(), "United Kingdom" );
+		StaticCountries c = StaticCountries.GB;
+		assertEquals( c.getCommonName(), "United Kingdom" );
 		assertNotNull( c.locales() );
 		assertEquals( c.locales().length, 1 );
 		assertTrue( Arrays.asList( c.locales() ).contains( Locale.ENGLISH ) );
 	}
 	
+	// Canada
+	// (Note that ca as a language is catalan. Canadian english is en_CA)
 	public void testCa() throws Exception {
 		
-		Country c = Country.CA;
-		assertEquals( c.commonName(), "Canada" );
+		StaticCountries c = StaticCountries.CA;
+		assertEquals( c.getCommonName(), "Canada" );
 		assertNotNull( c.locales() );
 		assertEquals( c.locales().length, 2 );
 		assertTrue( Arrays.asList( c.locales() ).contains( Locale.ENGLISH ) );
 		assertTrue( Arrays.asList( c.locales() ).contains( Locale.FRENCH ) );
+	}
+	
+	// Isle of man
+	public void testIm() throws Exception {
+		
+		StaticCountries c = StaticCountries.IM;
+		assertEquals( c.getCommonName(), "Isle of Man" );
+		assertNotNull( c.locales() );
+		assertEquals( c.locales().length, 1 );
+		assertTrue( Arrays.asList( c.locales() ).contains( Locale.ENGLISH ) );
 	}
 }

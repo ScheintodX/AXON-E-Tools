@@ -230,6 +230,15 @@ public abstract class Mapper {
 		}
 		return result;
 	}
+	
+	public static <T> List<T> list( Collection<T> values ) {
+		
+		if( values instanceof List ) {
+			return (List<T>) values;
+		} else {
+			return new ArrayList<>( values );
+		}
+	}
 
 	@SafeVarargs
 	public static <T> LinkedList<T> linkedList( T ... values ){
@@ -241,6 +250,24 @@ public abstract class Mapper {
 	public static <T> ArrayList<T> arrayList( T ... values ){
 
 		return new ArrayList<T>( Arrays.asList( values ) );
+	}
+	
+	public static <T> LinkedList<T> toLinkedListIfNeeded( Collection<T> values ){
+		
+		if( values instanceof ArrayList ) {
+			return (LinkedList<T>) values;
+		} else {
+			return new LinkedList<>( values );
+		}
+	}
+	
+	public static <T> ArrayList<T> toArrayListIfNeeded( Collection<T> values ){
+		
+		if( values instanceof ArrayList ) {
+			return (ArrayList<T>) values;
+		} else {
+			return new ArrayList<>( values );
+		}
 	}
 	
 	@SafeVarargs

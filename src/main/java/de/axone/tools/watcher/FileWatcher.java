@@ -7,6 +7,8 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.axone.exception.Assert;
+
 /**
  * Watches one file and can report if it has changed.
  * To minimize io this check is only done in a given
@@ -23,7 +25,7 @@ public class FileWatcher implements Watcher<File>, Serializable {
 
 	private static final double TIMEOUT = 2000; //2 s
 
-	private File file;
+	private final File file;
 
 	private double lastModifiedTime = -1;
 	private double lastCheckTime = -1;
@@ -38,6 +40,8 @@ public class FileWatcher implements Watcher<File>, Serializable {
 	 * @param timeout which has to pass until a new check is done
 	 */
 	public FileWatcher( File file, double timeout ){
+		
+		Assert.notNull( file, "file" );
 
 		this.file = file;
 		this.timeout = timeout;

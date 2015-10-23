@@ -14,9 +14,9 @@ public class CountryGenerator {
 	private static final String FILENAME = "/home/flo/workspace/EMogul_Data/import/countries.csv";
 	
 	private static enum FORMAT {
-		no, use,	
-		iso2, iso3, isoN, ccTld, currency, postalcode, eu, eurozone, lang_EN, lang, lang_fb,	
-		vat, vshow, sort_EN, name_EN, sort_DE, name_DE, sort_FR, name_FR
+		no,
+		iso2, iso3, isoN, ccTld, currency, currency2, postalcode, postalcode_required, eu, eurozone, lang_EN, lang, lang_fb,	
+		vat, vshow, sort_EN, name_EN, sort_DE, name_DE, sort_FR, name_FR, sort_ES, name_ES, sort_IT, name_IT
 		;
 	}
 	
@@ -103,7 +103,7 @@ public class CountryGenerator {
 			
 			if( ccTld != null ) ccTld = "\""+ccTld+"\"";
 			else ccTld = "null";
-			if( currency != null ) currency = "Currency.getInstance( \""+currency+"\" )";
+			if( currency != null ) currency = "\""+currency+"\"";
 			else currency = "null";
 			if( postalcode != null ) postalcode = "\""+postalcode+"\"";
 			else postalcode = "null";
@@ -118,7 +118,7 @@ public class CountryGenerator {
 					if( first ) first = false;
 					else langB.append( ", " );//lang += ", ";
 					//lang += "new Locale( \"" + langPart + "\" )";
-					langB.append( "new Locale( \"" + langPart + "\" )" );
+					langB.append(  langPart );
 				}
 				lang = langB.toString();
 			}
@@ -140,34 +140,36 @@ public class CountryGenerator {
 		}
 		in.close();
 		
-		File countryFile = new File( "src/code/de/axone/i18n/Country.java" );
+		File countryFile = new File( "src/main/java/de/axone/i18n/StaticCountries.java" );
 		E.rr( countryFile.getAbsolutePath() );
 		List<String> countryContent = new LinkedList<String>();
-		BufferedReader cIn = new BufferedReader( new FileReader( countryFile ) );
-		String cLine;
-		while( ( cLine = cIn.readLine() ) != null ){
-			countryContent.add( cLine );
-		}
-		cIn.close();
 		
-		FileWriter out = new FileWriter( countryFile );
-		
-		boolean inGenerated = false;
-		for( String l : countryContent ){
-			
-			if( l.matches( ".*START GENERATED.*" ) ){
-				inGenerated = true;
-				out.write( l );
-				out.write( "\n" );
-				out.write( enums.toString() );
-			} else if( l.matches( ".*END GENERATED.*" ) ){
-				inGenerated = false;
-			} 
-			if( !inGenerated ){
-				out.write( l );
-				out.write( "\n" );
+		try( BufferedReader cIn = new BufferedReader( new FileReader( countryFile ) ) ) {
+			String cLine;
+			while( ( cLine = cIn.readLine() ) != null ){
+				countryContent.add( cLine );
 			}
 		}
-		out.close();
+		
+		try( FileWriter out = new FileWriter( countryFile ) ) {
+		
+			boolean inGenerated = false;
+			for( String l : countryContent ){
+				
+				if( l.matches( ".*START GENERATED.*" ) ){
+					inGenerated = true;
+					out.write( l );
+					out.write( "\n" );
+					out.write( enums.toString() );
+				} else if( l.matches( ".*END GENERATED.*" ) ){
+					inGenerated = false;
+				} 
+				if( !inGenerated ){
+					out.write( l );
+					out.write( "\n" );
+				}
+			}
+		}
+		E.rr( "DONE" );
 	}
 }

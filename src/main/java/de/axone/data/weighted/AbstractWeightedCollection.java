@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.DoubleSummaryStatistics;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -21,6 +21,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 public abstract class AbstractWeightedCollection<W extends WeightedCollection<W, T>, T>
@@ -28,7 +29,8 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final W self;
+	@SuppressWarnings( "unchecked" )
+	private final W self = (W) this;
 	
 	private Map<T,T> map = new HashMap<>();
 	
@@ -38,17 +40,15 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	private final Supplier<W> supplier;
 	private final Weighter<T> weighter;
 	private final Cloner<T> cloner;
-	private final Merger<T> merger;
+	private final Combiner<T> combiner;
 	private final ItemCollector<T,W> collector;
 	
-	@SuppressWarnings( "unchecked" )
-	public AbstractWeightedCollection( Supplier<W> supplier, Weighter<T> weighter, Cloner<T> cloner, Merger<T> merger ){
-		this.self = (W) this;
+	public AbstractWeightedCollection( Supplier<W> supplier, Weighter<T> weighter, Cloner<T> cloner, Combiner<T> merger ){
 		this.supplier = supplier;
 		this.weighter = weighter;
 		this.cloner = cloner;
 		this.collector = new ItemCollector<>( supplier );
-		this.merger = merger;
+		this.combiner = merger;
 	}
 	
 	public AbstractWeightedCollection( Supplier<W> supplier, Weighter<T> weighter, Cloner<T> cloner ){
@@ -73,8 +73,8 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 		return cloner;
 	}
 	
-	public Merger<T> merger(){
-		return merger;
+	public Combiner<T> combiner(){
+		return combiner;
 	}
 	
 	@Override
@@ -88,25 +88,31 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 			
 			map.remove( old );
 			
-			T merged = merger.merge( old, item );
+			T merged = combiner.combine( old, item );
 			
 			map.put( merged, merged );
 			
 		} else {
 			
 			map.put( item, item );
+			
 		}
 		
 		return self;
 	}
 	
 	@Override
+	public W addIf( T item, Predicate<T> condition ) {
+		
+		if( condition.test( item ) ) add( item );
+		
+		return self;
+	}
+	
+	@Override
 	public W copy(){
-		
 		W result = supplier.get();
-		
 		result.addAll( map.keySet() );
-		
 		return result;
 	}
 	
@@ -144,6 +150,15 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 		for( Iterator<T> it = iterator(); it.hasNext(); ){
 			T item = it.next();
 			if( ! items.contains( item ) ) it.remove();
+		}
+		return self;
+	}
+	
+	@Override
+	public W distinct( W items ) {
+		for( Iterator<T> it = iterator(); it.hasNext(); ){
+			T item = it.next();
+			if( items.contains( item ) ) it.remove();
 		}
 		return self;
 	}
@@ -186,46 +201,43 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	}
 	
 	@Override
-	public DoubleSummaryStatistics metrics(){
-		
-		return stream()
-				.mapToDouble( weighter::weight )
-				.summaryStatistics();
-	}
-	
-	@Override
 	public double weight(){ 
 		
-		return stream()
-				.mapToDouble( weighter::weight )
-				.sum()
-				;
+		return weightStream()
+				.sum();
 	}
 		
 	@Override
 	public double maxWeight(){
 		
-		if( map.size() == 0 ) return 1;
+		OptionalDouble max = weightStream().max();
 		
-		return stream()
-				.mapToDouble( weighter::weight )
-				.max()
-				.getAsDouble()
-				;
+		return max.isPresent() ? max.getAsDouble() : 0;
 	}
 	
 	@Override
 	public double avgWeight(){ 
 		
-		if( map.size() == 0 ) return 1;
+		OptionalDouble avg = weightStream().average();
+		
+		return avg.isPresent() ? avg.getAsDouble() : 0;
+	}
+	
+	private DoubleStream weightStream() {
 		
 		return stream()
 				.mapToDouble( weighter::weight )
-				.average()
-				.getAsDouble()
 				;
 	}
 	
+	/*
+	private DoubleSummaryStatistics metrics() {
+		
+		return weightStream()
+				.summaryStatistics()
+				;
+	}
+	*/
 	
 	@Override
 	public int hashCode() {
@@ -257,14 +269,19 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	
 	@Override
 	public List<T> sorted() {
+		return sorted( new WeightComparator<>( weighter ) );
+	}
+	@Override
+	public List<T> sorted( Comparator<T> comparator ) {
 		List<T> result = asList();
-		Collections.sort( result, new WeightComparator<>( weighter ) );
+		Collections.sort( result, comparator );
 		return result;
 	}
 	
 	protected static void shuffle( List<?> list ){
 		Collections.shuffle( list );
 	}
+	
 	protected static void shuffleStable( List<?> list ){
 		Collections.shuffle( list, new Random( CONSTANT_SEED ) );
 	}
@@ -376,10 +393,8 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 		
 		if( size() == 0 ) return Stream.empty();
 		
-		DoubleSummaryStatistics metrics = metrics();
-		
-		double max = metrics.getMax();
-		double avg = metrics.getAverage();
+		double max = maxWeight();
+		double avg = avgWeight();
 		
 		return stream()
 				.map( (item) -> cloner.clone( item, normalize( item, max, avg ) ) )
@@ -387,10 +402,14 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	}
 	
 	/**
-	 * Normalize so that values near the average value end up
+	 * Normalise so that values near the average value end up
 	 * with a 0.5 value.
 	 * 
-	 * This prevents that eg. 1,2,5,7,100
+	 * This gives a "visually more pleasing" distribution of the values.
+	 * 
+	 * This prevents that for values like 1,2,5,7,100 (avg: 23)
+	 * we and up with a distribution like: .01,.02,.05,.07,1
+	 * but we get with: 0.02, 0.04, 0.11, 0.15, 1
 	 * 
 	 * @param item
 	 * @param max

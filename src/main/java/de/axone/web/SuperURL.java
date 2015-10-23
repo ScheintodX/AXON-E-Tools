@@ -821,6 +821,12 @@ public final class SuperURL {
 			
 			return true;
 		}
+		public Path clear() {
+			path.clear();
+			startsWithSlash = false;
+			endsWithSlash = false;
+			return this;
+		}
 	}
 	
 	public static final class Query implements Iterable<Query.QueryPart> {

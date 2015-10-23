@@ -288,16 +288,28 @@ public class StrTest {
 		
 	}
 	
-	public void translateSomeCharacters(){
+	public void translateSomeCharactersToStrings(){
 		
 		char [] from = new char [] { 'b','c' };
 		String [] to = new String [] { "BB", "CC" };
 		
-		assertNull( Str.translate( null, from, to ), "aBBCCd" );
+		assertNull( Str.translate( null, from, to ) );
 		
 		assertEquals( Str.translate( "", from, to ), "" );
 		
 		assertEquals( Str.translate( "abcd", from, to ), "aBBCCd" );
+	}
+	
+	public void translateSomeCharactersToCharacters() {
+		
+		assertNull( Str.translate( null, 'a', 'A' ) );
+		
+		assertEquals( Str.translate( "abaca", 'a', 'A' ), "AbAcA" );
+		
+		String testNoA = "bc";
+		
+		assertEquals( Str.translate( testNoA, 'a', 'A' ), testNoA );
+		assertTrue( Str.translate( testNoA, 'a', 'A' ) == testNoA );
 	}
 	
 	public void testClean() {

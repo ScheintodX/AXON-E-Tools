@@ -20,7 +20,7 @@ public abstract class E {
 				.append( ']' );
 	}
 	
-	private static void echo( PrintStream out, int depth, boolean lino, boolean nl, boolean tn, Object ... os ){
+	public static void echo( PrintStream out, int depth, boolean lino, boolean nl, boolean tn, Object ... os ){
 		
 		if( tn ) printThreadName( out );
 		

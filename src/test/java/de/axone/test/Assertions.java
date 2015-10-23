@@ -7,9 +7,13 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.assertj.core.api.AbstractObjectAssert;
+import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ObjectAssert;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -17,19 +21,19 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Assertions {
 
-	public void blah() {
-		org.assertj.core.api.Assertions.assertThat( true );
-	}
-	
-	
-	public static <X> OptionalAssert<X> assertThat( Optional<X> optional ) {
+	public static <X> OptionalAssert<X> assertOptional( Optional<X> optional ) {
 		
 		return new OptionalAssert<X>( optional );
 	}
 	
-	public static PathAssert assertThat( Path path ) {
+	public static PathAssert assertPath( Path path ) {
 		
 		return new PathAssert( path ).as( path.getFileName().toString() );
+	}
+	
+	public static <X> StreamAssert<X> assertStream( Stream<X> stream ) {
+		
+		return new StreamAssert<>( stream );
 	}
 	
 	
@@ -160,11 +164,11 @@ public class Assertions {
 					.filter( p -> p.getFileName().toString().matches( pattern ) )
 					.findFirst();
 			
-			Path found = assertThat( maybeFound )
+			Path found = assertOptional( maybeFound )
 					.isPresent()
 					.get();
 			
-			return assertThat( found );
+			return assertPath( found );
 		}
 		
 		S isSameAs( Path other ) {
@@ -175,6 +179,46 @@ public class Assertions {
 		public A andReturn() {
 			return actual;
 		}
+	}
+	
+	public static class StreamAssert<X> extends AbstractStreamAssert<X, StreamAssert<X>> {
+
+		protected StreamAssert( Stream<X> actual ) {
+			super( actual );
+		}
+	}
+	
+	
+	public static abstract class AbstractStreamAssert<
+			X,
+			S extends AbstractObjectAssert<S, Stream<X>>
+	
+	> extends AbstractObjectAssert<S,Stream<X>> {
+
+		protected AbstractStreamAssert( Stream<X> actual ) {
+			super( actual, AbstractStreamAssert.class );
+		}
+		
+		public S hasSize( int size ) {
+			
+			org.assertj.core.api.Assertions.assertThat( actual.count() )
+					.as( descriptionText() )
+					.isEqualTo( size );
+			
+			return myself;
+		}
+		
+		public ListAssert<X> asList() {
+			
+			return org.assertj.core.api.Assertions.assertThat(
+					actual.collect( Collectors.toList() ) );
+		}
+		
+		public List<X> theList() {
+			
+			return actual.collect( Collectors.toList() );
+		}
 		
 	}
+	
 }

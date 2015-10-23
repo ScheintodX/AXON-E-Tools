@@ -28,13 +28,13 @@ public class PictureBuilderTest {
 		
 		PictureBuilderNG builder = b.builder( "test001", 0 );
 		
-		Path p = assertThat( builder.get( 100 ) )
+		Path p = assertOptional( builder.get( 100 ) )
 				.as( "pic 100" )
 				.isNotNull()
 				.isPresent()
 				.get()
 				;
-		assertThat( p )
+		assertPath( p )
 				.startsWith( home.resolve( "testpng/t/test001/100/test001.jpg" ) )
 				;
 				
@@ -94,10 +94,10 @@ public class PictureBuilderTest {
 	public void checkDependencies() {
 		
 		// check everything is there as needed now
-		assertThat( home.resolve( "main/t/test001" ) ).isDirectory()
+		assertPath( home.resolve( "main/t/test001" ) ).isDirectory()
 				.resolve( "test001.jpg" ).isFile()
 				;
-		assertThat( home.resolve( "watermark" ) )
+		assertPath( home.resolve( "watermark" ) )
 				.isDirectory()
 				.resolve( "test.png" )
 				.isFile()
@@ -124,19 +124,19 @@ public class PictureBuilderTest {
 		assertEquals( builder.fileCount(), 10 );
 		Optional<Path> scaledImage = builder.get( 100 );
 		
-		assertThat( scaledImage ).isPresent();
-		assertThat( scaledImage.get() )
+		assertOptional( scaledImage ).isPresent();
+		assertPath( scaledImage.get() )
 				.startsWith( home.resolve( "plain/t/test001/100/test001.jpg" ) )
 				;
 		
-		assertThat( home )
+		assertPath( home )
 				.resolve( "plain" ).isDirectory()
 				.resolve( "t" ).isDirectory()
 				.resolve( "test001" ).isDirectory()
 				.resolve( "100" ).isDirectory()
 				.find( "test001\\.jpg.*" ).isFile()
 				;
-		assertThat( home )
+		assertPath( home )
 				.resolve( "plain/t/test001/1000" ).isDirectory()
 				.find( "test001\\.jpg.*" ).isFile()
 				;
@@ -148,13 +148,13 @@ public class PictureBuilderTest {
 		builder = pbb.builder( "test001", 0 );
 		scaledImage = builder.get( 100 );
 		
-		Path test001_testpng100 = assertThat( home.resolve( "testpng/t/test001/100" ) )
+		Path test001_testpng100 = assertPath( home.resolve( "testpng/t/test001/100" ) )
 				.find( "test001\\.jpg.*" )
 				.andReturn()
 				;
 		
-		assertThat( scaledImage ).isPresent();
-		assertThat( scaledImage.get() )
+		assertOptional( scaledImage ).isPresent();
+		assertPath( scaledImage.get() )
 				.isEqualTo( test001_testpng100 )
 				;
 	}

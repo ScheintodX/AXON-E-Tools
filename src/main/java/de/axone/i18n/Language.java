@@ -6,7 +6,7 @@ public enum Language {
 	be( "be", "ru", "en" ),
 	bg( "bg", "de", "en" ),
 	bs( "bs", "hr", "sr", "de", "en" ),
-	ca( "ca", "es", "fr" ),
+	ca( "ca", "es", "fr" ), //Catalan, not Canadian!
 	cs( "cs", "en" ),
 	da( "da", "en" ),
 	de( "de" ),
@@ -28,6 +28,7 @@ public enum Language {
 	mk( "mk", "en", "it" ),
 	mt( "mt", "en" ),
 	nl( "nl", "de", "en" ),
+	no( "no", "de", "en" ),
 	pl( "pl", "ru", "en", "de" ),
 	pt( "pt", "sp", "en", "fr" ),
 	ro( "ro", "en", "fr", "de", "it", "es" ),
