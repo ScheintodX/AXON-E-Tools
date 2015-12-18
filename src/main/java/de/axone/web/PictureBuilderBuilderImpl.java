@@ -54,6 +54,8 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 			this.maindir = homedir.resolve( MAIN );
 		} else if( maindir.isAbsolute() ) {
 			this.maindir = maindir;
+		} else if( maindir.equals( homedir ) ) {
+			this.maindir = maindir;
 		} else {
 			this.maindir = homedir.resolve( maindir );
 		}
@@ -278,6 +280,12 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 				return path.getFileName().toString().startsWith( mainFileName );
 			}
 			
+		}
+
+
+		@Override
+		public Path lookingAt() {
+			return mainDir();
 		};
 		
 	}

@@ -2,203 +2,208 @@ package de.axone.tools;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.NoSuchElementException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-public interface StringValueAccessor extends KeyValueAccessor<String,String> {
+public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	
 	// == String =====
 	@Override
-	public String access( String key );
+	public String access( K key );
 	
 	// == Integer =====
-	public default Integer getInteger( String key ){
+	public default Integer getInteger( K key ){
 		String v = get( key );
 		if( v == null ) return null;
 		return Integer.parseInt( v );
 	}
-	public default int getInteger( String key, int defaultValue ){
+	public default int getInteger( K key, int defaultValue ){
 		Integer v = getInteger( key );
 		if( v == null ) return defaultValue;
 		return v;
 	}
-	public default int getInteger( String key, IntegerValueProvider defaultValueProvider ){
+	public default Integer getInteger( K key, Integer defaultValue ){
+		Integer v = getInteger( key );
+		if( v == null ) return defaultValue;
+		return v;
+	}
+	public default int getInteger( K key, ValueProvider<Integer> defaultValueProvider ){
 		
 		Integer v = getInteger( key );
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default int getIntegerRequired( String key ){
+	public default int getIntegerRequired( K key ){
 		Integer v = getInteger( key );
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default int getIntegerRequired( String key, Integer defaultValue ){
+	public default int getIntegerRequired( K key, Integer defaultValue ){
 		Integer v = getInteger( key );
 		if( v == null ) v=defaultValue;
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default int getIntegerRequired( String key, IntegerValueProvider defaultValueProvider ){
+	public default int getIntegerRequired( K key, ValueProvider<Integer> defaultValueProvider ){
 		Integer v = getInteger( key );
 		if( v == null ) v=defaultValueProvider.get();
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
 	
-	@FunctionalInterface
-	public interface IntegerValueProvider {
-		public Integer get();
-	}
 	
 	// == Long =====
-	public default Long getLong( String key ){
+	public default Long getLong( K key ){
 		String v = get( key );
 		if( v == null ) return null;
 		return Long.parseLong( v );
 	}
-	public default long getLong( String key, long defaultValue ){
+	public default long getLong( K key, long defaultValue ){
 		Long v = getLong( key );
 		if( v == null ) return defaultValue;
 		return v;
 	}
-	public default long getLong( String key, LongValueProvider defaultValueProvider ){
+	public default Long getLong( K key, Long defaultValue ){
+		Long v = getLong( key );
+		if( v == null ) return defaultValue;
+		return v;
+	}
+	public default long getLong( K key, ValueProvider<Long> defaultValueProvider ){
 		Long v = getLong( key );
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default long getLongRequired( String key ){
+	public default long getLongRequired( K key ){
 		Long v = getLong( key );
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default long getLongRequired( String key, Long defaultValue ){
+	public default long getLongRequired( K key, Long defaultValue ){
 		Long v = getLong( key );
 		if( v == null ) v = defaultValue;
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default long getLongRequired( String key, LongValueProvider defaultValueProvider ){
+	public default long getLongRequired( K key, ValueProvider<Long> defaultValueProvider ){
 		Long v = getLong( key );
 		if( v == null ) v = defaultValueProvider.get();
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
 	
-	@FunctionalInterface
-	public interface LongValueProvider {
-		public Long get();
-	}
 	
 	// == Double =====
-	public default Double getDouble( String key ){
+	public default Double getDouble( K key ){
 		String v = get( key );
 		if( v == null ) return null;
 		return Double.parseDouble( v );
 	}
-	public default double getDouble( String key, double defaultValue ){
+	public default double getDouble( K key, double defaultValue ){
 		Double v = getDouble( key );
 		if( v == null ) return defaultValue;
 		return v;
 	}
-	public default double getDouble( String key, DoubleValueProvider defaultValueProvider ){
+	public default Double getDouble( K key, Double defaultValue ){
+		Double v = getDouble( key );
+		if( v == null ) return defaultValue;
+		return v;
+	}
+	public default double getDouble( K key, ValueProvider<Double> defaultValueProvider ){
 		Double v = getDouble( key );
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default double getDoubleRequired( String key ){
+	public default double getDoubleRequired( K key ){
 		Double v = getDouble( key );
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default double getDoubleRequired( String key, Double defaultValue ){
+	public default double getDoubleRequired( K key, Double defaultValue ){
 		Double v = getDouble( key );
 		if( v == null ) v = defaultValue;
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default double getDoubleRequired( String key, DoubleValueProvider defaultValueProvider ){
+	public default double getDoubleRequired( K key, ValueProvider<Double> defaultValueProvider ){
 		Double v = getDouble( key );
 		if( v == null ) v = defaultValueProvider.get();
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
 	
-	@FunctionalInterface
-	public interface DoubleValueProvider {
-		public Double get();
-	}
 	
 	// == Boolean =====
 	@SuppressFBWarnings( value="NP_BOOLEAN_RETURN_NULL", justification="Api" )
-	public default Boolean getBoolean( String key ){
+	public default Boolean getBoolean( K key ){
 		String v = get( key );
 		if( v == null ) return null;
 		return EasyParser.yesOrNoOrNull( v );
 	}
-	public default boolean getBoolean( String key, boolean defaultValue ){
+	public default boolean getBoolean( K key, boolean defaultValue ){
 		Boolean v = getBoolean( key );
 		if( v == null ) return defaultValue;
 		return v;
 	}
-	public default boolean getBoolean( String key, BooleanValueProvider defaultValueProvider ){
+	public default Boolean getBoolean( K key, Boolean defaultValue ){
+		Boolean v = getBoolean( key );
+		if( v == null ) return defaultValue;
+		return v;
+	}
+	public default boolean getBoolean( K key, ValueProvider<Boolean> defaultValueProvider ){
 		Boolean v = getBoolean( key );
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default boolean getBooleanRequired( String key ){
+	public default boolean getBooleanRequired( K key ){
 		Boolean v = getBoolean( key );
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default boolean getBooleanRequired( String key, boolean defaultValue ){
+	public default boolean getBooleanRequired( K key, Boolean defaultValue ){
 		Boolean v = getBoolean( key );
 		if( v == null ) v = defaultValue;
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default boolean getBooleanRequired( String key, BooleanValueProvider defaultValueProvider ){
+	public default boolean getBooleanRequired( K key, ValueProvider<Boolean> defaultValueProvider ){
 		Boolean v = getBoolean( key );
 		if( v == null ) v = defaultValueProvider.get();
+		if( v == null ) throw exception( key );
 		return v;
 	}
 	
-	@FunctionalInterface
-	public interface BooleanValueProvider {
-		public Boolean get();
-	}
 	
 	// == Files ==
-	public default File getFile( String key ){
+	public default File getFile( K key ){
 		String v = get( key );
 		if( v == null ) return null;
 		return new File( v );
 	}
-	public default File getFile( String key, File defaultValue ) {
+	public default File getFile( K key, File defaultValue ) {
 		File v = getFile( key );
 		if( v == null ) return defaultValue;
 		return v;
 	}
-	public default File getFile( String key, FileValueProvider defaultValueProvider ) {
+	public default File getFile( K key, ValueProvider<File> defaultValueProvider ) {
 		File v = getFile( key );
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default File getFileRequired( String key ) {
+	public default File getFileRequired( K key ) {
 		File v = getFile( key );
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default File getFileRequired( String key, File defaultValue ) {
+	public default File getFileRequired( K key, File defaultValue ) {
 		File v = getFile( key );
 		if( v == null ) v = defaultValue;
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default File getFileRequired( String key, FileValueProvider defaultValueProvider ) {
+	public default File getFileRequired( K key, ValueProvider<File> defaultValueProvider ) {
 		File v = getFile( key );
 		if( v == null ) v = defaultValueProvider.get();
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
 	
@@ -210,7 +215,7 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 			return new File( optionalBasedir, file.getPath() );
 		}
 	}
-	public default File absolute( File file, String optionalBasedirKey ) {
+	public default File absolute( File file, K optionalBasedirKey ) {
 		if( file == null ) return null;
 		if( file.isAbsolute() ) return file;
 		else {
@@ -219,7 +224,7 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 			return new File( basedir, file.getPath() );
 		}
 	}
-	public default File absolute( File file, FileValueProvider optionalBasedirProvider ) {
+	public default File absolute( File file, ValueProvider<File> optionalBasedirProvider ) {
 		if( file == null ) return null;
 		if( file.isAbsolute() ) return file;
 		else {
@@ -229,139 +234,167 @@ public interface StringValueAccessor extends KeyValueAccessor<String,String> {
 		}
 	}
 	
-	public default File absoluteRequired( File file, String optionalBasedirKey ) {
+	public default File absoluteRequired( File file, K optionalBasedirKey ) {
 		File v = absolute( file, optionalBasedirKey );
 		if( v == null ) return null;
 		if( v.isAbsolute() ) return v;
 		else throw new IllegalArgumentException( "Resulting file '" + file.getPath() + "' is not absolute" );
 	}
 	
-	public default File absoluteRequired( File file, FileValueProvider optionalBasedirProvider ) {
+	public default File absoluteRequired( File file, ValueProvider<File> optionalBasedirProvider ) {
 		File v = absolute( file, optionalBasedirProvider );
 		if( v == null ) return null;
 		if( v.isAbsolute() ) return v;
 		else throw new IllegalArgumentException( "Resulting file '" + file.getPath() + "' is not absolute" );
 	}
 	
-	@FunctionalInterface
-	public interface FileValueProvider {
-		public File get();
-	}
 	
 	
 	// == BigDecimal =====
-	public default BigDecimal getBigDecimal( String key ){
+	public default BigDecimal getBigDecimal( K key ){
 		String v = get( key );
 		if( v == null ) return null;
 		return new BigDecimal( v );
 	}
-	public default BigDecimal getBigDecimal( String key, BigDecimal defaultValue ){
+	public default BigDecimal getBigDecimal( K key, BigDecimal defaultValue ){
 		BigDecimal v = getBigDecimal( key );
 		if( v == null ) return defaultValue;
 		return v;
 	}
-	public default BigDecimal getBigDecimal( String key, BigDecimalValueProvider defaultValueProvider ){
+	public default BigDecimal getBigDecimal( K key, ValueProvider<BigDecimal> defaultValueProvider ){
 		BigDecimal v = getBigDecimal( key );
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default BigDecimal getBigDecimalRequired( String key ){
+	public default BigDecimal getBigDecimalRequired( K key ){
 		BigDecimal v = getBigDecimal( key );
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default BigDecimal getBigDecimalRequired( String key, BigDecimal defaultValue ){
+	public default BigDecimal getBigDecimalRequired( K key, BigDecimal defaultValue ){
 		BigDecimal v = getBigDecimal( key );
 		if( v == null ) v = defaultValue;
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default BigDecimal getBigDecimalRequired( String key, BigDecimalValueProvider defaultValueProvider ){
+	public default BigDecimal getBigDecimalRequired( K key, ValueProvider<BigDecimal> defaultValueProvider ){
 		BigDecimal v = getBigDecimal( key );
 		if( v == null ) v = defaultValueProvider.get();
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
 	
-	@FunctionalInterface
-	public interface BigDecimalValueProvider {
-		public BigDecimal get();
-	}
 	
 	// == Enumeration =====
-	public default <T extends Enum<T>> T getEnum( Class<T> clazz, String key ){
+	public default <T extends Enum<T>> T getEnum( Class<T> clazz, K key ){
 		String v = get( key );
 		if( v == null ) return null;
 		if( v.length() == 0 ) return null;
 		return Enum.valueOf( clazz, v );
 	}
-	public default <T extends Enum<T>> T getEnum( Class<T> clazz, String key, T defaultValue ){
+	public default <T extends Enum<T>> T getEnum( Class<T> clazz, K key, T defaultValue ){
 		T v = getEnum( clazz, key );
 		if( v == null ) return defaultValue;
 		return v;
 	}
-	public default <T extends Enum<T>> T getEnum( Class<T> clazz, String key, EnumValueProvider<T> defaultValueProvider ){
+	public default <T extends Enum<T>> T getEnum( Class<T> clazz, K key, ValueProvider<T> defaultValueProvider ){
 		T v = getEnum( clazz, key );
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, String key ){
+	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, K key ){
 		T v = getEnum( clazz, key );
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, String key, T defaultValue ){
+	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, K key, T defaultValue ){
 		T v = getEnum( clazz, key );
 		if( v == null ) v = defaultValue;
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, String key, EnumValueProvider<T> defaultValueProvider ){
+	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, K key, ValueProvider<T> defaultValueProvider ){
 		T v = getEnum( clazz, key );
 		if( v == null ) v = defaultValueProvider.get();
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
 	
-	@FunctionalInterface
-	public interface EnumValueProvider<T extends Enum<T>> {
-		public T get();
-	}
 	
 	// == Object instantiation =====
-	public default <T, T1 extends T> T getNewInstance( Class<T1> clazz, String key ) throws ReflectiveOperationException {
+	public default <T, T1 extends T> T getNewInstance( Class<T1> clazz, K key ) throws ReflectiveOperationException {
 		String v = get( key );
 		if( v == null ) return null;
 		@SuppressWarnings( "unchecked" )
 		Class<T> vClass = (Class<T>)Class.forName( v );
 		return vClass.newInstance();
 	}
-	public default <T, T1 extends T, T2 extends T> T getNewInstance( Class<T1> clazz, String key, Class<T2> defaultValue ) throws ReflectiveOperationException {
+	public default <T, T1 extends T, T2 extends T> T getNewInstance( Class<T1> clazz, K key, Class<T2> defaultValue ) throws ReflectiveOperationException {
 		T v = getNewInstance( clazz, key );
 		if( v == null ) return defaultValue != null ? defaultValue.newInstance() : null;
 		return v;
 	}
-	public default <T, T1 extends T, T2 extends T> T getNewInstance( Class<T1> clazz, String key, ObjectValueProvider<T2> defaultValueProvider ) throws ReflectiveOperationException {
+	public default <T, T1 extends T, T2 extends T> T getNewInstance( Class<T1> clazz, K key, ValueProvider<Class<T2>> defaultValueProvider ) throws ReflectiveOperationException {
 		T v = getNewInstance( clazz, key );
 		Class<T2> defaultValue = defaultValueProvider.get();
 		if( v == null ) return defaultValue != null ? defaultValue.newInstance() : null;
 		return v;
 	}
-	public default <T, T1 extends T> T getNewInstanceRequired( Class<T1> clazz, String key ) throws ReflectiveOperationException {
+	public default <T, T1 extends T> T getNewInstanceRequired( Class<T1> clazz, K key ) throws ReflectiveOperationException {
 		T v = getNewInstance( clazz, key );
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default <T, T1 extends T, T2 extends T> T getNewInstanceRequired( Class<T1> clazz, String key, ObjectValueProvider<T2> defaultValueProvider ) throws ReflectiveOperationException {
+	public default <T, T1 extends T, T2 extends T> T getNewInstanceRequired( Class<T1> clazz, K key, ValueProvider<Class<T2>> defaultValueProvider ) throws ReflectiveOperationException {
 		T v = getNewInstance( clazz, key );
 		Class<T2> defaultValue = defaultValueProvider.get();
 		if( v == null ) v = defaultValue != null ? defaultValue.newInstance() : null;
-		if( v == null ) throw new NoSuchElementException( key );
+		if( v == null ) throw exception( key );
 		return v;
 	}
 	
-	@FunctionalInterface
-	public interface ObjectValueProvider<T> {
-		public Class<T> get();
+	// == Object instantiation =====
+	public default <T, T1 extends T> T getNewInstanceUC( Class<T1> clazz, K key ) {
+		try {
+			return getNewInstance( clazz, key );
+		} catch( ReflectiveOperationException e ) {
+			throw new InstantiationError( key, e );
+		}
 	}
+	public default <T, T1 extends T, T2 extends T> T getNewInstanceUC( Class<T1> clazz, K key, Class<T2> defaultValue ) {
+		try {
+			return getNewInstance( clazz, key, defaultValue );
+		} catch( ReflectiveOperationException e ) {
+			throw new InstantiationError( key, e );
+		}
+	}
+	public default <T, T1 extends T, T2 extends T> T getNewInstanceUC( Class<T1> clazz, K key, ValueProvider<Class<T2>> defaultValueProvider ) {
+		try {
+			return getNewInstance( clazz, key, defaultValueProvider );
+		} catch( ReflectiveOperationException e ) {
+			throw new InstantiationError( key, e );
+		}
+	}
+	public default <T, T1 extends T> T getNewInstanceRequiredUC( Class<T1> clazz, K key ) {
+		try {
+			return getNewInstanceRequired( clazz, key );
+		} catch( ReflectiveOperationException e ) {
+			throw new InstantiationError( key, e );
+		}
+	}
+	public default <T, T1 extends T, T2 extends T> T getNewInstanceRequiredUC( Class<T1> clazz, K key, ValueProvider<Class<T2>> defaultValueProvider ) {
+		try {
+			return getNewInstanceRequired( clazz, key, defaultValueProvider );
+		} catch( ReflectiveOperationException e ) {
+			throw new InstantiationError( key, e );
+		}
+	}
+	
+	
+	public static final class InstantiationError extends Error {
+		public InstantiationError( Object key, Throwable cause ) {
+			super( key.toString(), cause );
+		}
+	}
+	
 }

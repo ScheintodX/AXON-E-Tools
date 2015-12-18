@@ -35,6 +35,11 @@ public abstract class Assert {
 		if( o.toString().length() == 0 ) throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' is empty" ) );
 	}
 	
+	public static <T extends Object> void notEmpty( T [] o, String name ){
+		if( o == null ) return;
+		if( o.length == 0 ) throw Ex.up( new ArgumentNullException( name ) );
+	}
+	
 	// ! Empty Collection
 	public static void notEmpty( Collection<?> o, String name ){
 		if( o == null ) return;
@@ -140,6 +145,11 @@ public abstract class Assert {
 	private static void isSize( Integer isSize, String name, int size ){
 		if( isSize == null ) return;
 		if( isSize != size ) throw Ex.up( new ArgumentRangeException( name, " size ==" + size, isSize ), 2 );
+	}
+	
+	public static <T> T one( Collection<T> values, String name ){
+		isSize( values.size(), name, 1 );
+		return values.iterator().next();
 	}
 	
 	// Contains ----------------

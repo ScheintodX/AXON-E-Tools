@@ -13,7 +13,7 @@ import de.axone.tools.StringValueAccessor;
  * 
  * @author flo
  */
-public class RequestUtil implements StringValueAccessor {
+public class RequestUtil implements StringValueAccessor<String> {
 	
 	private HttpServletRequest request;
 	

@@ -13,6 +13,7 @@ public interface PictureBuilderBuilder {
 		
 		return new PictureBuilderBuilderImpl( homedir, maindir, cachedir, hashLength );
 	}
+	
 	public static PictureBuilderBuilder instance( Path homedir ) {
 		
 		return new PictureBuilderBuilderImpl( homedir, null, null, 1 );

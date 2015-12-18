@@ -2,6 +2,7 @@ package de.axone.web.rest;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,9 +21,11 @@ import de.axone.web.Method;
 import de.axone.web.SuperURL;
 import de.axone.web.SuperURLBuilders;
 
-public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> {
+public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 
-	private static Logger log = LoggerFactory.getLogger( RestFunctionRegistry.class );
+	private static final Logger log = LoggerFactory.getLogger( RestFunctionRegistry.class );
 
 	private List<RestFunctionRoute> routes = new LinkedList<>();
 	private List<RestFunction<DATA, REQUEST>> functions = new LinkedList<>();

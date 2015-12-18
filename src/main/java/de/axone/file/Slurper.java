@@ -55,6 +55,11 @@ public class Slurper {
 			return slurpString( fin, charset );
 		}
 	}
+	public static String slurpString( Path in ) throws IOException {
+		try( InputStream fin = Files.newInputStream( in ) ){
+			return slurpString( fin );
+		}
+	}
 	public static String slurpString( InputStream in ) throws IOException {
 		return slurpString( in, DEFAULT_CHARSET );
 	}
@@ -241,13 +246,25 @@ public class Slurper {
 	
 	public static void burp( File outS, ByteBuffer buffer ) throws IOException {
 		
-		try( WritableByteChannel ch = FileChannel.open( outS.toPath(), StandardOpenOption.WRITE ) ){
-		
-			ch.write( buffer );
-		}
+		burp( outS.toPath(), buffer );
 		
 	}
 	
+	public static void burp( Path outS, ByteBuffer buffer ) throws IOException {
+	
+		try( WritableByteChannel ch = FileChannel.open( outS, StandardOpenOption.WRITE ) ){
+		
+			ch.write( buffer );
+		}
+	}
+	
+	public static void burp( Path outS, String value ) throws IOException {
+		
+		byte [] bytes = value.getBytes( "utf-8" );
+		ByteBuffer buffer = ByteBuffer.wrap( bytes );
+		
+		burp( outS, buffer );
+	}
 	
 	public static void print( File file ){
 		

@@ -3,6 +3,7 @@ package de.axone.tools;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -521,6 +522,55 @@ public class Str {
 		return result;
 	}
 	
+	
+	public static Set<String> splitFastToSet( String s, char split ){
+		
+		Set<String> result = new HashSet<>( 8 );
+		
+		final int len = s.length();
+		
+		int i, last=0;
+		for( i=0; i<len; i++ ){
+			
+			if( split == s.charAt( i ) ){
+				
+				result.add( s.substring( last, i ) );
+				
+				last = i+1;
+			};
+		}
+		
+		if( len>=last ){
+			result.add( s.substring( last ) );
+		}
+		
+		return result;
+	}
+	
+	public static Set<String> splitFastToSetAndProcess( String s, char split, Function<String,String> processor ){
+		
+		Set<String> result = new HashSet<>( 8 );
+		
+		final int len = s.length();
+		
+		int i, last=0;
+		for( i=0; i<len; i++ ){
+			
+			if( split == s.charAt( i ) ){
+				
+				result.add( processor.apply( s.substring( last, i ) ) );
+				
+				last = i+1;
+			};
+		}
+		
+		if( len>=last ){
+			result.add( processor.apply( s.substring( last ) ) );
+		}
+		
+		return result;
+	}
+	
 	public static List<String> splitFastAtSpacesToList( String s ){
 		
 		List<String> result = new ArrayList<>( 8 );
@@ -914,4 +964,34 @@ public class Str {
 		
 		return result.toString();
 	}
+	
+	public static final class Chain<T> implements Function<T,T> {
+		
+		private final Function<T,T>[] chain;
+		
+		@SafeVarargs
+		public Chain( Function<T,T> ... chain ){
+			this.chain = chain;
+		}
+		
+		@SafeVarargs
+		public static <X> Chain<X> of( Function<X,X> ... chain ) {
+			return new Chain<>( chain );
+		}
+
+		@Override
+		public T apply( T value ) {
+			
+			T out = chain[ 0 ].apply( value );
+			
+			for( int i=1; i<chain.length; i++ ) {
+				
+				out = chain[ i ].apply( out );
+			}
+			
+			return out;
+		}
+		
+	}
+	
 }
