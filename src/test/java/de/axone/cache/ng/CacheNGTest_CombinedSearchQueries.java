@@ -66,7 +66,7 @@ public class CacheNGTest_CombinedSearchQueries {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheHashMap<Tid,List<TArticle>> cacheForTid =
-				new CacheHashMap<>( RN.TID_LARTICLE );
+				new CacheHashMap<>( RN.TID_LARTICLE, false );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
 				new AutomaticClientImpl<>( cacheForTid );
@@ -75,7 +75,7 @@ public class CacheNGTest_CombinedSearchQueries {
 				new TestAccessor_ArticleForQuery( autoForTid, forTid );
 		
 		CacheHashMap<TestSearchQuery, List<TArticle>> cacheForQuery =
-				new CacheHashMap<>( RN.SQTID_LARTICLE );
+				new CacheHashMap<>( RN.SQTID_LARTICLE, false );
 				
 		CacheNG.AutomaticClient<TestSearchQuery, List<TArticle>> autoForQuery =
 				new AutomaticClientImpl<>( cacheForQuery );

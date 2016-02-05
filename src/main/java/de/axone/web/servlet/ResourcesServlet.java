@@ -91,7 +91,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 		return uri; // Do nothing per default
 	}
 	
-	private CacheNG.Cache<String,Object> cache = new CacheLRUMap<>( DEFAULT_RESOURCE_REALM, 1000 );
+	private CacheNG.Cache<String,Object> cache = new CacheLRUMap<>( DEFAULT_RESOURCE_REALM, 1000, true );
 	protected CacheNG.Cache<String,Object> buffer(){
 		return cache;
 	}

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Predicate;
 
 import de.axone.cache.ng.CacheNG.Cache;
 import de.axone.cache.ng.CacheNG.MultiValueAccessor;
@@ -21,8 +22,8 @@ import de.axone.cache.ng.CacheNG.SingleValueAccessor;
  * If a MultiValueDataAccessor is used fetching of more than one item can
  * be done with just one query which should speed up things significantly.
  * 
- * If this' cache doesn't contain the requested data it uses the DataAccessor
- * in order to obtain it.
+ * If this cache doesn't contain the requested data it uses the DataAccessor
+ * to obtain it.
  * 
  * Normally you would want to use this cache in connections with an CacheLRUMap
  * or CacheEHCache so that it has a limited size but fills automatically.
@@ -127,7 +128,7 @@ public class AutomaticClientImpl<K,O>
 		// First try to get from cache
 		Cache.Entry<O> entry = null;
 		
-		// deadlock #0
+		// deadlock #1
 		lock.readLock().lock();
 		try{
 			entry = backend.fetchEntry( key );
@@ -147,7 +148,7 @@ public class AutomaticClientImpl<K,O>
 			// Else mark miss
 			stats.miss();
 
-			// deadlock #1
+			// deadlock #2
 			lock.writeLock().lock();
 			try {
 				
@@ -171,6 +172,57 @@ public class AutomaticClientImpl<K,O>
 
     	return result;
 	}
+	
+	@Override
+	public O fetchFresh( K key, SingleValueAccessor<K,O> accessor, Predicate<O> refresh ) {
+		
+		Cache.Entry<O> entry;
+		
+		lock.readLock().lock();
+		try {
+			entry = backend.fetchEntry( key );
+		} finally {
+			lock.readLock().unlock();
+		}
+		
+		if( entry == null ) return fetch( key, accessor );
+		
+		if( refresh.test( entry.data() ) ){
+			invalidate( key );
+			return fetch( key, accessor );
+		}
+		
+		return entry.data();
+		
+	}
+
+	/*
+	@Override
+	public O update( K key, SingleValueAccessor<K, O> accessor,
+			UnaryOperator<O> updater ) {
+		
+		assert key != null;
+		assert accessor != null;
+		
+		O data = null;
+			
+		lock.writeLock().lock();
+		try {
+			
+			Cache.Entry<O> entry = backend.fetchEntry( key );
+			
+			if( entry != null ) {
+			
+				data = updater.apply( entry.data() );
+			}
+			
+		} finally {
+			lock.writeLock().unlock();
+		}
+
+		return data;
+	}
+	*/
 	
 	@Override
 	public int size(){

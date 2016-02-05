@@ -20,12 +20,14 @@ public class CacheHashMap<K,O>
 		implements CacheNG.Cache<K,O> {
 	
 	private final Realm<K,O> name;
+	private final Map<K,Cache.Entry<O>> unsafeBackend;
 	private final Map<K,Cache.Entry<O>> backend;
 	
-	public CacheHashMap( Realm<K,O> name ){
+	public CacheHashMap( Realm<K,O> name, boolean synchronize ){
 		
 		this.name = name;
-		this.backend = Collections.synchronizedMap( new HashMap<K,Cache.Entry<O>>() );
+		this.unsafeBackend = new HashMap<>();
+		this.backend = synchronize ? Collections.synchronizedMap( this.unsafeBackend ) : this.unsafeBackend;
 	}
 
 	@Override

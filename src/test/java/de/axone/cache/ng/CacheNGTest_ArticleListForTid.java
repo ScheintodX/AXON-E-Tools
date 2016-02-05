@@ -67,7 +67,7 @@ public class CacheNGTest_ArticleListForTid {
 		TestAccessor_ArticleForTid accessor = new TestAccessor_ArticleForTid( data );
 		
 		CacheNG.AutomaticClient<Tid, List<TArticle>> auto =
-				new AutomaticClientImpl<>( new CacheHashMap<>( RN.TID_LARTICLE ) );
+				new AutomaticClientImpl<>( new CacheHashMap<>( RN.TID_LARTICLE, false ) );
 		
 		assertThat( auto ).hasNotCached( T123 );
 		

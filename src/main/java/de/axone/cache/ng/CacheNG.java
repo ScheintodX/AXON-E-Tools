@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -268,6 +269,19 @@ public abstract class CacheNG {
 	    public Iterable<O> values();
 		
 		/**
+		 * Remove the entry when the predicate returns true;
+		 * 
+		 * @param key
+		 * @param invalidate Predicate returns true if this entry should be invalidated
+		 */
+		public default void invalidateWhen( K key, Predicate<O> invalidate ) {
+			
+			Entry<O> entry = fetchEntry( key );
+			if( entry == null ) return;
+			if( invalidate.test( entry.data() ) ) invalidate( key );
+		}
+		
+		/**
 		 * One cache entry
 		 * 
 		 * @author flo
@@ -286,7 +300,6 @@ public abstract class CacheNG {
 			 */
 			public long creation();
 		}
-	
 	}
 	
 	/**
@@ -309,6 +322,7 @@ public abstract class CacheNG {
 		public O fetch( K key, SingleValueAccessor<K,O> accessor );
 		
 		
+		
 		/**
 		 * @return a bunch of entries from the cache. If the entries are
 		 * not cached try to fetch them using the Accessor.
@@ -317,6 +331,18 @@ public abstract class CacheNG {
 		 * @param accessor
 		 */
 		public Map<K,O> fetch( Collection<K> keys, MultiValueAccessor<K,O> accessor );
+		
+		
+		/**
+		 * @return Returns one entry from the cache.
+		 * If the entry is not cached try to get it using the Accessor
+		 * If the entry is not fresh anymore (determined by the predicate) then get a fresh one using the Accessor
+		 * 
+		 * @param key
+		 * @param accessor
+		 * @param invalidateWhen return true to refresh the entry
+		 */
+		public O fetchFresh( K key, SingleValueAccessor<K,O> accessor, Predicate<O> invalidateWhen );
 		
 		
 		/**
@@ -348,7 +374,7 @@ public abstract class CacheNG {
 			void hit();
 			void miss();
 		}
-		
+
 	}
 	
 	/**
@@ -391,6 +417,20 @@ public abstract class CacheNG {
 		 */
 		public O fetch( K key ) ;
 	}
+	
+	/*
+	@FunctionalInterface
+	public interface SingleValueRefresher<K,O> {
+		
+		/**
+		 * @return a single entry
+		 * 
+		 * @param key
+		 * @param old the old value which is refreshed or null if there isn't one
+		 /
+		public @Nullable O fetch( K key, @Nullable O old );
+	}
+	*/
 	
 	/**
 	 * Accesses the Backend and get one value

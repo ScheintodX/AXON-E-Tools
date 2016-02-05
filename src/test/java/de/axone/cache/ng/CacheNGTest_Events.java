@@ -24,13 +24,13 @@ public class CacheNGTest_Events {
 		TestAccessor_ArticleForAid accSlave = spy( new TestAccessor_ArticleForAid() );
 		
 		CacheHashMap<Aid,TArticle> cacheMaster =
-				spy( new CacheHashMap<>( RN.AID_ARTICLE.unique() ) );
+				spy( new CacheHashMap<>( RN.AID_ARTICLE.unique(), false ) );
 		
 		CacheNG.AutomaticClient<Aid, TArticle> autoMaster =
 				spy( new AutomaticClientImpl<Aid,TArticle>( cacheMaster ) );
 		
 		CacheHashMap<Aid,TArticle> cacheSlave =
-				spy( new CacheHashMap<>( RN.AID_ARTICLE.unique() ) );
+				spy( new CacheHashMap<>( RN.AID_ARTICLE.unique(), false ) );
 		
 		CacheNG.AutomaticClient<Aid, TArticle> autoSlave =
 				spy( new AutomaticClientImpl<Aid,TArticle>( cacheSlave ) );

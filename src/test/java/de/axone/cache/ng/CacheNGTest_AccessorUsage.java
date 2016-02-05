@@ -1,6 +1,5 @@
 package de.axone.cache.ng;
 
-
 import static de.axone.cache.ng.CacheNGTest_Implementations.*;
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
@@ -17,7 +16,7 @@ public class CacheNGTest_AccessorUsage {
 
 	public void accessorIsOnlyUsedWhenNeeded(){
 		
-		CacheNG.AutomaticClient<Aid, TArticle> auto = new AutomaticClientImpl<>( new CacheHashMap<>( RN.AID_ARTICLE ) );
+		CacheNG.AutomaticClient<Aid, TArticle> auto = new AutomaticClientImpl<>( new CacheHashMap<>( RN.AID_ARTICLE, false ) );
 		
 		TestAccessor_ArticleForAid acc = spy( new TestAccessor_ArticleForAid() );
 		

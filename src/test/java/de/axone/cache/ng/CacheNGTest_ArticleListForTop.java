@@ -45,7 +45,7 @@ public class CacheNGTest_ArticleListForTop {
 				new TestAccessor_ArticleForTid( data );
 		
 		CacheHashMap<Tid, List<TArticle>> cacheForTid =
-				new CacheHashMap<>( RN.TID_LARTICLE );
+				new CacheHashMap<>( RN.TID_LARTICLE, false );
 				
 		CacheNG.AutomaticClient<Tid, List<TArticle>> autoForTid =
 				new AutomaticClientImpl<>( cacheForTid );
@@ -54,7 +54,7 @@ public class CacheNGTest_ArticleListForTop {
 				new TestAccessor_ArticleForTop( autoForTid, accessorForTid, tidForTop );
 		
 		CacheHashMap<Top, List<TArticle>> cacheForTop =
-				new CacheHashMap<>( RN.TOP_LARTICLE );
+				new CacheHashMap<>( RN.TOP_LARTICLE, false );
 		
 		CacheNG.AutomaticClient<Top, List<TArticle>> autoForTop =
 				new AutomaticClientImpl<>( cacheForTop );

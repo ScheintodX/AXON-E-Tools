@@ -16,6 +16,11 @@ import de.axone.tools.E;
 @Test( groups="cacheng.basic" )
 public class CacheNGTest_ArticleForId {
 
+	/**
+	 * Mock accessor for TArticles which builds the requested article by itself.
+	 * 
+	 * @author flo
+	 */
 	static class TestAccessor_ArticleForAid
 			implements CacheNG.UniversalAccessor<Aid, TArticle>,
 					CacheNG.CacheEventListener<Aid>{
@@ -45,7 +50,7 @@ public class CacheNGTest_ArticleForId {
 				new TestAccessor_ArticleForAid();
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				new AutomaticClientImpl<>( new CacheHashMap<>( RN.AID_ARTICLE ) );
+				new AutomaticClientImpl<>( new CacheHashMap<>( RN.AID_ARTICLE, false ) );
 		
 		assertFalse( auto.isCached( A12345 ) );
 		

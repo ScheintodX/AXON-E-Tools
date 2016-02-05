@@ -45,7 +45,7 @@ public class CacheNGTest_AutomaticTwoStepClient {
 	public void stringToListBasicOperations(){
 		
 		CacheNG.AutomaticClient<String, List<Aid>> aidListForString =
-				new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:S" ) ) );
+				new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:S" ), false ) );
 		
 		assertThat( aidListForString ).hasNotCached( "A" );
 		
@@ -62,7 +62,7 @@ public class CacheNGTest_AutomaticTwoStepClient {
 	public void aidToStringBasicOperations(){
 		
 		CacheNG.AutomaticClient<Aid, String> stringForAid =
-				new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "S->S" ) ) );
+				new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "S->S" ), false ) );
 				
 		assertThat( stringForAid ).hasNotCached( aid("a1" ) );
 		
@@ -78,10 +78,10 @@ public class CacheNGTest_AutomaticTwoStepClient {
 	public void combinedOperationsHaveCorrectResult(){
 	
 		CacheNG.AutomaticClient<String, List<Aid>> aidListForString =
-				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:S" ) ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:S" ), false ) ) );
 				
 		CacheNG.AutomaticClient<Aid, String> stringForAid =
-				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "S->S" ) ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "S->S" ), false ) ) );
 		
 		AutomaticTwoStepCache<String, Aid, String> atsc =
 				new AutomaticTwoStepCache<>( aidListForString, stringForAid );
@@ -112,10 +112,10 @@ public class CacheNGTest_AutomaticTwoStepClient {
 	public void combinedOperationsUseTheRightCaches(){
 		
 		CacheNG.AutomaticClient<String, List<Aid>> aidListForString =
-				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:S" ) ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:S" ), false ) ) );
 				
 		CacheNG.AutomaticClient<Aid, String> stringForAid =
-				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "S->S" ) ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "S->S" ), false ) ) );
 		
 		AutomaticTwoStepCache<String, Aid, String> atsc =
 				new AutomaticTwoStepCache<>( aidListForString, stringForAid );
@@ -135,10 +135,10 @@ public class CacheNGTest_AutomaticTwoStepClient {
 	public void combinedOperationsAndAccessorUsage(){
 		
 		CacheNG.AutomaticClient<String, List<Aid>> aidListForString =
-				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:S" ) ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:S" ), false ) ) );
 				
 		CacheNG.AutomaticClient<Aid, String> stringForAid =
-				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "S->S" ) ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "S->S" ), false ) ) );
 		
 		CacheNG.UniversalAccessor<String,List<Aid>> string2AidList = spy( String2AidList );
 		

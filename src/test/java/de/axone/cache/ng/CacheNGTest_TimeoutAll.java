@@ -78,7 +78,7 @@ public class CacheNGTest_TimeoutAll {
 	private CacheNG.AutomaticClient<Aid,TArticle> buildAutoClient() {
 		
 		CacheNG.Cache<Aid, TArticle> cache = 
-				new CacheHashMap<>( RN.AID_ARTICLE );
+				new CacheHashMap<>( RN.AID_ARTICLE, false );
 				
 		CacheWrapperDelayedInvalidation<Aid, TArticle> wrapper =
 				new CacheWrapperDelayedInvalidation<>( cache, 1000 );

@@ -18,7 +18,7 @@ import de.axone.cache.ng.CacheNGTest_ArticleListForTop.Top;
 @Test( groups="cacheng.timeoutall" )
 public class CacheNGTestHelpers {
 	
-	static abstract class RN {
+	public static abstract class RN {
 		
 		public static TestRealm<Aid,TArticle> AID_ARTICLE = new TestRealm<>( "aid->article" );
 		public static TestRealm<Tid,List<TArticle>> TID_LARTICLE = new TestRealm<>( "tid->L:article" );
@@ -31,24 +31,24 @@ public class CacheNGTestHelpers {
 	}
 	
 
-	static class TestRealm<K,O> implements CacheNG.Realm<K,O> {
+	public static class TestRealm<K,O> implements CacheNG.Realm<K,O> {
 		
 		private final String client;
 		private final String name;
 		private String suffix;
 		private Integer timeout;
 		
-		TestRealm( String name ){
+		public TestRealm( String name ){
 			this.client = "TestClient";
 			this.name = name;
 		}
 		
-		TestRealm( String name, String suffix ){
+		public TestRealm( String name, String suffix ){
 			this( name );
 			this.suffix = suffix;
 		}
 		
-		TestRealm( String name, int timeout ){
+		public TestRealm( String name, int timeout ){
 			this( name );
 			this.timeout = timeout;
 		}
@@ -85,7 +85,7 @@ public class CacheNGTestHelpers {
 	}
 	
 
-	static final class TArticle {
+	public static final class TArticle {
 		
 		private final Aid identifier;
 		private final List<Tid> treeIdentifiers;
@@ -118,7 +118,7 @@ public class CacheNGTestHelpers {
 	}
 
 	
-	static class Identifiable {
+	public static class Identifiable {
 		
 		private final String identifier;
 	

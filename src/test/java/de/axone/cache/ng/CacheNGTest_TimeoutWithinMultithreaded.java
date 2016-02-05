@@ -29,7 +29,7 @@ public class CacheNGTest_TimeoutWithinMultithreaded {
 			new TestAccessor();
 	
 	CacheNG.Cache<Aid,TArticle> cache =
-			new CacheHashMap<>( RN.AID_ARTICLE );
+			new CacheHashMap<>( RN.AID_ARTICLE, false );
 	
 	CacheWrapperDelayedInvalidation<Aid,TArticle> wrapper =
 			new CacheWrapperDelayedInvalidation<>( cache, TIME );

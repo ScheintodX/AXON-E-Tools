@@ -21,9 +21,10 @@ import de.axone.tools.Mapper;
 @Test( groups="cacheng.multithreaded" )
 public class CacheNGTest_AutomaticClient_Multithreaded {
 	
-	private static final int NUM_THREADS = 1000,
+	private static final int NUM_THREADS = 100,
 	                         NUM_ENTRIES = 100, // Must be multiple of 2
-	                         THREAD_DELAY_MS = 10;
+	                         THREAD_DELAY_MS = 10
+	                         ;
 
 	public void testAutomaticClientParallelSingleOneByOneAccessor() throws InterruptedException {
 		
@@ -34,7 +35,7 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 				new TestAccessor_Single( index::getAndIncrement );
 		
 		CacheNG.AutomaticClient<String,String> auto =
-				new AutomaticClientImpl<>( new CacheHashMap<>( RN.S_S ) );
+				new AutomaticClientImpl<>( new CacheHashMap<>( RN.S_S, false ) );
 		
 		
 		List<Thread> ts = new LinkedList<>();
@@ -63,7 +64,7 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 				new TestAccessor_Single( index::getAndIncrement );
 		
 		CacheNG.AutomaticClient<String,String> auto =
-				new AutomaticClientImpl<>( new CacheHashMap<>( RN.S_S ) );
+				new AutomaticClientImpl<>( new CacheHashMap<>( RN.S_S, false ) );
 		
 		
 		List<Thread> ts = new LinkedList<>();
@@ -92,7 +93,7 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 				new TestAccessor_Multi( index::getAndIncrement );
 		
 		CacheNG.AutomaticClient<String,String> auto =
-				new AutomaticClientImpl<>( new CacheHashMap<>( RN.S_S ) );
+				new AutomaticClientImpl<>( new CacheHashMap<>( RN.S_S, false ) );
 		
 		List<Thread> ts = new LinkedList<>();
 		
@@ -120,7 +121,7 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 				new TestAccessor_Multi( index::getAndIncrement );
 		
 		CacheNG.AutomaticClient<String,String> auto =
-				new AutomaticClientImpl<>( new CacheHashMap<>( RN.S_S ) );
+				new AutomaticClientImpl<>( new CacheHashMap<>( RN.S_S, false ) );
 		
 		List<Thread> ts = new LinkedList<>();
 		

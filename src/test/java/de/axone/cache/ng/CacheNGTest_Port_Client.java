@@ -28,7 +28,7 @@ public class CacheNGTest_Port_Client {
 	public void testHashCache(){
 		
 		CacheNG.Cache<String,TestEntry> cache = new CacheHashMap<>(
-				new TestRealm<String,TestEntry>( "HashTest" ));
+				new TestRealm<String,TestEntry>( "HashTest" ), true );
 		
 		assertPutGet( cache, A, a );
 		assertPutGet( cache, B, b );
@@ -44,7 +44,7 @@ public class CacheNGTest_Port_Client {
 	public void testLRUCache(){
 		
 		CacheNG.Cache<String,TestEntry> cache = new CacheLRUMap<>(
-				new TestRealm<String,TestEntry>( "LRUCache" ), 2);
+				new TestRealm<String,TestEntry>( "LRUCache" ), 2, true );
 		
 		assertPutGet( cache, A, a );
 		assertPutGet( cache, B, b );

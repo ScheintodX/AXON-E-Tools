@@ -23,10 +23,10 @@ public class CacheLRUMap<K,O>
 	private final LRUCache<K,Cache.Entry<O>> unsafeBackend;
 	private final Map<K,Cache.Entry<O>> backend;
 	
-	public CacheLRUMap( Realm<K,O> realm, int maxCapacity ) {
+	public CacheLRUMap( Realm<K,O> realm, int maxCapacity, boolean synchronize ) {
 		this.realm = realm;
 		this.unsafeBackend = new LRUCache<K,Cache.Entry<O>>( maxCapacity );
-		this.backend = Collections.<K,Cache.Entry<O>>synchronizedMap( unsafeBackend );
+		this.backend = synchronize ? Collections.<K,Cache.Entry<O>>synchronizedMap( unsafeBackend ) : this.unsafeBackend;
 	}
 
 	@Override

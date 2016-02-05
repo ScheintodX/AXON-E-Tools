@@ -18,7 +18,7 @@ public class CacheNGAssertTest {
 
 	public void checkAssertJForCache(){
 		
-		CacheNG.Cache<Aid,TArticle> client = new CacheHashMap<>( RN.AID_ARTICLE );
+		CacheNG.Cache<Aid,TArticle> client = new CacheHashMap<>( RN.AID_ARTICLE, false );
 		
 		assertThat( client ).hasNotCached( aid( "12345" ) );
 		try {

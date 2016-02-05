@@ -2,6 +2,9 @@ package de.axone.cache.ng;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Predicate;
+
+import de.axone.cache.ng.CacheNG.SingleValueAccessor;
 
 public class AutomaticClientNoCache<K,O>
 	extends AbstractCacheEventProvider<K,O>
@@ -19,6 +22,11 @@ public class AutomaticClientNoCache<K,O>
 	public O fetch( K key, CacheNG.SingleValueAccessor<K, O> accessor ) {
 		stats.miss();
 		return accessor.fetch( key );
+	}
+	
+	@Override
+	public O fetchFresh( K key, SingleValueAccessor<K, O> accessor, Predicate<O> invalidateWhen ) {
+		return fetch( key, accessor ); // Allways fresh
 	}
 
 	@Override

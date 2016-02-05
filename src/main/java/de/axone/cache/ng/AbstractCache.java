@@ -1,5 +1,7 @@
 package de.axone.cache.ng;
 
+import java.util.function.Predicate;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -15,6 +17,13 @@ public abstract class AbstractCache<K,O>
 		Cache.Entry<O> entry = fetchEntry( key );
 		if( entry == null ) return null;
 		return entry.data();
+	}
+	
+	public void invalidate( @Nonnull K key, Predicate<O> when ) {
+		
+		Cache.Entry<O> entry = fetchEntry( key );
+		if( entry == null ) return;
+		if( when.test( entry.data() ) ) invalidate( key );
 	}
 	
 	public void invalidate( K key ){
