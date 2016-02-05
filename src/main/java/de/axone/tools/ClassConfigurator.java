@@ -50,9 +50,9 @@ public abstract class ClassConfigurator {
 	
 	/**
 	 * Create a new Instance of the class specified in the description
-	 * initialized by these parameters.
+	 * initialised by these parameters.
 	 * 
-	 * The constuctor to call is found via the given construcotorparameters
+	 * The constructor to call is found via the given constructor parameters
 	 * which then are used to construct the object.
 	 * 
 	 * @param description
@@ -92,7 +92,7 @@ public abstract class ClassConfigurator {
 				parameters.put(name, value);
 			}
 		} else {
-			throw new IllegalArgumentException("Definition doesn't comply");
+			throw new IllegalArgumentException("Definition doesn't comply. Was: '" + description + "' must match: /" + COMPLETE + "/" );
 		}
 
 		Class<?> clazz = Class.forName(className);

@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.TreeSet;
 
+import javax.annotation.Nullable;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 
@@ -18,12 +20,12 @@ public abstract class EasyParser {
 	private static final Collection<String> NOSET 
 			= new TreeSet<String>( Arrays.asList( NOS ) );
 	
-	public static boolean isYes( String yesOrNo ) {
+	public static boolean isYes( @Nullable String yesOrNo ) {
 		
 		return contains( YESSET, yesOrNo );
 	}
 
-	public static boolean isNo( String yesOrNo ) {
+	public static boolean isNo( @Nullable String yesOrNo ) {
 
 		return contains( NOSET, yesOrNo );
 	}
@@ -41,7 +43,7 @@ public abstract class EasyParser {
 		return defaultValue;
 	}
 
-	private static boolean contains( Collection<String> options, String yesOrNo ) {
+	private static boolean contains( Collection<String> options, @Nullable String yesOrNo ) {
 		
 		if( yesOrNo == null ) return false;
 		
