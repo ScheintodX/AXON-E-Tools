@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.testng.annotations.Test;
 
@@ -17,7 +20,9 @@ import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.tools.E;
 
 /**
- * Try to simulate Article Backend in order to find some deadlocks which occure there
+ * Try to simulate Article Backend in order to find some deadlocks which might occur there
+ * 
+ * Simulating is done using a simple delay in accessor before returning something.
  * 
  * @author flo
  */
@@ -30,7 +35,7 @@ public class CacheNGTest_SimulateArticleBackend {
 	                  ;
 	private final double RATIO = .5; 
 
-	public void testMultithreadedBackendLikeAccess() throws InterruptedException {
+	public void testMultithreadedBackendLikeAccess() throws Exception {
 		
 		long start = System.currentTimeMillis();
 		
@@ -39,18 +44,17 @@ public class CacheNGTest_SimulateArticleBackend {
 		E.chof( "Running in tmp dir: %s", tmp.getAbsolutePath() );
 		
 		CacheNG.Cache<String,Collection<String>> cache =
-				CacheEHCache.instance( tmp, RN.S_SS, (long)(NUM_ACCESSES * RATIO ) );
+				CacheEHCache.instance( tmp, RN.S_SS2, (long)(NUM_ACCESSES * RATIO ) );
 		
 		CacheNG.AutomaticClient<String,Collection<String>> client
 			= new AutomaticClientImpl<>( cache );
 		
-		List<Thread> threads = new ArrayList<>( NUM_THREADS );
+		ExecutorService service = Executors.newFixedThreadPool( NUM_THREADS );
+		List<Future<?>> tasks = new ArrayList<>( NUM_THREADS );
 		
 		for( int ti = 0; ti < NUM_THREADS; ti++ ) {
 			
-			threads.add( 
-			
-				new Thread( new Runnable() {
+			tasks.add( service.submit( new Runnable() {
 		
 					@Override
 					public void run() {
@@ -59,17 +63,21 @@ public class CacheNGTest_SimulateArticleBackend {
 							
 							String key = "" + (int)(Math.random() * NUM_ACCESSES );
 							
-							Collection<String> result = client.fetch( key, SIMULATE_ACCESS_BACKEND );
+							Collection<String> result = client.fetch( key, BackendAccessorSimulator );
 							
 							assertEquals( result.iterator().next(), key );
 						}
 					}
-				} ) 
-			);
+				}
+			) );
 		}
+		
+		service.shutdown();
+		for( Future<?> f : tasks ) {
 			
-		for( Thread t : threads ) t.start();
-		for( Thread t : threads ) t.join();
+			// This may fail if running paralell with other tests because EHCache may have been shut down.
+			assertNull( f.get() );
+		}
 		
 		long end = System.currentTimeMillis();
 		
@@ -78,9 +86,8 @@ public class CacheNGTest_SimulateArticleBackend {
 	}
 	
 	
-	private final SimulateAccessBackend SIMULATE_ACCESS_BACKEND = new SimulateAccessBackend();
-	
-	private final class SimulateAccessBackend implements SingleValueAccessor<String,Collection<String>> {
+	private final SingleValueAccessor<String,Collection<String>> BackendAccessorSimulator =
+			new SingleValueAccessor<String,Collection<String>>() {
 
 		@Override
 		public Collection<String> fetch( String key ) {
@@ -94,6 +101,6 @@ public class CacheNGTest_SimulateArticleBackend {
 			return Arrays.asList( key );
 		}
 		
-	}
+	};
 	
 }

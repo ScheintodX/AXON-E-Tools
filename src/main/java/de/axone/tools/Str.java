@@ -3,6 +3,7 @@ package de.axone.tools;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +16,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import de.axone.refactor.NotTested;
 
@@ -355,10 +359,10 @@ public class Str {
 	}
 	
 	// --- T r i m ------------------------------------------------------
-	public static String trimAtWordBoundary( String text, int len ){
+	public static @Nonnull String trimAtWordBoundary( String text, int len ){
 		return trimAtWordBoundary( text, len, null );
 	}
-	public static String trimAtWordBoundary( String text, int len, String appendix ){
+	public static @Nonnull String trimAtWordBoundary( String text, int len, String appendix ){
 		
 		assert text != null;
 		assert len > 0;
@@ -380,7 +384,7 @@ public class Str {
 		}
 	}
 	
-	public static String[] splitAtWordBoundaryNear( String text, int len ) {
+	public static @Nonnull String[] splitAtWordBoundaryNear( String text, int len ) {
 		
 		assert text != null;
 		assert len >= 0;
@@ -402,7 +406,7 @@ public class Str {
 	}
 	
 	// --- S p l i t ----------------------------------------------------
-	public static String splitAt( int position, String text ){
+	public static @Nonnull String splitAt( int position, String text ){
 		
 		StringBuilder result = new StringBuilder( text.length() + text.length()/position +1 );
 		
@@ -415,7 +419,7 @@ public class Str {
 		return result.toString();
 	}
 	
-	public static String [] splitFast( String s, char fs ){
+	public static @Nonnull String [] splitFast( String s, char fs ){
 		
 		int n = count( s, fs ) + 1;
 		
@@ -424,7 +428,7 @@ public class Str {
 		return splitFastLimited( s, fs, n );
 	}
 	
-	public static String [] splitFastAndTrim( String s, char fs ){
+	public static @Nonnull String [] splitFastAndTrim( String s, char fs ){
 		
 		String [] result = splitFast( s, fs );
 		
@@ -447,7 +451,7 @@ public class Str {
 	 * @param split
 	 * @return the splitted values in a string array
 	 */
-	public static String [] splitFastLimited( String s, char split, int n ){
+	public static @Nonnull String [] splitFastLimited( String s, char split, int n ){
 		
 		final String [] result = new String[ n ];
 		
@@ -880,10 +884,27 @@ public class Str {
 	}
 	public static String replaceFast( String value, String replace, String with ) {
 		
-		if( ! value.contains( replace ) ) return value;
+		int idx = value.indexOf( replace );
 		
-		// TODO: Make fast
-		return value.replace( replace, with );
+		if( idx < 0 ) return value;
+		
+		StringBuilder result = new StringBuilder();
+		
+		int last=0;
+		while( idx >= 0 ) {
+			
+			String left = value.substring( last, idx );
+			
+			result.append( left ).append( with );
+			
+			last = last + left.length() + replace.length();
+			
+			idx = value.indexOf( replace, last );
+		}
+		
+		result.append( value.substring( last ) );
+		
+		return result.toString();
 	}
 	
 	@FunctionalInterface
@@ -992,6 +1013,69 @@ public class Str {
 			return out;
 		}
 		
+	}
+	
+	private static final String basicTidy( String value ) {
+		return value != null ? value.trim() : null;
+	}
+
+	/**
+	 * Split a string like A:a1,a2,a3;B:b1,b2
+	 * into a map of lists like:
+	 * 
+	 * <pre>
+	 * {
+	 *   A: [ a1, a2, a3 ],
+	 *   B: [ b1, b2 ]
+	 * }
+	 * </pre>
+	 * 
+	 * @param value to be split
+	 * @param rs Record separator. ';' in this case
+	 * @param ns Name separator. ':' in this case
+	 * @param fs Field separator. ',' in this case
+	 * @param keyConverter If present use this to tidy/convert the resulting keys. If none given basicTidy is done
+	 * @param valConverter If present use this to tidy/convert the resulting values
+	 * @return the generated map of lists
+	 */
+	public static Map<String,String[]> splitMappedLists( String value,
+			char rs, char ns, char fs,
+			@Nullable Function<String,String> keyConverter, @Nullable Function<String,String> valConverter
+	) {
+		
+		if( keyConverter == null ) keyConverter = Str::basicTidy;
+		
+		String [] records = Str.splitFast( value, rs );
+		
+		HashMap<String,String[]> result = new HashMap<>( records.length );
+		
+		for( String rec : records ) {
+			
+			String [] nameval = Str.splitFast( rec, ns );
+			
+			String key = keyConverter.apply( nameval[ 0 ] );
+			
+			String [] vals = nameval.length > 1 ? Str.splitFast( nameval[ 1 ], fs ) : null;
+			
+			if( vals != null && valConverter != null ) {
+				for( int i=0; i<vals.length; i++ ) {
+					vals[ i ] = valConverter.apply( vals[ i ] );
+				}
+			}
+			
+			result.put( key, vals );
+		}
+		
+		return result;
+	}
+	public static boolean isEmpty( String [] line ) {
+		
+		for( int i=0; i<line.length; i++ ) {
+			
+			if( line[ i ].trim().length() > 0 )
+					return false;
+		}
+		return true;
 	}
 	
 }

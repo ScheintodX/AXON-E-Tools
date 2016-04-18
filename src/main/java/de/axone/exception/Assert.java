@@ -1,5 +1,6 @@
 package de.axone.exception;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
@@ -22,6 +23,11 @@ public abstract class Assert {
 	public static void eq1( Number number, String name ){
 		if( number == null ) return;
 		if( number.longValue() != 1 ) throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' is not 1" ) );
+	}
+	public static void zero( Number number, String name ){
+		if( number == null ) return;
+		if( Double.compare( number.doubleValue(), 0 ) != 0 ) 
+				throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' is not zero" ) );
 	}
 	
 	// Not null or empty
@@ -214,6 +220,17 @@ public abstract class Assert {
 		if( o1 == null ) return;
 		if( comparator.compare( o1, o2 ) != 0 ) throw Ex.up( new ArgumentRangeException( name, "compare to" + o2, o1 ) );
 	}
+	// string stuff
+	public static void startsWith( String o, String name, String startsWith ) {
+		if( o == null ) return;
+		if( ! o.startsWith( startsWith ) )
+				throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' needs to start with: '" + startsWith + "'" ) );
+	}
+	public static void startsWithIgnoreCase( String o, String name, String startsWith ) {
+		if( o == null ) return;
+		if( ! o.toLowerCase().startsWith( startsWith.toLowerCase() ) )
+				throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' needs to start with: '" + startsWith + "'" ) );
+	}
 	// == --------------------
 	public static void ident( Object o1, String name, Object o2 ){
 		if( o1 == null ) return;
@@ -245,5 +262,13 @@ public abstract class Assert {
 	public static void existsWithContent( Iterable<?> list, String name ){
 		notNull( list, name );
 		isTrue( list.iterator().hasNext(), name + " content" );
+	}
+	
+	
+	// Advanced stuff
+	public static void canRead( File file, String name ) {
+		if( file == null ) return;
+		if( ! file.canRead() )
+				throw new IllegalArgumentException( "Cannot read '" + name + "' / '" + file.getAbsolutePath() + "'" );
 	}
 }

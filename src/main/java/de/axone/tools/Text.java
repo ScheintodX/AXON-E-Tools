@@ -451,13 +451,18 @@ public abstract class Text {
 		return arrayHexBB( new StringBuilder(), data, widht, indent );
 	}
 	public static StringBuilder arrayHexBB( StringBuilder builder, byte[] data, int width, int indent ){
+		return arrayHexBB( builder, data, width, indent, 0, -1 );
+	}
+	public static StringBuilder arrayHexBB( StringBuilder builder, byte[] data, int width, int indent, int offset, int len ){
 
 		@SuppressWarnings( "resource" )
 		Formatter f = new Formatter( builder );
 
 		if( indent > 0 ) indentBB( builder, indent );
+		
+		len = len > data.length ? data.length : len;
 
-		for( int i=0; i<data.length; i++ ){
+		for( int i=offset; i<data.length; i++ ){
 
 			f.format( "%02x", data[i] );
 

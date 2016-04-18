@@ -5,11 +5,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,6 +141,16 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 			Optional<Path> mainFile = mainFile();
 			
 			return mainFile.isPresent() && Files.isReadable( mainFile.get() );
+		}
+		
+		@Override
+		public @Nullable FileTime mtime() throws IOException {
+			
+			Optional<Path> mainFile = mainFile();
+			
+			if( !mainFile.isPresent() ) return null;
+			
+			return Files.getLastModifiedTime( mainFile.get() );
 		}
 
 		@Override

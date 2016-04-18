@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import de.axone.cache.ng.CacheNG.MultiValueAccessor;
 import de.axone.cache.ng.CacheNG.SingleValueAccessor;
 
 public class AutomaticClientNoCache<K,O>
@@ -27,6 +28,11 @@ public class AutomaticClientNoCache<K,O>
 	@Override
 	public O fetchFresh( K key, SingleValueAccessor<K, O> accessor, Predicate<O> invalidateWhen ) {
 		return fetch( key, accessor ); // Allways fresh
+	}
+	
+	@Override
+	public Map<K, O> fetchFresh( Collection<K> keys, MultiValueAccessor<K, O> accessor, Predicate<O> refresh ) {
+		return fetch( keys, accessor ); // Allways fresh
 	}
 
 	@Override

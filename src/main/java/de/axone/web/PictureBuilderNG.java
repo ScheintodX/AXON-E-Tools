@@ -2,6 +2,7 @@ package de.axone.web;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.Optional;
 
 public interface PictureBuilderNG {
@@ -17,6 +18,12 @@ public interface PictureBuilderNG {
 	public boolean exists();
 	
 	/**
+	 * @return time of last modification or creation
+	 * @throws IOException 
+	 */
+	public FileTime mtime() throws IOException;
+	
+	/**
 	 * @return optional path in filesystem to picture
 	 * 
 	 * @param size
@@ -25,7 +32,11 @@ public interface PictureBuilderNG {
 	public Optional<Path> get( int size ) throws IOException;
 	
 	/**
-	 * @return what we are looking for. This returns a result even if there is no file present. Used for reporting missing files.
+	 * @return what we are looking for.
+	 * 
+	 * This returns a result even if there is no file present.
+	 * Used for reporting missing files.
 	 */
 	public Path lookingAt();
+
 }

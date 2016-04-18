@@ -7,7 +7,8 @@ public enum LoginError {
 	DISABLED( "Gesperrt" ),
 	NOT_LOGGED_IN( "Nicht angemeldet" ),
 	WRONG_REQUEST( "Fehler im Request" ),
-	NOT_ALLOWED( "Nicht erlaubt" );
+	NOT_ALLOWED( "Nicht erlaubt" ),
+	NO_PASSWORD( "Kein Passwort gesetzt" );
 	
 	private String message;
 	

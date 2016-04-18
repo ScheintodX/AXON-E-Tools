@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -60,6 +61,7 @@ public class Slurper {
 			return slurpString( fin );
 		}
 	}
+	
 	public static String slurpString( InputStream in ) throws IOException {
 		return slurpString( in, DEFAULT_CHARSET );
 	}
@@ -80,16 +82,6 @@ public class Slurper {
 		return new String( slurp( in, startsize, extendsize ), charsetName );
 	}
 	
-	/*
-	public static ByteBuffer slurpInBuffer( File in ) throws IOException {
-		
-		try( FileChannel fch = FileChannel.open( in.toPath(), StandardOpenOption.READ ) ){
-			
-			return slurp( fch );
-		}
-	}
-	*/
-	
 	public static byte[] slurp( File in ) throws IOException {
 		try( FileInputStream fin = new FileInputStream( in ) ){
 			return slurp( fin );
@@ -108,24 +100,16 @@ public class Slurper {
 	}
 	public static byte[] slurp( InputStream in, int startsize, int extendsize ) throws IOException {
 		
-		ByteBuffer result = slurp( Channels.newChannel( in ), startsize, extendsize );
-		if( result.hasArray() ){
-			return result.array();
-		} else {
-			byte [] r = new byte[ result.remaining() ];
-			result.get( r );
-			return r;
-		}
+		return toArray( slurpToBuffer( Channels.newChannel( in ), startsize, extendsize ) );
 	}
-		
 	
-	public static ByteBuffer slurp( ReadableByteChannel in ) throws IOException{
-		return slurp( in, DEFAULT_STARTSIZE, DEFAULT_EXTENDSIZE );
+	public static ByteBuffer slurpToBuffer( ReadableByteChannel in ) throws IOException{
+		return slurpToBuffer( in, DEFAULT_STARTSIZE, DEFAULT_EXTENDSIZE );
 	}
-	public static ByteBuffer slurp( ReadableByteChannel in, int startsize ) throws IOException{
-		return slurp( in, startsize, DEFAULT_EXTENDSIZE );
+	public static ByteBuffer slurpToBuffer( ReadableByteChannel in, int startsize ) throws IOException{
+		return slurpToBuffer( in, startsize, DEFAULT_EXTENDSIZE );
 	}
-	public static ByteBuffer slurp( ReadableByteChannel in, int startsize, int extendsize ) throws IOException{
+	public static ByteBuffer slurpToBuffer( ReadableByteChannel in, int startsize, int extendsize ) throws IOException{
 		
 		if( startsize <= 0 ) startsize = DEFAULT_STARTSIZE;
 		if( extendsize <= 1 ) extendsize = DEFAULT_EXTENDSIZE;
@@ -134,49 +118,178 @@ public class Slurper {
 		
 		int count = in.read( buffer );
 		
-		if( count >= 0 ){
+		if( count == 0 ) return EMPTY_BUFFER;
 			
-			ByteBuffer bb = ByteBuffer.allocate( 1 );
-			int b = in.read( bb );
+		ByteBuffer bb = ByteBuffer.allocate( 1 );
+		int b = in.read( bb );
+		
+		// there is more in the buffer;
+		if( b >= 0 ){
 			
-			// there is more in the buffer;
-			if( b >= 0 ){
-				
-				// store one char
-				if( b == 1 ){
-					bb.flip();
-					buffer = addToBuffer( buffer, bb, extendsize+1 );
-				}
-				
-				ByteBuffer readBuffer = ByteBuffer.allocateDirect( extendsize );
-				
-				while( in.read( readBuffer ) >= 0 ){
-					
-					readBuffer.flip();
-					buffer = addToBuffer( buffer, readBuffer, extendsize );
-					readBuffer.clear();
-				}
+			// store one char
+			if( b == 1 ){
+				bb.flip();
+				buffer = addToBuffer( buffer, bb, extendsize+1 );
 			}
 			
-			return trim( buffer );
-		} else {
+			ByteBuffer extBuffer = ByteBuffer.allocateDirect( extendsize );
+			
+			while( in.read( extBuffer ) >= 0 ){
+				
+				extBuffer.flip();
+				buffer = addToBuffer( buffer, extBuffer, extendsize );
+				extBuffer.clear();
+			}
+		}
+		
+		return trim( buffer );
+	}
+	
+	public static String slurpStringAtUntil( SeekableByteChannel in, long pos, byte until, Charset encoding, int startsize, int extendsize ) throws IOException { 
+		
+		ByteBuffer buf = slurpAtUntil( in, pos, until, startsize, extendsize );
+		
+		return new String( buf.array(), buf.position(), buf.limit(), encoding );
+	}
+	
+	// NOTE: We don't use allocateDirect because we need .array() method in result and
+	// benchmarks show no performance benefit from using it.
+	public static ByteBuffer slurpAtUntil( SeekableByteChannel in, long pos, byte until, int startsize, int extendsize ) throws IOException {
+		
+		if( startsize <= 0 ) startsize = DEFAULT_STARTSIZE;
+		if( extendsize <= 1 ) extendsize = DEFAULT_EXTENDSIZE;
+		
+		in.position( pos );
+		
+		ByteBuffer buffer = ByteBuffer.allocate( startsize );
+		
+		int count = in.read( buffer );
+		
+		if( count == 0 ) return EMPTY_BUFFER;
+		
+		int index = findInBufferZeroToLimit( buffer, until );
+		
+		// Not found read further
+		if( index < 0 ) {
+			
+			ByteBuffer extBuffer = ByteBuffer.allocate( extendsize );
+			 
+			while( in.read( extBuffer ) >= 0 ){
+	
+				extBuffer.flip();
+				 
+				index = findInBufferZeroToLimit( extBuffer, until );
+				 
+				if( index >= 0 ) {
+					
+					ByteBuffer result = ByteBuffer.allocate( buffer.capacity() + index + 1 );
+					buffer.flip();
+					result.put( buffer );
+					
+					extBuffer.limit( index+1 );
+					result.put( extBuffer );
+					
+					result.flip();
+					return result;
+					 
+				} else {
+					
+					ByteBuffer plus = ByteBuffer.allocate( buffer.capacity() + extendsize );
+					buffer.flip();
+					plus.put( buffer );
+					plus.put( extBuffer );
+					buffer = plus;
+				}
+				 
+				extBuffer.clear();
+			}
+			 
 			return EMPTY_BUFFER;
+			
+		} else {
+			
+			buffer.flip();
+			buffer.limit( index+1 );
+			
+			return buffer;
 		}
 	}
 	
+	// Copy to arrayable buffer if wanted
+	/*
+	private static ByteBuffer arrayableEventually( ByteBuffer buffer, boolean doit ) {
+		
+		if( !doit || buffer.hasArray() ) return buffer;
+		
+		ByteBuffer result = ByteBuffer.allocate( buffer.remaining() );
+		
+		result.put( buffer );
+		result.flip();
+		
+		return result;
+	}
+	*/
+	private static byte [] toArray( ByteBuffer buffer ) {
+		
+		if( buffer.hasArray() ){
+			return buffer.array();
+		} else {
+			byte [] r = new byte[ buffer.remaining() ];
+			buffer.get( r );
+			return r;
+		}
+	}
+	
+	private static int findInBufferZeroToLimit( ByteBuffer haystack, byte needle ) {
+		
+		int i;
+		for( i = 0; i < haystack.limit(); i++ ) {
+			
+			byte b = haystack.get( i );
+			if( b == needle ) break;
+		}
+		if( i == haystack.limit() ) return -1;
+		return i;
+	}
+	
+	/*
+	public static ByteBuffer slurpAt( RandomAccessFile in, long pos, int len ) throws IOException{
+		
+		ByteBuffer buffer = ByteBuffer.allocate( len );
+		
+		return slurpAt( buffer, in, pos );
+		
+	}
+	public static ByteBuffer slurpAt( ByteBuffer buffer, RandomAccessFile in, long pos ) throws IOException {
+		
+		FileChannel ch = in.getChannel();
+		ch.position( pos );
+		
+		int count = ch.read( buffer );
+		
+		if( count == -1 )
+				throw new IOException( "Cannot read" );
+		
+		buffer.flip();
+		
+		return buffer;
+	}
+	*/
+	
 	/**
-	 * Add 'add' to 'buffer'
+	 * Add 'bytes' to 'buffer'
+	 * 
+	 * If there is not enough space left a new Buffer is allocated
 	 * 
 	 * @param buffer where to add at position
 	 * @param add where to add from position to limit
 	 * @param extendsize
-	 * @return
+	 * @return the new buffer
 	 */
-	private static ByteBuffer addToBuffer( ByteBuffer buffer, ByteBuffer add, int extendsize ){
+	public static ByteBuffer addToBuffer( ByteBuffer buffer, ByteBuffer add, int extendsize ){
 		
-		int pos = buffer.position();
 		int bLen = buffer.limit();
-		int remaining = bLen-pos;
+		int remaining = buffer.remaining();
 		
 		int len = add.remaining();
 		
@@ -193,7 +306,7 @@ public class Slurper {
 		return buffer;
 	}
 	
-	private static ByteBuffer trim( ByteBuffer buffer ){
+	public static ByteBuffer trim( ByteBuffer buffer ){
 		
 		if( buffer.capacity() != buffer.position() ){
 		

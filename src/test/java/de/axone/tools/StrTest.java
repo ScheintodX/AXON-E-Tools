@@ -319,4 +319,54 @@ public class StrTest {
 		
 	}
 	
+	public void testReplaceFast() {
+		
+		assertEquals( Str.replaceFast( "abcabcabc", "d", "B" ), "abcabcabc" );
+		assertEquals( Str.replaceFast( "abcabcabc", "b", "B" ), "aBcaBcaBc" );
+		assertEquals( Str.replaceFast( "abcabcabc", "ab", "B" ), "BcBcBc" );
+		assertEquals( Str.replaceFast( "abcabcabc", "bc", "B" ), "aBaBaB" );
+	}
+	
+	private static final int RUNS = 1000000;
+	
+	public void benchmarkReplaceFast() throws InterruptedException {
+		
+		String text = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
+				+ " Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque"
+				+ " penatibus et magnis dis parturient montes, nascetur ridiculus mus."
+				+ " Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem."
+				+ " Nulla consequat massa quis enim. Donec pede justo, fringilla vel,"
+				+ " aliquet nec, vulputate eget, arcu."
+				;
+		
+		int i;
+		long start, end;
+		
+		// ReplaceFast
+		for( i=0; i<RUNS; i++ ) {
+			Str.replaceFast( text, "e", "E" );
+		}
+		Thread.sleep( 1000 ); // give the optimizer some room
+		start = System.currentTimeMillis();
+		for( i=0; i<RUNS; i++ ) {
+			Str.replaceFast( text, "e", "E" );
+		}
+		end = System.currentTimeMillis();
+		E.rrf( "ReplaceFast took %.2fms", (end-start)/1000.0 );
+		
+		//String.replace
+		for( i=0; i<RUNS; i++ ) {
+			text.replace( "e", "E" );
+		}
+		Thread.sleep( 1000 );
+		start = System.currentTimeMillis();
+		for( i=0; i<RUNS; i++ ) {
+			text.replace( "e", "E" );
+		}
+		end = System.currentTimeMillis();
+		E.rrf( "String.replace took %.2fms", (end-start)/1000.0 );
+		
+		
+	}
+	
 }

@@ -2,6 +2,7 @@ package de.axone.tools;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import de.axone.exception.Ex;
 
@@ -70,6 +71,9 @@ public abstract class E {
 	private static void echo( PrintStream out, boolean lino, boolean nl, boolean tn, Object ... os ){
 		echo( out, 3, lino, nl, tn, os );
 	}
+	private static void echoup( int steps, PrintStream out, boolean lino, boolean nl, boolean tn, Object ... os ){
+		echo( out, 3+steps, lino, nl, tn, os );
+	}
 	
 	public static void banner( String text ){
 		echo( System.out, 2, true, true, false, Text.banner( text.charAt( 0 ), text ) );
@@ -128,6 +132,10 @@ public abstract class E {
 	public static void rr( Object ... os ){
 		
 		echo( System.err, true, true, false, os );
+	}
+	public static void rrup( int steps, Object ... os ){
+		
+		echoup( steps, System.err, true, true, false, os );
 	}
 	public static void rr_( Object ... os ){
 		
@@ -306,5 +314,9 @@ public abstract class E {
 	
 	public static <T> Consumer<T> peeker( String name ){
 		return what -> echo( System.err, 12, true, true, false, name, what );
+	}
+	
+	public static <T> Runnable freelancer( String name, Supplier<T> whatToPrint ) {
+		return () -> echo( System.err, 12, true, true, false, name, whatToPrint.get() );
 	}
 }

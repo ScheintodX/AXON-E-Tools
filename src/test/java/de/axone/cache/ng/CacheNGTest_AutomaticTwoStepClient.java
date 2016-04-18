@@ -14,7 +14,6 @@ import org.testng.annotations.Test;
 
 import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.TestRealm;
-import de.axone.tools.Mapper;
 
 @Test( groups="cacheng.twostep" )
 public class CacheNGTest_AutomaticTwoStepClient {
@@ -109,6 +108,7 @@ public class CacheNGTest_AutomaticTwoStepClient {
 		assertThat( arts )
 				.hasSize( 0 );
 	}
+	
 	public void combinedOperationsUseTheRightCaches(){
 		
 		CacheNG.AutomaticClient<String, List<Aid>> aidListForString =
@@ -135,10 +135,10 @@ public class CacheNGTest_AutomaticTwoStepClient {
 	public void combinedOperationsAndAccessorUsage(){
 		
 		CacheNG.AutomaticClient<String, List<Aid>> aidListForString =
-				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:S" ), false ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<String,List<Aid>>( "S->L:AID" ), false ) ) );
 				
 		CacheNG.AutomaticClient<Aid, String> stringForAid =
-				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "S->S" ), false ) ) );
+				spy( new AutomaticClientImpl<>( new CacheHashMap<>( new TestRealm<Aid,String>( "AID->S" ), false ) ) );
 		
 		CacheNG.UniversalAccessor<String,List<Aid>> string2AidList = spy( String2AidList );
 		
@@ -150,14 +150,15 @@ public class CacheNGTest_AutomaticTwoStepClient {
 		verify( aidListForString, never() ).fetch( "A", string2AidList );
 		verify( stringForAid, never() ).fetch( aid( "a1" ), aid2String );
 		verify( string2AidList, never() ).fetch( "A" );
-		verify( aid2String, never() ).fetch( Arrays.asList( aid( "a1" ), aid( "a2" ) ) );
+		//verify( aid2String, never() ).fetch( Arrays.asList( aid( "a1" ), aid( "a2" ) ) );
+		verify( aid2String, never() ).fetch( aid( "a1" ) );
 		
 		atsc.fetch( "A", string2AidList, aid2String );
 			
 		verify( aidListForString, times( 1 ) ).fetch( "A", string2AidList );
 		verify( stringForAid, times( 1 ) ).fetch( Arrays.asList( aid( "a1" ), aid( "a2" ) ), aid2String );
 		verify( string2AidList, times( 1 ) ).fetch( "A" );
-		verify( aid2String, times( 1 ) ).fetch( Mapper.hashSet( aid( "a1" ), aid( "a2" ) ) );
+		verify( aid2String, times( 1 ) ).fetch( Arrays.asList( aid( "a1" ), aid( "a2" ) ) );
 		
 		atsc.fetch( "A", string2AidList, aid2String );
 			
@@ -165,14 +166,14 @@ public class CacheNGTest_AutomaticTwoStepClient {
 		verify( aidListForString, times( 2 ) ).fetch( "A", string2AidList );
 		verify( stringForAid, times( 2 ) ).fetch( Arrays.asList( aid( "a1" ), aid( "a2" ) ), aid2String );
 		verify( string2AidList, times( 1 ) ).fetch( "A" );
-		verify( aid2String, times( 1 ) ).fetch( Mapper.hashSet( aid( "a1" ), aid( "a2" ) ) );
+		verify( aid2String, times( 1 ) ).fetch( Arrays.asList( aid( "a1" ), aid( "a2" ) ) );
 		
 		atsc.fetch( "B", string2AidList, aid2String );
 		
 		verify( aidListForString, times( 1 ) ).fetch( "B", string2AidList );
 		verify( stringForAid, times( 1 ) ).fetch( Arrays.asList( aid( "b1" ), aid( "b2" ) ), aid2String );
 		verify( string2AidList, times( 1 ) ).fetch( "B" );
-		verify( aid2String, times( 1 ) ).fetch( Mapper.hashSet( aid( "b1" ), aid( "b2" ) ) );
+		verify( aid2String, times( 1 ) ).fetch( Arrays.asList( aid( "b1" ), aid( "b2" ) ) );
 	}
 		
 }

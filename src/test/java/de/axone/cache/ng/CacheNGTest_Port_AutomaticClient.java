@@ -36,8 +36,9 @@ public class CacheNGTest_Port_AutomaticClient {
 	private static String [] testEntryKeys = new String[]{ A, B, C, D };
 	private static String [] testEntryKeys2 = new String[]{ X, Y, Z, D };
 
+	// We must synchronize the cache itself if we want multiple AutoClients accessing it!
 	private static CacheNG.Cache<String,TestEntry> backend =
-			new CacheLRUMap<>( new TestRealm<String,TestEntry>( "AutomaticCacheTest" ), 4, false );
+			new CacheLRUMap<>( new TestRealm<String,TestEntry>( "AutomaticCacheTest" ), 4, true );
 	
 	//private static Cache<String,TestEntry> backend = new CacheHashMap<String,TestEntry>();
 	private static TestDataAccessor acc = new TestDataAccessor();
@@ -105,29 +106,38 @@ public class CacheNGTest_Port_AutomaticClient {
 	//@Test( enabled=false )
 	public void testThreaded() throws Exception {
 		
-		TestThread [] threads = new TestThread[NUM_THREADS];
+		TestThread [] threads = new TestThread[ NUM_THREADS ];
 		
 		for( int i=0; i<threads.length; i++ ){
 			
 			threads[i] = new TestThread(i, i%4);
 			threads[i].start();
 		}
+		
 		// Wait for threads to finish
 		for( TestThread t : threads ){
 			t.join();
 		}
+		
 		for( TestThread t : threads ){
 			assertEquals( t.getState(), Thread.State.TERMINATED );
 			assertNull( t.error );
 		}
 		
-		assertEquals( backend.size(), 4, "Test for some rare synchronization problem" );
-		
 		/*
-		E.rr( "Auto: " + auto.stats() );
-		E.rr( backend.info() );
-		E.rr( acc );
+		E.rr( backend.keySet().getClass() );
+		E.rr( backend.keySet().size() );
+		for( String s : backend.keySet() ) {
+			E.rr( s );
+		}
+		E.rr( new ArrayList( backend.keySet() ) );
+		E.rr( new ArrayList( backend.keySet() ).size() );
+		E.rr( backend.values() );
+		E.rr( backend.size() );
 		*/
+		
+		// This will fail if Backend isn't synchronised
+		assertEquals( backend.size(), 4, "Test for some rare synchronization problem" );
 	}
 	
 	public void testThreadedMulti() throws Exception {
@@ -162,21 +172,26 @@ public class CacheNGTest_Port_AutomaticClient {
 		final int no;
 		final int index;
 		Throwable error;
+		
 		TestThread( int no, int index ){
 			this.no=no;
 			this.index=index;
 		}
+		
 		@Override
 		public void run() {
 			
 			try {
 				for( int i=0; i<NUM_RUNS/NUM_THREADS; i++ ){
+					
 					String k = testEntryKeys[index];
-					String k2 = testEntryKeys2[index];
 					TestEntry e = testEntries[index];
-					TestEntry e2 = testEntries2[index];
 					assertThat( auto ).fetch( k, acc ).isEqualTo( e );
+					
+					String k2 = testEntryKeys2[index];
+					TestEntry e2 = testEntries2[index];
 					assertThat( auto2 ).fetch( k2, acc ).isEqualTo( e2 );
+					
 					synchronized( this ){
 						try {
 							this.wait( 1 );

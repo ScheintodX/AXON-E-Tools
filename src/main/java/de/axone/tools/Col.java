@@ -3,6 +3,11 @@ package de.axone.tools;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Tools for collections
+ * 
+ * @author flo
+ */
 public abstract class Col {
 
 	/**

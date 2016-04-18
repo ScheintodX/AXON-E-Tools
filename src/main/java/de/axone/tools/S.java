@@ -9,7 +9,10 @@ public interface S {
 	public static final String EMPTY = "";
 	
 	public static final String NL = "\n";
-	public static final char nl = '\n';
+	public static final char nl = '\n',
+	                         tab = '\t',
+	                         quot = '\'',
+	                         dquot = '"';
 	
 	public static final String
 			TRUE = "true",
@@ -49,5 +52,6 @@ public interface S {
 			HTML_EN_DASH = "&ndash;",
 			HTML_EM_DASH = "&mdash;"
 			;
+
 }
 	

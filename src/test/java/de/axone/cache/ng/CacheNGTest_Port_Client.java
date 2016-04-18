@@ -60,7 +60,7 @@ public class CacheNGTest_Port_Client {
 				.has( cached( C ) )
 				;
 		
-		assertThat( cache.info() ).contains( "(Size: 2 of 2," );
+		assertThat( cache.info() ).contains( "(Size: 2 of 2" );
 	}
 	
 	public void testNoCache(){

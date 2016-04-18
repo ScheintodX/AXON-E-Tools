@@ -27,17 +27,23 @@ public class F {
 		if( o == null ) r.append( S._NULL_ );
 		else {
 			// TODO: Explicit vorhandenes toString checken
-			if( o instanceof String ) formatString( r, (String)o );
+			if( o instanceof CharSequence ) formatCharSequence( r, (CharSequence)o );
 			else if( o instanceof Path ) formatPath( r, (Path)o );
 			else if( o instanceof Iterable<?> ) formatIterable( r, (Iterable<?>)o );
 			else if( o instanceof Map<?,?> ) formatMap( r, (Map<?,?>) o );
 			else if( o instanceof Enumeration<?> ) formatEnumeration( r, (Enumeration<?>) o );
 			else if( o.getClass().isArray() ) formatArray( r, o );
+			else if( o instanceof Byte ) formatByte( r, (Byte)o );
 			else r.append( String.valueOf( o ) );
 		}
 	}
 	
-	private static void formatIterable( Appendable r, Iterable<?> l ) throws IOException{
+	private static void formatByte( Appendable r, Byte b ) throws IOException {
+	    r.append( Character.forDigit( (b >> 4) & 0xF, 16));
+	    r.append( Character.forDigit( (b & 0xF), 16));
+	}
+	
+	private static void formatIterable( Appendable r, Iterable<?> l ) throws IOException {
 		
 		r.append( "(" );
 		boolean first = true;
@@ -88,7 +94,7 @@ public class F {
 		
 		Class<?> component = a.getClass().getComponentType();
 		
-		r.append( "[" );
+		r.append( "[ " );
 		boolean first = true;
 		if( component == boolean.class ){
 			for( boolean o : (boolean[])a ){
@@ -130,14 +136,22 @@ public class F {
 				_formatArrayItem( r, first, o );
 				first = false;
 			}
+		} else if( component.isArray() ) {
+			
+			r.append( "\n" );
+			for( Object o : (Object[])a ){
+				formatArray( r, o );
+				r.append( '\n' );
+				first = false;
+			}
+			
 		} else {
-			// This handles arrays of arrays, too
 			for( Object o : (Object[])a ){
 				_formatArrayItem( r, first, o );
 				first = false;
 			}
 		}
-		r.append( "]" );
+		r.append( " ]" );
 	}
 	
 	private static void _formatArrayItem( Appendable r, boolean first, Object o ) throws IOException {
@@ -145,7 +159,7 @@ public class F {
 		formatItem( r, o );
 	}
 	
-	private static void formatString( Appendable r, String s ) throws IOException {
+	private static void formatCharSequence( Appendable r, CharSequence s ) throws IOException {
 		r.append( s );
 	}
 	
@@ -157,16 +171,17 @@ public class F {
 	
 	private static void formatItem( Appendable r, Object o ) throws IOException {
 		
-		boolean isSpecial = 
+		boolean dontUseQuotes = 
 				o == null ||
+				o instanceof Number ||
 				o instanceof Collection<?> ||
 				o instanceof Map<?,?> ||
 				o.getClass().isArray()
 		;
 		
-		if( !isSpecial ) r.append( '\'' );
+		if( !dontUseQuotes ) r.append( '\'' );
 		ormatB( r, o );
-		if( !isSpecial ) r.append( '\'' );
+		if( !dontUseQuotes ) r.append( '\'' );
 	}
 
 }

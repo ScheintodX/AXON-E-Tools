@@ -28,6 +28,7 @@ public class CacheNGTestHelpers {
 		
 		public static TestRealm<String,String> S_S = new TestRealm<>( "s->s" );
 		public static TestRealm<String,Collection<String>> S_SS = new TestRealm<>( "s->C:s" );
+		public static TestRealm<String,Collection<String>> S_SS2 = new TestRealm<>( "s->C:s2" );
 	}
 	
 

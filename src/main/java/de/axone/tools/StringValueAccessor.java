@@ -2,6 +2,7 @@ package de.axone.tools;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -15,6 +16,8 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default Integer getInteger( K key ){
 		String v = get( key );
 		if( v == null ) return null;
+		v = v.trim();
+		if( v.length() == 0 ) return null;
 		return Integer.parseInt( v );
 	}
 	public default int getInteger( K key, int defaultValue ){
@@ -56,6 +59,8 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default Long getLong( K key ){
 		String v = get( key );
 		if( v == null ) return null;
+		v = v.trim();
+		if( v.length() == 0 ) return null;
 		return Long.parseLong( v );
 	}
 	public default long getLong( K key, long defaultValue ){
@@ -96,6 +101,8 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default Double getDouble( K key ){
 		String v = get( key );
 		if( v == null ) return null;
+		v = v.trim();
+		if( v.length() == 0 ) return null;
 		return Double.parseDouble( v );
 	}
 	public default double getDouble( K key, double defaultValue ){
@@ -137,6 +144,8 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default Boolean getBoolean( K key ){
 		String v = get( key );
 		if( v == null ) return null;
+		v = v.trim();
+		if( v.length() == 0 ) return null;
 		return EasyParser.yesOrNoOrNull( v );
 	}
 	public default boolean getBoolean( K key, boolean defaultValue ){
@@ -177,6 +186,8 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default File getFile( K key ){
 		String v = get( key );
 		if( v == null ) return null;
+		v = v.trim();
+		if( v.length() == 0 ) return null;
 		return new File( v );
 	}
 	public default File getFile( K key, File defaultValue ) {
@@ -254,10 +265,24 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default BigDecimal getBigDecimal( K key ){
 		String v = get( key );
 		if( v == null ) return null;
+		v = v.trim();
+		if( v.length() == 0 ) return null;
 		return new BigDecimal( v );
+	}
+	public default BigDecimal getBigDecimal( K key, MathContext mox ){
+		String v = get( key );
+		if( v == null ) return null;
+		v = v.trim();
+		if( v.length() == 0 ) return null;
+		return new BigDecimal( v, mox );
 	}
 	public default BigDecimal getBigDecimal( K key, BigDecimal defaultValue ){
 		BigDecimal v = getBigDecimal( key );
+		if( v == null ) return defaultValue;
+		return v;
+	}
+	public default BigDecimal getBigDecimal( K key, BigDecimal defaultValue, MathContext mox ){
+		BigDecimal v = getBigDecimal( key, mox );
 		if( v == null ) return defaultValue;
 		return v;
 	}
@@ -266,13 +291,29 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
+	public default BigDecimal getBigDecimal( K key, ValueProvider<BigDecimal> defaultValueProvider, MathContext mox ){
+		BigDecimal v = getBigDecimal( key, mox );
+		if( v == null ) return defaultValueProvider.get();
+		return v;
+	}
 	public default BigDecimal getBigDecimalRequired( K key ){
 		BigDecimal v = getBigDecimal( key );
 		if( v == null ) throw exception( key );
 		return v;
 	}
+	public default BigDecimal getBigDecimalRequired( K key, MathContext mox ){
+		BigDecimal v = getBigDecimal( key, mox );
+		if( v == null ) throw exception( key );
+		return v;
+	}
 	public default BigDecimal getBigDecimalRequired( K key, BigDecimal defaultValue ){
 		BigDecimal v = getBigDecimal( key );
+		if( v == null ) v = defaultValue;
+		if( v == null ) throw exception( key );
+		return v;
+	}
+	public default BigDecimal getBigDecimalRequired( K key, BigDecimal defaultValue, MathContext mox ){
+		BigDecimal v = getBigDecimal( key, mox );
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw exception( key );
 		return v;
@@ -283,12 +324,19 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( v == null ) throw exception( key );
 		return v;
 	}
+	public default BigDecimal getBigDecimalRequired( K key, ValueProvider<BigDecimal> defaultValueProvider, MathContext mox ){
+		BigDecimal v = getBigDecimal( key, mox );
+		if( v == null ) v = defaultValueProvider.get();
+		if( v == null ) throw exception( key );
+		return v;
+	}
 	
 	
 	// == Enumeration =====
 	public default <T extends Enum<T>> T getEnum( Class<T> clazz, K key ){
 		String v = get( key );
 		if( v == null ) return null;
+		v = v.trim();
 		if( v.length() == 0 ) return null;
 		return Enum.valueOf( clazz, v );
 	}
@@ -325,6 +373,8 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default <T, T1 extends T> T getNewInstance( Class<T1> clazz, K key ) throws ReflectiveOperationException {
 		String v = get( key );
 		if( v == null ) return null;
+		v = v.trim();
+		if( v.length() == 0 ) return null;
 		@SuppressWarnings( "unchecked" )
 		Class<T> vClass = (Class<T>)Class.forName( v );
 		return vClass.newInstance();
@@ -351,6 +401,21 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( v == null ) v = defaultValue != null ? defaultValue.newInstance() : null;
 		if( v == null ) throw exception( key );
 		return v;
+	}
+	
+	
+	@SuppressWarnings( "unchecked" )
+	public default <T, T1 extends T> Instantiator<? extends T> getInstantiator(
+			Class<T> clazz, K key, Class<T1> defaultValue, Class<?> ... parameterTypes )
+			throws ReflectiveOperationException {
+		
+		String v = get( key );
+		
+		E.rr( key, v );
+		
+		Class<? extends T> vClass = v != null ? (Class<T>) Class.forName( v ) : defaultValue;
+		
+		return Instantiator.forClass( vClass );
 	}
 	
 	// == Object instantiation =====

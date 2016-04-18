@@ -408,6 +408,26 @@ public abstract class Mapper {
 		if( items instanceof Collection ) return new ArrayList<>( (Collection<T>) items );
 		ArrayList<T> result = new ArrayList<>();
 		for( T t : items ) result.add( t );
+		result.trimToSize();
+		return result;
+	}
+	
+	public static <T> ArrayList<T> asArrayList( Iterable<T> items ) {
+		if( items == null ) return null;
+		if( items instanceof ArrayList ) return (ArrayList<T>)items;
+		if( items instanceof Collection ) return new ArrayList<>( (Collection<T>) items );
+		ArrayList<T> result = new ArrayList<>();
+		for( T t : items ) result.add( t );
+		result.trimToSize();
+		return result;
+	}
+	
+	public static <T> LinkedList<T> asLinkedList( Iterable<T> items ) {
+		if( items == null ) return null;
+		if( items instanceof ArrayList ) return (LinkedList<T>)items;
+		if( items instanceof Collection ) return new LinkedList<>( (Collection<T>) items );
+		LinkedList<T> result = new LinkedList<>();
+		for( T t : items ) result.add( t );
 		return result;
 	}
 	
@@ -436,4 +456,5 @@ public abstract class Mapper {
 		
 		return result;
 	}
+	
 }

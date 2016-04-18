@@ -51,7 +51,12 @@ public class AutomaticWatcher<W,T> {
 			lock.writeLock().lock();
 			try {
 				// Use Accessor to fetch
-				result = accessor.fetch( backend.getWatched() );
+				try {
+					result = accessor.fetch( backend.getWatched() );
+				} catch( Throwable t ) {
+					store.setError( t );
+					throw t;
+				}
 
 				store.setData( result );
 				

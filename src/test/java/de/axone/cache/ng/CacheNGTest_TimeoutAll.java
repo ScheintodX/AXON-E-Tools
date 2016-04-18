@@ -37,7 +37,7 @@ public class CacheNGTest_TimeoutAll {
 		
 		auto.invalidateAll( false );
 		
-		synchronized( this ){ wait( 110 ); }
+		synchronized( this ){ wait( 1100 ); }
 		
 		assertThat( auto )
 				.hasNotCached( A12345 )

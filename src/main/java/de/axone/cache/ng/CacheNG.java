@@ -3,10 +3,10 @@ package de.axone.cache.ng;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -157,6 +157,17 @@ public abstract class CacheNG {
 		 */
 		public String realm();
 		
+		
+		/*
+		@SuppressWarnings( "unchecked" )
+		public default <X,Y> Realm<X,Y> as( Class<X> x, Class<Y> y ) {
+			return (Realm<X,Y>)this;
+		}
+		@SuppressWarnings( "rawtypes" )
+		public default Realm plain() {
+			return this;
+		}
+		*/
 	}
 	
 	
@@ -344,7 +355,8 @@ public abstract class CacheNG {
 		 */
 		public O fetchFresh( K key, SingleValueAccessor<K,O> accessor, Predicate<O> invalidateWhen );
 		
-		
+		public Map<K,O> fetchFresh( Collection<K> keys, MultiValueAccessor<K,O> accessor, Predicate<O> refresh );
+
 		/**
 		 * @return true if this entry is already stored.
 		 * 
@@ -452,10 +464,9 @@ public abstract class CacheNG {
 		@Override
 		default public Map<K, O> fetch( Collection<K> keys ) {
 			
-			return keys.stream()
-					.collect( Collectors.toMap(
-							key -> key,
-							key -> fetch( key ) ) );
+			Map<K, O> result = new HashMap<>( keys.size() );
+			for( K key : keys ) result.put( key, fetch( key ) );
+			return result;
 		}
 	}
 	
@@ -466,10 +477,11 @@ public abstract class CacheNG {
 	
 	public static <K,O> MultiValueAccessor<K,O> single2multi( SingleValueAccessor<K,O> single ){
 		
-		return keys -> keys.stream()
-				.collect( Collectors.toMap(
-						k -> k,
-						k -> single.fetch( k ) ) );
+		return keys -> {
+				Map<K,O> result = new HashMap<>( keys.size() );
+				for( K key : keys ) result.put( key, single.fetch( key ) );
+				return result;
+		};
 	}
 	
 	public static <K,O> UniversalAccessor<K,O> multi2universal( MultiValueAccessor<K,O> multi ){
@@ -504,10 +516,21 @@ public abstract class CacheNG {
 			@Override
 			public Map<K, O> fetch( Collection<K> keys ) {
 				
+				Map<K,O> result = new HashMap<>( keys.size() );
+				for( K key : keys ) result.put( key, single.fetch( key ) );
+				return result;
+				
+				// Stream fails because values can be null and Collections.toMap is broken in that aspect
+				/*
 				return keys.stream()
+						//.filter( Objects::nonNull )
+						.peek( k -> E.rr( k, single.fetch( k ) ) )
 						.collect( Collectors.toMap(
 								k -> k,
-								k -> single.fetch( k ) ) );
+								k -> single.fetch( k ) ) )
+				;
+				*/
+				
 			}
 		};
 		

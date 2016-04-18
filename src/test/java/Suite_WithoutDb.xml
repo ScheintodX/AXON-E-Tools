@@ -1,0 +1,70 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+
+<suite name="Without DB" verbose="2" parallel="methods" thread-count="4">
+		
+	<test name="Shop">
+		<groups>
+			<run>
+				<include name=".*"/>
+				<exclude name="em"/>
+				<exclude name="rt"/>
+			</run>
+		</groups>
+		
+        <packages>
+            <package name="de.axone.shop.*"/>
+        </packages>
+	</test>
+	
+	<test name="Special">
+		<groups>
+			<run>
+				<include name="special.*"/>
+			</run>
+		</groups>
+		
+        <packages>
+            <package name="de.feinebanner.*"/>
+            <package name="de.headnature.*"/>
+            <package name="de.heidelpay.*"/>
+        </packages>
+	</test>
+	
+	<test name="Tools">
+		<groups>
+			<run>
+				<include name="tools.*"/>
+			</run>
+		</groups>
+		
+        <packages>
+            <package name="de.axone.*"/>
+        </packages>
+	</test>
+	
+	<test name="Tools.Web">
+		<groups>
+			<run>
+				<include name="web.*"/>
+			</run>
+		</groups>
+		
+        <packages>
+            <package name="de.axone.*"/>
+        </packages>
+	</test>
+	
+	<test name="WebTemplates">
+		<groups>
+			<run>
+				<include name="webtemplate.*"/>
+			</run>
+		</groups>
+		
+        <packages>
+            <package name="de.axone.webtemplate.*"/>
+        </packages>
+	</test>
+	
+	
+</suite>

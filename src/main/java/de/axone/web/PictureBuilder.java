@@ -33,16 +33,16 @@ public abstract class PictureBuilder {
 	private final int index;
 	private final int hashLength;
 	
-	public PictureBuilder(File cacheDir, String identifier) {
+	public PictureBuilder( File cacheDir, String identifier ) {
 
 		this( cacheDir, identifier, 0 );
 	}
 
-	public PictureBuilder(File cacheDir, String identifier, int index ) {
+	public PictureBuilder( File cacheDir, String identifier, int index ) {
 		this( cacheDir, "main", identifier, index, 1 );
 	}
 		
-	public PictureBuilder(File cacheDir, String mainDir, String identifier, int index, int hashLength ) {
+	public PictureBuilder( File cacheDir, String mainDir, String identifier, int index, int hashLength ) {
 
 		this.cacheDir = cacheDir;
 		this.mainDir = mainDir;
