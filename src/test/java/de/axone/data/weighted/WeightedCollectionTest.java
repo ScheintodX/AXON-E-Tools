@@ -1,5 +1,9 @@
 package de.axone.data.weighted;
 
+import static org.testng.Assert.*;
+
+import java.util.Iterator;
+
 import org.assertj.core.api.AbstractIterableAssert;
 import org.testng.annotations.Test;
 
@@ -36,6 +40,31 @@ public class WeightedCollectionTest {
 				.hasMaxWeight( 10.0 )
 				.hasAvgWeight( 10.0 )
 				;
+		
+	}
+	
+	public void testBest() {
+		
+		WeightedTestItems list = new WeightedTestItems();
+		list.add( id1_10 )
+		    .add( id1_10 )
+		    .add( id2_20 )
+		    .add( id3_30 )
+		    .add( id4_40 )
+		    ;
+		assertThat( list )
+			.hasSize( 4 )
+			;
+		
+		WeightedTestItems best = list.best( 2 );
+		
+		assertThat( best )
+			.hasSize( 2 )
+			;
+		
+		Iterator<TestItem> it = best.sorted().iterator();
+		assertEquals( it.next(), id4_40 );
+		assertEquals( it.next(), id3_30 );
 		
 	}
 		

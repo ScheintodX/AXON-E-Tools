@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -16,6 +17,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Iterator;
+import java.util.function.Function;
 
 import de.axone.data.Charsets;
 
@@ -99,8 +102,17 @@ public class Slurper {
 		return slurp( in, startsize, DEFAULT_EXTENDSIZE );
 	}
 	public static byte[] slurp( InputStream in, int startsize, int extendsize ) throws IOException {
-		
 		return toArray( slurpToBuffer( Channels.newChannel( in ), startsize, extendsize ) );
+	}
+	
+	public static char[] slurpChars( InputStream in, Charset cs ) throws IOException {
+		return slurpChars( in, DEFAULT_STARTSIZE, DEFAULT_EXTENDSIZE, cs );
+	}
+	public static char[] slurpChars( InputStream in, int startsize, Charset cs ) throws IOException {
+		return slurpChars( in, startsize, DEFAULT_EXTENDSIZE, cs );
+	}
+	public static char[] slurpChars( InputStream in, int startsize, int extendsize, Charset cs ) throws IOException {
+		return toCharArray( slurpToBuffer( Channels.newChannel( in ), startsize, extendsize ), cs );
 	}
 	
 	public static ByteBuffer slurpToBuffer( ReadableByteChannel in ) throws IOException{
@@ -239,6 +251,18 @@ public class Slurper {
 			return r;
 		}
 	}
+	private static char [] toCharArray( ByteBuffer buffer, Charset cs ) {
+		
+		CharBuffer cb = cs.decode( buffer );
+		
+		if( cb.hasArray() ){
+			return cb.array();
+		} else {
+			char [] r = new char[ cb.remaining() ];
+			cb.get( r );
+			return r;
+		}
+	}
 	
 	private static int findInBufferZeroToLimit( ByteBuffer haystack, byte needle ) {
 		
@@ -365,7 +389,7 @@ public class Slurper {
 	
 	public static void burp( Path outS, ByteBuffer buffer ) throws IOException {
 	
-		try( WritableByteChannel ch = FileChannel.open( outS, StandardOpenOption.WRITE ) ){
+		try( WritableByteChannel ch = FileChannel.open( outS, StandardOpenOption.CREATE, StandardOpenOption.WRITE ) ){
 		
 			ch.write( buffer );
 		}
@@ -387,4 +411,30 @@ public class Slurper {
 			throw new IOError( e );
 		}
 	}
+	
+	public static <T> int burp( Path outS, Iterable<T> dataP, Function<T, byte[]> mapper ) throws IOException{
+		
+		try( WritableByteChannel ch = FileChannel.open( outS, StandardOpenOption.CREATE, StandardOpenOption.WRITE ) ){
+			
+			Iterator<T> it = dataP.iterator();
+			
+			int c = 0;
+			while( it.hasNext() ) {
+				
+				ByteBuffer buf = ByteBuffer.wrap( mapper.apply( it.next() ) );
+				
+				c += buf.remaining();
+				while( buf.remaining() > 0 ) {
+					ch.write( buf );
+				}
+			}
+			return c;
+		}
+	}
+	
+	public static int burp( Path outS, Iterable<byte[]> dataP ) throws IOException{
+		
+		return burp( outS, dataP, Function.identity() );
+	}
+	
 }

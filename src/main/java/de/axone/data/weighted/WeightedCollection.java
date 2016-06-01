@@ -9,6 +9,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import de.axone.test.TestClass;
+
+@TestClass( "WeightedCollectionTest" )
 public interface WeightedCollection<W extends WeightedCollection<W, T>, T> extends Iterable<T>{
 	
 	public double weight();

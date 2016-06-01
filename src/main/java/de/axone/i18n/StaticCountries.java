@@ -273,13 +273,11 @@ public enum StaticCountries implements Country {
 	private final Locale [] locales;
 	
 	private static HashMap<String,StaticCountries>forIso2 = new HashMap<String,StaticCountries>();
-	private static HashMap<Integer,StaticCountries>forIsoN = new HashMap<Integer,StaticCountries>();
 	
 	static {
 		for( StaticCountries c : StaticCountries.values() ){
 			
 			forIso2.put( c.getIso2(), c );
-			forIsoN.put( c.getIsoN(), c );
 		}
 	}
 	
@@ -303,7 +301,7 @@ public enum StaticCountries implements Country {
 		this.postalcode = postalcode;
 		Locale [] l = new Locale[ language.length ];
 		for( int i=0; i<language.length; i++ ){
-			l[i] = new Locale( language[i].code() );
+			l[i] = new Locale( language[i].iso2() );
 		}
 		this.locales = l;
 	}
@@ -311,7 +309,6 @@ public enum StaticCountries implements Country {
 	public Locale [] locales(){ return locales; }
 	
 	public static StaticCountries forIso2( String iso2 ){ return forIso2.get( iso2.toUpperCase() ); }
-	public static StaticCountries forIsoN( int isoN ){ return forIsoN.get( isoN ); }
 
 	@Override
 	public String getCommonName() { return commonName; }

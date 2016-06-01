@@ -3,6 +3,8 @@ package de.axone.tools;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -261,6 +263,85 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	
 	
 	
+	// == Path ==
+	public default Path getPath( K key ){
+		String v = get( key );
+		if( v == null ) return null;
+		v = v.trim();
+		if( v.length() == 0 ) return null;
+		return Paths.get( v );
+	}
+	public default Path getPath( K key, Path defaultValue ) {
+		Path v = getPath( key );
+		if( v == null ) return defaultValue;
+		return v;
+	}
+	public default Path getPath( K key, ValueProvider<Path> defaultValueProvider ) {
+		Path v = getPath( key );
+		if( v == null ) return defaultValueProvider.get();
+		return v;
+	}
+	public default Path getPathRequired( K key ) {
+		Path v = getPath( key );
+		if( v == null ) throw exception( key );
+		return v;
+	}
+	public default Path getPathRequired( K key, Path defaultValue ) {
+		Path v = getPath( key );
+		if( v == null ) v = defaultValue;
+		if( v == null ) throw exception( key );
+		return v;
+	}
+	public default Path getPathRequired( K key, ValueProvider<Path> defaultValueProvider ) {
+		Path v = getPath( key );
+		if( v == null ) v = defaultValueProvider.get();
+		if( v == null ) throw exception( key );
+		return v;
+	}
+	
+	public default Path absolute( Path path, Path optionalBasedir ) {
+		if( path == null ) return null;
+		if( path.isAbsolute() ) return path;
+		else {
+			if( optionalBasedir == null ) return path;
+			return optionalBasedir.resolve( path );
+		}
+	}
+	public default Path absolute( Path path, K optionalBasedirKey ) {
+		if( path == null ) return null;
+		if( path.isAbsolute() ) return path;
+		else {
+			Path basedir = getPathRequired( optionalBasedirKey );
+			if( basedir == null ) return path;
+			return basedir.resolve( path );
+		}
+	}
+	public default Path absolute( Path path, ValueProvider<Path> optionalBasedirProvider ) {
+		if( path == null ) return null;
+		if( path.isAbsolute() ) return path;
+		else {
+			Path basedir =  optionalBasedirProvider.get();
+			if( basedir == null ) return path;
+			return basedir.resolve( path );
+		}
+	}
+	
+	public default Path absoluteRequired( Path path, K optionalBasedirKey ) {
+		Path v = absolute( path, optionalBasedirKey );
+		if( v == null ) return null;
+		if( v.isAbsolute() ) return v;
+		else throw new IllegalArgumentException( "Resulting path '" + path.toString() + "' is not absolute" );
+	}
+	
+	public default Path absoluteRequired( Path path, ValueProvider<Path> optionalBasedirProvider ) {
+		Path v = absolute( path, optionalBasedirProvider );
+		if( v == null ) return null;
+		if( v.isAbsolute() ) return v;
+		else throw new IllegalArgumentException( "Resulting path '" + path.toString() + "' is not absolute" );
+	}
+	
+	
+	
 	// == BigDecimal =====
 	public default BigDecimal getBigDecimal( K key ){
 		String v = get( key );
@@ -410,8 +491,6 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 			throws ReflectiveOperationException {
 		
 		String v = get( key );
-		
-		E.rr( key, v );
 		
 		Class<? extends T> vClass = v != null ? (Class<T>) Class.forName( v ) : defaultValue;
 		

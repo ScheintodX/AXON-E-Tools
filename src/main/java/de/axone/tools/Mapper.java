@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import de.axone.data.collections.DoubleImmutableSet;
 import de.axone.data.collections.SingleImmutableList;
@@ -82,6 +84,34 @@ public abstract class Mapper {
 	@SafeVarargs
 	public static <T> LinkedHashMap<T,T> linkedHashMapIgnoreEmptyValues( T ... values ){
 		return map( new LinkedHashMap<T,T>(), true, values );
+	}
+	
+	// =========== Generated Maps =============
+	
+	public static <K extends Enum<K>,V> EnumMap<K,V> enumMapOf( Class<K> enumType, Function<K,V> generator ) {
+		EnumMap<K,V> result = new EnumMap<K,V>( enumType );
+		for( K key : enumType.getEnumConstants() ) {
+			result.put( key, generator.apply( key ) );
+		}
+		return result;
+	}
+	public static <K extends Enum<K>,V> EnumMap<K,V> enumMapOf( Class<K> enumType, Generator<V> generator ) {
+		return enumMapOf( enumType, v -> generator.generate() );
+	}
+	
+	public static <K,V> HashMap<K,V> hashMapOf( Iterable<K> keys, Function<K,V> generator ) {
+		HashMap<K,V> result = new HashMap<>();
+		for( K key : keys ) {
+			result.put( key, generator.apply( key ) );
+		}
+		return result;
+	}
+	public static <K,V> HashMap<K,V> hashMapOf( Iterable<K> keys, Generator<V> generator ) {
+		return hashMapOf( keys, v -> generator.generate() );
+	}
+	
+	public interface Generator<T> {
+		public T generate();
 	}
 		
 	@SafeVarargs
@@ -200,6 +230,15 @@ public abstract class Mapper {
 		
 		TreeSet<T> result = new TreeSet<T>( Arrays.asList( values ));
 		return result;
+	}
+	
+	@SafeVarargs
+	public static <T> Set<T> setAtLeast( Set<T> source, T ... addThese ){
+		if( source == null ) return hashSet( addThese );
+		for( T addon : addThese ){
+			source.add( addon );
+		}
+		return source;
 	}
 
 	// Converted Set

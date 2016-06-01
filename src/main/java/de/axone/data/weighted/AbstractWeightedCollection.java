@@ -342,6 +342,7 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 				;
 	}
 	
+	// Note, that this doesn't imply "sorted" results.
 	@Override
 	public W best( int maxAmount, Predicate<T> filter ){
 		

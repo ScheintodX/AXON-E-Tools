@@ -141,6 +141,11 @@ public abstract class E {
 		
 		echo( System.err, true, false, false, os );
 	}
+	/*
+	public static <T> void rrm( Formatter<T> formatter, Object ... os ) {
+		echo( System.err, true, false, false, formatter, os );
+	}
+	*/
 	public static void rrf( String format, Object ... args ){
 		
 		printf( System.err, true, true, format, args );
@@ -319,4 +324,10 @@ public abstract class E {
 	public static <T> Runnable freelancer( String name, Supplier<T> whatToPrint ) {
 		return () -> echo( System.err, 12, true, true, false, name, whatToPrint.get() );
 	}
+	
+	/*
+	public interface Formatter<T> {
+		void format( Appendable out, T object );
+	}
+	*/
 }

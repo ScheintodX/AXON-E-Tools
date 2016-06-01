@@ -8,6 +8,7 @@ public abstract class WeightedStrings<L extends WeightedStrings<L,S>, S extends 
 
 	public WeightedStrings( Supplier<L> supplier,
 			WeightedCollection.Cloner<S> cloner ) {
+		
 		super( supplier, item -> item.weight, cloner );
 	}
 	

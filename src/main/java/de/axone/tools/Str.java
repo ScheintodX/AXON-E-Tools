@@ -1,5 +1,6 @@
 package de.axone.tools;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -91,6 +92,9 @@ public class Str {
 	}
 	public static <T, U extends T> String join( StreamJoiner<T> joiner, Stream<U> objects ){
 		return joinB( joiner, objects ).toString();
+	}
+	public static <T, U extends T> String join( Function<T,String> mapper, String joinWith, Iterable<U> objects ){
+		return joinB( new ConfiguredJoiner<T>( joinWith, mapper ), objects ).toString();
 	}
 	@SafeVarargs
 	public static <T, U extends T> String joinIgnoreEmpty( Joiner<T> joiner, U ... objects ){
@@ -317,8 +321,26 @@ public class Str {
 		public String toString( String object, int index ) {
 			return '"' + object.replace( "\"", "\"\"" ) + '"';
 		}
-
 	};
+	
+	public static final class ConfiguredJoiner<T> implements Joiner<T> {
+		
+		private final String seperator;
+		private final Function<T,String> mapper;
+			
+		public ConfiguredJoiner( String seperator, Function<T,String> mapper ) {
+			this.seperator = seperator;
+			this.mapper = mapper;
+		}
+		@Override
+		public String getSeparator() {
+			return seperator;
+		}
+		@Override
+		public String toString( T object, int index ) {
+			return mapper.apply( object );
+		}
+	}
 	
 	public interface MapJoiner<K,V> {
 		public String getRecordSeparator();
@@ -847,6 +869,62 @@ public class Str {
 		}
 		
 		return result.toString();
+	}
+	
+	public static final char [] translateToArray( String value, CharMapper mapper ) {
+		
+		if( value == null ) return null;
+		
+		return translate( value.toCharArray(), mapper );
+	}
+		
+	public static final String translate( String value, CharMapper mapper ) {
+		
+		return new String( translateToArray( value, mapper ) );
+	}
+	
+	public static final char [] translate( char [] in, CharMapper mapper ) {
+		
+		if( in == null ) return null;
+		
+		char [] out = new char[ in.length ];
+		
+		for( int i=0; i<in.length; i++ ) {
+			out[ i ] = mapper.map( in[ i ] );
+		}
+		
+		return out;
+	}
+	
+	public static final byte [] translate( byte [] in, ByteMapper mapper ) {
+		
+		if( in == null ) return null;
+		
+		byte [] out = new byte[ in.length ];
+		
+		for( int i=0; i<in.length; i++ ) {
+			out[ i ] = mapper.map( in[ i ] );
+		}
+		
+		return out;
+	}
+	
+	public static final byte [] translateToBytes( String in, ByteMapper mapper, Charset cs ) {
+		
+		byte [] bytes = in.getBytes( cs );
+		
+		return translate( bytes, mapper );
+		
+	}
+	
+	@FunctionalInterface
+	public interface CharMapper {
+		public char map( char c );
+	}
+	
+	@FunctionalInterface
+	public interface ByteMapper {
+		public byte map( byte c );
 	}
 	
 	public static final boolean contains( String value, char ch ){

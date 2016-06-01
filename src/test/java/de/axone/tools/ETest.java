@@ -64,7 +64,7 @@ public class ETest {
 			double doubleV=123.45;
 			
 			E.cho( booleanV );	assertOut( s, "true" );
-			E.cho( byteV );		assertOut( s, "12" );
+			E.cho( byteV );		assertOut( s, "0c" );
 			E.cho( charV );		assertOut( s, "c" );
 			E.cho( intV );		assertOut( s, "12345" );
 			E.cho( doubleV );	assertOut( s, "123.45" );

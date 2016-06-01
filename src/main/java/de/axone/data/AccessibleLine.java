@@ -1,6 +1,7 @@
 package de.axone.data;
 
 import java.util.Arrays;
+import java.util.List;
 
 import de.axone.tools.F;
 import de.axone.tools.Str;
@@ -9,6 +10,8 @@ import de.axone.tools.StringValueAccessor;
 public class AccessibleLine<T extends Enum<T>> implements StringValueAccessor<T> {
 	
 	private final String[] values;
+	private long filePos;
+	private int originalLength;
 	
 	@Override
 	public String access( T key ) {
@@ -20,6 +23,24 @@ public class AccessibleLine<T extends Enum<T>> implements StringValueAccessor<T>
 	}
 	public AccessibleLine( String line, char fs ) {
 		this( Str.splitFast( line, fs ) );
+	}
+	public AccessibleLine( List<String> values ) {
+		this.values = values.toArray( new String[ values.size() ] );
+	}
+	
+	public AccessibleLine<T> atPos( long pos ) {
+		this.filePos = pos;
+		return this;
+	}
+	public long filePos() {
+		return filePos;
+	}
+	public AccessibleLine<T> withOriginalLength( int originalLength ) {
+		this.originalLength = originalLength;
+		return this;
+	}
+	public int originalLength() {
+		return originalLength;
 	}
 	
 	public boolean isEmpty() {

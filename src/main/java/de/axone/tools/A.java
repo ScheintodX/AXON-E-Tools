@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.axone.test.TestClass;
+
+@TestClass( "ATest" )
 public class A {
 
 	// Boolean
@@ -30,6 +33,24 @@ public class A {
 	public static Set<Boolean> set( boolean ... values ){
 		return new HashSet<Boolean>( list( values ) );
 	}
+	public static int indexOf( int start, boolean needle, boolean ... haystack ) {
+		for( int c = start; c < haystack.length; c++ ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int lastIndexOf( int start, boolean needle, boolean ... haystack ) {
+		for( int c = start; c >= 0; c-- ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int indexOf( boolean needle, boolean ... haystack ) {
+		return indexOf( 0, needle, haystack );
+	}
+	public static int lastIndexOf( boolean needle, boolean ... haystack ) {
+		return lastIndexOf( haystack.length-1, needle, haystack );
+	}
 	
 	// Byte
 	public static byte[] array( byte ... values ){ return values; }
@@ -44,6 +65,25 @@ public class A {
 	public static Set<Byte> set( byte ... values ){
 		return new HashSet<Byte>( list( values ) );
 	}
+	public static int indexOf( int start, byte needle, byte ... haystack ) {
+		for( int c = start; c < haystack.length; c++ ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int lastIndexOf( int start, byte needle, byte ... haystack ) {
+		for( int c = start; c >= 0; c-- ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int indexOf( byte needle, byte ... haystack ) {
+		return indexOf( 0, needle, haystack );
+	}
+	public static int lastIndexOf( byte needle, byte ... haystack ) {
+		return lastIndexOf( haystack.length-1, needle, haystack );
+	}
+	
 	
 	// Character
 	public static char[] array( char ... values ){ return values; }
@@ -58,6 +98,24 @@ public class A {
 	public static Set<Character> set( char ... values ){
 		return new HashSet<Character>( list( values ) );
 	}
+	public static int indexOf( int start, char needle, char ... haystack ) {
+		for( int c = start; c < haystack.length; c++ ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int lastIndexOf( int start, char needle, char ... haystack ) {
+		for( int c = start; c >= 0; c-- ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int indexOf( char needle, char ... haystack ) {
+		return indexOf( 0, needle, haystack );
+	}
+	public static int lastIndexOf( char needle, char ... haystack ) {
+		return lastIndexOf( haystack.length-1, needle, haystack );
+	}
 	
 	// Short
 	public static short[] array( short ... values ){ return values; }
@@ -71,6 +129,24 @@ public class A {
 	}
 	public static Set<Short> set( short ... values ){
 		return new HashSet<Short>( list( values ) );
+	}
+	public static int indexOf( int start, short needle, short ... haystack ) {
+		for( int c = start; c < haystack.length; c++ ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int lastIndexOf( int start, short needle, short ... haystack ) {
+		for( int c = start; c >= 0; c-- ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int indexOf( short needle, short ... haystack ) {
+		return indexOf( 0, needle, haystack );
+	}
+	public static int lastIndexOf( short needle, short ... haystack ) {
+		return lastIndexOf( haystack.length-1, needle, haystack );
 	}
 	
 	// Integer
@@ -94,6 +170,24 @@ public class A {
 	public static Set<Integer> set( int ... values ){
 		return new HashSet<Integer>( list( values ) );
 	}
+	public static int indexOf( int start, int needle, int ... haystack ) {
+		for( int c = start; c < haystack.length; c++ ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int lastIndexOf( int start, int needle, int ... haystack ) {
+		for( int c = start; c >= 0; c-- ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int indexOf( int needle, int ... haystack ) {
+		return indexOf( 0, needle, haystack );
+	}
+	public static int lastIndexOf( int needle, int ... haystack ) {
+		return lastIndexOf( haystack.length-1, needle, haystack );
+	}
 	
 	// Long
 	public static long[] array( long ... values ){ return values; }
@@ -107,6 +201,24 @@ public class A {
 	}
 	public static Set<Long> set( long ... values ){
 		return new HashSet<Long>( list( values ) );
+	}
+	public static int indexOf( int start, long needle, long ... haystack ) {
+		for( int c = start; c < haystack.length; c++ ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int lastIndexOf( int start, long needle, long ... haystack ) {
+		for( int c = start; c >= 0; c-- ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int indexOf( long needle, long ... haystack ) {
+		return indexOf( 0, needle, haystack );
+	}
+	public static int lastIndexOf( long needle, long ... haystack ) {
+		return lastIndexOf( haystack.length-1, needle, haystack );
 	}
 	
 	// Float
@@ -123,6 +235,34 @@ public class A {
 		return new HashSet<Float>( list( values ) );
 	}
 	
+	/**
+	 * Note that this compares floats via == which you should only use if you
+	 * *exactly* know what you are doing.
+	 * 
+	 * @param start 
+	 * @param needle
+	 * @param haystack
+	 * @return first index of needle in haystack
+	 */
+	public static int indexOf( int start, float needle, float ... haystack ) {
+		for( int c = start; c < haystack.length; c++ ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int lastIndexOf( int start, float needle, float ... haystack ) {
+		for( int c = start; c >= 0; c-- ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int indexOf( float needle, float ... haystack ) {
+		return indexOf( 0, needle, haystack );
+	}
+	public static int lastIndexOf( float needle, float ... haystack ) {
+		return lastIndexOf( haystack.length-1, needle, haystack );
+	}
+	
 	// Double
 	public static double[] array( double ... values ){ return values; }
 	public static Double[] objects( double ... values ){
@@ -135,6 +275,34 @@ public class A {
 	}
 	public static Set<Double> set( double ... values ){
 		return new HashSet<Double>( list( values ) );
+	}
+	
+	/**
+	 * Note that this compares floats via == which you should only use if you
+	 * *exactly* know what you are doing.
+	 * 
+	 * @param start 
+	 * @param needle
+	 * @param haystack
+	 * @return first index of needle in haystack
+	 */
+	public static int indexOf( int start, double needle, double ... haystack ) {
+		for( int c = start; c < haystack.length; c++ ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int lastIndexOf( int start, double needle, double ... haystack ) {
+		for( int c = start; c >= 0; c-- ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	public static int indexOf( double needle, double ... haystack ) {
+		return indexOf( 0, needle, haystack );
+	}
+	public static int lastIndexOf( double needle, double ... haystack ) {
+		return lastIndexOf( haystack.length-1, needle, haystack );
 	}
 	
 	// Generic
@@ -204,6 +372,55 @@ public class A {
 		return new HashSet<Object>( objectList( values ) );
 	}
 	
+	@SafeVarargs
+	public static <T> int indexOf( int start, T needle, T ... haystack ) {
+		for( int c = start; c < haystack.length; c++ ) {
+			if( needle.equals( haystack[ c ] ) ) return c;
+		}
+		return -1;
+	}
+	@SafeVarargs
+	public static <T> int lastIndexOf( int start, T needle, T ... haystack ) {
+		for( int c = start; c >= 0; c-- ) {
+			if( haystack[ c ] == needle ) return c;
+		}
+		return -1;
+	}
+	@SafeVarargs
+	public static <T> int indexOf( T needle, T ... haystack ) {
+		return indexOf( 0, needle, haystack );
+	}
+	@SafeVarargs
+	public static <T> int lastIndexOf( T needle, T ... haystack ) {
+		return lastIndexOf( haystack.length-1, needle, haystack );
+	}
+	
+	/**
+	 * @param arr 
+	 * @return array with leading trailing null removed
+	 */
+	public static byte [] trim( byte [] arr ) {
+		
+		if( arr == null ) return null;
+		if( arr.length == 0 ) return arr;
+		
+		int start=0,
+		    end = arr.length -1
+		    ;
+		
+		if( arr[ start ] != 0 && arr[ end ] != 0 ) return arr;
+		
+		while( start < end && arr[ start ] == 0 ) start++;
+		while( end >= start && arr[ end ] == 0 ) end--;
+		
+		int len = end-start+1;
+		
+		byte [] result = new byte[ len ];
+		System.arraycopy( arr, start, result, 0, len );
+		
+		return result;
+		
+	}
 	
 	public static char [] union( char [] a, char ... b ){
 		

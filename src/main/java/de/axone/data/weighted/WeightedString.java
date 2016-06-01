@@ -6,7 +6,7 @@ public class WeightedString {
 	protected final double weight;
 	protected final String text;
 	
-	public WeightedString( String text , double weight  ) {
+	public WeightedString( String text, double weight  ) {
 		this.weight = weight;
 		this.text = text;
 	}

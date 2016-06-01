@@ -7,13 +7,10 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.AbstractObjectAssert;
-import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ObjectAssert;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -186,39 +183,6 @@ public class Assertions {
 		protected StreamAssert( Stream<X> actual ) {
 			super( actual );
 		}
-	}
-	
-	
-	public static abstract class AbstractStreamAssert<
-			X,
-			S extends AbstractObjectAssert<S, Stream<X>>
-	
-	> extends AbstractObjectAssert<S,Stream<X>> {
-
-		protected AbstractStreamAssert( Stream<X> actual ) {
-			super( actual, AbstractStreamAssert.class );
-		}
-		
-		public S hasSize( int size ) {
-			
-			org.assertj.core.api.Assertions.assertThat( actual.count() )
-					.as( descriptionText() )
-					.isEqualTo( size );
-			
-			return myself;
-		}
-		
-		public ListAssert<X> asList() {
-			
-			return org.assertj.core.api.Assertions.assertThat(
-					actual.collect( Collectors.toList() ) );
-		}
-		
-		public List<X> theList() {
-			
-			return actual.collect( Collectors.toList() );
-		}
-		
 	}
 	
 }
