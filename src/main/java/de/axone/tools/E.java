@@ -228,6 +228,12 @@ public abstract class E {
 		printf( System.out, false, false, format, args );
 	}
 	
+	/* === Threads =========================================================== */
+	synchronized public static void t( String message ) {
+		
+		echo( System.err, true, true, true, message );
+	}
+	
 	/* === EXIT =========================================================== */
 	private static final int EXIT_UP = 3;
 	private static void exit( String message, int code ){

@@ -43,7 +43,7 @@ public class CacheNGTest_TimeoutWithinMultithreaded {
 			
 	public void fillCache(){
 		
-		E.rr( "fill: " + NUM );
+		E.cho( "fill: " + NUM );
 		for( int i=0; i<NUM; i++ ){
 			assertThat( autoClient )
 					.fetch( aid( ""+i ), accessor )
@@ -83,7 +83,7 @@ public class CacheNGTest_TimeoutWithinMultithreaded {
 						Aid aid = aid( ""+i );
 						
 						if( ! autoClient.isCached( aid ) ){
-							System.out.print( "." );
+							//System.out.print( "." );
 							count.incrementAndGet();
 							if( System.currentTimeMillis() < start + TIME/2 ){
 								mid.incrementAndGet();
@@ -104,7 +104,7 @@ public class CacheNGTest_TimeoutWithinMultithreaded {
 			
 		}
 		
-		E.rr( "start: " + THREADS + " threads" );
+		E.cho( "start: " + THREADS + " threads" );
 		
 		start = System.currentTimeMillis();
 		for( int t = 0; t < THREADS; t++ ){ rs[ t ].start(); }
@@ -113,31 +113,31 @@ public class CacheNGTest_TimeoutWithinMultithreaded {
 		
 		long time = end-start;
 		
-		System.out.println();
+		//System.out.println();
 		
 		// Must run longer than invalidation time to get all invalidated
-		E.rr( "time: " + time + "ms" );
+		E.cho( "time: " + time + "ms" );
 		assertThat( time ).isGreaterThan( TIME );
 		
 		// It's possible that parallel threads access invalid
 		// values at the same time. so count > NUM
 		int theCount = count.get();
-		E.rr( "invalid: " + theCount );
+		E.cho( "invalid: " + theCount );
 		assertThat( theCount ).isGreaterThanOrEqualTo( NUM );
 		
 		// Amount of values which where invalid at half the time invalidation time
 		// Doesn't really work and don't know why...
 		int theMid = mid.get();
-		E.rr( "mid: " + theMid );
+		E.cho( "mid: " + theMid );
 		//assertThat( theMid ).isBetween( theCount - theCount/2, theCount + theCount/2 );
 		
 		int theFull = full.get();
-		E.rr( "full: " + theFull );
+		E.cho( "full: " + theFull );
 		//assertThat( theFull ).isBetween( (int)(theMid * 1.5), (int)(theMid * 3f) );
 		
-		E.rr( "Cache accesses: " + counter.count.get() );
+		E.cho( "Cache accesses: " + counter.count.get() );
 		
-		E.rr( "Accessor accesses: " + accessor.count.get() );
+		E.cho( "Accessor accesses: " + accessor.count.get() );
 	}
 	
 	

@@ -1,5 +1,8 @@
 package de.axone.i18n;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum Language {
 	
 	ab( "Abkhaz", "аҧсуа бызшәа, аҧсшәа", "ab", "abk", "abk", "abk", "abks" ),
@@ -195,6 +198,15 @@ public enum Language {
 	private final String iso3;
 	private final String[] fallback;
 	
+	private static Map<String,Language> forIso2 = new HashMap<>();
+	private static Map<String,Language> forIso3 = new HashMap<>();
+	static {
+		for( Language lang : Language.values() ) {
+			forIso2.put( lang.iso2(), lang );
+			forIso3.put( lang.iso3(), lang );
+		}
+	}
+	
 	Language( String nameEn, String nameLocal, 
 			String iso639_1, String iso639_2T, String iso639_2B, String iso639_3, String iso639_6, 
 			String ... fallback_iso2 ) {
@@ -205,6 +217,18 @@ public enum Language {
 		this.iso3 = iso639_2B;
 		this.fallback = fallback_iso2;
 	}
+	
+	public static Language forIso2( String iso2 ) {
+		Language lang = forIso2.get( iso2 );
+		if( lang == null ) throw new IllegalArgumentException( "Unknown: " + iso2 );
+		return lang;
+	}
+	public static Language forIso3( String iso3 ) {
+		Language lang = forIso3.get( iso3 );
+		if( lang == null ) throw new IllegalArgumentException( "Unknown: " + iso3 );
+		return lang;
+	}
+	
 	
 	public String iso2(){ return iso2; }
 	public String iso3(){ return iso3; }

@@ -69,7 +69,7 @@ public class ETest {
 			E.cho( intV );		assertOut( s, "12345" );
 			E.cho( doubleV );	assertOut( s, "123.45" );
 			E.cho( booleanV, byteV, charV, intV, doubleV );
-			assertOut( s, "true, 12, c, 12345, 123.45" );
+			assertOut( s, "true, 0c, c, 12345, 123.45" );
 			
 			// Wrapers
 			Boolean booleanO=booleanV;
@@ -79,7 +79,7 @@ public class ETest {
 			Double doubleO=doubleV;
 			
 			E.cho( booleanO );	assertOut( s, "true" );
-			E.cho( byteO );		assertOut( s, "12" );
+			E.cho( byteO );		assertOut( s, "0c" );
 			E.cho( charO );		assertOut( s, "c" );
 			E.cho( intO );		assertOut( s, "12345" );
 			E.cho( doubleO );	assertOut( s, "123.45" );
@@ -91,11 +91,11 @@ public class ETest {
 			int [] intA=new int[]{ 12345, 12346, 12347 };
 			double [] doubleA = new double[]{ 123.45, 123.46, 123.47 };
 			
-			E.cho( booleanA );	assertOut( s, "['true', 'false']" );
-			E.cho( byteA );		assertOut( s, "['1', '2', '3']" );
-			E.cho( charA );		assertOut( s, "['a', 'b', 'c']" );
-			E.cho( intA );		assertOut( s, "['12345', '12346', '12347']" );
-			E.cho( doubleA );	assertOut( s, "['123.45', '123.46', '123.47']" ); 
+			E.cho( booleanA );	assertOut( s, "[ 'true', 'false' ]" );
+			E.cho( byteA );		assertOut( s, "[ 01, 02, 03 ]" );
+			E.cho( charA );		assertOut( s, "[ 'a', 'b', 'c' ]" );
+			E.cho( intA );		assertOut( s, "[ 12345, 12346, 12347 ]" );
+			E.cho( doubleA );	assertOut( s, "[ 123.45, 123.46, 123.47 ]" ); 
 			
 			// Wrapper Arrays
 			Boolean [] booleanOA=new Boolean[]{ true, false };
@@ -105,15 +105,15 @@ public class ETest {
 			Double [] doubleOA = new Double[]{ 123.45, 123.46, 123.47 };
 			
 			E.cho( (Object[])booleanOA );	assertOut( s, "true, false" );
-			E.cho( (Object[])byteOA );		assertOut( s, "1, 2, 3" );
+			E.cho( (Object[])byteOA );		assertOut( s, "01, 02, 03" );
 			E.cho( (Object[])charOA );		assertOut( s, "a, b, c" );
 			E.cho( (Object[])intOA );		assertOut( s, "12345, 12346, 12347" );
 			E.cho( (Object[])doubleOA );	assertOut( s, "123.45, 123.46, 123.47" ); 
-			E.cho( (Object)booleanOA );		assertOut( s, "['true', 'false']" );
-			E.cho( (Object)byteOA );		assertOut( s, "['1', '2', '3']" );
-			E.cho( (Object)charOA );		assertOut( s, "['a', 'b', 'c']" );
-			E.cho( (Object)intOA );			assertOut( s, "['12345', '12346', '12347']" );
-			E.cho( (Object)doubleOA );		assertOut( s, "['123.45', '123.46', '123.47']" ); 
+			E.cho( (Object)booleanOA );		assertOut( s, "[ 'true', 'false' ]" );
+			E.cho( (Object)byteOA );		assertOut( s, "[ 01, 02, 03 ]" );
+			E.cho( (Object)charOA );		assertOut( s, "[ 'a', 'b', 'c' ]" );
+			E.cho( (Object)intOA );			assertOut( s, "[ 12345, 12346, 12347 ]" );
+			E.cho( (Object)doubleOA );		assertOut( s, "[ 123.45, 123.46, 123.47 ]" ); 
 			
 			// List
 			List<Boolean> booleanOL=Arrays.asList( true, false );
@@ -122,17 +122,17 @@ public class ETest {
 			List<Integer> intOL=Arrays.asList( 12345, 12346, 12347 );
 			List<Double> doubleOL=Arrays.asList( 123.45, 123.46, 123.47 );
 			
-			E.cho( booleanOL );	assertOut( s, "('true', 'false')" );
-			E.cho( byteOL );	assertOut( s, "('1', '2', '3')" );
-			E.cho( charOL );	assertOut( s, "('a', 'b', 'c')" );
-			E.cho( intOL );		assertOut( s, "('12345', '12346', '12347')" );
-			E.cho( doubleOL );	assertOut( s, "('123.45', '123.46', '123.47')" ); 
+			E.cho( booleanOL );	assertOut( s, "( 'true', 'false' )" );
+			E.cho( byteOL );	assertOut( s, "( 01, 02, 03 )" );
+			E.cho( charOL );	assertOut( s, "( 'a', 'b', 'c' )" );
+			E.cho( intOL );		assertOut( s, "( 12345, 12346, 12347 )" );
+			E.cho( doubleOL );	assertOut( s, "( 123.45, 123.46, 123.47 )" ); 
 			
 			Map<Integer,Boolean> ibM = Mapper.linkedHashMap( new Integer[]{1, 2}, new Boolean[]{true, false} );
-			E.cho( ibM );	assertOut( s, "{'1'=>'true', '2'=>'false'}" );
+			E.cho( ibM );	assertOut( s, "{ 1=>'true', 2=>'false' }" );
 			
 			Map<Character,String> csM = Mapper.linkedHashMap( new Character[]{'a', 'b'}, new String[]{"AAA", "BBB"} );
-			E.cho( csM );	assertOut( s, "{'a'=>'AAA', 'b'=>'BBB'}" );
+			E.cho( csM );	assertOut( s, "{ 'a'=>'AAA', 'b'=>'BBB' }" );
 			
 			List<Integer> l1 = Arrays.asList( 100, 101, 102 );
 			List<Integer> l2 = Arrays.asList( 200, 201, 202, null );
@@ -141,7 +141,7 @@ public class ETest {
 					new List<?>[]{ l1, l2 }
 			);
 			
-			E.cho( bslM );	assertOut( s, "{'1'=>('100', '101', '102'), '2'=>('200', '201', '202', (-null-))}" );
+			E.cho( bslM );	assertOut( s, "{ 01=>( 100, 101, 102 ), 02=>( 200, 201, 202, (-null-) ) }" );
 			
 			// Keep line number stable or this will fail
 			a(); assertOut( s, "[test] < (ETest.java:159) < (ETest.java:158) < (ETest.java:147)" );

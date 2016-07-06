@@ -69,7 +69,6 @@ public class CacheNGTest_FetchFresh {
 	private static final int ACCESSORS = 100,
 	                         ACCESSES = 10_000;
 	
-	// TODO: Implement me
 	public void testFetchFreshMultiThreadedMulti() {
 		
 		//CacheNG.Cache<String,String> cache = spy( new CacheHashMap<>( new RealmImpl<String,String>( "blah" ), false ) );

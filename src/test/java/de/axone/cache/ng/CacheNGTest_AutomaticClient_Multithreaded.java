@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 import org.testng.annotations.Test;
 
@@ -140,6 +141,33 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 		
 	}
 	
+	public void testAutomaticClientParalelleManyAtOnceFetchFresh() throws Exception {
+		
+		final DelayedIndexProvider index = new DelayedIndexProvider();
+		
+		TestAccessor_Multi accessor =
+				new TestAccessor_Multi( index::getAndIncrement );
+		
+		CacheNG.AutomaticClient<String,String> auto =
+				new AutomaticClientImpl<>( new CacheHashMap<>( RN.S_S, false ) );
+		
+		List<Thread> ts = new LinkedList<>();
+		
+		for( int i=0; i<NUM_THREADS; i++ ){
+			
+			Thread t = new Thread( new FetchRunnerManyAtOnce( accessor, auto ), "T-" + i );
+			
+			ts.add( t );
+			
+		}
+		
+		for( Thread t : ts ) t.start();
+		for( Thread t : ts ) t.join();
+		
+		assertEquals( index.getAndIncrement(), NUM_ENTRIES, "Amount of fetches" );
+		
+	}
+	
 	private class FetchRunnerOneByOne implements Runnable {
 		
 		final CacheNG.UniversalAccessor<String, String> accessor;
@@ -170,11 +198,17 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 		
 		final CacheNG.UniversalAccessor<String, String> accessor;
 		final CacheNG.AutomaticClient<String, String> autoClient;
+		final Predicate<String> freshness;
 		
 		public FetchRunnerManyAtOnce( UniversalAccessor<String, String> accessor,
-				AutomaticClient<String, String> autoClient ) {
+				AutomaticClient<String, String> autoClient, Predicate<String> freshness ) {
 			this.accessor = accessor;
 			this.autoClient = autoClient;
+			this.freshness = freshness;
+		}
+		public FetchRunnerManyAtOnce( UniversalAccessor<String, String> accessor,
+				AutomaticClient<String, String> autoClient ) {
+			this( accessor, autoClient, null );
 		}
 
 		@Override
@@ -190,7 +224,12 @@ public class CacheNGTest_AutomaticClient_Multithreaded {
 				List<String> request = Mapper.asLinkedList( ""+c, ""+d );
 				
 				Map<String,String> expected = Mapper.hashMap( ""+c, ""+c+i, ""+d, ""+d+j );
-				Map<String,String> result = autoClient.fetch( request, accessor );
+				Map<String,String> result;
+				if( freshness != null ) {
+					result = autoClient.fetchFresh( request, accessor, freshness );
+				} else {
+					result = autoClient.fetch( request, accessor );
+				}
 				
 				//print( c + "/" + d + "->" + expected + "///" + result );
 				

@@ -45,7 +45,7 @@ public class F {
 	
 	private static void formatIterable( Appendable r, Iterable<?> l ) throws IOException {
 		
-		r.append( "(" );
+		r.append( "( " );
 		boolean first = true;
 		for( Object o : l ){
 			if( first ) first = false;
@@ -53,12 +53,12 @@ public class F {
 			
 			formatItem( r, o );
 		}
-		r.append( ")" );
+		r.append( " )" );
 	}
 
 	private static void formatEnumeration( Appendable r, Enumeration<?> l ) throws IOException{
 		
-		r.append( "(" );
+		r.append( "( " );
 		boolean first = true;
 		
 		while( l.hasMoreElements() ){
@@ -69,12 +69,12 @@ public class F {
 			
 			formatItem( r, o );
 		}
-		r.append( ")" );
+		r.append( " )" );
 	}
 
 	private static void formatMap( Appendable r, Map<?,?> m ) throws IOException {
 		
-		r.append( "{" );
+		r.append( "{ " );
 		boolean first = true;
 		for( Map.Entry<?,?> entry : m.entrySet() ){
 			
@@ -87,7 +87,7 @@ public class F {
 			r.append( "=>" );
 			formatItem( r, entry.getValue() );
 		}
-		r.append( "}" );
+		r.append( " }" );
 	}
 
 	private static void formatArray( Appendable r, Object a ) throws IOException{

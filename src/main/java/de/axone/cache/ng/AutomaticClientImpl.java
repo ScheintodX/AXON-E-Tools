@@ -69,10 +69,13 @@ public class AutomaticClientImpl<K,O>
 		Cache.Entry<O> entry = null;
 		
 		// deadlock #1
+		//E.t( "R" );
 		__read__.lock();
+		//E.t( "R>" );
 		try{
 			entry = backend.fetchEntry( key );
 		} finally {
+			//E.t( "R<" );
 			__read__.unlock();
 		}
 		
@@ -89,30 +92,38 @@ public class AutomaticClientImpl<K,O>
 			stats.miss();
 
 			// deadlock #2
+			//E.t( "F" );
 			__fetch__.lock();
+			//E.t( "F>" );
 			
 			try {
 				
 				// Try again in case another process has gotten it meanwhile
 				entry = backend.fetchEntry( key );
 				
-				if( entry != null ) result = entry.data();
+				if( entry != null ){
+					
+					result = entry.data();
 				
-				else {
+				} else {
 				
 					// Use Accessor to fetch
 					result = accessor.fetch( key );
 	
 					// deadlock #4
+					//E.t( "W" );
 					__write__.lock();
+					//E.t( "W>" );
 					try {
 						backend.put( key, result );
 					} finally {
+						//E.t( "W<" );
 						__write__.unlock();
 					}
 				}
 				
 			} finally {
+				//E.t( "F<" );
 				__fetch__.unlock();
 			}
 		}
@@ -127,8 +138,11 @@ public class AutomaticClientImpl<K,O>
 
 		HashMap<K,O> result = new HashMap<K,O>();
 		List<K> missed = null;
-
+		
+		//E.t( "R" );
 		__read__.lock();
+		//E.t( "R>" );
+		
 		try{
     		for( K key : keys ){
     			
@@ -146,12 +160,15 @@ public class AutomaticClientImpl<K,O>
     			}
     		}
 		} finally {
+			//E.t( "R<" );
 			__read__.unlock();
 		}
-
+		
 		if( missed != null ){
 
+			//E.t( "F" );
 			__fetch__.lock();
+			//E.t( "F>" );
 			
 			try {
 				List<K> reallyMissed = new LinkedList<>();
@@ -174,7 +191,10 @@ public class AutomaticClientImpl<K,O>
 					
 					O value = fetched.get( key );
 					
+					//E.t( "W" );
 					__write__.lock();
+					//E.t( "W>" );
+					
 					try {
 						if( value == null ){
 	
@@ -184,11 +204,13 @@ public class AutomaticClientImpl<K,O>
 							backend.put( key, value );
 						}
 					} finally {
+						//E.t( "W<" );
 						__write__.unlock();
 					}
 				}
 
 			} finally {
+				//E.t( "F<" );
 				__fetch__.unlock();
 			}
 		}
@@ -201,55 +223,50 @@ public class AutomaticClientImpl<K,O>
 	@Override
 	public O fetchFresh( K key, SingleValueAccessor<K,O> accessor, Predicate<O> refresh ) {
 		
-		Cache.Entry<O> entry;
+		O entry = fetch( key, accessor );
 		
-		// deadlock #3
-		__read__.lock();
-		try {
-			entry = backend.fetchEntry( key );
-		} finally {
-			__read__.unlock();
+		if( refresh.test( entry ) ){
+			// we can (and must) synchonize this because we want to refetch for sure
+			// and we know it is invalid (bacause we say so)
+			synchronized( this ) {
+				invalidate( key );
+				return fetch( key, accessor );
+			}
 		}
 		
-		if( entry == null ) return fetch( key, accessor );
-		
-		if( refresh.test( entry.data() ) ){
-			invalidate( key );
-			return fetch( key, accessor );
-		}
-		
-		return entry.data();
-		
+		return entry;
 	}
 	
 	// TODO: Testen testen testen
 	@Override
 	public Map<K,O> fetchFresh( Collection<K> keys, MultiValueAccessor<K,O> accessor, Predicate<O> refresh ){
 		
-		Map<K,O> result;
+		//E.t( "o" );
 		
-		__read__.lock();
-		try {
-			result = fetch( keys, accessor );
-		} finally {
-			__read__.unlock();
-		}
+		Map<K,O> result = fetch( keys, accessor );
+		
+		//E.t( ".o" );
 		
 		Set<K> invalid = null;
 		
 		for( Map.Entry<K,O> entry : result.entrySet() ) {
 			
 			if( refresh.test( entry.getValue() ) ) {
-				invalidate( entry.getKey() );
 				
 				if( invalid == null ) invalid = new HashSet<>();
 				invalid.add( entry.getKey() );
 			}
 		}
 		
+		//E.t( "..o" );
+		
 		if( invalid != null ) {
 			
-			Map<K,O> revalid = fetch( invalid, accessor );
+			Map<K,O> revalid;
+			synchronized( this ) { // s. above
+				invalidate( invalid );
+				revalid = fetch( invalid, accessor );
+			}
 			
 			for( Map.Entry<K,O> entry : revalid.entrySet() ) {
 				
@@ -257,16 +274,21 @@ public class AutomaticClientImpl<K,O>
 			}
 		}
 		
+		//E.t( "...o" );
+		
 		return result;
 	}
 
 	@Override
 	public int size(){
 		
+		//E.t( "R" );
 		__read__.lock();
+		//E.t( "R>" );
 		try {
 			return backend.size();
 		} finally {
+			//E.t( "R<" );
 			__read__.unlock();
 		}
 	}
@@ -274,10 +296,13 @@ public class AutomaticClientImpl<K,O>
 	@Override
 	public int capacity() {
 		
+		//E.t( "R" );
 		__read__.lock();
+		//E.t( "R>" );
 		try {
 			return backend.capacity();
 		} finally {
+			//E.t( "R<" );
 			__read__.unlock();
 		}
 	}
@@ -288,10 +313,26 @@ public class AutomaticClientImpl<K,O>
 		
 		assert key != null;
 		
+		//E.t( "W" );
 		__write__.lock();
+		//E.t( "W>" );
 		try {
 			backend.invalidate( key );
 		} finally {
+			//E.t( "W<" );
+			__write__.unlock();
+		}
+	}
+	
+	void invalidate( Collection<K> keys ) {
+		
+		__write__.lock();
+		try {
+			for( K key : keys ) {
+				backend.invalidate( key );
+			}
+		} finally {
+			//E.t( "W<" );
 			__write__.unlock();
 		}
 	}
@@ -300,10 +341,13 @@ public class AutomaticClientImpl<K,O>
 	public void invalidateAll( boolean force ) {
 		
 		// Clear cache
+		//E.t( "W" );
 		__write__.lock();
+		//E.t( "W>" );
 		try {
     		backend.invalidateAll( force );
 		} finally {
+			//E.t( "W<" );
 			__write__.unlock();
 		}
 	}
@@ -316,10 +360,13 @@ public class AutomaticClientImpl<K,O>
 	@Override
 	public boolean isCached( K key ) {
 		
+		//E.t( "R" );
 		__read__.lock();
+		//E.t( "R>" );
 		try {
 			return backend.isCached( key );
 		} finally {
+			//E.t( "R<" );
 			__read__.unlock();
 		}
 		
