@@ -61,13 +61,6 @@ public class CacheNGTest_FetchFresh_MultiThreadMultiValue {
 		
 		assertEquals( act, exp );
 		
-		
-		/*
-		for( int i=1; i<10; i++ ) {
-			if( i < 5 ) assertEquals( tvp.getCount( i ), NUM_THREADS+1 );
-			else assertEquals( tvp.getCount( i ), 1 );
-		}
-		*/
 	}
 	
 	@Test( dependsOnMethods="testSingleFetchFreshMultithreaded" )
