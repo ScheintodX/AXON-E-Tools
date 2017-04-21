@@ -21,11 +21,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 
 import de.axone.data.Charsets;
 import de.axone.data.Label;
+import de.axone.tools.E;
 import de.axone.tools.Str;
 import de.axone.web.SuperURLBuilders.SuperURLBuilder_Copy;
 import de.axone.web.SuperURLBuilders.SuperURLBuilder_Request;
@@ -77,6 +80,65 @@ public final class SuperURL {
 	
 	public enum FinalEncoding {
 		Plain, Html, Attribute;
+	}
+	
+	public interface MimeTypes {
+		public String code();
+	}
+	public enum KnownMimeType implements MimeTypes {
+		
+		DIR( "text/directory" ),
+		JPEG( "image/jpeg", "jpg", "jpeg" ),
+		PNG( "image/png", "png" ),
+		GIF( "image/gif", "gif" ),
+		ICON( "image/x-icon", "ico" ),
+		SVG( "image/svg+xml", "svg" ),
+		CSS( "text/css", "css" ),
+		JS( "text/javascript", "js" ),
+		HTML( "text/html", "htm", "html", "xhtml" ),
+		TXT( "text/plain", "txt" );
+		
+		private final String code;
+		private final String [] extensions;
+		
+		private static final Map<String,KnownMimeType> forExtension =
+				new HashMap<String,KnownMimeType>();
+		
+		static {
+			for( KnownMimeType type : KnownMimeType.values() ) {
+				
+				for( String extension : type.extensions ) {
+					
+					forExtension.put( extension, type );
+				}
+			}
+		}
+		
+		KnownMimeType( String code, String ... extensions ) {
+			this.code = code;
+			this.extensions = extensions;
+		}
+		
+		public static KnownMimeType forExtension( String extension ) {
+			
+			return forExtension.get( extension );
+		}
+		
+		@Override
+		public String code() {
+			return code;
+		}
+	}
+	
+	private static final class UnknownMimeType implements MimeTypes {
+		private final String code;
+		UnknownMimeType( String code ){
+			this.code = code;
+		}
+		@Override
+		public String code() {
+			return code;
+		}
 	}
 	
 	private static final EnumMap<Encode, SuperURLPrinter> printers;
@@ -219,6 +281,7 @@ public final class SuperURL {
 	
 	// TODO: Da ist das automatische erzeugen des Pfades dazu gekommen.
 	// Das können jetzt also beim Aufrufer Checks entfernt werden.
+	@Nonnull
 	public Path getPath() {
 		if( path == null ) path = new Path();
 		return path;
@@ -572,6 +635,25 @@ public final class SuperURL {
 		public String get( int index ){
 			return path.get( index );
 		}
+		public String find( Predicate<String> test ) {
+			
+			for( String part : path ) {
+				
+				E.rr( part );
+				
+				if( test.test( part ) ) return part;
+			}
+			return null;
+		}
+		public String findBackwards( Predicate<String> test ) {
+			
+			for( int i = path.size()-1; i >= 0; i-- ) {
+				
+				String part = path.get( i );
+				if( test.test( part ) ) return part;
+			}
+			return null;
+		}
 		
 		public boolean isEndsWithSlash(){
 			return endsWithSlash;
@@ -702,45 +784,25 @@ public final class SuperURL {
 			return null;
 		}
 		
-		public String getMimeType(){
+		public MimeTypes getMimeType(){
 			
 			if( endsWithSlash ){
-				return "text/directory";
+				return KnownMimeType.DIR;
 			}
 			
 			String extension = getExtension();
 			if( extension != null ) {
-				/* Images */
-				if( extension.equalsIgnoreCase( "jpg" )
-						|| extension.equalsIgnoreCase( "jpeg" ) ) {
-	
-					return "image/jpeg";
-				} else if( extension.equalsIgnoreCase( "png" ) ) {
-					return "image/png";
-				} else if( extension.equalsIgnoreCase( "gif" ) ) {
-					return "image/gif";
-				} else if( extension.equalsIgnoreCase( "ico" ) ) {
-					return "image/x-icon";
-				} else if( extension.equalsIgnoreCase( "svg" ) ) {
-					return "image/svg+xml";
-					/* css/js */
-				} else if( extension.equalsIgnoreCase( "css" ) ) {
-					return "text/css";
-				} else if( extension.equalsIgnoreCase( "js" ) ) {
-					return "text/javascript";
-					/* html */
-				} else if( extension.equalsIgnoreCase( "htm" )
-						|| extension.equalsIgnoreCase( "html" )
-						/* Not! application/xhtml+xml. Not good in any browser. */
-						|| extension.equalsIgnoreCase( "xhtml" ) ) {
-					return "text/html";
-				} else if( extension.equalsIgnoreCase( "txt" ) ) {
-					return "text/plain";
+				
+				KnownMimeType type = KnownMimeType.forExtension( extension );
+				
+				if( type != null ) {
+					
+					return type;
+				
 				} else {
 					
 					// Use Java. (Doesn't know xhtml for example)
-					String last = getLast();
-					return URLConnection.getFileNameMap().getContentTypeFor( last );
+					return new UnknownMimeType( URLConnection.getFileNameMap().getContentTypeFor( getLast() ) );
 				}
 			}
 			
