@@ -331,9 +331,38 @@ public abstract class E {
 		return () -> echo( System.err, 12, true, true, false, name, whatToPrint.get() );
 	}
 	
-	/*
-	public interface Formatter<T> {
-		void format( Appendable out, T object );
+	
+	//private static String 
+	
+	public static void rrx( byte [] bytes ) {
+		echo( System.err, true, true, false, HEX.toString( bytes ) );
 	}
-	*/
+	public static void rrx( byte value ) {
+		echo( System.err, true, true, false, HEX.toString( value ) );
+	}
+	public static void rrx( short value ) {
+		echo( System.err, true, true, false, HEX.toString( value ) );
+	}
+	public static void rrx( int value ) {
+		echo( System.err, true, true, false, HEX.toString( value ) );
+	}
+	public static void rrx( long value ) {
+		echo( System.err, true, true, false, HEX.toString( value ) );
+	}
+	
+	public static void chox( byte [] bytes ) {
+		echo( System.out, true, true, false, HEX.toString( bytes ) );
+	}
+	public static void chox( byte value ) {
+		echo( System.out, true, true, false, HEX.toString( value ) );
+	}
+	public static void chox( short value ) {
+		echo( System.out, true, true, false, HEX.toString( value ) );
+	}
+	public static void chox( int value ) {
+		echo( System.out, true, true, false, HEX.toString( value ) );
+	}
+	public static void chox( long value ) {
+		echo( System.out, true, true, false, HEX.toString( value ) );
+	}
 }
