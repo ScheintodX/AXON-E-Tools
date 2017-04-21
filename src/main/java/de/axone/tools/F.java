@@ -2,6 +2,7 @@ package de.axone.tools;
 
 import java.io.IOError;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -26,16 +27,35 @@ public class F {
 		
 		if( o == null ) r.append( S._NULL_ );
 		else {
-			// TODO: Explicit vorhandenes toString checken
 			if( o instanceof CharSequence ) formatCharSequence( r, (CharSequence)o );
+			else if( hasToString( o ) ) formatToString( r, o );
 			else if( o instanceof Path ) formatPath( r, (Path)o );
 			else if( o instanceof Iterable<?> ) formatIterable( r, (Iterable<?>)o );
 			else if( o instanceof Map<?,?> ) formatMap( r, (Map<?,?>) o );
 			else if( o instanceof Enumeration<?> ) formatEnumeration( r, (Enumeration<?>) o );
 			else if( o.getClass().isArray() ) formatArray( r, o );
 			else if( o instanceof Byte ) formatByte( r, (Byte)o );
-			else r.append( String.valueOf( o ) );
+			else r.append( o.toString() );
 		}
+	}
+	
+	private static boolean hasToString( Object o ) {
+		
+		Method [] methods = o.getClass().getDeclaredMethods();
+		
+		for( Method method : methods ) {
+			
+			if( "toString".equals( method.getName() ) )
+					return true;
+		}
+		return false;
+	}
+	
+	private static void formatToString( Appendable r, Object o ) throws IOException {
+		
+		r.append( "‹" );
+		r.append( o.toString() );
+		r.append( "›" );
 	}
 	
 	private static void formatByte( Appendable r, Byte b ) throws IOException {
