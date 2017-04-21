@@ -184,7 +184,6 @@ public abstract class PictureBuilder {
 			
 			long start = System.currentTimeMillis();
 
-    		//synchronized( lock ) {
 			ThreadQueue.Lock lock = null;
 			try {
 				// Get lock. Only if called in outer recursion

@@ -22,6 +22,8 @@ public interface CountryExtended extends Country {
 
 	public String getPostalcode();
 	public boolean isPostalcodeRequired();
+	
+	public String getTin();
 
 	public String getLanguagesIso2();
 	public List<String> getLanguageListIso2();

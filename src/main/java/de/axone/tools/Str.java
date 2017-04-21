@@ -698,6 +698,11 @@ public class Str {
 		return result.toString();
 	}
 	
+	public static String removeChars( String s, String chars ){
+		
+		return removeChars( s, chars.toCharArray() );
+	}
+	
 	public static String collapseWhitespace( String s ) {
 		
 		StringBuilder result = new StringBuilder( s.length() );

@@ -270,12 +270,12 @@ public class SuperURLTest {
 	// Tests only important types
 	public void testMimeTypes() throws Exception {
 		
-		assertEquals( SuperURLBuilders.Path().parse( "index.Xhtml" ).build().getMimeType(), "text/html" );
-		assertEquals( SuperURLBuilders.Path().parse( "index.hTml" ).build().getMimeType(), "text/html" );
-		assertEquals( SuperURLBuilders.Path().parse( "img.jpg" ).build().getMimeType(), "image/jpeg" );
-		assertEquals( SuperURLBuilders.Path().parse( "img.jpEg" ).build().getMimeType(), "image/jpeg" );
-		assertEquals( SuperURLBuilders.Path().parse( "img.giF" ).build().getMimeType(), "image/gif" );
-		assertEquals( SuperURLBuilders.Path().parse( "file.CSS" ).build().getMimeType(), "text/css" );
+		assertEquals( SuperURLBuilders.Path().parse( "index.Xhtml" ).build().getMimeType().code(), "text/html" );
+		assertEquals( SuperURLBuilders.Path().parse( "index.hTml" ).build().getMimeType().code(), "text/html" );
+		assertEquals( SuperURLBuilders.Path().parse( "img.jpg" ).build().getMimeType().code(), "image/jpeg" );
+		assertEquals( SuperURLBuilders.Path().parse( "img.jpEg" ).build().getMimeType().code(), "image/jpeg" );
+		assertEquals( SuperURLBuilders.Path().parse( "img.giF" ).build().getMimeType().code(), "image/gif" );
+		assertEquals( SuperURLBuilders.Path().parse( "file.CSS" ).build().getMimeType().code(), "text/css" );
 	}
 	
 	// Compare results to those of the URLParser in order to
@@ -700,6 +700,20 @@ public class SuperURLTest {
     	assertEquals( url.getPath().length(), 1 );
     	assertEquals( url.getPath().get( 0 ), "blah" );
     	assertEquals( url.getHost().toString(), "[::1]" );
+    }
+    
+    public void testToString() {
+    	
+    	String urlS = "http://www.shop.de/search?q=foo%20bar";
+    	
+    	SuperURL url = SuperURLBuilders.fromString()
+    			.build( urlS );
+    	
+    	assertThat( url )
+    			.asString().isEqualTo( urlS )
+    			;
+    	
+    	
     }
     
     

@@ -107,7 +107,6 @@ implements CrudFunction<ID, DATA,REQUEST> {
 		
 		Actions action = Actions.OTHER;
 		
-		
 		switch( method ){
 		
 			case GET:
@@ -134,6 +133,8 @@ implements CrudFunction<ID, DATA,REQUEST> {
 			default:
 				throw new IllegalArgumentException( "Unsupported Method: " + method );
 		}
+		
+		//E.rr( action );
 		
 		return action;
 	}

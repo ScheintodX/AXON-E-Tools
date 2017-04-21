@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
@@ -14,8 +15,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import java.util.function.Predicate;
 
 import de.axone.cache.ng.CacheNG.Cache;
+import de.axone.cache.ng.CacheNG.CacheNGInterrupted;
+import de.axone.cache.ng.CacheNG.CacheNGTimeout;
 import de.axone.cache.ng.CacheNG.MultiValueAccessor;
 import de.axone.cache.ng.CacheNG.SingleValueAccessor;
+import de.axone.test.TestClass;
 
 
 /**
@@ -40,23 +44,32 @@ import de.axone.cache.ng.CacheNG.SingleValueAccessor;
  * @param <K> Key-Type
  * @param <O> Value-Type
  */
+@TestClass( { "CacheNGTest_FetchFresh", "u.a." } )
 public class AutomaticClientImpl<K,O>
 		implements CacheNG.AutomaticClient<K,O> {
+	
+	private static final long DEFAULT_TIMEOUT = 10_000;
 	
 	private static final boolean FAIR = true;
 
 	final CacheNG.Cache<K,O> backend;
+	final Locker LOCK;
 	
-	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock( FAIR );
-	private final ReadLock __read__ = lock.readLock();
-	private final WriteLock __write__ = lock.writeLock();
-	private final ReentrantLock __fetch__ = new ReentrantLock( FAIR );
-
 	private final Stats stats = new DefaultStats( this );
 	
 	public AutomaticClientImpl( CacheNG.Cache<K,O> backend ){
+		/*
 		assert backend != null;
 		this.backend = backend;
+		LOCK = new SimpleLocker();
+		*/
+		this( backend, DEFAULT_TIMEOUT );
+	}
+	
+	public AutomaticClientImpl( CacheNG.Cache<K,O> backend, long timeout ){
+		assert backend != null;
+		this.backend = backend;
+		LOCK = new TimedLocker( timeout );
 	}
 	
 	@Override
@@ -69,14 +82,11 @@ public class AutomaticClientImpl<K,O>
 		Cache.Entry<O> entry = null;
 		
 		// deadlock #1
-		//E.t( "R" );
-		__read__.lock();
-		//E.t( "R>" );
+		LOCK.__READLOCK__();
 		try{
 			entry = backend.fetchEntry( key );
 		} finally {
-			//E.t( "R<" );
-			__read__.unlock();
+			LOCK.__READUNLOCK__();
 		}
 		
 		O result;
@@ -92,9 +102,7 @@ public class AutomaticClientImpl<K,O>
 			stats.miss();
 
 			// deadlock #2
-			//E.t( "F" );
-			__fetch__.lock();
-			//E.t( "F>" );
+			LOCK.__FETCHLOCK__();
 			
 			try {
 				
@@ -111,20 +119,16 @@ public class AutomaticClientImpl<K,O>
 					result = accessor.fetch( key );
 	
 					// deadlock #4
-					//E.t( "W" );
-					__write__.lock();
-					//E.t( "W>" );
+					LOCK.__WRITELOCK__();
 					try {
 						backend.put( key, result );
 					} finally {
-						//E.t( "W<" );
-						__write__.unlock();
+						LOCK.__WRITEUNLOCK__();
 					}
 				}
 				
 			} finally {
-				//E.t( "F<" );
-				__fetch__.unlock();
+				LOCK.__FETCHUNLOCK__();
 			}
 		}
 
@@ -139,9 +143,7 @@ public class AutomaticClientImpl<K,O>
 		HashMap<K,O> result = new HashMap<K,O>();
 		List<K> missed = null;
 		
-		//E.t( "R" );
-		__read__.lock();
-		//E.t( "R>" );
+		LOCK.__READLOCK__();
 		
 		try{
     		for( K key : keys ){
@@ -160,15 +162,12 @@ public class AutomaticClientImpl<K,O>
     			}
     		}
 		} finally {
-			//E.t( "R<" );
-			__read__.unlock();
+			LOCK.__READUNLOCK__();
 		}
 		
 		if( missed != null ){
 
-			//E.t( "F" );
-			__fetch__.lock();
-			//E.t( "F>" );
+			LOCK.__FETCHLOCK__();
 			
 			try {
 				List<K> reallyMissed = new LinkedList<>();
@@ -191,9 +190,7 @@ public class AutomaticClientImpl<K,O>
 					
 					O value = fetched.get( key );
 					
-					//E.t( "W" );
-					__write__.lock();
-					//E.t( "W>" );
+					LOCK.__WRITELOCK__();
 					
 					try {
 						if( value == null ){
@@ -204,14 +201,12 @@ public class AutomaticClientImpl<K,O>
 							backend.put( key, value );
 						}
 					} finally {
-						//E.t( "W<" );
-						__write__.unlock();
+						LOCK.__WRITEUNLOCK__();
 					}
 				}
 
 			} finally {
-				//E.t( "F<" );
-				__fetch__.unlock();
+				LOCK.__FETCHUNLOCK__();
 			}
 		}
 		
@@ -219,7 +214,6 @@ public class AutomaticClientImpl<K,O>
 	}
 
 
-	// TODO: Testen
 	@Override
 	public O fetchFresh( K key, SingleValueAccessor<K,O> accessor, Predicate<O> refresh ) {
 		
@@ -228,6 +222,8 @@ public class AutomaticClientImpl<K,O>
 		if( refresh.test( entry ) ){
 			// we can (and must) synchonize this because we want to refetch for sure
 			// and we know it is invalid (bacause we say so)
+			// Note that this is a slow path but it should be taken only in a small fraction of calls
+			// or the whole caching concept would be flawed.
 			synchronized( this ) {
 				invalidate( key );
 				return fetch( key, accessor );
@@ -237,15 +233,10 @@ public class AutomaticClientImpl<K,O>
 		return entry;
 	}
 	
-	// TODO: Testen testen testen
 	@Override
 	public Map<K,O> fetchFresh( Collection<K> keys, MultiValueAccessor<K,O> accessor, Predicate<O> refresh ){
 		
-		//E.t( "o" );
-		
 		Map<K,O> result = fetch( keys, accessor );
-		
-		//E.t( ".o" );
 		
 		Set<K> invalid = null;
 		
@@ -257,8 +248,6 @@ public class AutomaticClientImpl<K,O>
 				invalid.add( entry.getKey() );
 			}
 		}
-		
-		//E.t( "..o" );
 		
 		if( invalid != null ) {
 			
@@ -274,36 +263,30 @@ public class AutomaticClientImpl<K,O>
 			}
 		}
 		
-		//E.t( "...o" );
-		
 		return result;
 	}
 
 	@Override
 	public int size(){
 		
-		//E.t( "R" );
-		__read__.lock();
-		//E.t( "R>" );
+		LOCK.__READLOCK__();
+		
 		try {
 			return backend.size();
 		} finally {
-			//E.t( "R<" );
-			__read__.unlock();
+			LOCK.__READUNLOCK__();
 		}
 	}
 	
 	@Override
 	public int capacity() {
 		
-		//E.t( "R" );
-		__read__.lock();
-		//E.t( "R>" );
+		LOCK.__READLOCK__();
+
 		try {
 			return backend.capacity();
 		} finally {
-			//E.t( "R<" );
-			__read__.unlock();
+			LOCK.__READUNLOCK__();
 		}
 	}
 
@@ -313,27 +296,25 @@ public class AutomaticClientImpl<K,O>
 		
 		assert key != null;
 		
-		//E.t( "W" );
-		__write__.lock();
-		//E.t( "W>" );
+		LOCK.__WRITELOCK__();
+
 		try {
 			backend.invalidate( key );
 		} finally {
-			//E.t( "W<" );
-			__write__.unlock();
+			LOCK.__WRITEUNLOCK__();
 		}
 	}
 	
 	void invalidate( Collection<K> keys ) {
 		
-		__write__.lock();
+		LOCK.__WRITELOCK__();
+		
 		try {
 			for( K key : keys ) {
 				backend.invalidate( key );
 			}
 		} finally {
-			//E.t( "W<" );
-			__write__.unlock();
+			LOCK.__WRITEUNLOCK__();
 		}
 	}
 	
@@ -341,14 +322,12 @@ public class AutomaticClientImpl<K,O>
 	public void invalidateAll( boolean force ) {
 		
 		// Clear cache
-		//E.t( "W" );
-		__write__.lock();
-		//E.t( "W>" );
+		LOCK.__WRITELOCK__();
+
 		try {
     		backend.invalidateAll( force );
 		} finally {
-			//E.t( "W<" );
-			__write__.unlock();
+			LOCK.__WRITEUNLOCK__();
 		}
 	}
 
@@ -360,18 +339,108 @@ public class AutomaticClientImpl<K,O>
 	@Override
 	public boolean isCached( K key ) {
 		
-		//E.t( "R" );
-		__read__.lock();
-		//E.t( "R>" );
+		LOCK.__READLOCK__();
+
 		try {
 			return backend.isCached( key );
 		} finally {
-			//E.t( "R<" );
-			__read__.unlock();
+			LOCK.__READUNLOCK__();
 		}
 		
 	}
 	
 	public CacheNG.Cache<K, O> backend(){ return backend; }
 	
+	private interface Locker {
+		
+		void __READLOCK__();
+		void __WRITELOCK__();
+		void __FETCHLOCK__();
+		
+		void __READUNLOCK__();
+		void __WRITEUNLOCK__();
+		void __FETCHUNLOCK__();
+	}
+	
+	@SuppressWarnings( "unused" )
+	private class SimpleLocker implements Locker {
+		
+		private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock( FAIR );
+	
+		private final ReadLock __read__ = lock.readLock();
+		private final WriteLock __write__ = lock.writeLock();
+		private final ReentrantLock __fetch__ = new ReentrantLock( FAIR );
+	
+		@Override public void __READLOCK__() {
+			__read__.lock();
+		}
+		@Override public void __WRITELOCK__() {
+			__write__.lock();
+		}
+		@Override public void __FETCHLOCK__() {
+			__fetch__.lock();
+		}
+		
+		@Override public void __READUNLOCK__() {
+			__read__.unlock();
+		}
+		@Override public void __WRITEUNLOCK__() {
+			__write__.unlock();
+		}
+		@Override public void __FETCHUNLOCK__() {
+			__fetch__.unlock();
+		}
+		
+	}
+	
+	private class TimedLocker implements Locker {
+		
+		private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock( FAIR );
+	
+		private final ReadLock __read__ = lock.readLock();
+		private final WriteLock __write__ = lock.writeLock();
+		private final ReentrantLock __fetch__ = new ReentrantLock( FAIR );
+		
+		private final long timeout;
+		
+		TimedLocker( long timeout ) {
+			this.timeout = timeout;
+		}
+	
+		@Override public void __READLOCK__() {
+			try {
+				if( ! ( __read__.tryLock() || __read__.tryLock( timeout, TimeUnit.MILLISECONDS ) ) )
+						throw new CacheNGTimeout( timeout );
+			} catch( InterruptedException e ) {
+				throw new CacheNGInterrupted( e );
+			}
+		}
+		@Override public void __WRITELOCK__() {
+			try {
+				if( ! ( __write__.tryLock() || __write__.tryLock( timeout, TimeUnit.MILLISECONDS ) ) )
+						throw new CacheNGTimeout( timeout );
+			} catch( InterruptedException e ) {
+				throw new CacheNGInterrupted( e );
+			}
+		}
+		@Override public void __FETCHLOCK__() {
+			try {
+				if( ! ( __fetch__.tryLock() || __fetch__.tryLock( timeout, TimeUnit.MILLISECONDS ) ) )
+						throw new CacheNGTimeout( timeout );
+			} catch( InterruptedException e ) {
+				throw new CacheNGInterrupted( e );
+			}
+		}
+		
+		@Override public void __READUNLOCK__() {
+			__read__.unlock();
+		}
+		@Override public void __WRITEUNLOCK__() {
+			__write__.unlock();
+		}
+		@Override public void __FETCHUNLOCK__() {
+			__fetch__.unlock();
+		}
+		
+	}
 }

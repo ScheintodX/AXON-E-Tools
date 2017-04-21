@@ -5,6 +5,10 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -13,6 +17,13 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	// == String =====
 	@Override
 	public String access( K key );
+	
+	public default @Nullable List<String> getAsList( @Nonnull K key ) {
+		
+		String v = get( key );
+		if( v == null ) return null;
+		return Str.splitFastAtSpacesToList( v );
+	}
 	
 	// == Integer =====
 	public default Integer getInteger( K key ){
@@ -25,14 +36,14 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default int getInteger( K key, int defaultValue ){
 		Integer v = getInteger( key );
 		if( v == null ) return defaultValue;
-		return v;
+		return (int)v;
 	}
 	public default Integer getInteger( K key, Integer defaultValue ){
 		Integer v = getInteger( key );
 		if( v == null ) return defaultValue;
 		return v;
 	}
-	public default int getInteger( K key, ValueProvider<Integer> defaultValueProvider ){
+	public default Integer getInteger( K key, ValueProvider<Integer> defaultValueProvider ){
 		
 		Integer v = getInteger( key );
 		if( v == null ) return defaultValueProvider.get();
@@ -41,19 +52,19 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default int getIntegerRequired( K key ){
 		Integer v = getInteger( key );
 		if( v == null ) throw exception( key );
-		return v;
+		return (int)v;
 	}
 	public default int getIntegerRequired( K key, Integer defaultValue ){
 		Integer v = getInteger( key );
 		if( v == null ) v=defaultValue;
 		if( v == null ) throw exception( key );
-		return v;
+		return (int)v;
 	}
 	public default int getIntegerRequired( K key, ValueProvider<Integer> defaultValueProvider ){
 		Integer v = getInteger( key );
 		if( v == null ) v=defaultValueProvider.get();
 		if( v == null ) throw exception( key );
-		return v;
+		return (int)v;
 	}
 	
 	
@@ -68,14 +79,14 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default long getLong( K key, long defaultValue ){
 		Long v = getLong( key );
 		if( v == null ) return defaultValue;
-		return v;
+		return (long)v;
 	}
 	public default Long getLong( K key, Long defaultValue ){
 		Long v = getLong( key );
 		if( v == null ) return defaultValue;
 		return v;
 	}
-	public default long getLong( K key, ValueProvider<Long> defaultValueProvider ){
+	public default Long getLong( K key, ValueProvider<Long> defaultValueProvider ){
 		Long v = getLong( key );
 		if( v == null ) return defaultValueProvider.get();
 		return v;
@@ -83,19 +94,19 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default long getLongRequired( K key ){
 		Long v = getLong( key );
 		if( v == null ) throw exception( key );
-		return v;
+		return (long)v;
 	}
 	public default long getLongRequired( K key, Long defaultValue ){
 		Long v = getLong( key );
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw exception( key );
-		return v;
+		return (long)v;
 	}
 	public default long getLongRequired( K key, ValueProvider<Long> defaultValueProvider ){
 		Long v = getLong( key );
 		if( v == null ) v = defaultValueProvider.get();
 		if( v == null ) throw exception( key );
-		return v;
+		return (long)v;
 	}
 	
 	
@@ -110,14 +121,14 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default double getDouble( K key, double defaultValue ){
 		Double v = getDouble( key );
 		if( v == null ) return defaultValue;
-		return v;
+		return (double)v;
 	}
 	public default Double getDouble( K key, Double defaultValue ){
 		Double v = getDouble( key );
 		if( v == null ) return defaultValue;
 		return v;
 	}
-	public default double getDouble( K key, ValueProvider<Double> defaultValueProvider ){
+	public default Double getDouble( K key, ValueProvider<Double> defaultValueProvider ){
 		Double v = getDouble( key );
 		if( v == null ) return defaultValueProvider.get();
 		return v;
@@ -125,19 +136,19 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default double getDoubleRequired( K key ){
 		Double v = getDouble( key );
 		if( v == null ) throw exception( key );
-		return v;
+		return (double)v;
 	}
 	public default double getDoubleRequired( K key, Double defaultValue ){
 		Double v = getDouble( key );
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw exception( key );
-		return v;
+		return (double)v;
 	}
 	public default double getDoubleRequired( K key, ValueProvider<Double> defaultValueProvider ){
 		Double v = getDouble( key );
 		if( v == null ) v = defaultValueProvider.get();
 		if( v == null ) throw exception( key );
-		return v;
+		return (double)v;
 	}
 	
 	
@@ -153,14 +164,14 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default boolean getBoolean( K key, boolean defaultValue ){
 		Boolean v = getBoolean( key );
 		if( v == null ) return defaultValue;
-		return v;
+		return (boolean)v;
 	}
 	public default Boolean getBoolean( K key, Boolean defaultValue ){
 		Boolean v = getBoolean( key );
 		if( v == null ) return defaultValue;
 		return v;
 	}
-	public default boolean getBoolean( K key, ValueProvider<Boolean> defaultValueProvider ){
+	public default Boolean getBoolean( K key, ValueProvider<Boolean> defaultValueProvider ){
 		Boolean v = getBoolean( key );
 		if( v == null ) return defaultValueProvider.get();
 		return v;
@@ -168,19 +179,19 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	public default boolean getBooleanRequired( K key ){
 		Boolean v = getBoolean( key );
 		if( v == null ) throw exception( key );
-		return v;
+		return (boolean)v;
 	}
 	public default boolean getBooleanRequired( K key, Boolean defaultValue ){
 		Boolean v = getBoolean( key );
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw exception( key );
-		return v;
+		return (boolean)v;
 	}
 	public default boolean getBooleanRequired( K key, ValueProvider<Boolean> defaultValueProvider ){
 		Boolean v = getBoolean( key );
 		if( v == null ) v = defaultValueProvider.get();
 		if( v == null ) throw exception( key );
-		return v;
+		return (boolean)v;
 	}
 	
 	

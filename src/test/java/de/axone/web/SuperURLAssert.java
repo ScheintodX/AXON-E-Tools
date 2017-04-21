@@ -5,6 +5,7 @@ import static org.testng.Assert.*;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractIterableAssert;
+import org.assertj.core.api.StringAssert;
 
 import de.axone.web.SuperURL.Encode;
 
@@ -34,6 +35,12 @@ public class SuperURLAssert
 		assertEquals( actual, expected );
 		
 		return this;
+	}
+	
+	@SuppressWarnings( "deprecation" )
+	public StringAssert asString() {
+		
+		return assertThat( actual.toString() );
 	}
 	
 	public static class HostAssert extends AbstractIterableAssert<HostAssert, SuperURL.Host, String> {
@@ -126,7 +133,6 @@ public class SuperURLAssert
 		protected QueryPartAssert( SuperURL.Query.QueryPart actual ) {
 			super( actual, QueryAssert.class );
 		}
-		
 		
 	}
 		

@@ -661,4 +661,35 @@ public abstract class CacheNG {
 		public boolean equals( Object other );
 	}
 	
+	public static class CacheNGException extends RuntimeException {
+
+		public CacheNGException() { super(); }
+
+		public CacheNGException( String message, Throwable cause ) {
+			super( message, cause );
+		}
+
+		public CacheNGException( String message ) {
+			super( message );
+		}
+
+		public CacheNGException( Throwable cause ) {
+			super( cause );
+		}
+	}
+	
+	public static class CacheNGTimeout extends CacheNGException {
+		
+		public CacheNGTimeout( long time ) {
+			super( "Timeout waiting for Lock after " + time + "ms" );
+		}
+	}
+	
+	public static class CacheNGInterrupted extends CacheNGException {
+		
+		public CacheNGInterrupted( InterruptedException e ) {
+			super( e );
+		}
+	}
+	
 }

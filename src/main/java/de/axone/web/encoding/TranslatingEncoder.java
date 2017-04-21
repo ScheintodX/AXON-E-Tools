@@ -12,6 +12,10 @@ public class TranslatingEncoder implements Encoder {
 
 	private final String [] tt;
 	private final char min, max;
+	
+	// Some arbitrary size. This is to prevent major memory leak.
+	// Note that we can't translate value 
+	private static final int TABLE_SIZE = 256;
 
 	public TranslatingEncoder( char [] from, String [] to ) {
 		
@@ -28,6 +32,7 @@ public class TranslatingEncoder implements Encoder {
 		char min = Character.MAX_VALUE,
 		     max = Character.MIN_VALUE;
 		
+		// build map and find min/max char
 		for( int i=0; i<from.length; i++ ){
 			
 			char c = from[ i ];
@@ -40,7 +45,7 @@ public class TranslatingEncoder implements Encoder {
 		
 		int size = max-min+1;
 		
-		if( size > 256 ) //Some arbitrary size. This is to prevent major memory leak.
+		if( size > TABLE_SIZE )
 				throw new IllegalArgumentException( "Build to big translation table" );
 		
 		String [] result = new String[ size ];
@@ -52,12 +57,29 @@ public class TranslatingEncoder implements Encoder {
 		
 		return new Tripple<>( result, min, max );
 	}
-
 	
+	private boolean ok( CharSequence csq, int start, int end ) {
+		
+		for( int i = start; i < end; i++ ) {
+			
+			char c = csq.charAt( i );
+			
+			if( c >= min && c <= max ){
+				
+				String value = tt[ c-min ];
+				
+				if( value != null ) return false;
+			}
+		}
+		return true;
+	}
+
 	@Override
 	public String encode( CharSequence csq ) {
 		
 		if( csq == null ) return null;
+		
+		if( ok( csq, 0, csq.length() ) ) return csq.toString();
 		
 		StringBuilder result = new StringBuilder();
 		
@@ -70,45 +92,48 @@ public class TranslatingEncoder implements Encoder {
 		return result.toString();
 	}
 	
-	
 	private void append( Appendable ap, CharSequence csq, int start, int end ) throws IOException{
 		
 		int subStart=0;
 		
-		// iterate over string until there is something to encode
-		int i;
-		for( i=start; i<end; i++ ){
-			
-			char c = csq.charAt( i );
-			
-			if( c >= min && c <= max ){
+		if( ok( csq, start, end ) ) {
+			ap.append( csq, start, end );
+		} else {
+		
+			// iterate over string until there is something to encode
+			int i;
+			for( i=start; i<end; i++ ){
 				
-				String value = tt[ c-min ];
+				char c = csq.charAt( i );
 				
-				if( value != null ){
+				if( c >= min && c <= max ){
 					
-					// Append chunk
-					if( i-subStart > 0 )
-							ap.append( csq.subSequence( subStart, i ) );
+					String value = tt[ c-min ];
 					
-					// append encoded
-					ap.append( value );
-					
-					// remember new start
-					subStart = i+1;
+					if( value != null ){
+						
+						// Append chunk
+						if( i-subStart > 0 )
+								ap.append( csq.subSequence( subStart, i ) );
+						
+						// append encoded
+						ap.append( value );
+						
+						// remember new start
+						subStart = i+1;
+					}
 				}
 			}
-		}
-		
-		// Nothing encoded. Append complete string.
-		if( subStart == 0 ) {
-			ap.append( csq );
 			
-		// Append rest of string
-		} else if( i-subStart > 0 ) {
-			ap.append( csq.subSequence( subStart, i ) );
+			// Nothing encoded. Append complete string.
+			if( subStart == 0 ) {
+				ap.append( csq );
+				
+			// Append rest of string
+			} else if( i-subStart > 0 ) {
+				ap.append( csq.subSequence( subStart, i ) );
+			}
 		}
-		
 	}
 	
 	private void append( Appendable ap, char c ) throws IOException{

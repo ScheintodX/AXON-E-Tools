@@ -3,6 +3,8 @@ package de.axone.data;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import de.axone.tools.F;
 import de.axone.tools.Str;
 import de.axone.tools.StringValueAccessor;
@@ -87,26 +89,32 @@ public class AccessibleLine<T extends Enum<T>> implements StringValueAccessor<T>
 		return toLower( trimmed( i ) );
 	}
 	
+	@Nullable
 	public <X extends Enum<X>> String trimmedToNull( X field ) {
 		String result = trimmed( field );
 		if( result.length() == 0 ) return null;
 		return result;
 	}
+	@Nullable
 	public <X extends Enum<X>> String trimmedToNull( int i ) {
 		String result = trimmed( i );
 		if( result.length() == 0 ) return null;
 		return result;
 	}
 	
+	@Nullable
 	public <X extends Enum<X>> String trimmedToUpperNull( X field ) {
 		return toUpper( trimmedToNull( field ) );
 	}
+	@Nullable
 	public <X extends Enum<X>> String trimmedToUpperNull( int i ) {
 		return toUpper( trimmedToNull( i ) );
 	}
+	@Nullable
 	public <X extends Enum<X>> String trimmedToLowerNull( X field ) {
 		return toLower( trimmedToNull( field ) );
 	}
+	@Nullable
 	public <X extends Enum<X>> String trimmedToLowerNull( int i ) {
 		return toLower( trimmedToNull( i ) );
 	}

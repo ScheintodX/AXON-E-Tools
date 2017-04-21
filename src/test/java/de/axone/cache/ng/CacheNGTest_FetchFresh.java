@@ -3,8 +3,14 @@ package de.axone.cache.ng;
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
 
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.testng.annotations.Test;
 
@@ -12,8 +18,12 @@ import de.axone.cache.ng.CacheNG.UniversalAccessor;
 import de.axone.tools.A;
 import de.axone.tools.Mapper;
 
+
 @Test( groups="cacheng.fetchfresh" )
 public class CacheNGTest_FetchFresh {
+	
+	private static final int ACCESSORS = 100,
+	                         ACCESSES = 10_000;
 	
 	public void fetchFreshSingleValues() {
 		
@@ -66,31 +76,43 @@ public class CacheNGTest_FetchFresh {
 				Mapper.hashMap( "a1", "Xa1", "a2", "Xa2", "b1", "Xb1" ) );
 	}
 	
-	private static final int ACCESSORS = 100,
-	                         ACCESSES = 10_000;
-	
-	public void testFetchFreshMultiThreadedMulti() {
+	public void testFetchFreshMultiThreadedMulti() throws Exception {
 		
-		//CacheNG.Cache<String,String> cache = spy( new CacheHashMap<>( new RealmImpl<String,String>( "blah" ), false ) );
-		//AutomaticClientImpl<String,String> auto = new AutomaticClientImpl<>( cache );
+		CacheNG.Cache<String,String> cache = new CacheHashMap<>( new RealmImpl<String,String>( "blah" ), false );
+		AutomaticClientImpl<String,String> auto = new AutomaticClientImpl<>( cache );
 		TestAccessor_StringForString accessor = new TestAccessor_StringForString();
 		
-		ExecutorService accessors = Executors.newFixedThreadPool( ACCESSORS );
+		ExecutorService executors = Executors.newFixedThreadPool( ACCESSORS );
 		for( int t = 0; t < ACCESSORS; t++ ) {
 			
-			accessors.execute( () -> {
+			executors.execute( () -> {
+				
 				for( int i=0; i<ACCESSES; i++ ) {
-					assertEquals( accessor.fetch( "abc" ), "abc" );
+					
+					Map<String,String> act = auto.fetchFresh( Arrays.asList( "abc", "def" ), accessor, x -> true );
+					assertEquals( act, Mapper.hashMap( "abc", "abc", "def", "def" ) );
 				}
+				
 			} );
 		}
 		
-		accessors.shutdown();
+		executors.shutdown();
+		
+		boolean allFinished = executors.awaitTermination( 10, TimeUnit.MINUTES );
+		
+		if( !allFinished ) executors.shutdownNow();
+		
+		assertTrue( allFinished );
+		
+		assertEquals( accessor.count.get(), 2*ACCESSORS*ACCESSES+2 ); // "abc", "def" == 2 * refetches + 2 first fetches
+		
 	}
 	
 	public static final class TestAccessor_StringForString implements UniversalAccessor<String,String> {
 		
 		private String prefix = "";
+		private AtomicInteger count = new AtomicInteger();
+		private AtomicBoolean inUse = new AtomicBoolean( false );
 		
 		public void setPrefix( String prefix ) {
 			this.prefix = prefix;
@@ -100,9 +122,19 @@ public class CacheNGTest_FetchFresh {
 		}
 
 		@Override
+		// Note that this is *not* synchronized. We want the surrounding code to synchonise it. Or do we?
 		public String fetch( String key ) {
-			if( key.startsWith( "-" ) ) return null;
-			return prefix + key;
+			try {
+				if( inUse.get() ) throw new ConcurrentModificationException();
+				inUse.set( true );
+				//E._cho_( "-" );
+				if( key.startsWith( "-" ) ) return null;
+				return prefix + key;
+			} finally {
+				count.incrementAndGet();
+				//E._cho( "x" );
+				inUse.set( false );
+			}
 		}
 	}
 }

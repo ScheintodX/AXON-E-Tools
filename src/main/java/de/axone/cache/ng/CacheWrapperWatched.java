@@ -1,26 +1,30 @@
 package de.axone.cache.ng;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import de.axone.cache.ng.CacheNG.Cache;
 
 public class CacheWrapperWatched<K,O> extends CacheWrapper<K,O> {
 	
-	private long hits, misses;
+	private AtomicLong hits = new AtomicLong(),
+	                   misses = new AtomicLong()
+	                   ;
 	
-	public synchronized void hit(){
-		hits++;
+	public void hit(){
+		hits.incrementAndGet();
 	}
-	public synchronized void miss(){
-		misses++;
+	public void miss(){
+		misses.incrementAndGet();
 	}
 
-	public synchronized long hits(){
-		return hits;
+	public long hits(){
+		return hits.get();
 	}
-	public synchronized long misses(){
-		return misses;
+	public long misses(){
+		return misses.get();
 	}
-	public synchronized long accesses(){
-		return hits+misses;
+	public long accesses(){
+		return hits.get()+misses.get();
 	}
 
 	public CacheWrapperWatched( Cache<K, O> wrapped ) {
@@ -29,13 +33,14 @@ public class CacheWrapperWatched<K,O> extends CacheWrapper<K,O> {
 	}
 
 	@Override
-	public synchronized double ratio() {
+	public double ratio() {
 		
-		long sum = hits+misses;
+		long h = hits.get(), m = misses.get(),
+		     sum = h+m;
 		
 		if( sum == 0 ) return 0;
 		
-		return (double)hits/sum;
+		return (double)h/sum;
 		
 	}
 	@Override

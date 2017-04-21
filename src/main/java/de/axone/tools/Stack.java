@@ -3,6 +3,7 @@ package de.axone.tools;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 public abstract class Stack {
 
@@ -37,6 +38,12 @@ public abstract class Stack {
 	
 	public static <OUT extends Appendable> OUT print( OUT out, Throwable t, int stepback, int length ) throws IOException {
 		
+		return print( out, t, stepback+1, 1000, Stack::toString );
+	}
+	
+	public static <OUT extends Appendable> OUT print( OUT out, Throwable t, int stepback, int length,
+			Function<StackTraceElement, String> convert ) throws IOException {
+		
 		stepback+=2;
 		
 		StackTraceElement [] stes = t.getStackTrace();
@@ -47,7 +54,7 @@ public abstract class Stack {
 		for( int i=stepback; i<end; i++ ){
 			
 			if( i > stepback ) out.append( " / " );
-			out.append( toString( stes[ i ] ) );
+			out.append( convert.apply( stes[ i ] ) );
 		}
 		
 		return out;
@@ -99,6 +106,18 @@ public abstract class Stack {
 		} catch( IOException e ) {
 			throw new Error( "Error writing to StringBuilder" );
 		}
+	}
+
+	public static String quick( Throwable t ) {
+		
+		try {
+			return print( new StringBuilder(), t, 1, 1000, Stack::toString ).toString();
+			
+		} catch( IOException e ) {
+			
+			throw new RuntimeException( "Cannot print Stacktrace", e );
+		}
+		
 	}
 	
 }

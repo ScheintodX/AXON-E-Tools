@@ -6,9 +6,14 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.axone.tools.Str;
 
 public class ShellExec {
+	
+	private static final Logger log = LoggerFactory.getLogger( ShellExec.class );
 
 	public static QuickResult quickexec( Path cmd, String ... args )
 	throws IOException, InterruptedException {
@@ -22,6 +27,8 @@ public class ShellExec {
 		
 		String commandline = 
 				cmd.toFile().getAbsolutePath() + " " + Str.join( " ", args );
+		
+		log.debug( commandline );
 		
 		Process process = Runtime.getRuntime().exec( commandline );
 		

@@ -119,6 +119,8 @@ public abstract class AbstractStrongHashCodeBuilder<T> implements StrongHashCode
 
 	@Override
 	public StrongHashCodeBuilder<T> append( String s ){
+		if( s == null ) return appendNull();
+		else if( s.length() == 0 ) return appendEmpty();
 		return append( s.toCharArray() );
 	}
 

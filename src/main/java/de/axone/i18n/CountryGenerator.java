@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.axone.data.AccessibleLine;
 import de.axone.tools.E;
 
 public class CountryGenerator {
@@ -15,13 +16,13 @@ public class CountryGenerator {
 	
 	private static enum FORMAT {
 		no,
-		iso2, iso3, isoN, ccTld, currency, currency2, postalcode, postalcode_required, eu, eurozone, lang_EN, lang, lang_fb,	
+		iso2, iso3, isoN, ccTld, currency, currency2, postalcode, postalcode_required, tin, eu, eurozone, lang_EN, lang, lang_fb,	
 		vat, vshow, sort_EN, name_EN, sort_DE, name_DE, sort_FR, name_FR, sort_ES, name_ES, sort_IT, name_IT
 		;
 	}
 	
 	private static final String enumTemplate = 
-		"\t%id%( %name%, %iso2%, %iso3%, %isoN%, %ccTld%, %currency%, %postalcode% %lang% ),\n"
+		"\t%id%( %name%, %iso2%, %iso3%, %isoN%, %ccTld%, %currency%, %postalcode%, %tin% %lang% ),\n"
 	;
 	
 	public static void main( String [] args ) throws Exception {
@@ -56,31 +57,26 @@ public class CountryGenerator {
 				}
 			}
 			
+			AccessibleLine<FORMAT> aLine = new AccessibleLine<>( parts );
+			
 			String id;
-			String iso2 = parts[ FORMAT.iso2.ordinal() ].trim();
-			String iso3 = parts[ FORMAT.iso3.ordinal() ].trim();
-			String isoN = parts[ FORMAT.isoN.ordinal() ].trim();
-			String ccTld = parts[ FORMAT.ccTld.ordinal() ].trim();
-			String currency = parts[ FORMAT.currency.ordinal() ].trim();
-			String postalcode = parts[ FORMAT.postalcode.ordinal() ].trim();
-			String lang = parts[ FORMAT.lang.ordinal() ].trim();
-			String lang_fb = parts[ FORMAT.lang_fb.ordinal() ].trim();
-			String name = parts[ FORMAT.name_EN.ordinal() ].trim();
+			String iso2 = aLine.trimmedToNull( FORMAT.iso2 );
+			String iso3 = aLine.trimmedToNull( FORMAT.iso3 );
+			String isoN = aLine.trimmedToNull( FORMAT.isoN );
+			String ccTld = aLine.trimmedToNull( FORMAT.ccTld );
+			String currency = aLine.trimmedToNull( FORMAT.currency );
+			String postalcode = aLine.trimmedToNull( FORMAT.postalcode );
+			String tin = aLine.trimmedToNull( FORMAT.tin );
+			String lang = aLine.trimmedToNull( FORMAT.lang );
+			String lang_fb = aLine.trimmedToNull( FORMAT.lang_fb );
+			String name = aLine.trimmedToNull( FORMAT.name_EN );
 			
-			if( ccTld.startsWith( "." ) ) ccTld=ccTld.substring( 1 );
+			if( ccTld != null && ccTld.startsWith( "." ) ) ccTld=ccTld.substring( 1 );
 			
-			isoN = "" + Integer.parseInt( isoN, 10 );
+			if( isoN != null ) isoN = "" + Integer.parseInt( isoN, 10 );
 			
-			if( iso2.length() == 0 ) iso2=null;
-			if( iso3.length() == 0 ) iso3=null;
-			if( isoN.length() == 0 ) isoN=null;
-			if( ccTld.length() == 0 ) ccTld=null;
-			if( currency.length() == 0 ) currency=null;
-			if( postalcode.length() == 0 ) postalcode=null;
 			if( "--".equals( postalcode ) ) postalcode=null;
-			if( lang.length() == 0 ) lang=null;
-			if( lang_fb.length() == 0 ) lang_fb=null;
-			if( name.length() == 0 ) name=null;
+			if( "--".equals( tin ) ) tin=null;
 			
 			if( lang_fb != null ){
 				if( lang != null ){
@@ -107,6 +103,8 @@ public class CountryGenerator {
 			else currency = "null";
 			if( postalcode != null ) postalcode = "\""+postalcode+"\"";
 			else postalcode = "null";
+			if( tin != null ) tin = "\""+tin+"\"";
+			else tin = "null";
 			if( lang == null ) lang = "";
 			else {
 				String [] langParts = lang.split( "," );
@@ -133,6 +131,7 @@ public class CountryGenerator {
 			l = l.replaceAll( "%ccTld%", ccTld );
 			l = l.replaceAll( "%currency%", currency );
 			l = l.replaceAll( "%postalcode%", postalcode );
+			l = l.replaceAll( "%tin%", tin );
 			l = l.replaceAll( "%lang%", lang );
 			l = l.replaceAll( "%name%", name );
 			
