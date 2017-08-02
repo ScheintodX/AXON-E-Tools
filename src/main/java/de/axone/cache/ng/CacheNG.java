@@ -7,8 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
+
+import de.axone.data.tupple.Pair;
 
 /**
  * Mögliche Cache-Arten nach Key
@@ -408,7 +411,14 @@ public abstract class CacheNG {
 		 * @param keys
 		 * @return the entries found
 		 */
-		public Map<K,O> fetch( Collection<K> keys ) ;
+		public Map<K,O> fetch( Collection<K> keys );
+	}
+	
+	
+	@FunctionalInterface
+	public interface StreamAccessor<K,O> {
+		
+		public Stream<Pair<K,O>> fetch( Stream<K> keys );
 	}
 	
 	/**

@@ -243,6 +243,14 @@ public abstract class Assert {
 		if( ! clz.isInstance( o ) ) throw Ex.up( new ArgumentInstanceException( name, clz ) );
 		return (T)o;
 	}
+	public static <T> T canCast( Object o, String name, Class<T> clz ) {
+		if( o == null ) return null;
+		try {
+			return clz.cast( o );
+		} catch( ClassCastException e ) {
+			throw Ex.up( new IllegalArgumentException( name + ": Cannot cast " + o.getClass().getSimpleName() + " to " + clz.getSimpleName() ) );
+		}
+	}
 	public static void notClass( Object o, String name, Class<?> clz ) {
 		
 		if( o == null ) return;

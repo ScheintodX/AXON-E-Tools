@@ -1053,6 +1053,50 @@ public class Str {
 		return result.toString();
 	}
 	
+	public static String alphanum( String string ) {
+		
+		StringBuilder result = new StringBuilder();
+		
+		char [] chars = string.toCharArray();
+		
+		int cnt=0;
+		
+		for( char c : chars ) {
+			
+			if( Character.isAlphabetic( c ) || Character.isDigit( c ) ) {
+				
+				result.append( c );
+				cnt = 0;
+				
+			} else if( cnt == 0 ) {
+				
+				result.append( '_' );
+				cnt++;
+			}
+		}
+		
+		return result.toString();
+	}
+	
+	public static String strip( String str, char c ) {
+		
+		if( str == null || str.length() == 0 ) return str;
+		
+		int s,e,
+		    len = str.length();
+		
+		if( str.charAt( 0 ) != c && str.charAt( len-1 ) != c ) return str;
+		
+		for( s=0; s<len; s++ ) {
+			if( str.charAt( s ) != c ) break;
+		}
+		for( e = len-1; e>=s; e-- ) {
+			if( str.charAt( e ) != c ) break;
+		}
+		
+		return str.substring( s, e+1 );
+	}
+	
 	public static String cleanToLowerCase( String string ) {
 		
 		StringBuilder result = new StringBuilder();

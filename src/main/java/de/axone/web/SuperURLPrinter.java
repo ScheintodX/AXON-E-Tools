@@ -486,7 +486,7 @@ public abstract class SuperURLPrinter implements Serializable {
 							buildEncoder( gen_delims );//, SpaceAs.keep );
 		
 		private static final Encoder DEFAULT_plus_query_key =
-							buildEncoder( A.union( gen_delims, '&', '=' ) );//, SpaceAs.plus );
+							buildEncoder( A.union( (char[])gen_delims, '&', '=' ) );//, SpaceAs.plus );
 		
 		private static final Encoder DEFAULT_plus_query_value =
 							buildEncoder( A.union( gen_delims, '&' ) );//, SpaceAs.plus );

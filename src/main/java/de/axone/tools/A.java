@@ -441,6 +441,36 @@ public class A {
 		
 		return result;
 	}
+	public static String [] union( String a, String ... b ){
+		
+		String [] result = new String[ 1 + b.length ];
+		
+		result[ 0 ] = a;
+		System.arraycopy( b, 0, result, 1, b.length );
+		
+		return result;
+	}
+	
+	public static Object [] unionO( Object [] a, Object ... b ){
+		
+		Object [] result = new Object[ a.length + b.length ];
+		
+		System.arraycopy( a, 0, result, 0, a.length );
+		System.arraycopy( b, 0, result, a.length, b.length );
+		
+		return result;
+	}
+	
+	public static Object [] unionO( Object a, Object ... b ){
+		
+		Object [] result = new Object[ 1 + b.length ];
+		
+		result[ 0 ] = a;
+		System.arraycopy( b, 0, result, 1, b.length );
+		
+		return result;
+	}
+	
 	
 	
 }

@@ -10,6 +10,8 @@ import org.testng.annotations.Test;
 
 import com.google.common.base.Splitter;
 
+import de.axone.test.Bench;
+
 @Test( groups="tools.str" )
 public class StrTest {
 
@@ -150,71 +152,34 @@ public class StrTest {
 		
 	}
 	
-	private static int NUM_RUNS = 1_000_000;
+	private static int RUNS = 1_000_000;
 	
 	public void timing() throws InterruptedException{
-		
-		long start, end;
 		
 		String test = "abc;def;hij";
 		
 		// Regex split
 		Pattern pat = Pattern.compile( ";" );
-		for( int i=0; i<NUM_RUNS; i++ ){
-			pat.split( test );
-		}
-		start = System.currentTimeMillis();
-		for( int i=0; i<NUM_RUNS; i++ ){
-			pat.split( test );
-		}
-		end = System.currentTimeMillis();
-		E.rr( "Pattern.split Took " + (end-start) + " ms" );
+		
+		Bench.mark( "Pattern.split", RUNS, () -> pat.split( test ) )
+				.print();
 		
 		// String split
-		for( int i=0; i<NUM_RUNS; i++ ){
-			test.split( ";" );
-		}
-		start = System.currentTimeMillis();
-		for( int i=0; i<NUM_RUNS; i++ ){
-			test.split( ";" );
-		}
-		end = System.currentTimeMillis();
-		E.rr( "String.split Took " + (end-start) + " ms" );
-		
+		Bench.mark( "String.split", RUNS, () -> test.split( ";" ) )
+				.print();
 		
 		// splitFastLimited
-		for( int i=0; i<NUM_RUNS; i++ ){
-			Str.splitFastLimited( test, ';', 8 );
-		}
-		start = System.currentTimeMillis();
-		for( int i=0; i<NUM_RUNS; i++ ){
-			Str.splitFastLimited( test, ';', 8 );
-		}
-		end = System.currentTimeMillis();
-		E.rr( "Str Took " + (end-start) + " ms" );
+		Bench.mark( "Str.splitFastLimited", RUNS, () -> Str.splitFastLimited( test, ';', 8 ) )
+				.print();
 		
 		// splitFastOnce
-		for( int i=0; i<NUM_RUNS; i++ ){
-			Str.splitFastOnce( test, ';' );
-		}
-		start = System.currentTimeMillis();
-		for( int i=0; i<NUM_RUNS; i++ ){
-			Str.splitFastOnce( test, ';' );
-		}
-		end = System.currentTimeMillis();
-		E.rr( "Str Once Took " + (end-start) + " ms" );
+		Bench.mark( "Str.splitFastOnce", RUNS, () -> Str.splitFastOnce( test, ';' ) )
+				.print();
 		
 		
 		// String utils
-		for( int i=0; i<NUM_RUNS; i++ ){
-			StringUtils.split( test, ';' );
-		}
-		start = System.currentTimeMillis();
-		for( int i=0; i<NUM_RUNS; i++ ){
-			StringUtils.split( test, ';' );
-		}
-		end = System.currentTimeMillis();
-		E.rr( "StringUtils Took " + (end-start) + " ms" );
+		Bench.mark( "StringUtils.split", RUNS, () -> StringUtils.split( test, ';' ) )
+				.print();
 		
 		
 		// Test2
@@ -222,52 +187,23 @@ public class StrTest {
 		// Pattern
 		Pattern p = Pattern.compile( "\\s+" );
 		String test2 = "   a \tb  c ";
-		for( int i=0; i<NUM_RUNS; i++ ){
-			p.split( test2 );
-		}
-		start = System.currentTimeMillis();
-		for( int i=0; i<NUM_RUNS; i++ ){
-			p.split( test2 );
-		}
-		end = System.currentTimeMillis();
-		E.rr( "Pattern Took " + (end-start) + " ms" );
+		Bench.mark( "Pattern split", RUNS, ()->p.split( test2 ) )
+				.print();
 		
 		// Fast Spaces
-		for( int i=0; i<NUM_RUNS; i++ ){
-			Str.splitFastAtSpacesToList( test2 );
-		}
-		start = System.currentTimeMillis();
-		for( int i=0; i<NUM_RUNS; i++ ){
-			Str.splitFastAtSpacesToList( test2 );
-		}
-		end = System.currentTimeMillis();
-		E.rr( "FastSpaces Took " + (end-start) + " ms" );
+		Bench.mark( "Str.splitFastAtSpacesToList", RUNS, ()->Str.splitFastAtSpacesToList( test2 ) )
+				.print();
 		
 		
 		// Guava
 		Splitter s = Splitter.on( ';' );
-		for( int i=0; i<NUM_RUNS; i++ ){
-			s.splitToList( test );
-		}
-		start = System.currentTimeMillis();
-		for( int i=0; i<NUM_RUNS; i++ ){
-			s.splitToList( test );
-		}
-		end = System.currentTimeMillis();
-		E.rr( "Guava Took " + (end-start) + " ms" );
+		Bench.mark( "Guava Splitter", RUNS, () -> s.splitToList( test ) )
+				.print();
 		
 		// Guava Once
 		Splitter s2 = Splitter.on( ';' ).limit( 1 );
-		for( int i=0; i<NUM_RUNS; i++ ){
-			s2.splitToList( test );
-		}
-		start = System.currentTimeMillis();
-		for( int i=0; i<NUM_RUNS; i++ ){
-			s2.splitToList( test );
-		}
-		end = System.currentTimeMillis();
-		E.rr( "Guava Once Took " + (end-start) + " ms" );
-		
+		Bench.mark( "Guava Splitter Once", RUNS, () -> s2.splitToList( test ) )
+				.print();
 	}
 	
 	public void testGuavaSplitter() {
@@ -319,6 +255,32 @@ public class StrTest {
 		
 	}
 	
+	public void testAlphanum() {
+		
+		assertEquals( Str.alphanum( "abcäöüß123" ), "abcäöüß123" );
+		assertEquals( Str.alphanum( "a!§$%&/()=z" ), "a_z" );
+		
+	}
+	
+	public void testStrip() {
+		
+		assertEquals( Str.strip( "", '@' ), "" );
+		assertEquals( Str.strip( "@", '@' ), "" );
+		assertEquals( Str.strip( "@@", '@' ), "" );
+		assertEquals( Str.strip( "@@@", '@' ), "" );
+		assertEquals( Str.strip( "mummy", '@' ), "mummy" );
+		assertEquals( Str.strip( "@mummy", '@' ), "mummy" );
+		assertEquals( Str.strip( "mummy@@", '@' ), "mummy" );
+		assertEquals( Str.strip( "@mummy@", '@' ), "mummy" );
+		assertEquals( Str.strip( "@@@mummy@@@@", '@' ), "mummy" );
+		
+	}
+	
+	public void benchStrip() {
+		
+		Bench.mark( "Strip", 10_000_000, this::testStrip ).print();
+	}
+	
 	public void testReplaceFast() {
 		
 		assertEquals( Str.replaceFast( "abcabcabc", "d", "B" ), "abcabcabc" );
@@ -326,8 +288,6 @@ public class StrTest {
 		assertEquals( Str.replaceFast( "abcabcabc", "ab", "B" ), "BcBcBc" );
 		assertEquals( Str.replaceFast( "abcabcabc", "bc", "B" ), "aBaBaB" );
 	}
-	
-	private static final int RUNS = 1000000;
 	
 	public void benchmarkReplaceFast() throws InterruptedException {
 		
@@ -339,32 +299,13 @@ public class StrTest {
 				+ " aliquet nec, vulputate eget, arcu."
 				;
 		
-		int i;
-		long start, end;
-		
 		// ReplaceFast
-		for( i=0; i<RUNS; i++ ) {
-			Str.replaceFast( text, "e", "E" );
-		}
-		Thread.sleep( 1000 ); // give the optimizer some room
-		start = System.currentTimeMillis();
-		for( i=0; i<RUNS; i++ ) {
-			Str.replaceFast( text, "e", "E" );
-		}
-		end = System.currentTimeMillis();
-		E.rrf( "ReplaceFast took %.2fms", (end-start)/1000.0 );
+		Bench.mark( "Str.replaceFast", RUNS, () -> Str.replaceFast( text, "e", "E" ) )
+				.print();
 		
 		//String.replace
-		for( i=0; i<RUNS; i++ ) {
-			text.replace( "e", "E" );
-		}
-		Thread.sleep( 1000 );
-		start = System.currentTimeMillis();
-		for( i=0; i<RUNS; i++ ) {
-			text.replace( "e", "E" );
-		}
-		end = System.currentTimeMillis();
-		E.rrf( "String.replace took %.2fms", (end-start)/1000.0 );
+		Bench.mark( "String.replace", RUNS, () -> text.replace( "e", "E" ) )
+				.print();
 		
 		
 	}

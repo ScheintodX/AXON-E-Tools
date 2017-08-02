@@ -141,6 +141,11 @@ public abstract class E {
 		
 		echo( System.err, true, false, false, os );
 	}
+	public static void rr( IS_DEBUG check, Object ... os ) {
+		String debug = check.isDebug();
+		if( debug != null )
+				echo( System.err, 3, true, true, false, A.unionO( debug, os ) );
+	}
 	/*
 	public static <T> void rrm( Formatter<T> formatter, Object ... os ) {
 		echo( System.err, true, false, false, formatter, os );
@@ -364,5 +369,10 @@ public abstract class E {
 	}
 	public static void chox( long value ) {
 		echo( System.out, true, true, false, HEX.toString( value ) );
+	}
+	
+	@FunctionalInterface
+	public interface IS_DEBUG {
+		String isDebug();
 	}
 }

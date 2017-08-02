@@ -4,6 +4,8 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
+import de.axone.test.Bench;
+
 @Test( groups="tools.passwordbuilder" )
 public class PasswordBuilderTest {
 	
@@ -51,26 +53,14 @@ public class PasswordBuilderTest {
 	public void testTiming() throws Exception {
 
 		String plain = "testPw123!";
-		// Warmup for jit and crypto init
-		for( int i=0; i<TIMING_ROUNDS; i++ ){
-			PasswordBuilder.hashPassword( plain );
-			if( i%0xf == 0 ){
-				System.out.print( "." );
-			}
-		}
 		
-		long start = System.currentTimeMillis();
-		for( int i=0; i<TIMING_ROUNDS; i++ ){
-			PasswordBuilder.hashPassword( plain );
-			if( i%0xf == 0 ){
-				System.out.print( "." );
-			}
-		}
-		long duration = System.currentTimeMillis() - start;
-		
-		System.err.println( "It took " + duration + "ms for hashing " + TIMING_ROUNDS + " passwords" );
-		
-		assertTrue( duration >= TIMING_LIMIT_LOWER );
-		assertTrue( duration <= TIMING_LIMIT_UPPER );
+		Bench.mark( "hashing", TIMING_ROUNDS, () -> PasswordBuilder.hashPassword( plain ) )
+				.print()
+				.time()
+						.isGreaterThan( TIMING_LIMIT_LOWER )
+						.isLessThan( TIMING_LIMIT_UPPER )
+						;
+						
+				
 	}
 }

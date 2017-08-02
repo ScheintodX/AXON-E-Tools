@@ -430,7 +430,7 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( v == null ) return null;
 		v = v.trim();
 		if( v.length() == 0 ) return null;
-		return Enum.valueOf( clazz, v );
+		return Enum.valueOf( clazz, v.toUpperCase() );
 	}
 	public default <T extends Enum<T>> T getEnum( Class<T> clazz, K key, T defaultValue ){
 		T v = getEnum( clazz, key );
