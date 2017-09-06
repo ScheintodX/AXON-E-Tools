@@ -151,7 +151,7 @@ public class Str {
 		return joinBB( result, new SimpleStreamJoiner<T>( joinWith ), ignoreEmpty, objects );
 	}
 	public static <T, U extends T> StringBuilder joinBB( StringBuilder result, Joiner<T> joiner, boolean ignoreEmpty, Iterable<U> objects ){
-
+		
 		int index=0;
 		if( objects != null ) for( T object : objects ){
 			

@@ -2,6 +2,7 @@ package de.axone.tools;
 
 import static org.testng.Assert.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -17,36 +18,38 @@ public class ETest {
 	
 	private static final class StringOutputStream extends OutputStream {
 		
-		StringBuffer buf = new StringBuffer();
+		ByteArrayOutputStream buf = new ByteArrayOutputStream();
 
 		@Override
 		public void write( int b ) throws IOException {
 			
 			Character c = Character.valueOf( (char)b );
-			buf.append( c );
+			buf.write( c );
 		}
 		
 		@Override
 		public String toString(){
 			
+			System.err.print( buf.toString() );
 			return buf.toString();
 		}
 		
-		public void clear(){
-			buf = new StringBuffer();
+		public void clear() throws IOException{
+			if( buf != null ) buf.close();
+			buf = new ByteArrayOutputStream();
 		}
 		
 	}
 	
-	private StringOutputStream s = new StringOutputStream();
-	private PrintStream saveOut = null,
-	                     tmpOut = new PrintStream( s );
-	
 	public void testE() throws Exception {
 		
-		try {
+		PrintStream saveOut = System.out;
+		
+		try (
+				StringOutputStream s = new StringOutputStream();
+				PrintStream tmpOut = new PrintStream( s, false, "UTF-8" )
+		) {
 			
-			saveOut = System.out;
 			System.setOut( tmpOut );
 			
 			String string="text";
@@ -144,14 +147,10 @@ public class ETest {
 			E.cho( bslM );	assertOut( s, "{ 01=>( 100, 101, 102 ), 02=>( 200, 201, 202, (-null-) ) }" );
 			
 			// Keep line number stable or this will fail
-			a(); assertOut( s, "[test] < (ETest.java:159) < (ETest.java:158) < (ETest.java:147)" );
+			a(); assertOut( s, "[test] < (ETest.java:158) < (ETest.java:157) < (ETest.java:150)" );
 			
 		} finally {
-			if( saveOut != null ) try {
-				System.setOut( saveOut );
-			} catch( Throwable t ){
-				t.printStackTrace(); //<-- goes to err
-			}
+			System.setOut( saveOut );
 		}
 	}
 	
@@ -167,19 +166,19 @@ public class ETest {
 			Pattern.compile( "\n$" );
 	private static final String EMPTY = "";
 
-	private void assertOut( StringOutputStream s, String text ){
+	private void assertOut( StringOutputStream s, String text ) throws Exception {
 		
 		String ref = s.toString();
 		
 		ref = CLASS_PREFIX.matcher( ref ).replaceAll( EMPTY );
 		ref = NL.matcher( ref ).replaceAll( EMPTY );
 		
-		/*
 		ref = ref
 				.replaceAll( "^>>> \\(ETest.java:[0-9]+\\) ", "" )
 				.replaceAll( "\n$", "" );
 		;
-		*/
+		
+		System.err.println( "=" + ref + "=");
 		
 		assertEquals( ref, text );
 		

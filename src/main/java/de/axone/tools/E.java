@@ -144,7 +144,7 @@ public abstract class E {
 	public static void rr( IS_DEBUG check, Object ... os ) {
 		String debug = check.isDebug();
 		if( debug != null )
-				echo( System.err, 3, true, true, false, A.unionO( debug, os ) );
+				echo( System.err, 2, true, true, false, A.unionO( debug, os ) );
 	}
 	/*
 	public static <T> void rrm( Formatter<T> formatter, Object ... os ) {

@@ -309,18 +309,18 @@ public class A {
 	@SafeVarargs
 	public static <X> X[] Array( X ... values ){ return values; }
 	
-	// This is a common case. Make it more comfortable and quicker.
+	// TODO: This is a common case. Make it more comfortable and quicker.
 	public static String [] Array( Collection<String> values ){
 		
 		return values.toArray( new String[ values.size() ] );
 	}
+	
 	public static <X> X[] Array( Collection<X> values, Class<X> clazz ){
 		
 		if( values == null || values.size() == 0 )
 			throw new IllegalArgumentException( "values is null or empty" );
 		
 		@SuppressWarnings( "unchecked" )
-		//X[] result = (X[])Array.newInstance( values.iterator().next().getClass(), values.size() );
 		X[] result = (X[])Array.newInstance( clazz, values.size() );
 		
 		return values.toArray( result );

@@ -279,4 +279,12 @@ public abstract class Assert {
 		if( ! file.canRead() )
 				throw new IllegalArgumentException( "Cannot read '" + name + "' / '" + file.getAbsolutePath() + "'" );
 	}
+	
+	// Enum stuff
+	@SafeVarargs
+	public static <T extends Enum<T>> boolean isOneOf( T o, String name, T ... oneOf ) {
+		
+		for( T x : oneOf ) if( o == x ) return true;
+		return false;
+	}
 }

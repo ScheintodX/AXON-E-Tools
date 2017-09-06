@@ -28,18 +28,20 @@ public class F {
 		if( o == null ) r.append( S._NULL_ );
 		else {
 			if( o instanceof CharSequence ) formatCharSequence( r, (CharSequence)o );
+			else if( o instanceof Byte ) formatByte( r, (Byte)o );
 			else if( hasToString( o ) ) formatToString( r, o );
 			else if( o instanceof Path ) formatPath( r, (Path)o );
 			else if( o instanceof Iterable<?> ) formatIterable( r, (Iterable<?>)o );
 			else if( o instanceof Map<?,?> ) formatMap( r, (Map<?,?>) o );
 			else if( o instanceof Enumeration<?> ) formatEnumeration( r, (Enumeration<?>) o );
 			else if( o.getClass().isArray() ) formatArray( r, o );
-			else if( o instanceof Byte ) formatByte( r, (Byte)o );
 			else r.append( o.toString() );
 		}
 	}
 	
 	private static boolean hasToString( Object o ) {
+		
+		if( o == null ) return false;
 		
 		Method [] methods = o.getClass().getDeclaredMethods();
 		
@@ -53,14 +55,19 @@ public class F {
 	
 	private static void formatToString( Appendable r, Object o ) throws IOException {
 		
-		r.append( "‹" );
-		r.append( o.toString() );
-		r.append( "›" );
+		r
+		 .append( o.toString() )
+		 
+		 ;
 	}
 	
 	private static void formatByte( Appendable r, Byte b ) throws IOException {
-	    r.append( Character.forDigit( (b >> 4) & 0xF, 16));
-	    r.append( Character.forDigit( (b & 0xF), 16));
+		
+		r
+	     .append( Character.forDigit( (b >> 4) & 0xF, 16))
+	     .append( Character.forDigit( (b & 0xF), 16))
+	     
+	     ;
 	}
 	
 	private static void formatIterable( Appendable r, Iterable<?> l ) throws IOException {
