@@ -121,7 +121,7 @@ public final class SuperURL {
 		
 		public static KnownMimeType forExtension( String extension ) {
 			
-			return forExtension.get( extension );
+			return forExtension.get( extension.toLowerCase() );
 		}
 		
 		@Override
