@@ -471,6 +471,4 @@ public class A {
 		return result;
 	}
 	
-	
-	
 }

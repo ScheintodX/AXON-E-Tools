@@ -1205,4 +1205,8 @@ public class Str {
 		return true;
 	}
 	
+	public static StringBuilder ing() {
+		return new StringBuilder();
+	}
+	
 }

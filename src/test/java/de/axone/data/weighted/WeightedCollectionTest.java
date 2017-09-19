@@ -361,7 +361,7 @@ public class WeightedCollectionTest {
 		
 		public WeightedCollectionAssert<T,W> print() {
 			
-			E.rr( actual );
+			E.rrup( 1, actual );
 			
 			return this;
 		}
