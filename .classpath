@@ -110,7 +110,7 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.assertj/assertj-core/1.6.1/631f89e7050cf8ac2ba25d68f0434b80731bf2f2/assertj-core-1.6.1-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.assertj/assertj-core/1.6.1/5db13d0ae30dca5157f0dea60f78640cf039cafe/assertj-core-1.6.1.jar" exported="true">
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.assertj/assertj-core/3.8.0/85dab3e124fb391b10196df9bfdb43640deabb09/assertj-core-3.8.0-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.assertj/assertj-core/3.8.0/b209d90ff2e279bee3e02547ee7b11349c52d0e3/assertj-core-3.8.0.jar" exported="true">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>

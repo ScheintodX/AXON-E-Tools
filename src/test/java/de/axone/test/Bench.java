@@ -1,7 +1,5 @@
 package de.axone.test;
 
-import static org.assertj.core.api.Assertions.*;
-
 import org.assertj.core.api.DoubleAssert;
 import org.assertj.core.api.LongAssert;
 
@@ -76,12 +74,12 @@ public class Bench {
 	}
 	
 	public LongAssert time() {
-		return assertThat( lastTime / 1_000_000 )
+		return new LongAssert( lastTime / 1_000_000 )
 				.as( title + " duration" )
 				;
 	}
 	public DoubleAssert average() {
-		return assertThat( lastTime / 1e6 / runs )
+		return new DoubleAssert( lastTime / 1e6 / runs )
 				.as( title + " average" )
 				;
 	}

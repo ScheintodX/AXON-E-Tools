@@ -1,5 +1,6 @@
 package de.axone.test;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
 import java.io.IOException;
@@ -11,18 +12,12 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.AbstractObjectAssert;
-import org.assertj.core.api.ObjectAssert;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 public class Assertions {
 
-	public static <X> OptionalAssert<X> assertOptional( Optional<X> optional ) {
-		
-		return new OptionalAssert<X>( optional );
-	}
-	
 	public static PathAssert assertPath( Path path ) {
 		
 		return new PathAssert( path ).as( path.getFileName().toString() );
@@ -31,56 +26,6 @@ public class Assertions {
 	public static <X> StreamAssert<X> assertStream( Stream<X> stream ) {
 		
 		return new StreamAssert<>( stream );
-	}
-	
-	
-	/* ================= */
-	/* = Optional ====== */
-	/* ================= */
-	public static class OptionalAssert<X> extends AbstractOptionalAssert<X, OptionalAssert<X>> {
-
-		protected OptionalAssert( Optional<X> actual ) {
-			super( actual, OptionalAssert.class );
-		}
-		
-	}
-
-	public static abstract class AbstractOptionalAssert<
-			X,
-			S extends AbstractObjectAssert<S, Optional<X>>
-	
-	> extends AbstractObjectAssert<S,Optional<X>> {
-
-		protected AbstractOptionalAssert( Optional<X> actual, Class<?> selfType ) {
-			super( actual, selfType );
-		}
-		
-		public S isPresent() {
-			
-			if( ! actual.isPresent() )
-					fail( "Expected " + this.descriptionText() + " to be present" );
-			
-			return myself;
-		}
-		
-		public S isNotPresent() {
-			
-			if( actual.isPresent() )
-					fail( "Expected " + this.descriptionText() + " to be NOT present" );
-			
-			return myself;
-		}
-		
-		public X get() {
-			
-			return actual.get();
-		}
-		
-		public ObjectAssert<X> lookingAt() {
-			
-			return org.assertj.core.api.Assertions.assertThat( actual.get() );
-		}
-		
 	}
 	
 	/* ================= */
@@ -161,9 +106,10 @@ public class Assertions {
 					.filter( p -> p.getFileName().toString().matches( pattern ) )
 					.findFirst();
 			
-			Path found = assertOptional( maybeFound )
-					.isPresent()
-					.get();
+			 assertThat( maybeFound )
+					.isPresent();
+			 
+			 Path found = maybeFound.get();
 			
 			return assertPath( found );
 		}

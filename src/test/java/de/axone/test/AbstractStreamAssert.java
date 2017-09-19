@@ -26,7 +26,7 @@ public abstract class AbstractStreamAssert<
 		return myself;
 	}
 	
-	public ListAssert<X> asList() {
+	public ListAssert<X> toListAssert() {
 		
 		return org.assertj.core.api.Assertions.assertThat(
 				actual.collect( Collectors.toList() ) );

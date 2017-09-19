@@ -74,7 +74,7 @@ dependencies {
 	// =======================================
 
 	testCompile 'org.mockito:mockito-all:1.9+'
-	testCompile 'org.assertj:assertj-core:1.6+' // 1.7 macht noch trouble
+	testCompile 'org.assertj:assertj-core:3.8+'
 	testCompile 'com.googlecode.catch-exception:catch-exception:1.2+'
 
 	testRuntime 'org.testng:testng:6.8+'

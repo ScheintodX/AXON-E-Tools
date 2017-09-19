@@ -8,6 +8,7 @@ import org.assertj.core.api.AbstractIterableAssert;
 import org.assertj.core.api.StringAssert;
 
 import de.axone.web.SuperURL.Encode;
+import de.axone.web.SuperURL.Query.QueryPart;
 
 public class SuperURLAssert 
 			extends AbstractAssert<SuperURLAssert, SuperURL> {
@@ -37,13 +38,7 @@ public class SuperURLAssert
 		return this;
 	}
 	
-	@SuppressWarnings( "deprecation" )
-	public StringAssert asString() {
-		
-		return assertThat( actual.toString() );
-	}
-	
-	public static class HostAssert extends AbstractIterableAssert<HostAssert, SuperURL.Host, String> {
+	public static class HostAssert extends AbstractIterableAssert<HostAssert, SuperURL.Host, String, StringAssert> {
 
 		protected HostAssert( SuperURL.Host actual ) {
 			
@@ -94,10 +89,15 @@ public class SuperURLAssert
 					;
 			return this;
 		}
+
+		@Override
+		protected StringAssert toAssert( String value, String description ) {
+			return new StringAssert( value ).as( description );
+		}
 		
 	}
 	
-	public static class PathAssert extends AbstractIterableAssert<PathAssert, SuperURL.Path, String> {
+	public static class PathAssert extends AbstractIterableAssert<PathAssert, SuperURL.Path, String, StringAssert> {
 		
 		protected PathAssert( SuperURL.Path actual ) {
 			super( actual, PathAssert.class );
@@ -111,9 +111,14 @@ public class SuperURLAssert
 			
 			return myself;
 		}
+
+		@Override
+		protected StringAssert toAssert( String value, String description ) {
+			return new StringAssert( value ).as( description );
+		}
 	}
 	
-	public static class QueryAssert extends AbstractIterableAssert<QueryAssert, SuperURL.Query, SuperURL.Query.QueryPart> {
+	public static class QueryAssert extends AbstractIterableAssert<QueryAssert, SuperURL.Query, SuperURL.Query.QueryPart, QueryPartAssert> {
 		
 		protected QueryAssert( SuperURL.Query actual ) {
 			super( actual, QueryAssert.class );
@@ -123,6 +128,11 @@ public class SuperURLAssert
 			
 			contains( new SuperURL.Query.QueryPart( string, string2 ) );
 			return myself;
+		}
+
+		@Override
+		protected QueryPartAssert toAssert( QueryPart value, String description ) {
+			return new QueryPartAssert( value ).as( description );
 		}
 		
 		

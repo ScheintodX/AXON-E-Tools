@@ -1,5 +1,6 @@
 package de.axone.data.weighted;
 
+import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractIterableAssert;
 import org.testng.annotations.Test;
 
@@ -205,40 +206,44 @@ public class WeightedCollectionContainedTest {
 		}}
 	
 	
-	public static class WeightedCollectionContainedAssert<S,W extends AbstractWeightedCollectionContained<W,S>>
-	extends AbstractIterableAssert<WeightedCollectionContainedAssert<S,W>, W, WeightedItem<S>> {
+	public static class WeightedCollectionContainedAssert<
+			S,
+			W extends AbstractWeightedCollectionContained<W,S>,
+			Y extends WeightedItemAssert<S>
+			>
+	extends AbstractIterableAssert<WeightedCollectionContainedAssert<S,W,Y>, W, WeightedItem<S>, WeightedItemAssert<S>> {
 
 		protected WeightedCollectionContainedAssert( W actual ) {
 			super( actual, WeightedCollectionContainedAssert.class );
 		}
 		
-		public WeightedCollectionContainedAssert<S,W> print() {
+		public WeightedCollectionContainedAssert<S,W,Y> print() {
 			
 			E.echo( System.err, 2, true, true, false, actual );
 			
 			return this;
 		}
 
-		public WeightedCollectionContainedAssert<S,W> hasWeight( double weight ){
+		public WeightedCollectionContainedAssert<S,W,Y> hasWeight( double weight ){
 			org.assertj.core.api.Assertions.assertThat( actual.weight() )
 					.isEqualTo( weight )
 					;
 			return this;
 		}
-		public WeightedCollectionContainedAssert<S,W> hasMaxWeight( double weight ){
+		public WeightedCollectionContainedAssert<S,W,Y> hasMaxWeight( double weight ){
 			org.assertj.core.api.Assertions.assertThat( actual.maxWeight() )
 					.isEqualTo( weight )
 					;
 			return this;
 		}
-		public WeightedCollectionContainedAssert<S,W> hasAvgWeight( double weight ){
+		public WeightedCollectionContainedAssert<S,W,Y> hasAvgWeight( double weight ){
 			org.assertj.core.api.Assertions.assertThat( actual.avgWeight() )
 					.isEqualTo( weight )
 					;
 			return this;
 		}
 		
-		public WeightedCollectionContainedAssert<S,W> contains( S item, double weight ){
+		public WeightedCollectionContainedAssert<S,W,Y> contains( S item, double weight ){
 			
 			WeightedItem<S> it = actual.new WeightedItemImpl( item, weight );
 			
@@ -252,7 +257,7 @@ public class WeightedCollectionContainedTest {
 			return this;
 		}
 		
-		public WeightedCollectionContainedAssert<S,W> contains( S item, double weight, double normalized ){
+		public WeightedCollectionContainedAssert<S,W,Y> contains( S item, double weight, double normalized ){
 			
 			WeightedItem<S> it = new TestWeightedItem<>( item, weight, normalized );
 			
@@ -265,17 +270,32 @@ public class WeightedCollectionContainedTest {
 			
 			return this;
 		}
+
+		@Override
+		protected WeightedItemAssert<S> toAssert( WeightedItem<S> value,
+				String description ) {
+			return new WeightedItemAssert<>( value ).as(  description );
+		}
 		
 	}
 	
 	
-	public static <S,W extends AbstractWeightedCollectionContained<W,S>> WeightedCollectionContainedAssert<S,W> assertThat( W list ) {
+	public static <S,W extends AbstractWeightedCollectionContained<W,S>, Y extends WeightedItemAssert<S>> WeightedCollectionContainedAssert<S,W,Y> assertThat( W list ) {
+			
 		
-		return new WeightedCollectionContainedAssert<>( list )
+		return new WeightedCollectionContainedAssert<S,W,Y>( list )
 				.as( list.toString() )
 				;
 	}
 	
+	
+	public static class WeightedItemAssert<T> extends AbstractAssert<WeightedItemAssert<T>, WeightedItem<T>> {
+
+		public WeightedItemAssert( WeightedItem<T> actual ) {
+			super( actual, WeightedItemAssert.class );
+		}
+		
+	}
 	
 	private static final class TestWeightedItem<T> implements WeightedItem<T> {
 		

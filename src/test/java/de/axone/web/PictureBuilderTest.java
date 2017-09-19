@@ -1,6 +1,7 @@
 package de.axone.web;
 
 import static de.axone.test.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.*;
 
 import java.nio.file.Files;
@@ -28,13 +29,14 @@ public class PictureBuilderTest {
 		
 		PictureBuilderNG builder = b.builder( "test001", 0 );
 		
-		Path p = assertOptional( builder.get( 100 ) )
+		Optional<Path> o = builder.get( 100 );
+		assertThat( o )
 				.as( "pic 100" )
 				.isNotNull()
 				.isPresent()
-				.get()
+				
 				;
-		assertPath( p )
+		assertPath( o.get() )
 				.startsWith( home.resolve( "testpng/t/test001/100/test001.jpg" ) )
 				;
 				
@@ -124,7 +126,7 @@ public class PictureBuilderTest {
 		assertEquals( builder.fileCount(), 10 );
 		Optional<Path> scaledImage = builder.get( 100 );
 		
-		assertOptional( scaledImage ).isPresent();
+		assertThat( scaledImage ).isPresent();
 		assertPath( scaledImage.get() )
 				.startsWith( home.resolve( "plain/t/test001/100/test001.jpg" ) )
 				;
@@ -153,7 +155,7 @@ public class PictureBuilderTest {
 				.andReturn()
 				;
 		
-		assertOptional( scaledImage ).isPresent();
+		assertThat( scaledImage ).isPresent();
 		assertPath( scaledImage.get() )
 				.isEqualTo( test001_testpng100 )
 				;
