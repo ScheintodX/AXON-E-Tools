@@ -710,7 +710,7 @@ public class SuperURLTest {
     			.build( urlS );
     	
     	assertThat( url )
-    			.asString().isEqualTo( urlS )
+    			.seenAsString().isEqualTo( urlS )
     			;
     	
     	

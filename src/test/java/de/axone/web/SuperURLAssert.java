@@ -38,6 +38,14 @@ public class SuperURLAssert
 		return this;
 	}
 	
+	@SuppressWarnings( "deprecation" )
+	public StringAssert seenAsString() {
+	
+		return new StringAssert( actual.toString() );
+	}
+	
+
+	
 	public static class HostAssert extends AbstractIterableAssert<HostAssert, SuperURL.Host, String, StringAssert> {
 
 		protected HostAssert( SuperURL.Host actual ) {
