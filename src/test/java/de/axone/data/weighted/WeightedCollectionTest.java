@@ -293,35 +293,58 @@ public class WeightedCollectionTest {
 
 	}
 	
-
-	public static class WeightedCollectionAssert<
+	public static class GenericWeightedCollectionAssert<
 			T,
 			W extends AbstractWeightedCollection<W,T>,
 			Y extends AbstractAssert<Y, T>>
-	extends AbstractIterableAssert<WeightedCollectionAssert<T,W,Y>, W, T, Y> {
+	extends AbstractWeightedCollectionAssert<T,W,Y> {
+
+		public GenericWeightedCollectionAssert( W actual ) {
+			super( actual, GenericWeightedCollectionAssert.class );
+		}
 
 		@Override
 		protected Y toAssert( T value, String description ) {
 			throw new UnsupportedOperationException();
 		}
-		
-		protected WeightedCollectionAssert( W actual ) {
-			super( actual, WeightedCollectionAssert.class );
+	}
+
+	public abstract static class AbstractWeightedCollectionAssert<
+			T,
+			W extends AbstractWeightedCollection<W,T>,
+			Y extends AbstractAssert<Y, T>>
+	extends AbstractIterableAssert<AbstractWeightedCollectionAssert<T,W,Y>, W, T, Y> {
+
+		public AbstractWeightedCollectionAssert( W actual, Class<?> selfType ) {
+			super( actual, selfType );
 		}
 		
-		public WeightedCollectionAssert<T,W,Y> hasWeight( double weight ){
+		/*
+		@Override
+		protected Y toAssert( T value, String description ) {
+			throw new UnsupportedOperationException();
+		}
+		*/
+		
+		/*
+		protected AbstractWeightedCollectionAssert( W actual ) {
+			super( actual, AbstractWeightedCollectionAssert.class );
+		}
+		*/
+		
+		public AbstractWeightedCollectionAssert<T,W,Y> hasWeight( double weight ){
 			org.assertj.core.api.Assertions.assertThat( actual.weight() )
 					.isEqualTo( weight )
 					;
 			return this;
 		}
-		public WeightedCollectionAssert<T,W,Y> hasMaxWeight( double weight ){
+		public AbstractWeightedCollectionAssert<T,W,Y> hasMaxWeight( double weight ){
 			org.assertj.core.api.Assertions.assertThat( actual.maxWeight() )
 					.isEqualTo( weight )
 					;
 			return this;
 		}
-		public WeightedCollectionAssert<T,W,Y> hasAvgWeight( double weight ){
+		public AbstractWeightedCollectionAssert<T,W,Y> hasAvgWeight( double weight ){
 			org.assertj.core.api.Assertions.assertThat( actual.avgWeight() )
 					.isEqualTo( weight )
 					;
@@ -329,7 +352,7 @@ public class WeightedCollectionTest {
 		}
 		
 		@SuppressWarnings( "unchecked" )
-		public WeightedCollectionAssert<T,W,Y> containsPrecisely( T ... items ){
+		public AbstractWeightedCollectionAssert<T,W,Y> containsPrecisely( T ... items ){
 			for( T item : items ) containsPrecisely( item );
 			return this;
 		}
@@ -345,7 +368,7 @@ public class WeightedCollectionTest {
 			return false;
 		}
 		
-		public WeightedCollectionAssert<T,W,Y> containsPrecisely( T item ){
+		public AbstractWeightedCollectionAssert<T,W,Y> containsPrecisely( T item ){
 			
 			if( _containsPrecisely( actual, item ) ) return this;
 			
@@ -354,7 +377,7 @@ public class WeightedCollectionTest {
 			return this;
 		}
 		
-		public WeightedCollectionAssert<T,W,Y> doesNotContainPrecisely( T item ){
+		public AbstractWeightedCollectionAssert<T,W,Y> doesNotContainPrecisely( T item ){
 			
 			Weighter<T> weighter = actual.weighter();
 			
@@ -368,7 +391,7 @@ public class WeightedCollectionTest {
 			return this;
 		}
 		
-		public WeightedCollectionAssert<T,W,Y> print() {
+		public AbstractWeightedCollectionAssert<T,W,Y> print() {
 			
 			E.rrup( 1, actual );
 			
@@ -378,10 +401,9 @@ public class WeightedCollectionTest {
 	}
 	
 	public static <T, W extends AbstractWeightedCollection<W,T>, Y extends AbstractAssert<Y, T>>
-			WeightedCollectionAssert<T,W,Y> assertThat( W list ){
+			AbstractWeightedCollectionAssert<T,W,Y> assertThat( W list ){
 			
-		
-		return new WeightedCollectionAssert<T,W,Y>( list );
+		return new GenericWeightedCollectionAssert<T,W,Y>( list );
 	}
 	
 }

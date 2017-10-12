@@ -1,6 +1,7 @@
 package de.axone.data;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 
 import de.axone.exception.Assert;
 
@@ -35,5 +36,24 @@ public abstract class Numbers {
 		
 		return first.add( error ).compareTo( second ) >= 0 && first.subtract( error ).compareTo( second ) <= 0;
 	}
+	
+	public static int compare( BigDecimal o1, BigDecimal o2 ) {
 		
+			if( o1 == o2 ) return 0;
+			if( o1 == null ) return -1;
+			if( o2 == null ) return 1;
+			
+			return o1.compareTo( o2 );
+	}
+	
+	public static final Comparator<BigDecimal> COMPARATOR = Numbers::compare;
+	
+	
+	public static boolean isZero( BigDecimal value ) {
+		
+		if( value == null ) return true;
+		
+		return BigDecimal.ZERO.compareTo( value ) == 0;
+	}
+
 }

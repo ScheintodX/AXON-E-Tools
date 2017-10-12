@@ -5,7 +5,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention( RetentionPolicy.SOURCE )
 // Set to @Deprecated in order to show them in eclipse
-//@Deprecated
+@Deprecated
 public @interface Refactor {
 	
 	State value() default State.TODO;
