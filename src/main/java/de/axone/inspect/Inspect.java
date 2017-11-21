@@ -2,6 +2,7 @@ package de.axone.inspect;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 
 import de.axone.tools.Str;
 
@@ -15,16 +16,20 @@ public abstract class Inspect {
 		
 		result.append( myName ).append( '\n' );
 		
-		for( Method m : clz.getDeclaredMethods() ) {
-			
-			result.append( '\t' )
-					.append( pretty( m ) )
-					.append( '\n' )
-					;
-		}
+		Method [] methods = clz.getDeclaredMethods();
+		
+		Arrays.stream( methods )
+				.sorted( (m1, m2) -> m1.getName().compareTo( m2.getName() ) )
+				.forEach( m ->
+		
+						result.append( '\t' )
+								.append( pretty( m ) )
+								.append( '\n' )
+				);
 		
 		return result.toString();
 	}
+	
 	
 	public static String pretty( Method m ) {
 		

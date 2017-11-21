@@ -406,6 +406,7 @@ public class Str {
 		}
 	}
 	
+	// --- S p l i t ----------------------------------------------------
 	public static @Nonnull String[] splitAtWordBoundaryNear( String text, int len ) {
 		
 		assert text != null;
@@ -427,7 +428,6 @@ public class Str {
 		}
 	}
 	
-	// --- S p l i t ----------------------------------------------------
 	public static @Nonnull String splitAt( int position, String text ){
 		
 		StringBuilder result = new StringBuilder( text.length() + text.length()/position +1 );
