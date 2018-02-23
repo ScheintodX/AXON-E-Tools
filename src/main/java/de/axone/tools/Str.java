@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import de.axone.exception.Assert;
 import de.axone.refactor.NotTested;
 
 public class Str {
@@ -449,6 +450,21 @@ public class Str {
 		
 		return splitFastLimited( s, fs, n );
 	}
+	public static @Nonnull String [] splitEvery( String s, int chars ) {
+		
+		Assert.gt0( chars, "chars" );
+		
+		int len = s.length();
+		int parts = (len + chars -1) / chars;
+		
+		String [] result = new String[ parts ];
+		
+		for( int i=0; i<parts; i++ ) {
+			
+			result[ i ] = s.substring( i*chars, Math.min( (i+1)*chars, len ) );
+		}
+		return result;
+	}
 	
 	public static @Nonnull String [] splitFastAndTrim( String s, char fs ){
 		
@@ -459,6 +475,18 @@ public class Str {
 		}
 		
 		return result;
+	}
+	
+	public static @Nonnull Set<String> splitFastAndTrimToSet( String s, char fs ){
+		
+		String [] result = splitFast( s, fs );
+		Set<String> resultSet = new HashSet<>( result.length );
+		
+		for( int i=0; i < result.length; i++ ){
+			resultSet.add( result[ i ].trim() );
+		}
+		
+		return resultSet;
 	}
 	
 	
@@ -800,6 +828,37 @@ public class Str {
 		return string;
 	}
 	
+	/* Untested
+	public static String removeNewlines( String value ) {
+		
+		if( value == null ) return null;
+		
+		return removeChars( value, new char[]{ '\n', '\r' } );
+	}
+	public static String collapsWhitespace( String value ){
+		
+		if( value == null ) return null;
+		
+		StringBuilder result = new StringBuilder( value.length() );
+		
+		for( int i=0; i<value.length(); i++ ) {
+			
+			char c = value.charAt( i );
+			
+			if( Character.isWhitespace( c ) ) c = ' '; // Unify whitespaces
+			
+			if( i > 0 ) {
+				
+				if( c == ' ' && Character.isWhitespace( value.charAt( i-1 ) ) ) continue;
+			}
+			
+			result.append( c );
+		}
+		
+		return result.toString();
+	}
+	*/
+	
 	
 	public static final String translate( String value, char from, char to ){
 		
@@ -989,6 +1048,18 @@ public class Str {
 		
 		return result.toString();
 	}
+	public static String replaceFast( String value, char replace, char with ) {
+		
+		char [] input = value.toCharArray();
+		int len = input.length;
+		char [] result = new char[ len ];
+		
+		for( int i=0; i<len; i++ ) {
+			char ch = input[ i ];
+			result[ i ] = ch == replace ? with : ch;
+		}
+		return new String( result );
+	}
 	
 	@FunctionalInterface
 	public interface ReplacementProvider {
@@ -1113,6 +1184,15 @@ public class Str {
 		return result.toString();
 	}
 	
+	/**
+	 * Allows chaining of functions.
+	 * 
+	 * In order to work the functions must have the same input and output types.
+	 * 
+	 * @author flo
+	 *
+	 * @param <T>
+	 */
 	public static final class Chain<T> implements Function<T,T> {
 		
 		private final Function<T,T>[] chain;

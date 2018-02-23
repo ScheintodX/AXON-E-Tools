@@ -1,6 +1,10 @@
 package de.axone.data.tupple;
 
-public class Pair<L, R> implements Comparable<Pair<L,R>> {
+import java.io.Serializable;
+
+public class Pair<L, R> implements Comparable<Pair<L,R>>, Serializable {
+	
+	private static final long serialVersionUID = 42L;
 	 
     private final L left;
     private final R right;

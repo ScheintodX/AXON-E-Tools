@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.Optional;
 
+import de.axone.data.tupple.Pair;
+
 public interface PictureBuilderNG {
 
 	/**
@@ -29,7 +31,7 @@ public interface PictureBuilderNG {
 	 * @param size
 	 * @throws IOException
 	 */
-	public Optional<Path> get( int size ) throws IOException;
+	public Optional<Pair<Path, Boolean>> get( int size ) throws IOException;
 	
 	/**
 	 * @return what we are looking for.

@@ -1,6 +1,7 @@
 package de.axone.data;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Comparator;
 
 import de.axone.exception.Assert;
@@ -54,6 +55,13 @@ public abstract class Numbers {
 		if( value == null ) return true;
 		
 		return BigDecimal.ZERO.compareTo( value ) == 0;
+	}
+	
+	public static boolean isZero( BigInteger value ) {
+		
+		if( value == null ) return true;
+		
+		return BigInteger.ZERO.compareTo( value ) == 0;
 	}
 
 }

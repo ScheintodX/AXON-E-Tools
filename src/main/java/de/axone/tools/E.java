@@ -8,6 +8,9 @@ import de.axone.exception.Ex;
 
 public abstract class E {
 	
+	public static final PrintStream OUT = System.out;
+	public static final PrintStream RR = System.err;
+	
 	private static void printPos( PrintStream out, int depth ){
 		
 		String clazz = Ex.me( depth+1 );
@@ -93,179 +96,179 @@ public abstract class E {
 	}
 	
 	public static String banner( String text ){
-		return echo( System.out, 2, true, true, false, Text.banner( text.charAt( 0 ), text ) );
+		return echo( OUT, 2, true, true, false, Text.banner( text.charAt( 0 ), text ) );
 	}
 	
 	public static String banner( char border, String text ){
-		return echo( System.out, 2, true, true, false, Text.banner( border, text ) );
+		return echo( OUT, 2, true, true, false, Text.banner( border, text ) );
 	}
 	
 	public static String  poster( String text ){
-		return echo( System.out, 2, true, true, false, Text.poster( text.charAt( 0 ), text ) );
+		return echo( OUT, 2, true, true, false, Text.poster( text.charAt( 0 ), text ) );
 	}
 	
 	public static String poster( char border, String text ){
-		return echo( System.out, 2, true, true, false, Text.poster( border, text ) );
+		return echo( OUT, 2, true, true, false, Text.poster( border, text ) );
 	}
 	
 	/**
 	 * Output file and line number and some text to STDERR
 	 */
 	public static void rr(){
-		echo( System.err, true, true, false, "" );
+		echo( RR, true, true, false, "" );
 	}
 	
 	public static byte[] rr( byte [] a ){
-		echo( System.err, true, true, false, (Object[])A.objects( a ) );
+		echo( RR, true, true, false, (Object[])A.objects( a ) );
 		return a;
 	}
 	
 	public static char[] rr( char [] a ){
-		echo( System.err, true, true, false, (Object[])A.objects( a ) );
+		echo( RR, true, true, false, (Object[])A.objects( a ) );
 		return a;
 	}
 	
 	public static short[] rr( short [] a ){
-		echo( System.err, true, true, false, (Object[])A.objects( a ) );
+		echo( RR, true, true, false, (Object[])A.objects( a ) );
 		return a;
 	}
 	
 	public static int[] rr( int [] a ){
-		echo( System.err, true, true, false, (Object[])A.objects( a ) );
+		echo( RR, true, true, false, (Object[])A.objects( a ) );
 		return a;
 	}
 	
 	public static long[] rr( long [] a ){
-		echo( System.err, true, true, false, (Object[])A.objects( a ) );
+		echo( RR, true, true, false, (Object[])A.objects( a ) );
 		return a;
 	}
 	
 	public static float[] rr( float [] a ){
-		echo( System.err, true, true, false, (Object[])A.objects( a ) );
+		echo( RR, true, true, false, (Object[])A.objects( a ) );
 		return a;
 	}
 	
 	public static double[] rr( double [] a ){
-		echo( System.err, true, true, false, (Object[])A.objects( a ) );
+		echo( RR, true, true, false, (Object[])A.objects( a ) );
 		return a;
 	}
 	
 	public static boolean[] rr( boolean [] a ){
-		echo( System.err, true, true, false, a );
+		echo( RR, true, true, false, a );
 		return a;
 	}
 	@SafeVarargs
 	public static <T> T rr( T ... os ){
 		
-		return echo( System.err, true, true, false, os );
+		return echo( RR, true, true, false, os );
 	}
 	@SafeVarargs
 	public static <T> T rrup( int steps, T ... os ){
 		
-		return echoup( steps, System.err, true, true, false, os );
+		return echoup( steps, RR, true, true, false, os );
 	}
 	@SafeVarargs
 	public static <T> T rr_( T ... os ){
 		
-		return echo( System.err, true, false, false, os );
+		return echo( RR, true, false, false, os );
 	}
 	@SafeVarargs
 	public static <T> T rr( IS_DEBUG check, T ... os ) {
 		String debug = check.isDebug();
 		if( debug != null )
-				echo( System.err, 2, true, true, false, A.unionO( debug, os ) );
+				echo( RR, 2, true, true, false, A.unionO( debug, os ) );
 		return pick( os );
 	}
 	/*
 	public static <T> void rrm( Formatter<T> formatter, Object ... os ) {
-		echo( System.err, true, false, false, formatter, os );
+		echo( ERR, true, false, false, formatter, os );
 	}
 	*/
 	@SafeVarargs
 	public static <T> T rrf( String format, T ... args ){
-		return printf( System.err, true, true, format, args );
+		return printf( RR, true, true, format, args );
 	}
 	@SafeVarargs
 	public static <T> T rrf_( String format, T ... args ){
-		return printf( System.err, true, false, format, args );
+		return printf( RR, true, false, format, args );
 	}
 	@SafeVarargs
 	public static <T> T _rrf( String format, T ... args ){
-		return printf( System.err, false, true, format, args );
+		return printf( RR, false, true, format, args );
 	}
 	@SafeVarargs
 	public static <T> T _rrf_( String format, T ... args ){
-		return printf( System.err, false, false, format, args );
+		return printf( RR, false, false, format, args );
 	}
 	@SafeVarargs
 	public static <T> T rrl( String format, T ... args ){
-		return log( System.err, true, true, format, args );
+		return log( RR, true, true, format, args );
 	}
 	@SafeVarargs
 	public static <T> T _rrl( String format, T ... args ){
-		return log( System.err, false, true, format, args );
+		return log( RR, false, true, format, args );
 	}
 	@SafeVarargs
 	public static <T> T rrl_( String format, T ... args ){
-		return log( System.err, true, false, format, args );
+		return log( RR, true, false, format, args );
 	}
 	@SafeVarargs
 	public static <T> T _rrl_( String format, T ... args ){
-		return log( System.err, false, false, format, args );
+		return log( RR, false, false, format, args );
 	}
 	
 	@SafeVarargs
 	public synchronized static <T> T rrt( T ... os ){
-		return echo( System.err, true, true, true, os );
+		return echo( RR, true, true, true, os );
 	}
 	@SafeVarargs
 	public synchronized static <T> T _rrt( T ... os ){
-		return echo( System.err, false, true, true, os );
+		return echo( RR, false, true, true, os );
 	}
 	/**
 	 * Output file and line number and some text to STDOUT
 	 */
 	public static void cho(){
 		
-		echo( System.out, true, true, false, "" );
+		echo( OUT, true, true, false, "" );
 	}
 	@SafeVarargs
 	public static <T> T cho( T ... os ){
-		return echo( System.out, true, true, false, os );
+		return echo( OUT, true, true, false, os );
 	}
 	@SafeVarargs
 	public static <T> T cho_( T ... os ){
-		return echo( System.out, true, false, false, os );
+		return echo( OUT, true, false, false, os );
 	}
 	@SafeVarargs
 	public static <T> T _cho_( T ... os ){
-		return echo( System.out, false, false, false, os );
+		return echo( OUT, false, false, false, os );
 	}
 	@SafeVarargs
 	public static <T> T _cho( T ... os ){
-		return echo( System.out, false, true, false, os );
+		return echo( OUT, false, true, false, os );
 	}
 	@SafeVarargs
 	public static <T> T chof( String format, T ... args ){
-		return printf( System.out, true, true, format, args );
+		return printf( OUT, true, true, format, args );
 	}
 	@SafeVarargs
 	public static <T> T chof_( String format, T ... args ){
-		return printf( System.out, true, false, format, args );
+		return printf( OUT, true, false, format, args );
 	}
 	@SafeVarargs
 	public static <T> T _chof( String format, T ... args ){
-		return printf( System.out, false, true, format, args );
+		return printf( OUT, false, true, format, args );
 	}
 	@SafeVarargs
 	public static <T> T _chof_( String format, T ... args ){
-		return printf( System.out, false, false, format, args );
+		return printf( OUT, false, false, format, args );
 	}
 	
 	/* === Threads =========================================================== */
 	synchronized public static String t( String message ) {
 		
-		return echo( System.err, true, true, true, message );
+		return echo( RR, true, true, true, message );
 	}
 	
 	/* === EXIT =========================================================== */
@@ -282,10 +285,10 @@ public abstract class E {
 		
 		if( code == 0 ){
 			text.append( "OK" );
-    		echo( System.out, EXIT_UP, true, true, false, text.toString() );
+    		echo( OUT, EXIT_UP, true, true, false, text.toString() );
 		} else {
 			text.append( code );
-    		echo( System.err, EXIT_UP, true, true, false, text.toString() );
+    		echo( RR, EXIT_UP, true, true, false, text.toString() );
 		}
 		System.exit( code );
 	}
@@ -324,20 +327,20 @@ public abstract class E {
 	 */
 	public static void x(){
 		
-		ex( System.err, new Throwable(), EX_UP, EX_DEFAULT_DEPTH, EX_MARK );
+		ex( RR, new Throwable(), EX_UP, EX_DEFAULT_DEPTH, EX_MARK );
 	}
 	public static <T> T x( T message ){
-		return ex( System.err, new Throwable(), EX_UP, EX_DEFAULT_DEPTH, message );
+		return ex( RR, new Throwable(), EX_UP, EX_DEFAULT_DEPTH, message );
 	}
 	public static void x( int depth ){
-		ex( System.err, new Throwable(), EX_UP, depth, EX_MARK );
+		ex( RR, new Throwable(), EX_UP, depth, EX_MARK );
 	}
 	public static <T> T x( int depth, T message ){
-		return ex( System.err, new Throwable(), EX_UP, depth, message );
+		return ex( RR, new Throwable(), EX_UP, depth, message );
 	}
 	/* for testing */
 	static void _x( int depth, String message ){
-		ex( System.out, new Throwable(), EX_UP, depth, message );
+		ex( OUT, new Throwable(), EX_UP, depth, message );
 	}
 	private static <T> T ex( PrintStream out, Throwable t, int start, int depth, T message ){
 		
@@ -352,65 +355,65 @@ public abstract class E {
 		return message;
 	}
 	public static Throwable x( int depth, Throwable t ){
-		ex( System.err, t, EX_UP-1, depth, t.getMessage() );
+		ex( RR, t, EX_UP-1, depth, t.getMessage() );
 		return t;
 	}
 	public static Throwable x( Throwable t ){
-		ex( System.err, t, EX_UP-1, EX_DEFAULT_DEPTH, t.getMessage() );
+		ex( RR, t, EX_UP-1, EX_DEFAULT_DEPTH, t.getMessage() );
 		return t;
 	}
 	
 	
 	public static <T> Consumer<T> peeker( String name ){
-		return what -> echo( System.err, 12, true, true, false, name, what );
+		return what -> echo( RR, 12, true, true, false, name, what );
 	}
 	
 	public static <T> Runnable freelancer( String name, Supplier<T> whatToPrint ) {
-		return () -> echo( System.err, 12, true, true, false, name, whatToPrint.get() );
+		return () -> echo( RR, 12, true, true, false, name, whatToPrint.get() );
 	}
 	
 	
 	//private static String 
 	
 	public static byte[] rrx( byte [] bytes ) {
-		echo( System.err, true, true, false, HEX.toString( bytes ) );
+		echo( RR, true, true, false, HEX.prettyFrom( bytes ) );
 		return bytes;
 	}
 	public static byte rrx( byte value ) {
-		echo( System.err, true, true, false, HEX.toString( value ) );
+		echo( RR, true, true, false, HEX.encode( value ) );
 		return value;
 	}
 	public static short rrx( short value ) {
-		echo( System.err, true, true, false, HEX.toString( value ) );
+		echo( RR, true, true, false, HEX.encode( value ) );
 		return value;
 	}
 	public static int rrx( int value ) {
-		echo( System.err, true, true, false, HEX.toString( value ) );
+		echo( RR, true, true, false, HEX.encode( value ) );
 		return value;
 	}
 	public static long rrx( long value ) {
-		echo( System.err, true, true, false, HEX.toString( value ) );
+		echo( RR, true, true, false, HEX.encodePretty( value ) );
 		return value;
 	}
 	
 	public static byte[] chox( byte [] bytes ) {
-		echo( System.out, true, true, false, HEX.toString( bytes ) );
+		echo( OUT, true, true, false, HEX.prettyFrom( bytes ) );
 		return bytes;
 	}
 	public static byte chox( byte value ) {
-		echo( System.out, true, true, false, HEX.toString( value ) );
+		echo( OUT, true, true, false, HEX.encode( value ) );
 		return value;
 	}
 	public static short chox( short value ) {
-		echo( System.out, true, true, false, HEX.toString( value ) );
+		echo( OUT, true, true, false, HEX.encode( value ) );
 		return value;
 	}
 	public static int chox( int value ) {
-		echo( System.out, true, true, false, HEX.toString( value ) );
+		echo( OUT, true, true, false, HEX.encode( value ) );
 		return value;
 	}
 	public static long chox( long value ) {
-		echo( System.out, true, true, false, HEX.toString( value ) );
+		echo( OUT, true, true, false, HEX.encodePretty( value ) );
 		return value;
 	}
 	

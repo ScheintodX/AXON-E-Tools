@@ -1,6 +1,7 @@
 package de.axone.tools;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.nio.file.Path;
@@ -462,33 +463,41 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	
 	
 	// == Object instantiation =====
-	public default <T, T1 extends T> T getNewInstance( Class<T1> clazz, K key ) throws ReflectiveOperationException {
+	public default <T, T1 extends T> T getNewInstance( Class<T1> clazz, K key, Object ... constructorParameters ) throws ReflectiveOperationException {
 		String v = get( key );
 		if( v == null ) return null;
 		v = v.trim();
 		if( v.length() == 0 ) return null;
 		@SuppressWarnings( "unchecked" )
 		Class<T> vClass = (Class<T>)Class.forName( v );
-		return vClass.newInstance();
+		int clen = constructorParameters.length;
+		if( clen > 0 ) {
+			Class<?> constructorTypes[] = new Class[ clen ];
+			for( int i=0;i<clen; i++) constructorTypes[ i ] = constructorParameters[ i ].getClass();
+			Constructor<T> constr = vClass.getDeclaredConstructor( constructorTypes );
+			return constr.newInstance( constructorParameters );
+		} else {
+			return vClass.newInstance();
+		}
 	}
-	public default <T, T1 extends T, T2 extends T> T getNewInstance( Class<T1> clazz, K key, Class<T2> defaultValue ) throws ReflectiveOperationException {
-		T v = getNewInstance( clazz, key );
+	public default <T, T1 extends T, T2 extends T> T getNewInstance( Class<T1> clazz, K key, Class<T2> defaultValue, Object ... constructorParameters ) throws ReflectiveOperationException {
+		T v = getNewInstance( clazz, key, constructorParameters );
 		if( v == null ) return defaultValue != null ? defaultValue.newInstance() : null;
 		return v;
 	}
-	public default <T, T1 extends T, T2 extends T> T getNewInstance( Class<T1> clazz, K key, ValueProvider<Class<T2>> defaultValueProvider ) throws ReflectiveOperationException {
-		T v = getNewInstance( clazz, key );
+	public default <T, T1 extends T, T2 extends T> T getNewInstance( Class<T1> clazz, K key, ValueProvider<Class<T2>> defaultValueProvider, Object ... constructorParameters ) throws ReflectiveOperationException {
+		T v = getNewInstance( clazz, key, constructorParameters );
 		Class<T2> defaultValue = defaultValueProvider.get();
 		if( v == null ) return defaultValue != null ? defaultValue.newInstance() : null;
 		return v;
 	}
-	public default <T, T1 extends T> T getNewInstanceRequired( Class<T1> clazz, K key ) throws ReflectiveOperationException {
-		T v = getNewInstance( clazz, key );
+	public default <T, T1 extends T> T getNewInstanceRequired( Class<T1> clazz, K key, Object ... constructorParameters ) throws ReflectiveOperationException {
+		T v = getNewInstance( clazz, key, constructorParameters );
 		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default <T, T1 extends T, T2 extends T> T getNewInstanceRequired( Class<T1> clazz, K key, ValueProvider<Class<T2>> defaultValueProvider ) throws ReflectiveOperationException {
-		T v = getNewInstance( clazz, key );
+	public default <T, T1 extends T, T2 extends T> T getNewInstanceRequired( Class<T1> clazz, K key, ValueProvider<Class<T2>> defaultValueProvider, Object ... constructorParameters ) throws ReflectiveOperationException {
+		T v = getNewInstance( clazz, key, constructorParameters );
 		Class<T2> defaultValue = defaultValueProvider.get();
 		if( v == null ) v = defaultValue != null ? defaultValue.newInstance() : null;
 		if( v == null ) throw exception( key );

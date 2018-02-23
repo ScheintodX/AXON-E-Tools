@@ -38,11 +38,11 @@ public abstract class AbstractRestServlet<DATA, REQUEST extends RestRequest> ext
 		
 		resp.setCharacterEncoding( Charsets.utf8 );
 		resp.setContentType( MimeTypes.JSON.text() );
+		resp.setHeader( "Access-Control-Allow-Origin", "*" );
 		
 		REQUEST request = makeRequest( req, resp );
 		
 		try {
-			
 			registry.run( null, request, resp );
 		} catch( Throwable t ){
 			

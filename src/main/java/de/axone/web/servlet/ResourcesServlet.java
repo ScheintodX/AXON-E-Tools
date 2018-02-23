@@ -220,12 +220,24 @@ public abstract class ResourcesServlet extends HttpServlet {
 							file = new File( subdir, uriPart );
 						}
 						
+						// check for sass
+						boolean isScss = false;
+						if( isCss ) {
+							
+							String cssPath = file.getAbsolutePath();
+							File scss = new File( cssPath.substring( 0, cssPath.length()-4 ) + ".scss" );
+							if( scss.isFile() ){
+								file = scss;
+								isScss = true;
+							}
+						}
+						
 						FileWatcher watcher = new FileWatcher( file );
-						watcher.haveChanged(); //reset watcher
-	
+						watcher.haveChanged();
+						
 						if( !file.isFile() ) {
-	
-							log().error( "Not found: " + uriPart );
+							
+							log().error( "Not found: " + file );
 	
 							response.sendError( HttpServletResponse.SC_NOT_FOUND, uriPart );
 	
@@ -246,62 +258,76 @@ public abstract class ResourcesServlet extends HttpServlet {
 						}
 						int filesize = (int) filesizeL;
 	
+						byte [] plainData = null;
+						String dataAsString = null;
+						
 						// Read via nio
-						try (
-							FileInputStream fin = new FileInputStream( file );
-							FileChannel in = fin.getChannel();
-						) {
-	
-	    					response.setContentLength( filesize );
-	
-	    					ByteBuffer bb = in.map( FileChannel.MapMode.READ_ONLY, 0,
-	    							filesize );
-	
-	    					byte[] plainData = new byte[ filesize ];
-	
-	    					bb.get( plainData );
-	    					
-	    					if( ( isCss || isJs ) && doYui ){
-	    						
-	    						String dataAsString = new String( plainData, Charsets.utf8 );
-	    						
-	    						if( isCss && rotCss != null ){
-	    							
-    								dataAsString = rotCss.rotate( dataAsString );
-	    						}
-	    						
-	    						StringReader sIn = new StringReader( dataAsString );
-	    						StringWriter sOut = new StringWriter();
-	    						
-	    						if( isCss ){
-		    						CssCompressor compressor = new CssCompressor( sIn );
-		    						compressor.compress( sOut, 0 );
-	    						} else {
-	    							JavaScriptCompressor compressor = new JavaScriptCompressor( sIn, null );
-	    							compressor.compress( sOut, 0, true, false, false, false );
-	    						}
-	    						
-	    						String compressedString = sOut.toString();
-	    						plainData = compressedString.getBytes();
-	    					}
-	    					
-	    					if( (isPng|isJpg|isGif) && rotImg != null ){
-	    						
-	    						if( isPng ){
-		    						plainData = rotImg.rotate( plainData, "png" );
-		    						
-	    						} else if( isJpg ){
-		    						plainData = rotImg.rotate( plainData, "jpeg" );
-		    						
-	    						} else if( isGif ){
-		    						plainData = rotImg.rotate( plainData, "gif" );
-	    						}
-	    					}
-	
-	    					datas.add( plainData );
-	    					watcherList.add( watcher );
-	
+						if( !isScss ) {
+							
+							try (
+								FileInputStream fin = new FileInputStream( file );
+								FileChannel in = fin.getChannel();
+							) {
+		
+		    					response.setContentLength( filesize );
+		
+		    					ByteBuffer bb = in.map( FileChannel.MapMode.READ_ONLY, 0, filesize );
+		
+		    					plainData = new byte[ filesize ];
+		
+		    					bb.get( plainData );
+							}
+							
+						} else {
+						
+							dataAsString = compileSass( file );
+							if( dataAsString == null )
+									throw new RuntimeException( "Cannot compile " + file.getAbsolutePath() );
 						}
+						
+    					if( ( isCss || isJs ) && doYui ){
+    						
+    						if( dataAsString == null )
+    								dataAsString = new String( plainData, Charsets.utf8 );
+    						
+    						if( isCss && rotCss != null ){
+    							
+								dataAsString = rotCss.rotate( dataAsString );
+    						}
+    						
+    						StringReader sIn = new StringReader( dataAsString );
+    						StringWriter sOut = new StringWriter();
+    						
+    						if( isCss ){
+	    						CssCompressor compressor = new CssCompressor( sIn );
+	    						compressor.compress( sOut, 0 );
+    						} else {
+    							JavaScriptCompressor compressor = new JavaScriptCompressor( sIn, null );
+    							compressor.compress( sOut, 0, true, false, false, false );
+    						}
+    						
+    						String compressedString = sOut.toString();
+    						plainData = compressedString.getBytes();
+    					}
+    					
+    					if( (isPng|isJpg|isGif) && rotImg != null ){
+    						
+    						if( isPng ){
+	    						plainData = rotImg.rotate( plainData, "png" );
+	    						
+    						} else if( isJpg ){
+	    						plainData = rotImg.rotate( plainData, "jpeg" );
+	    						
+    						} else if( isGif ){
+	    						plainData = rotImg.rotate( plainData, "gif" );
+    						}
+    					}
+    					
+    					if( plainData == null && dataAsString != null )
+    							plainData = dataAsString.getBytes( Charsets.UTF8 );
+
+    					datas.add( plainData );
+    					watcherList.add( watcher );
 						
 					}
 					
@@ -412,6 +438,11 @@ public abstract class ResourcesServlet extends HttpServlet {
 				t.printStackTrace();
 			}
 		}
+	}
+	
+	protected String compileSass( File file ) {
+		
+		throw new UnsupportedOperationException( "Cannot compile sass until someone tells me how too" );
 	}
 	
 	protected void onError( HttpServletRequest req, HttpServletResponse resp, Throwable e ) throws Exception {

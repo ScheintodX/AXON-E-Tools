@@ -307,7 +307,31 @@ public class StrTest {
 		Bench.mark( "String.replace", RUNS, () -> text.replace( "e", "E" ) )
 				.print();
 		
+	}
+	
+	public void testSplitEvery() {
 		
+		assertEquals( Str.splitEvery( "", 1 ).length, 0 );
+		assertEquals( Str.splitEvery( "a", 1 ).length, 1 );
+		assertEquals( Str.splitEvery( "a", 2 ).length, 1 );
+		
+		assertEquals( Str.splitEvery( "abc", 1 ).length, 3 );
+		assertEquals( Str.splitEvery( "abc", 2 ).length, 2 );
+		assertEquals( Str.splitEvery( "abc", 3 ).length, 1 );
+		assertEquals( Str.splitEvery( "abc", 4 ).length, 1 );
+		
+		assertEquals( Str.splitEvery( "abc", 1 ), new String[]{ "a", "b", "c" } );
+		assertEquals( Str.splitEvery( "abc", 2 ), new String[]{ "ab", "c" } );
+		assertEquals( Str.splitEvery( "abc", 3 ), new String[]{ "abc" } );
+		
+		assertEquals( Str.splitEvery( "aabbcc", 1 ).length, 6 );
+		assertEquals( Str.splitEvery( "aabbcc", 2 ).length, 3 );
+		assertEquals( Str.splitEvery( "aabbcc", 3 ).length, 2 );
+		assertEquals( Str.splitEvery( "aabbcc", 4 ).length, 2 );
+		assertEquals( Str.splitEvery( "aabbcc", 5 ).length, 2 );
+		assertEquals( Str.splitEvery( "aabbcc", 6 ).length, 1 );
+		
+		assertEquals( Str.splitEvery( "aabbcc", 2 ), new String[]{ "aa", "bb", "cc" } );
 	}
 	
 }

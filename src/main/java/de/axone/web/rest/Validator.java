@@ -11,7 +11,6 @@ import java.util.TreeSet;
 
 import javax.persistence.EntityManager;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,9 +63,7 @@ public abstract class Validator<T> {
 		}
 	}
 	
-	protected void doValidate(  ValidatorResult result, EntityManager em, T object ){
-		// Override me
-	}
+	protected abstract void doValidate(  ValidatorResult result, EntityManager em, T object );
 	
 	public interface ValidatorResult {
 		
@@ -118,7 +115,7 @@ public abstract class Validator<T> {
 		public void setInfo( String info );
 	}
 	
-	protected static class ValidatorErrorImpl implements ValidatorError {
+	public static class ValidatorErrorImpl implements ValidatorError {
 		
 		private final String field, code;
 		private String info;
@@ -139,7 +136,6 @@ public abstract class Validator<T> {
 		public Severity getSeverity() { return severity; }
 
 		@Override
-		@JsonIgnore
 		public String getField() { return field; }
 
 		@Override
@@ -452,8 +448,18 @@ public abstract class Validator<T> {
 			String field, Object value ){
 		
 		if( value == null )
-			error( result, field , "IS_NULL" );
+				error( result, field , "IS_NULL" );
 		
+	}
+	
+	public static void assertMinLen( int len, ValidatorResult result,
+			String field, String value ) {
+		
+		if( value == null )
+				error( result, field , "IS_NULL" );
+		
+		else if( value.length() < len )
+				error( result, field , "IS_TOO_SHORT:" + len + ":" + value.length() );
 	}
 	
 	public static void assertNoDups( ValidatorResult result,

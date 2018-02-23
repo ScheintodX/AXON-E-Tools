@@ -46,6 +46,14 @@ public abstract class Mapper {
 	public static <X,Y> TreeMap<X,Y> treeMap( MapperEntry<X,Y> ... values ){
 		return map( new TreeMap<X,Y>(), false, values );
 	}
+	@SafeVarargs
+	public static <X,Y> HashMap<X,Y> hashMapIgnoreEmptyValues( MapperEntry<X,Y> ... values ){
+		return map( new HashMap<X,Y>(), true, values );
+	}
+	@SafeVarargs
+	public static <X,Y> TreeMap<X,Y> treeMapIgnoreEmptyValues( MapperEntry<X,Y> ... values ){
+		return map( new TreeMap<X,Y>(), true, values );
+	}
 	// Maps for Lists
 	@SafeVarargs
 	public static <T> HashMap<T,T> hashMap( T ... values ){
@@ -122,7 +130,7 @@ public abstract class Mapper {
 
 		for( int i = 0; i < values.length; i+= 2 ){
 			if( ignoreEmptyValues || values[ i+1 ] != null )
-				result.put( values[ i ], values[ i+1 ] );
+					result.put( values[ i ], values[ i+1 ] );
 		}
 		return result;
 	}
@@ -132,7 +140,7 @@ public abstract class Mapper {
 
 		for( T [] value : values ){
 			if( ignoreEmptyValues || value[ 1 ] != null )
-				result.put( value[ 0 ], value[ 1 ] );
+					result.put( value[ 0 ], value[ 1 ] );
 		}
 		return result;
 	}
@@ -141,7 +149,8 @@ public abstract class Mapper {
 	public static <X,Y,M extends Map<X,Y>> M map( M result, boolean ignoreEmptyValues,  MapperEntry<X,Y> ... values ){
 
 		for( MapperEntry<X,Y> e : values ){
-			result.put( e.x, e.y );
+			if( ignoreEmptyValues || e.y != null ) 
+					result.put( e.x, e.y );
 		}
 		return result;
 	}

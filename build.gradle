@@ -48,7 +48,7 @@ task setup {
 
 dependencies {
 
-	compile 'commons-codec:commons-codec:1.4'
+	compile 'commons-codec:commons-codec:1+'
 	compile 'commons-lang:commons-lang:2.6'
 
 	compile 'org.hibernate.common:hibernate-commons-annotations:4.0+'
@@ -56,20 +56,27 @@ dependencies {
 
 	compile 'net.sf.ehcache:ehcache-core:2.5.2'
 	compile 'org.apache.httpcomponents:httpclient:4.3+'
-	compile 'com.fasterxml.jackson.core:jackson-databind:2.4+'
+	compile 'com.fasterxml.jackson.core:jackson-databind:2+'
 	compile 'org.ostermiller:utils:1.07.00'
 
 	compile 'org.slf4j:slf4j-api:1.7+'
 
 	compile 'javax.servlet:javax.servlet-api:3.0.1'
 
-	compile( 'com.yahoo.platform.yui:yuicompressor:2.4.7' ){
+	compile( 'com.yahoo.platform.yui:yuicompressor:2.4+' ){
 		transitive = false
 	}
 
-	compile 'com.google.code.findbugs:annotations:2.0.3'
+	compile 'com.google.code.findbugs:annotations:3+'
 
 	compile 'com.google.guava:guava:18+'
+
+	// Validation
+	//compile 'org.apache.geronimo.specs:geronimo-validation_1.0_spec:1.1'
+	//compile 'org.apache.bval:org.apache.bval.bundle:0.5'
+
+	// Sass
+	compile 'com.cathive.sass:sass-java:4.0.0'
 
 	// =======================================
 

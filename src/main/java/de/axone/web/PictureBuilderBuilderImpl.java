@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.axone.async.ThreadQueue;
+import de.axone.data.tupple.Pair;
 import de.axone.gfx.ImageScaler;
 import de.axone.thread.ThreadsafeContractor;
 
@@ -154,7 +155,7 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 		}
 
 		@Override
-		public Optional<Path> get( int size ) throws IOException {
+		public Optional<Pair<Path,Boolean>> get( int size ) throws IOException {
 			
 			return get( size, watermarkFile(), true, false );
 		}
@@ -187,10 +188,12 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 			return Optional.of( mainPath );
 		}
 		
-		private Optional<Path> get( int size, Optional<Path> watermark, boolean doPrescale, boolean hq )
+		private Optional<Pair<Path,Boolean>> get( int size, Optional<Path> watermark, boolean doPrescale, boolean hq )
 				throws IOException {
 			
 			if( ! exists() ) return Optional.empty();
+			
+			boolean hasChanged = false;
 	
 			Optional<Path> cachedFileResult = cachedFile( size, watermark );
 			if( ! cachedFileResult.isPresent() ) return Optional.empty();
@@ -204,7 +207,7 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 				if( !mainFileResult.isPresent() ) return Optional.empty();
 				Path mainFile = mainFileResult.get();
 	
-	    		//synchronized( lock ) {
+	    		//synchronized( lock ) {}
 				ThreadQueue.Lock lock = null;
 				try {
 					// Get lock. Only if called in outer recursion
@@ -236,17 +239,18 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 	    				}
 	    				
 	    				// Get precached image if this is'nt a request for it
-	    				Optional<Path> imageFile;
+	    				Optional<Pair<Path,Boolean>> imageFile;
 	    				if( doPrescale ) {
 	    					imageFile = get( 1000, Optional.empty(), false, true );
 	    				} else {
-	    					imageFile = Optional.of( mainFile );
+	    					imageFile = Optional.of( new Pair<>( mainFile, false ) );
 	    				}
 	    				
 	    				if( !imageFile.isPresent() )
 	    				return Optional.empty();
 	
-	    				ImageScaler.instance().scale( cachedFile, imageFile.get(), watermark, size, hq );
+	    				ImageScaler.instance().scale( cachedFile, imageFile.get().getLeft(), watermark, size, hq );
+	    				hasChanged = true;
 
 	    			}
 	    		} finally {
@@ -256,7 +260,7 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 	    		}
 			}
 	
-			return Optional.of( cachedFile );
+			return Optional.of( new Pair<>( cachedFile, hasChanged ) );
 		}
 		
 		@Override

@@ -4,7 +4,7 @@ public class HEX {
 
 	private final static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 	
-	public static String toString( byte[] bytes ) {
+	public static String prettyFrom( byte[] bytes ) {
 		
 		if( bytes == null ) return "";
 		
@@ -29,10 +29,20 @@ public class HEX {
 	    }
 	    
 	    return hexBuilder.toString();
-	    
 	}
 	
-	public static String toString( Integer value ) {
+	public static String encode( byte[] bytes ) {
+		
+		return javax.xml.bind.DatatypeConverter.printHexBinary( bytes );
+	}
+	
+	public static byte [] decode( String hex ) {
+		
+		return javax.xml.bind.DatatypeConverter.parseHexBinary( hex );
+		
+	}
+	
+	public static String encode( Integer value ) {
 		
 		if( value == null ) return "";
 		
@@ -43,7 +53,7 @@ public class HEX {
 				                        HEX_ARRAY[ (value >>> 4)&0xf ], HEX_ARRAY[ value &0xf ] } );
 	}
 	
-	public static String toString( Short value ) {
+	public static String encode( Short value ) {
 		
 		if( value == null ) return "";
 		
@@ -51,17 +61,17 @@ public class HEX {
 				                        HEX_ARRAY[ (value >>> 4)&0xf ], HEX_ARRAY[ value &0xf ] } );
 	}
 	
-	public static String toString( Byte value ) {
+	public static String encode( Byte value ) {
 		
 		if( value == null ) return "";
 		
 		return new String( new char[]{ HEX_ARRAY[ value >>> 4 ], HEX_ARRAY[ value &0xf ] } );
 	}
 	
-	public static String toString( Long value ) {
+	public static String encodePretty( Long value ) {
 		
 		if( value == null ) return "";
 		
-		return toString( (int)(value >> 32) ) + "." + toString( (int)(value&0xffffffff) );
+		return encode( (int)(value >> 32) ) + "." + encode( (int)(value&0xffffffff) );
 	}
 }

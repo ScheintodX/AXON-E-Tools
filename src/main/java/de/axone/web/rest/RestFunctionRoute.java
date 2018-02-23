@@ -67,7 +67,7 @@ public interface RestFunctionRoute {
 				parameterNames.add( name );
 				parameterIndizes.put( name, Integer.valueOf( i++ ) );
 				
-				m.appendReplacement( compiled, "([a-zA-Z0-9_-]+)" );
+				m.appendReplacement( compiled, "([^\\/]+)" );
 			}
 			m.appendTail( compiled );
 			

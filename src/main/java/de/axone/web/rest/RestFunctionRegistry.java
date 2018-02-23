@@ -54,15 +54,14 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> implements 
 				url.getPath().removeFirst();
 			}
 			
+			url.getPath().setEndsWithSlash( false );
+			String path = url.getPath().toString();
+			
 			RestFunction<DATA, REQUEST> f = null;
 			Map<String,String> parameters = null;
 			for( int i=0; i<routes.size(); i++ ){
 				
 				RestFunctionRoute route = routes.get( i );
-				
-				url.getPath().setEndsWithSlash( false );
-				
-				String path = url.getPath().toString();
 				
 				parameters = route.match(
 						req.getRestMethod(), path );
@@ -77,8 +76,9 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> implements 
 
 			if( f == null ) {
 				
-				log.warn( "No function: " + req.getRequestURI() );
+				log.warn( "No function: {} ({})", req.getRequestURI(), path );
 				renderHelp( req, resp, null, false );
+				
 			} else {
 				
 				log.info( "Client requested {}", f.name() );

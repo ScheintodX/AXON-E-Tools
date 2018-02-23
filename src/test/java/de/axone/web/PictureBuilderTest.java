@@ -13,6 +13,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import de.axone.data.tupple.Pair;
 import de.axone.file.Crusher;
 
 @Test( groups="tools.picturebuilder" )
@@ -29,14 +30,14 @@ public class PictureBuilderTest {
 		
 		PictureBuilderNG builder = b.builder( "test001", 0 );
 		
-		Optional<Path> o = builder.get( 100 );
+		Optional<Pair<Path,Boolean>> o = builder.get( 100 );
 		assertThat( o )
 				.as( "pic 100" )
 				.isNotNull()
 				.isPresent()
 				
 				;
-		assertPath( o.get() )
+		assertPath( o.get().getLeft() )
 				.startsWith( home.resolve( "testpng/t/test001/100/test001.jpg" ) )
 				;
 				
@@ -124,10 +125,10 @@ public class PictureBuilderTest {
 		PictureBuilderNG builder = pbb.builder( "test001", 0 );
 		assertTrue( builder.exists() );
 		assertEquals( builder.fileCount(), 10 );
-		Optional<Path> scaledImage = builder.get( 100 );
+		Optional<Pair<Path,Boolean>> scaledImage = builder.get( 100 );
 		
 		assertThat( scaledImage ).isPresent();
-		assertPath( scaledImage.get() )
+		assertPath( scaledImage.get().getLeft() )
 				.startsWith( home.resolve( "plain/t/test001/100/test001.jpg" ) )
 				;
 		
@@ -156,7 +157,7 @@ public class PictureBuilderTest {
 				;
 		
 		assertThat( scaledImage ).isPresent();
-		assertPath( scaledImage.get() )
+		assertPath( scaledImage.get().getLeft() )
 				.isEqualTo( test001_testpng100 )
 				;
 	}

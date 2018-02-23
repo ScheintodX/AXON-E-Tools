@@ -186,6 +186,10 @@ public class UrlParser {
 				return "image/x-icon";
 			} else if( extension.equalsIgnoreCase( "css" ) ) {
 				return "text/css";
+			} else if( extension.equalsIgnoreCase( "scss" ) ) {
+				return "text/css";
+			} else if( extension.equalsIgnoreCase( "sass" ) ) {
+				return "text/css";
 			} else if( extension.equalsIgnoreCase( "js" ) ) {
 				return "text/javascript";
 				/* html */

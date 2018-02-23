@@ -14,20 +14,29 @@ public abstract class Assert {
 	public static void isNull( Object o, String name ){
 		if( o != null ) throw Ex.up( new ArgumentNullException( name ) );
 	}
-	// gt 0
 	public static void gt0( Number number, String name ){
 		if( number == null ) return;
 		if( number.doubleValue() <= 0 ) throw Ex.up( new ArgumentNullException( name ) );
 	}
-	// eq 1
 	public static void eq1( Number number, String name ){
 		if( number == null ) return;
 		if( number.longValue() != 1 ) throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' is not 1" ) );
 	}
+	// != ZERO --------------------
 	public static void zero( Number number, String name ){
 		if( number == null ) return;
 		if( Double.compare( number.doubleValue(), 0 ) != 0 ) 
 				throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' is not zero" ) );
+	}
+	public static void notZero( Number number, String name ){
+		if( number == null ) return;
+		if( Double.compare( number.doubleValue(), 0 ) == 0 ) 
+				throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' is zero" ) );
+	}
+	public static void notNullNorZero( Number number, String name ) {
+		if( number == null ) throw Ex.up( new ArgumentNullException( name ) );
+		if( Double.compare( number.doubleValue(), 0 ) == 0 ) 
+				throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' is zero" ) );
 	}
 	
 	// Not null or empty
@@ -261,6 +270,12 @@ public abstract class Assert {
 	public static <T> T isClass( Object o, String name, Class<?> clz ){
 		if( o == null ) return null;
 		if( ! o.getClass().isInstance( clz ) ) throw Ex.up( new ArgumentClassException( name, clz ) );
+		return (T)o;
+	}
+	@SuppressWarnings( "unchecked" )
+	public static <T> T isExactClass( Object o, String name, Class<?> clz ){
+		if( o == null ) return null;
+		if( o.getClass() != clz ) throw Ex.up( new ArgumentClassException( name, clz ) );
 		return (T)o;
 	}
 	
