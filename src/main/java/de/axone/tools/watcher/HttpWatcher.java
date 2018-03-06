@@ -24,6 +24,9 @@ import de.axone.web.SuperURL;
  * 
  * This class is similar in use to FileWatcher
  * 
+ * A minTimeout is supplied in order to keep backend requests under control
+ * A MAX_TIMEOUT is used to at least refresh every now and then
+ * 
  * @see de.axone.tools.watcher.FileWatcher
  *
  * @author flo
@@ -37,19 +40,19 @@ public class HttpWatcher implements Serializable {
 
 	private static final long SECONDS = 1000;
 	private static final long DAYS = SECONDS * 60 * 60 * 24;
-	private static final long TIMEOUT = 2 * SECONDS;
+	private static final long MIN_TIMEOUT = 2 * SECONDS;
 	private static final long MAX_TIMEOUT = 1 * DAYS; // At least recheck once a day
-	//private static final long MAX_TIMEOUT = 1 * SECONDS; // For manual testing
 
 	private final SuperURL url;
-	private final long minTimeout;
+	private final long minTimeout, maxTimeout;
 
 	private String eTag;
 	private String lastModified;
 	private long expires = -1;
 	private long lastCheckTime = -1;
+	
+	private long timeout;
 
-	private long timeout = -1;
 	
 	/**
 	 * Create a HttpWatcher for one url with the given
@@ -57,11 +60,13 @@ public class HttpWatcher implements Serializable {
 	 *
 	 * @param url to watch
 	 * @param minTimeout which has to pass until a new check is done
+	 * @param maxTimeout which is the maximum time this data stays valid
 	 */
-	public HttpWatcher( SuperURL url, long minTimeout ){
-
+	private HttpWatcher( SuperURL url, long minTimeout, long maxTimeout ){
+		
 		this.url = url;
 		this.minTimeout = minTimeout;
+		this.maxTimeout = maxTimeout;
 	}
 
 	/**
@@ -71,9 +76,16 @@ public class HttpWatcher implements Serializable {
 	 */
 	public HttpWatcher( SuperURL url ){
 
-		this( url, TIMEOUT );
+		this( url, MIN_TIMEOUT, MAX_TIMEOUT );
+	}
+	
+	public void setTimeout( long timeout ) {
+		this.timeout = timeout;
 	}
 
+	/**
+	 * @return an httputilresponse if site has changed or NULL otherwise
+	 */
 	public HttpUtilResponse hasChanged(){
 
 		long time = System.currentTimeMillis();
@@ -89,7 +101,7 @@ public class HttpWatcher implements Serializable {
 			
 			try {
 				
-				if( log.isTraceEnabled() ) log.trace( "Check for: " + url + "(" + eTag + ")" );
+				log.trace( "Check for: {} ({}/{})", url, eTag, lastModified );
 				
 				HttpUtilResponse response = HttpUtil.request( url.toURL(), eTag, lastModified );
 				
@@ -101,7 +113,7 @@ public class HttpWatcher implements Serializable {
 					
 					long maxAgeMs = response.maxAge * 1000;
 					maxAgeMs = ( maxAgeMs > minTimeout ? maxAgeMs : minTimeout );
-					maxAgeMs = ( maxAgeMs < MAX_TIMEOUT ? maxAgeMs : MAX_TIMEOUT );
+					maxAgeMs = ( maxAgeMs < maxTimeout ? maxAgeMs : maxTimeout );
 					
 					timeout = maxAgeMs;
 					
@@ -141,12 +153,12 @@ public class HttpWatcher implements Serializable {
 		String key = url.toUnique() + "/" + timeout;
 
 		if( ! staticWatchers.containsKey( key ) ){
-			staticWatchers.put( key, new HttpWatcher( url, timeout ) );
+			staticWatchers.put( key, new HttpWatcher( url, timeout, MAX_TIMEOUT ) );
 		}
 		return staticWatchers.get( key );
 	}
 	public static HttpWatcher staticWatcher( SuperURL url ){
-		return staticWatcher( url, TIMEOUT );
+		return staticWatcher( url, MIN_TIMEOUT );
 	}
 
 }

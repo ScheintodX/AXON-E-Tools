@@ -75,12 +75,8 @@ public abstract class ResourcesServlet extends HttpServlet {
 			uri = favicon( req, resp, uri );
 		}
 		
-		/*
-		String prefix = uriPrefix();
-		if( uri.startsWith( prefix ) ){
-			uri = uri.substring( prefix.length() );
-		}
-		*/
+		if( uri.endsWith( "/" ) )
+				uri += "index.html";
 		
 		uri = DEPLENK.matcher( uri ).replaceAll( ":" );
 			
@@ -155,11 +151,12 @@ public abstract class ResourcesServlet extends HttpServlet {
 					for( String uriPart : uriSplitted ){
 						
 						@SuppressWarnings( "unused" )
-						boolean isHtml=false, isCss=false, isJs=false, isPng=false, isJpg=false, isGif=false, isIcon=false;
+						boolean isHtml=false, isCss=false, isScss=false, isJs=false, isPng=false, isJpg=false, isGif=false, isIcon=false;
 						if( uriPart.endsWith( ".html" ) || uriPart.endsWith( ".xhtml" ) ){
 							isHtml = true;
-						} else if( uriPart.endsWith( ".css" ) ){
+						} else if( uriPart.endsWith( ".css" )||uriPart.endsWith( ".scss" ) ){
 							isCss = true;
+							if( uriPart.endsWith( ".scss" ) ) isScss = true;
 						} else if( uriPart.endsWith( ".js" ) ){
 							isJs = true;
 						} else if( uriPart.endsWith( ".png" ) ){
@@ -212,7 +209,11 @@ public abstract class ResourcesServlet extends HttpServlet {
 						
 							file = new File( basedir, uriPart );
 							
-							subdir = new File( basedir, basePath );
+							if( basePath == null ) {
+								subdir = basedir;
+							} else {
+								subdir = new File( basedir, basePath );
+							}
 							
 						} else {
 							if( subdir == null )
@@ -221,8 +222,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 						}
 						
 						// check for sass
-						boolean isScss = false;
-						if( isCss ) {
+						if( isCss && !isScss ) {
 							
 							String cssPath = file.getAbsolutePath();
 							File scss = new File( cssPath.substring( 0, cssPath.length()-4 ) + ".scss" );
@@ -279,7 +279,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 							}
 							
 						} else {
-						
+							
 							dataAsString = compileSass( file );
 							if( dataAsString == null )
 									throw new RuntimeException( "Cannot compile " + file.getAbsolutePath() );

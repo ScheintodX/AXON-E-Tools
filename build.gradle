@@ -10,6 +10,8 @@ repositories {
 eclipse {
 	classpath {
 		defaultOutputDir = file('build.eclipse')
+		downloadSources = true
+
 		file {
 			whenMerged { classpath -> 
 				classpath.entries.findAll { entry -> entry.kind == 'lib' }*.exported = true

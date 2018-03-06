@@ -1,6 +1,5 @@
 package de.axone.web.rest;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.EnumSet;
@@ -101,7 +100,7 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> implements 
 	}
 	
 	protected void handleException( RestFunction<?,?> f,
-			Throwable e, REQUEST req, HttpServletResponse resp ) throws IOException{
+			Throwable e, REQUEST req, HttpServletResponse resp ) throws Exception{
 		
 		int status;
 		

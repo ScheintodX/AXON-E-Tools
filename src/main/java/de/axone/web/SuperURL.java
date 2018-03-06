@@ -607,6 +607,10 @@ public final class SuperURL {
 			this.path = path;
 			this.endsWithSlash = endsWithSlash;
 		}
+		public Path( Collection<String> path, boolean endsWithSlash ){
+			this.path = new LinkedList<>( path );
+			this.endsWithSlash = endsWithSlash;
+		}
 		
 		public Path copy() {
 			Path result = new Path();

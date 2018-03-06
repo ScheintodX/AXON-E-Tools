@@ -7,6 +7,7 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractIterableAssert;
 import org.assertj.core.api.StringAssert;
 
+import de.axone.tools.E;
 import de.axone.web.SuperURL.Encode;
 import de.axone.web.SuperURL.Query.QueryPart;
 
@@ -36,6 +37,11 @@ public class SuperURLAssert
 		assertEquals( actual, expected );
 		
 		return this;
+	}
+	
+	public PathAssert thePath() {
+		E.rr( actual );
+		return new PathAssert( actual.getPath() );
 	}
 	
 	@SuppressWarnings( "deprecation" )

@@ -13,10 +13,6 @@ public class HttpDataWatcher<T> extends HttpWatcher implements Serializable {
 	public HttpDataWatcher( SuperURL url ) {
 		super( url );
 	}
-	public HttpDataWatcher( SuperURL url, T data ) {
-		super( url );
-		this.data = data;
-	}
 	
 	public T getData(){ return data; }
 	

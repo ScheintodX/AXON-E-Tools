@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public enum Method {
 	
-	GET, PUT, POST, DELETE;
+	GET, PUT, POST, DELETE, HEAD, OPTION;
 	
 	public boolean is( HttpServletRequest request ){
 		return name().equalsIgnoreCase( request.getMethod() );

@@ -137,7 +137,7 @@ public class SuperURLTest {
 		url2.setPath( SuperURLBuilders.Path().parse( "/foo/bar/" ).build() );
 		url2.setQuery( SuperURLBuilders.Query().parse( "par=val" ).build() );
 		
-		assertThat( url ).isEqualTo( url2 );
+		assertThis( url ).isEqualTo( url2 );
 		
 	}
 
@@ -150,7 +150,7 @@ public class SuperURLTest {
 		hostStr = "www.axon-e.de";
 		host = SuperURLBuilders.Host().parse( hostStr ).build();
 		
-		assertThat( host )
+		assertThis( host )
 				.hostEquals( "www" )
 				.netContains( "axon-e", 0 )
 				.netAsStringEquals( "axon-e" )
@@ -159,7 +159,7 @@ public class SuperURLTest {
 				;
 		
 		host.getParts().remove( 0 );
-		assertThat( host ).asStringEquals( Encode.Plain, "axon-e.de" );
+		assertThis( host ).asStringEquals( Encode.Plain, "axon-e.de" );
 		
 		/* ----------- */
 		hostStr = "test.webs.axon-e.de";
@@ -170,7 +170,7 @@ public class SuperURLTest {
 				.contains( "axon-e", atIndex( 1 ) )
 				.hasSize( 2 )
 				;
-		assertThat( host )
+		assertThis( host )
 				.hostEquals( "test" )
 				.netAsStringEquals( "webs.axon-e" )
 				.tldEquals( "de" )
@@ -344,7 +344,7 @@ public class SuperURLTest {
 		
 		assertTrue( query2.equals( query ) );
 		assertEquals( (Object)query2, query );
-		assertThat( query2 ).isEqualTo( query );
+		assertThis( query2 ).isEqualTo( query );
 		
 	}
 	
@@ -354,7 +354,7 @@ public class SuperURLTest {
 		
 		SuperURL.Query query = SuperURLBuilders.Query().parse( test, true ).build();
 		
-		assertThat( query )
+		assertThis( query )
 				.contains( "a", "b" )
 				.contains( "ä", "ü" )
 				.contains( "Ä", "Ü" )
@@ -561,7 +561,7 @@ public class SuperURLTest {
     	
     	SuperURL url = SuperURLBuilders.fromString().build( "http://www.axon-e.de?a=a&b=b%26b&c=c" );
     	
-    	assertThat( url.getQuery() )
+    	assertThis( url.getQuery() )
     			.containsOnly(
     					new QueryPart( "a", "a" ),
     					new QueryPart( "b", "b&b" ),
@@ -574,7 +574,7 @@ public class SuperURLTest {
     	
     	SuperURL url = SuperURLBuilders.fromString().build( "http://www.axon-e.de/a/b%2fb/c" );
     	
-    	assertThat( url.getPath() )
+    	assertThis( url.getPath() )
     			.containsOnly( "a", "b/b", "c" )
     			.hasSize( 3 )
     			;
@@ -636,7 +636,7 @@ public class SuperURLTest {
     			.contains( "Bläh", atIndex( 0 ) )
     			.hasSize( 1 )
     			;
-    	assertThat( url.getQuery() )
+    	assertThis( url.getQuery() )
     			.contains( new SuperURL.Query.QueryPart( "füü", "bär" ) )
     			.hasSize( 1 )
     			;
@@ -646,7 +646,7 @@ public class SuperURLTest {
     	
     	SuperURL reread = SuperURLBuilders.fromString().build( encoded );
     	
-    	assertThat( url ).isEqualTo( reread );
+    	assertThis( url ).isEqualTo( reread );
     	
     }
     
@@ -709,7 +709,7 @@ public class SuperURLTest {
     	SuperURL url = SuperURLBuilders.fromString()
     			.build( urlS );
     	
-    	assertThat( url )
+    	assertThis( url )
     			.seenAsString().isEqualTo( urlS )
     			;
     	
