@@ -34,6 +34,7 @@ import de.axone.web.SuperURLBuilders.SuperURLBuilder_Copy;
 import de.axone.web.SuperURLBuilders.SuperURLBuilder_Request;
 import de.axone.web.SuperURLBuilders.SuperURLBuilder_String;
 import de.axone.web.SuperURLBuilders.SuperURLBuilder_URI;
+import de.axone.web.SuperURLBuilders.SuperURLBuilder_URL;
 
 /**
  * Extended and more usefull version of Javas URI class whereas
@@ -1316,6 +1317,7 @@ public final class SuperURL {
 	private static final SuperURLBuilder_String BUILDER_STRING = SuperURLBuilders.fromString();
 	private static final SuperURLBuilder_Request BUILDER_REQUEST = SuperURLBuilders.fromRequest();
 	private static final SuperURLBuilder_URI BUILDER_URI = SuperURLBuilders.fromURI();
+	private static final SuperURLBuilder_URL BUILDER_URL = SuperURLBuilders.fromURL();
 	private static final SuperURLBuilder_Copy BUILDER_SHALLOW_COPY = SuperURLBuilders.fromSuperURL().usingDeepCopy( false );
 	private static final SuperURLBuilder_Copy BUILDER_DEEP_COPY = SuperURLBuilders.fromSuperURL().usingDeepCopy( true );
 	
@@ -1329,6 +1331,10 @@ public final class SuperURL {
 	
 	public static SuperURL fromURI( URI uri ){
 		return BUILDER_URI.build( uri );
+	}
+	
+	public static SuperURL fromURL( URL uri ){
+		return BUILDER_URL.build( uri );
 	}
 	
 	public static SuperURL copyShallow( SuperURL other ){

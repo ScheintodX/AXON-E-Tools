@@ -8,14 +8,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import de.axone.exception.Assert;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * A replacement and facade for <tt>Properties</tt>
@@ -66,7 +65,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  *
  * @author flo
  */
-public class SuperProperties {
+public class SuperProperties implements StringValueAccessor<String> {
 
 	private final Properties backend;
 	private final String prefix;
@@ -99,6 +98,11 @@ public class SuperProperties {
 		this.backend = backend;
 		this.prefix = prefix;
 		this.rootDir = rootDir;
+	}
+	
+	@Override
+	public String access( String key ) {
+		return backend.getProperty( realKey( key ) );
 	}
 
 	public String getPrefix(){
@@ -146,65 +150,27 @@ public class SuperProperties {
 		}
 	}
 
-	public String getProperty( String key ) {
-		return backend.getProperty( realKey( key ) );
-	}
-	public void setProperty( String key, String value ) {
+	public void set( String key, String value ) {
 		backend.setProperty( realKey( key ), value );
 	}
-	public void setProperty( String key, int value ) {
+	public void set( String key, int value ) {
 		backend.setProperty( realKey( key ), ""+value );
 	}
-	public String getProperty( String key, String defaultValue ) {
-		return backend.getProperty( realKey( key ), defaultValue );
+	
+	private File prependBaseDir( File baseDir, File file ){
+
+		if( file == null ) return null;
+
+		if( ! file.isAbsolute() && baseDir != null ){
+			file = new File( baseDir, file.getPath() );
+		}
+		return file;
 	}
-	public String getPropertyRequired( String key ) throws PropertiesException {
-		String result = getProperty( key );
-		if( result == null ) throw new PropertyNotFoundException( key );
-		if( result.length() == 0 ) throw new PropertyEmptyException( key );
-		return result;
-	}
-
-	public Object instantiate( String key ) throws SecurityException,
-			IllegalArgumentException, ClassNotFoundException,
-			InstantiationException, IllegalAccessException,
-			NoSuchMethodException, InvocationTargetException {
-
-		String className = getProperty( key );
-		if( className == null ) return null;
-		return ClassConfigurator.create( className );
-	}
-
-	public Object instantiateRequired( String key ) throws SecurityException,
-			IllegalArgumentException, ClassNotFoundException,
-			InstantiationException, IllegalAccessException,
-			NoSuchMethodException, InvocationTargetException,
-			PropertyInstantiationException {
-
-		Object result = instantiate( key );
-		if( result == null )
-			throw new PropertyInstantiationException( key, getProperty( key ) );
-		return result;
-	}
-
-	public List<String> getList( String key ) {
-
-		LinkedList<String> result = new LinkedList<String>();
-		String value = null;
-		int i = 1;
-		do {
-			value = getProperty( key + '.' + i );
-			if( value != null ) result.addLast( value );
-			i++;
-		} while( value != null );
-
-		if( result.size() > 0 ) return result;
-		else return null;
-	}
-
+	
+	@Override
 	public File getFile( String key ) {
 
-		String filename = getProperty( key );
+		String filename = get( key );
 
 		if( filename == null ) return null;
 
@@ -213,7 +179,7 @@ public class SuperProperties {
 
 	public File getFile( File basedir, String key ) {
 
-		String filename = getProperty( key );
+		String filename = get( key );
 
 		if( filename == null ) return null;
 
@@ -224,7 +190,7 @@ public class SuperProperties {
 
 	public File getFile( String basedirKey, String key ) {
 
-		String basedirFilename = getProperty( basedirKey );
+		String basedirFilename = get( basedirKey );
 
 		if( basedirFilename == null ){
 			return getFile( key );
@@ -233,162 +199,28 @@ public class SuperProperties {
 		}
 	}
 
-	private File prependBaseDir( File baseDir, File file ){
-
-		if( file == null ) return null;
-
-		if( ! file.isAbsolute() && baseDir != null ){
-			file = new File( baseDir, file.getPath() );
-		}
-		return file;
-	}
-
-	public File getFileRequired( String key ) throws PropertiesException {
+	@Override
+	public File getFileRequired( String key ) {
 
 		File result = getFile( key );
-		if( result == null ) throw new PropertyNotFoundException( key );
+		if( result == null ) throw new NoSuchElementException( key );
 		return result;
 	}
 
-	public File getFileRequired( File basedir, String key ) throws PropertiesException {
+	public File getFileRequired( File basedir, String key ) {
 
 		File result = getFile( basedir, key );
-		if( result == null ) throw new PropertyNotFoundException( key );
+		if( result == null ) throw new NoSuchElementException( key );
 		return result;
 	}
 
-	public File getFileRequired( String basedirKey, String key ) throws PropertiesException {
+	public File getFileRequired( String basedirKey, String key ) {
 
 		File result = getFile( basedirKey, key );
-		if( result == null ) throw new PropertyNotFoundException( key );
+		if( result == null ) throw new NoSuchElementException( key );
 		return result;
 	}
 
-	public Integer getInt( String key ){
-
-		String value = getProperty( key );
-		if( value == null ) return null;
-
-		return Integer.valueOf( value );
-	}
-
-	public int getInt( String key, int defaultValue ){
-
-		Integer value = getInt( key );
-
-		if( value == null ) return defaultValue;
-
-		return value;
-	}
-
-	public int getIntRequired( String key ) throws PropertiesException {
-
-		String value = getPropertyRequired( key );
-		int result;
-		try {
-			result = Integer.parseInt( value );
-		} catch( NumberFormatException e ){
-			throw new PropertyConversationException( key, value, PropertyConversationException.Format.INT );
-		}
-
-		return result;
-	}
-
-	public Long getLong( String key ){
-
-		String value = getProperty( key );
-		if( value == null ) return null;
-
-		return Long.valueOf( value );
-	}
-
-	public long getLong( String key, int defaultValue ){
-
-		Long value = getLong( key );
-
-		if( value == null ) return defaultValue;
-
-		return value;
-	}
-
-	public long getLongRequired( String key ) throws PropertiesException {
-
-		String value = getPropertyRequired( key );
-		long result;
-		try {
-			result = Long.parseLong( value );
-		} catch( NumberFormatException e ){
-			throw new PropertyConversationException( key, value, PropertyConversationException.Format.INT );
-		}
-
-		return result;
-	}
-
-	public Double getDouble( String key ){
-
-		String value = getProperty( key );
-		if( value == null ) return null;
-
-		return Double.valueOf( value );
-	}
-
-	public double getDouble( String key, double defaultValue ){
-
-		Double value = getDouble( key );
-
-		if( value == null ) return defaultValue;
-
-		return value;
-	}
-
-	public double getDoubleRequired( String key ) throws PropertiesException {
-
-		String value = getPropertyRequired( key );
-		double result;
-		try {
-			result = Double.parseDouble( value );
-		} catch( NumberFormatException e ){
-			throw new PropertyConversationException( key, value, PropertyConversationException.Format.DOUBLE );
-		}
-
-		return result;
-	}
-
-	@SuppressFBWarnings( value="NP_BOOLEAN_RETURN_NULL", justification="Api" )
-	public Boolean getBoolean( String key ){
-
-		String value = getProperty( key );
-		if( value == null ) return null;
-
-		if( EasyParser.isYes( value ) ) return true;
-		if( EasyParser.isNo( value ) ) return false;
-		return null;
-	}
-
-	public boolean getBoolean( String key, boolean defaultValue ){
-
-		String value = getProperty( key );
-		if( value == null ) return defaultValue;
-
-		if( EasyParser.isYes( value ) ) return true;
-		if( EasyParser.isNo( value ) ) return false;
-		return defaultValue;
-	}
-
-	public boolean getBooleanRequired( String key ) throws PropertiesException {
-
-		String value = getPropertyRequired( key );
-
-		if( EasyParser.isYes( value ) ) return true;
-		if( EasyParser.isNo( value ) ) return false;
-
-		throw new PropertyConversationException( key, value, PropertyConversationException.Format.BOOL );
-	}
-
-	@Deprecated
-	public SuperProperties getSubset( String prefix ){
-		return new SuperProperties( prefix, this.backend, this.rootDir );
-	}
 
 	public SuperProperties subset( String prefix ) {
 		Assert.notNull( prefix, "prefix" );
@@ -398,11 +230,22 @@ public class SuperProperties {
 			return new SuperProperties( this.prefix + '.' + prefix, this.backend, this.rootDir );
 		}
 	}
-	/*
-	public SuperProperties getSuperset(){
-		return new SuperProperties( null, this.backend );
+	
+	public List<String> getList( String key ) {
+
+		LinkedList<String> result = new LinkedList<String>();
+		String value = null;
+		int i = 1;
+		do {
+			value = get( key + '.' + i );
+			if( value != null ) result.addLast( value );
+			i++;
+		} while( value != null );
+
+		if( result.size() > 0 ) return result;
+		else return null;
 	}
-	*/
+
 
 	@Override
 	public String toString(){
@@ -440,66 +283,4 @@ public class SuperProperties {
 		return result;
 	}
 
-	/* *************** exceptions *************** */
-
-	public static class PropertiesException extends Exception {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -1399195266886800097L;
-
-		private PropertiesException( String cause ){ super( cause ); }
-	}
-
-	public static class PropertyNotFoundException extends PropertiesException {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 7014470488286327371L;
-
-		private PropertyNotFoundException( String propertyName ){
-			super( "Property not found: " + propertyName );
-		}
-	}
-
-	public static class PropertyEmptyException extends PropertiesException {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -8619269284604950197L;
-
-		private PropertyEmptyException( String propertyName ){
-			super( "Property is empty: " + propertyName );
-		}
-	}
-
-	public static class PropertyConversationException extends PropertiesException {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 30336261348480483L;
-		private enum Format {BOOL,INT,FLOAT,DOUBLE};
-		private PropertyConversationException( String propertyName, String value, Format format ){
-			super( "Cannot convert value of " + propertyName + " (" + value + ") to " + format );
-		}
-	}
-
-	public static class PropertyInstantiationException extends PropertiesException {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 7399765717886263434L;
-
-		private PropertyInstantiationException( String propertyName, String value ){
-			super( "Cannot instantiate " + propertyName + ": '" + value + "'" );
-		}
-	}
-
-	/*
-	private static class PropertyFileNotFoundException extends PropertiesException {
-		private PropertyFileNotFoundException( String propertyName, File file ){
-			super( "File not found for " + propertyName + ": " + file.getAbsolutePath() );
-		}
-	}
-	*/
 }

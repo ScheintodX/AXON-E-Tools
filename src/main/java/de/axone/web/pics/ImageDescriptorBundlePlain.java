@@ -10,6 +10,7 @@ public class ImageDescriptorBundlePlain implements ImageDescriptorBundle {
 	private final Path basedir;
 	private final SuperURL basepath;
 	
+	@SuppressWarnings( "unused" )
 	private final ImageDescriptor.Type type;
 	
 	public ImageDescriptorBundlePlain( SuperURL basepath, Path basedir, ImageDescriptor.Type type ){

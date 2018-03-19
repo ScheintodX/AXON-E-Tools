@@ -70,9 +70,8 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> implements 
 					f = functions.get( i );
 					break;
 				}
-				
 			}
-
+			
 			if( f == null ) {
 				
 				log.warn( "No function: {} ({})", req.getRequestURI(), path );

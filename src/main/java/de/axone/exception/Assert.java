@@ -247,10 +247,10 @@ public abstract class Assert {
 	}
 	// instance --------------------
 	@SuppressWarnings( "unchecked" )
-	public static <T> T isInstance( Object o, String name, Class<T> clz ){
+	public static <T, X extends T> X isInstance( Object o, String name, Class<T> clz ){
 		if( o == null ) return null;
 		if( ! clz.isInstance( o ) ) throw Ex.up( new ArgumentInstanceException( name, clz ) );
-		return (T)o;
+		return (X)o;
 	}
 	public static <T> T canCast( Object o, String name, Class<T> clz ) {
 		if( o == null ) return null;

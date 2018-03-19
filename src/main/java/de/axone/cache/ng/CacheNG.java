@@ -171,6 +171,10 @@ public abstract class CacheNG {
 			return this;
 		}
 		*/
+		
+		public static <X,Y> Realm<X,Y> dontCare() {
+			return new RealmImpl<>( "dontCare" );
+		}
 	}
 	
 	

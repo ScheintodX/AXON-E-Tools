@@ -23,9 +23,7 @@ public class RequestUtil implements StringValueAccessor<String> {
 	
 	@Override
 	public String access( String value ) {
-		String result = request.getParameter( value );
-		//E.rr( value, "=>", result );
-		return result;
+		return request.getParameter( value );
 	}
 		
 	/**

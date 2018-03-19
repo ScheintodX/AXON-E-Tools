@@ -110,6 +110,14 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.cathive.sass/sass-java/4.0.0/10ab0ba08a7df1fd5fd96aea9171118fd3face8c/sass-java-4.0.0-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.cathive.sass/sass-java/4.0.0/166b3f3713d04f26f51a28fe597176d666a833af/sass-java-4.0.0.jar" exported="true">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-all/1.9.5/b8086d4e4daa361fc746abea62f77a2ae55d3ed9/mockito-all-1.9.5-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-all/1.9.5/79a8984096fc6591c1e3690e07d41be506356fa5/mockito-all-1.9.5.jar" exported="true">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
@@ -238,6 +246,30 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/4.1.0/28a5d592b494fe54c120c64689087e779a7bf55b/jna-4.1.0-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/4.1.0/1c12d070e602efd8021891cdd7fd18bc129372d4/jna-4.1.0.jar" exported="true">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna-platform/4.1.0/67d178949fe41ff82de6dbda7ef62d48f70e031c/jna-platform-4.1.0-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna-platform/4.1.0/23457ad1cf75c2c16763330de5565a0e67b4bc0a/jna-platform-4.1.0.jar" exported="true">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.nativelibs4java/jnaerator-runtime/0.11/39776ef7f66bbf66e4c093915a04e56ca33f48c/jnaerator-runtime-0.11-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.nativelibs4java/jnaerator-runtime/0.11/fd166695bcfc6dd0130f1d89dd9da7d6b9ee4e27/jnaerator-runtime-0.11.jar" exported="true">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/1.9.5/46f703fb4266140c544d48a189cb25947eb6333e/mockito-core-1.9.5-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/1.9.5/c3264abeea62c4d2f367e21484fbb40c7e256393/mockito-core-1.9.5.jar" exported="true">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
@@ -257,6 +289,22 @@
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.beust/jcommander/1.27/fae697ac46477a5227a5ee14f8f3a1270a4627b0/jcommander-1.27-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.beust/jcommander/1.27/58c9cbf0f1fa296f93c712f2cf46de50471920f9/jcommander-1.27.jar" exported="true">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.nativelibs4java/ochafik-util/0.11/430547620c7c8b3f130e10979e851de9850c4382/ochafik-util-0.11-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.nativelibs4java/ochafik-util/0.11/459cd8d8c610de3ba236b6fa0d230b40fa2cc6a/ochafik-util-0.11.jar" exported="true">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.nativelibs4java/jna-jnaerator/0.11/bf0c61cee597de652a050e86975499a420e9e18e/jna-jnaerator-0.11-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.nativelibs4java/jna-jnaerator/0.11/171a3eca6c56f13e327370d784ee691fdf27d8a9/jna-jnaerator-0.11.jar" exported="true">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>

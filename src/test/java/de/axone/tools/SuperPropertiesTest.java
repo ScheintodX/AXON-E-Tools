@@ -14,19 +14,19 @@ public class SuperPropertiesTest {
 
 		SuperProperties p = new SuperProperties();
 
-		p.setProperty( "A", "a--" );
-		p.setProperty( "B.1", "b--1" );
-		p.setProperty( "B.2", "b--2" );
-		p.setProperty( "B.3", "b--3" );
-		p.setProperty( "C.D", "cd-" );
-		p.setProperty( "C.E.1", "ce-1" );
-		p.setProperty( "C.E.2", "ce-2" );
-		p.setProperty( "C.E.3", "ce-3" );
-		p.setProperty( "C.F.G", "cfg" );
-		p.setProperty( "C.F.H", "cfh" );
+		p.set( "A", "a--" );
+		p.set( "B.1", "b--1" );
+		p.set( "B.2", "b--2" );
+		p.set( "B.3", "b--3" );
+		p.set( "C.D", "cd-" );
+		p.set( "C.E.1", "ce-1" );
+		p.set( "C.E.2", "ce-2" );
+		p.set( "C.E.3", "ce-3" );
+		p.set( "C.F.G", "cfg" );
+		p.set( "C.F.H", "cfh" );
 
 		// Property access
-		assertEquals( p.getProperty( "A" ), "a--" );
+		assertEquals( p.get( "A" ), "a--" );
 
 		// List access
 		List<String> listB = p.getList( "B" );
@@ -38,7 +38,7 @@ public class SuperPropertiesTest {
 
 		// Sub-Properties
 		SuperProperties pC = p.subset( "C" );
-		assertEquals( pC.getProperty( "D" ), "cd-" );
+		assertEquals( pC.get( "D" ), "cd-" );
 
 		List<String> listCE = pC.getList( "E" );
 		assertNotNull( listCE );
@@ -52,15 +52,15 @@ public class SuperPropertiesTest {
 	public void testTypes(){
 
 		SuperProperties p = new SuperProperties();
-		p.setProperty( "string", "string" );
-		p.setProperty( "int", "123" );
-		p.setProperty( "bool", "true" );
+		p.set( "string", "string" );
+		p.set( "int", "123" );
+		p.set( "bool", "true" );
 
-		assertEquals( p.getProperty( "string" ), "string" );
-		assertEquals( (int)p.getInt( "int" ), 123 );
+		assertEquals( p.get( "string" ), "string" );
+		assertEquals( (int)p.getInteger( "int" ), 123 );
 		assertEquals( (boolean)p.getBoolean( "bool" ), true );
-		assertEquals( p.getProperty( "no", "default" ), "default" );
-		assertEquals( p.getInt( "no", 321 ), 321 );
+		assertEquals( p.get( "no", "default" ), "default" );
+		assertEquals( p.getInteger( "no", 321 ), 321 );
 		assertEquals( p.getBoolean( "no", true ), true );
 
 	}
@@ -70,9 +70,9 @@ public class SuperPropertiesTest {
 		File abs = new File( "abs.txt" ).getAbsoluteFile();
 
 		SuperProperties p = new SuperProperties();
-		p.setProperty( "base", "base" );
-		p.setProperty( "rel", "rel.ext" );
-		p.setProperty( "abs", abs.getPath() ); //<- allways the abs. path
+		p.set( "base", "base" );
+		p.set( "rel", "rel.ext" );
+		p.set( "abs", abs.getPath() ); //<- allways the abs. path
 
 		assertEquals( p.getFile( "rel" ), new File( "rel.ext" ) );
 		assertEquals( p.getFile( "abs" ), abs );
@@ -109,9 +109,9 @@ public class SuperPropertiesTest {
 		File abs = new File( "abs.txt" ).getAbsoluteFile();
 
 		SuperProperties p = new SuperProperties();
-		p.setProperty( "base", "base" );
-		p.setProperty( "rel", "rel.ext" );
-		p.setProperty( "abs", abs.getPath() ); //<- allways the abs. path
+		p.set( "base", "base" );
+		p.set( "rel", "rel.ext" );
+		p.set( "abs", abs.getPath() ); //<- allways the abs. path
 
 		assertEquals( p.getFileRequired( "rel" ), new File( "rel.ext" ) );
 		assertEquals( p.getFileRequired( "abs" ), abs );

@@ -6,6 +6,8 @@ import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.Channels;
@@ -19,6 +21,11 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 import java.util.function.Function;
+
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.entity.ContentType;
 
 import de.axone.data.Charsets;
 
@@ -83,6 +90,24 @@ public class Slurper {
 	}
 	public static String slurpString( InputStream in, Charset charsetName, int startsize, int extendsize ) throws IOException {
 		return new String( slurp( in, startsize, extendsize ), charsetName );
+	}
+	
+	public static String slurp( HttpEntity entity ) throws IllegalStateException, IOException {
+		
+		try( InputStream in = entity.getContent() ) {
+			
+			Charset cs = null;
+			ContentType cType = ContentType.get( entity );
+			if( cType != null ) cs = cType.getCharset();
+			Header encodingHeader = entity.getContentEncoding();
+			if( encodingHeader != null ) cs = Charset.forName( encodingHeader.getValue() );
+			if( cs == null ) cs = Charsets.UTF8;
+			
+			return slurpString( in, cs );
+		}
+	}
+	public static String slurp( HttpResponse response ) throws IllegalStateException, IOException {
+		return slurp( response.getEntity() );
 	}
 	
 	public static byte[] slurp( File in ) throws IOException {
@@ -346,6 +371,16 @@ public class Slurper {
 		buffer.rewind();
 		
 		return buffer;
+	}
+	public static void copy( Writer dst, Reader src ) throws IOException{
+		
+		char [] buffer = new char[ DEFAULT_COPY_BUFFER ];
+		int n = 0;
+		
+		while( (n = src.read(buffer) ) >= 0 ) {
+			
+            dst.write( buffer, 0, n );
+        }
 	}
 	
 	public static void copy( OutputStream outS, InputStream inS ) throws IOException{

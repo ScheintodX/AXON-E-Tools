@@ -43,14 +43,33 @@ public class HEX {
 	}
 	
 	public static String encode( Integer value ) {
-		
 		if( value == null ) return "";
+		return encode( (int)value );
+	}
+	public static String encode( int value ) {
 		
 		return new String( new char[]{
 				                        HEX_ARRAY[ (value >>> 28)&0xf ], HEX_ARRAY[ (value >>> 24)&0xf ],
 				                        HEX_ARRAY[ (value >>> 20)&0xf ], HEX_ARRAY[ (value >>> 16)&0xf ],
 				                        HEX_ARRAY[ (value >>> 12)&0xf ], HEX_ARRAY[ (value >>> 8)&0xf ],
 				                        HEX_ARRAY[ (value >>> 4)&0xf ], HEX_ARRAY[ value &0xf ] } );
+	}
+	
+	public static String encode( Long value ) {
+		if( value == null ) return "";
+		return encode( (long)value );
+	}
+	public static String encode( long value ) {
+		
+		return new String( new char[]{
+				                        HEX_ARRAY[ (int)(value >>> 60)&0xf ], HEX_ARRAY[ (int)(value >>> 56)&0xf ],
+				                        HEX_ARRAY[ (int)(value >>> 52)&0xf ], HEX_ARRAY[ (int)(value >>> 48)&0xf ],
+				                        HEX_ARRAY[ (int)(value >>> 44)&0xf ], HEX_ARRAY[ (int)(value >>> 40)&0xf ],
+				                        HEX_ARRAY[ (int)(value >>> 36)&0xf ], HEX_ARRAY[ (int)(value >>> 32)&0xf ],
+				                        HEX_ARRAY[ (int)(value >>> 28)&0xf ], HEX_ARRAY[ (int)(value >>> 24)&0xf ],
+				                        HEX_ARRAY[ (int)(value >>> 20)&0xf ], HEX_ARRAY[ (int)(value >>> 16)&0xf ],
+				                        HEX_ARRAY[ (int)(value >>> 12)&0xf ], HEX_ARRAY[ (int)(value >>> 8)&0xf ],
+				                        HEX_ARRAY[ (int)(value >>> 4)&0xf ], HEX_ARRAY[ (int)value &0xf ] } );
 	}
 	
 	public static String encode( Short value ) {

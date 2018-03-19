@@ -56,6 +56,11 @@ public class SuperURLBuilders {
 		return new SuperURLBuilder_URI();
 	}
 	
+	public static SuperURLBuilder_URL fromURL() {
+		
+		return new SuperURLBuilder_URL();
+	}
+	
 	public static SuperURLBuilder_Request fromRequest() {
 		
 		return new SuperURLBuilder_Request();
