@@ -1,11 +1,24 @@
 package de.axone.tools;
 
+import java.util.Collection;
+
 import de.axone.exception.Assert;
 
 public interface EnumExt<T extends Enum<T>> {
 	
 	@SuppressWarnings( "unchecked" )
 	public default boolean isOneOf(  T ... others ) {
+		
+		if( others == null ) return false;
+		
+		for( T other : others ) {
+			if( this == other ) return true;
+		}
+		return false;
+	}
+	public default boolean isOneOf(  Collection<T> others ) {
+		
+		if( others == null ) return false;
 		
 		for( T other : others ) {
 			if( this == other ) return true;
@@ -15,6 +28,17 @@ public interface EnumExt<T extends Enum<T>> {
 	
 	@SuppressWarnings( "unchecked" )
 	public default boolean isNoneOf(  T ... others ) {
+		
+		if( others == null ) return true;
+		
+		for( T other : others ) {
+			if( this == other ) return false;
+		}
+		return true;
+	}
+	public default boolean isNoneOf(  Collection<T> others ) {
+		
+		if( others == null ) return true;
 		
 		for( T other : others ) {
 			if( this == other ) return false;
