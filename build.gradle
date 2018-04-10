@@ -57,7 +57,7 @@ dependencies {
 	compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0+'
 
 	compile 'net.sf.ehcache:ehcache-core:2.5.2'
-	compile 'org.apache.httpcomponents:httpclient:4.3+'
+	compile 'org.apache.httpcomponents:httpclient:4+'
 	compile 'com.fasterxml.jackson.core:jackson-databind:2+'
 	compile 'org.ostermiller:utils:1.07.00'
 
@@ -71,14 +71,11 @@ dependencies {
 
 	compile 'com.google.code.findbugs:annotations:3+'
 
-	compile 'com.google.guava:guava:18+'
+	compile 'com.google.guava:guava:24+'
 
 	// Validation
 	//compile 'org.apache.geronimo.specs:geronimo-validation_1.0_spec:1.1'
 	//compile 'org.apache.bval:org.apache.bval.bundle:0.5'
-
-	// Sass
-	compile 'com.cathive.sass:sass-java:4.0.0'
 
 	// =======================================
 
