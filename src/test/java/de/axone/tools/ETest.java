@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 import org.testng.annotations.Test;
 
-@Test( groups="tools.e" )
+@Test( groups="nomt.tools.e", singleThreaded=true )
 public class ETest {
 	
 	private static final class StringOutputStream extends OutputStream {
@@ -41,6 +41,13 @@ public class ETest {
 		
 	}
 	
+	/**
+	 * Note that these tests mail fail when another thread writes something 
+	 * to stdout. I have currently no idea how to fix this and it's no problem
+	 * in production because gibberish is what you kind of expect in that case.
+	 * 
+	 * @throws Exception
+	 */
 	public void testE() throws Exception {
 		
 		PrintStream saveOut = System.out;
@@ -147,7 +154,7 @@ public class ETest {
 			E.cho( bslM );	assertOut( s, "{ 01=>( 100, 101, 102 ), 02=>( 200, 201, 202, (-null-) ) }" );
 			
 			// Keep line number stable or this will fail
-			a(); assertOut( s, "[test] < (ETest.java:158) < (ETest.java:157) < (ETest.java:150)" );
+			a(); assertOut( s, "[test] < (ETest.java:165) < (ETest.java:164) < (ETest.java:157)" );
 			
 		} finally {
 			System.setOut( saveOut );
@@ -184,4 +191,5 @@ public class ETest {
 		
 		s.clear();
 	}
+	
 }

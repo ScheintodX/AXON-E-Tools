@@ -22,6 +22,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 import java.util.function.Function;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -54,7 +56,8 @@ public class Slurper {
 	                         DEFAULT_COPY_BUFFER = 4096;
 	
 	//private static final byte [] EMPTY_ARRAY = new byte[]{};
-	private static final ByteBuffer EMPTY_BUFFER = ByteBuffer.allocate(0);
+	private static final ByteBuffer EMPTY_BYTEBUFFER = ByteBuffer.allocate(0);
+	private static final CharBuffer EMPTY_CHARBUFFER = CharBuffer.allocate(0);
 	
 	private static final Charset DEFAULT_CHARSET = Charsets.UTF8;
 	
@@ -109,6 +112,10 @@ public class Slurper {
 	public static String slurp( HttpResponse response ) throws IllegalStateException, IOException {
 		return slurp( response.getEntity() );
 	}
+	public static String slurp( HttpServletRequest request ) throws IllegalStateException, IOException {
+		
+		return slurpToBuffer( request.getReader(), DEFAULT_STARTSIZE, DEFAULT_EXTENDSIZE ).toString();
+	}
 	
 	public static byte[] slurp( File in ) throws IOException {
 		try( FileInputStream fin = new FileInputStream( in ) ){
@@ -155,7 +162,7 @@ public class Slurper {
 		
 		int count = in.read( buffer );
 		
-		if( count == 0 ) return EMPTY_BUFFER;
+		if( count == 0 ) return EMPTY_BYTEBUFFER;
 			
 		ByteBuffer bb = ByteBuffer.allocate( 1 );
 		int b = in.read( bb );
@@ -182,6 +189,44 @@ public class Slurper {
 		return trim( buffer );
 	}
 	
+	public static CharBuffer slurpToBuffer( Reader in, int startsize, int extendsize ) throws IOException{
+		
+		if( startsize <= 0 ) startsize = DEFAULT_STARTSIZE;
+		if( extendsize <= 1 ) extendsize = DEFAULT_EXTENDSIZE;
+		
+		CharBuffer buffer = CharBuffer.allocate( startsize );
+		
+		int count = in.read( buffer );
+		
+		if( count == 0 ) return EMPTY_CHARBUFFER;
+			
+		CharBuffer bb = CharBuffer.allocate( 1 );
+		int b = in.read( bb );
+		
+		// there is more in the buffer;
+		if( b >= 0 ){
+			
+			// store one char
+			if( b == 1 ){
+				bb.flip();
+				buffer = addToBuffer( buffer, bb, extendsize+1 );
+			}
+			
+			CharBuffer extBuffer = CharBuffer.allocate( extendsize );
+			
+			while( in.read( extBuffer ) >= 0 ){
+				
+				extBuffer.flip();
+				buffer = addToBuffer( buffer, extBuffer, extendsize );
+				extBuffer.clear();
+			}
+		}
+		
+		return trim( buffer );
+		
+		
+	}
+	
 	public static String slurpStringAtUntil( SeekableByteChannel in, long pos, byte until, Charset encoding, int startsize, int extendsize ) throws IOException { 
 		
 		ByteBuffer buf = slurpAtUntil( in, pos, until, startsize, extendsize );
@@ -202,7 +247,7 @@ public class Slurper {
 		
 		int count = in.read( buffer );
 		
-		if( count == 0 ) return EMPTY_BUFFER;
+		if( count == 0 ) return EMPTY_BYTEBUFFER;
 		
 		int index = findInBufferZeroToLimit( buffer, until );
 		
@@ -241,7 +286,7 @@ public class Slurper {
 				extBuffer.clear();
 			}
 			 
-			return EMPTY_BUFFER;
+			return EMPTY_BYTEBUFFER;
 			
 		} else {
 			
@@ -355,6 +400,26 @@ public class Slurper {
 		return buffer;
 	}
 	
+	public static CharBuffer addToBuffer( CharBuffer buffer, CharBuffer add, int extendsize ){
+		
+		int bLen = buffer.limit();
+		int remaining = buffer.remaining();
+		
+		int len = add.remaining();
+		
+		if( len > remaining ){
+			
+			int missing = len-remaining;
+			missing = missing > extendsize ? missing : extendsize;
+			CharBuffer newBuffer = CharBuffer.allocate( bLen+missing );
+			buffer.flip();
+			newBuffer.put( buffer );
+			buffer = newBuffer;
+		}
+		buffer.put( add );
+		return buffer;
+	}
+	
 	public static ByteBuffer trim( ByteBuffer buffer ){
 		
 		if( buffer.capacity() != buffer.position() ){
@@ -372,6 +437,25 @@ public class Slurper {
 		
 		return buffer;
 	}
+	
+	public static CharBuffer trim( CharBuffer buffer ){
+		
+		if( buffer.capacity() != buffer.position() ){
+		
+			CharBuffer result = CharBuffer.allocate( buffer.position() );
+			
+			buffer.flip();
+			
+			result.put( buffer );
+			
+			buffer = result;
+		}
+		
+		buffer.rewind();
+		
+		return buffer;
+	}
+	
 	public static void copy( Writer dst, Reader src ) throws IOException{
 		
 		char [] buffer = new char[ DEFAULT_COPY_BUFFER ];

@@ -192,6 +192,10 @@ public class UrlParser {
 				return "text/css";
 			} else if( extension.equalsIgnoreCase( "js" ) ) {
 				return "text/javascript";
+			} else if( extension.equalsIgnoreCase( "woff" ) ) {
+				return "application/x-font-woff";
+			} else if( extension.equalsIgnoreCase( "woff2" ) ) {
+				return "application/font-woff2";
 				/* html */
 			} else if( extension.equalsIgnoreCase( "htm" )
 					|| extension.equalsIgnoreCase( "html" ) ){

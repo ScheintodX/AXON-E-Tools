@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.axone.data.Charsets;
 import de.axone.data.Mime.MimeTypes;
+import de.axone.tools.E;
 import de.axone.web.Method;
 import de.axone.web.SuperURL;
 
@@ -48,6 +49,8 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 		
 		String data = req.getParameter( "data" );
 		
+		E.rr( data );
+		
 		// Only for debugging
 		/*
 		if( data == null ){
@@ -71,6 +74,7 @@ public abstract class AbstractRestFunction<DATA, REQUEST extends RestRequest>
 				jsonData = req.mapper().readValue( req.getInputStream(), type );
 			}
 			
+			E.rr( jsonData );
 			
 		} catch( IOException e ) {
 			e.printStackTrace();

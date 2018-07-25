@@ -13,6 +13,11 @@ public class ArgumentClassException extends IllegalNamedArgumentException implem
 		this.field = name;
 	}
 	
+	public ArgumentClassException( String name, Class<?> clz, Class<?> actual ){
+		super( name, "is not of class '" + clz.getName() + "'" + " but '" + actual.getName() + "'" );
+		this.field = name;
+	}
+	
 	@Override
 	public String getField(){
 		return field;

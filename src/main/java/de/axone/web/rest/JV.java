@@ -7,5 +7,7 @@ public interface JV {
 	public interface List extends Basic {}
 	public interface Extended extends List {}
 	public interface Full extends Extended {}
+	public interface All extends Full {}
+	
 	public interface Search extends Basic {}
 }

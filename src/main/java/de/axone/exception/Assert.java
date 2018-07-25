@@ -38,6 +38,22 @@ public abstract class Assert {
 		if( Double.compare( number.doubleValue(), 0 ) == 0 ) 
 				throw Ex.up( new IllegalArgumentException( "Argument '" + name + "' is zero" ) );
 	}
+	public static void allNull( String name, Object ... os ) {
+		for( Object o : os ) {
+			if( o != null ) throw Ex.up( new ArgumentNullException( name ) );
+		}
+	}
+	public static void noneNull( String name, Object ... os ) {
+		for( Object o : os ) {
+			if( o == null ) throw Ex.up( new ArgumentNullException( name ) );
+		}
+	}
+	public static void anyNotNull( String name, Object ... os ) { 
+		for( Object o : os ) {
+			if( o != null ) return;
+		}
+		throw Ex.up( new ArgumentNullException( name ) );
+	}
 	
 	// Not null or empty
 	public static void notNullOrEmpty( Object o, String name ){
@@ -269,7 +285,7 @@ public abstract class Assert {
 	@SuppressWarnings( "unchecked" )
 	public static <T> T isClass( Object o, String name, Class<?> clz ){
 		if( o == null ) return null;
-		if( ! o.getClass().isInstance( clz ) ) throw Ex.up( new ArgumentClassException( name, clz ) );
+		if( ! ( o.getClass() == clz || o.getClass().isInstance( clz ) ) ) throw Ex.up( new ArgumentClassException( name, clz, o.getClass() ) );
 		return (T)o;
 	}
 	@SuppressWarnings( "unchecked" )

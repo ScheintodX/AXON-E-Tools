@@ -528,6 +528,15 @@ public class Str {
 		return Arrays.copyOf( result, num+1 );
 	}
 	
+	public static @Nonnull String [] splitFastLimitedAndTrim( String s, char split, int n ) {
+		
+		String [] result = splitFastLimited( s, split, n );
+		for( int i=0; i<result.length; i++ ) {
+			result[ i ] = result[ i ].trim();
+		}
+		return result;
+	}
+	
 	public static List<String> splitFastToList( String s, char split ){
 		
 		List<String> result = new ArrayList<>( 8 );
@@ -1184,6 +1193,22 @@ public class Str {
 		return result.toString();
 	}
 	
+	public static String cleanToUpperCase( String string ) {
+		
+		StringBuilder result = new StringBuilder();
+		
+		char [] chars = string.toCharArray();
+		
+		for( char c : chars ) {
+			
+			if( c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' ) result.append( c );
+			else if( c >='a' && c <= 'z' ) result.append( (char)(c + ('A'-'a')) ); //(char) is needed to select the correct method because char + char is casted to int otherwise
+			else if( c == ' ' || c == '_' ) result.append( '_' );
+		}
+		
+		return result.toString();
+	}
+	
 	/**
 	 * Allows chaining of functions.
 	 * 
@@ -1289,4 +1314,18 @@ public class Str {
 		return new StringBuilder();
 	}
 	
+	
+	public static boolean eq( String s1, String s2 ) {
+		
+		if( s1 == s2 ) return true;
+		if( s1 == null || s2 == null ) return false;
+		return s1.equals( s2 );
+	}
+	
+	public static boolean Neq( String s1, String s2 ) {
+		
+		if( s1 == s2 ) return false;
+		if( s1 == null || s2 == null ) return true;
+		return ! s1.equals( s2 );
+	}
 }
