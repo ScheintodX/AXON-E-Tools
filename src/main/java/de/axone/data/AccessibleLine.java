@@ -2,21 +2,40 @@ package de.axone.data;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.annotation.Nullable;
 
+import de.axone.exception.Ex;
 import de.axone.tools.F;
 import de.axone.tools.Str;
 import de.axone.tools.StringValueAccessor;
 
-public class AccessibleLine<T extends Enum<T>> implements StringValueAccessor<T> {
+public class AccessibleLine<T extends Enum<T>> implements StringValueAccessor<T,NoSuchElementException> {
 	
 	private final String[] values;
 	private long filePos;
 	private int originalLength;
 	
 	@Override
+	public NoSuchElementException exception( T key ) {
+		return Ex.up( new NoSuchElementException( key.toString() ) );
+	}
+	
+	@Override
+	public String accessChecked( T key ) {
+		
+		int idx = key.ordinal();
+		if( idx >= values.length ) return null;
+		
+		return values[ key.ordinal() ];
+	}
+	@Override
 	public String access( T key ) {
+		
+		int idx = key.ordinal();
+		if( idx >= values.length ) throw exception( key );
+		
 		return values[ key.ordinal() ];
 	}
 	

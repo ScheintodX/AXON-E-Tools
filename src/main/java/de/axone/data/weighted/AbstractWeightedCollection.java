@@ -34,6 +34,8 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	
 	private Map<T,T> map = new HashMap<>();
 	
+	private Map<String,T> forName;
+	
 	private static final int CONSTANT_SEED =
 			(new Random()).nextInt();
 	
@@ -42,19 +44,24 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	private final Cloner<T> cloner;
 	private final Combiner<T> combiner;
 	private final ItemCollector<T,W> collector;
+	private final Namer<T> namer;
 	
-	public AbstractWeightedCollection( Supplier<W> supplier, Weighter<T> weighter, Cloner<T> cloner, Combiner<T> merger ){
+	public AbstractWeightedCollection( Supplier<W> supplier, Weighter<T> weighter, Cloner<T> cloner, Combiner<T> merger, Namer<T> namer ){
 		this.supplier = supplier;
 		this.weighter = weighter;
 		this.cloner = cloner;
 		this.collector = new ItemCollector<>( supplier );
 		this.combiner = merger;
+		this.namer = namer;
+		if( namer != null ) {
+			forName = new HashMap<>();
+		}
 	}
 	
 	public AbstractWeightedCollection( Supplier<W> supplier, Weighter<T> weighter, Cloner<T> cloner ){
 		
 		this( supplier, weighter, cloner,
-			(t1,t2) -> cloner.clone( t1, weighter.weight( t1 ) + weighter.weight( t2 ) ) );
+			(t1,t2) -> cloner.clone( t1, weighter.weight( t1 ) + weighter.weight( t2 ) ), null );
 	}
 	
 	protected Supplier<W> supplier(){
@@ -95,7 +102,13 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 		} else {
 			
 			map.put( item, item );
+		}
+		
+		if( namer != null ) {
 			
+			String name = namer.name( item );
+			
+			forName.put( name, item );
 		}
 		
 		return self;
@@ -178,7 +191,7 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	}
 	
 	@Override
-	public boolean contains( Object item ) {
+	public boolean contains( T item ) {
 		return map.containsKey( item );
 	}
 	
@@ -228,6 +241,14 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 		return stream()
 				.mapToDouble( weighter::weight )
 				;
+	}
+	
+	public T find( String name ) {
+		
+		if( namer == null )
+				throw new UnsupportedOperationException( "No 'namer' given" );
+		
+		return forName.get( name );
 	}
 	
 	/*

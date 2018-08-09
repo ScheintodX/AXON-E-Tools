@@ -1,9 +1,11 @@
 package de.axone.web;
 
 import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import de.axone.exception.Ex;
 import de.axone.tools.S;
 import de.axone.tools.Str;
 import de.axone.tools.StringValueAccessor;
@@ -13,7 +15,7 @@ import de.axone.tools.StringValueAccessor;
  * 
  * @author flo
  */
-public class RequestUtil implements StringValueAccessor<String> {
+public class RequestUtil implements StringValueAccessor<String,NoSuchElementException> {
 	
 	private HttpServletRequest request;
 	
@@ -22,8 +24,20 @@ public class RequestUtil implements StringValueAccessor<String> {
 	}
 	
 	@Override
-	public String access( String value ) {
-		return request.getParameter( value );
+	public NoSuchElementException exception( String key ) {
+		return Ex.up( new NoSuchElementException( key ) );
+	}
+	
+	@Override
+	public String accessChecked( String key ) {
+		return request.getParameter( key );
+	}
+		
+	@Override
+	public String access( String key ) {
+		String result = request.getParameter( key );
+		if( result == null ) throw exception( key );
+		return result;
 	}
 		
 	/**

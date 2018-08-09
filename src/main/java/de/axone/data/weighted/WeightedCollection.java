@@ -59,6 +59,11 @@ public interface WeightedCollection<W extends WeightedCollection<W, T>, T> exten
 	public interface Weighter<T> {
 		public double weight( T item );
 	}
+	
+	@FunctionalInterface
+	public interface Namer<T> {
+		public String name( T item );
+	}
 
 	@FunctionalInterface
 	public interface Cloner<T> {

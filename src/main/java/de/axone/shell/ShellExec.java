@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.axone.tools.E;
 import de.axone.tools.Str;
 
 public class ShellExec {
@@ -27,6 +28,8 @@ public class ShellExec {
 		
 		String commandline = 
 				cmd.toFile().getAbsolutePath() + " " + Str.join( " ", args );
+		
+		E.rr( commandline );
 		
 		log.debug( commandline );
 		

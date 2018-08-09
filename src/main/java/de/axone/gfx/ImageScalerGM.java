@@ -1,5 +1,7 @@
 package de.axone.gfx;
 
+import static de.axone.gfx.ImageScalerGMOptions.*;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,27 +17,28 @@ public class ImageScalerGM implements ImageScaler {
 	private static final Logger log = LoggerFactory.getLogger( ImageScaler.class );
 	
 	private static final String CONVERT = "convert",
-	                            COMPOSITE = "composite",
-	                            _COMPOSE_OVER = "-compose Over",
-	                            _RESIZE = "-resize",
-	                            _STRIP = "-strip",
-	                            _GRAVITY_SOUTHEAST = "-gravity SouthEast",
-	                            _HIGH_QUALITY = "-quality 90",
-	                            _LOW_QUALITY = "-quality 60"
+	                            COMPOSITE = "composite"
 	                            ;
 	
 	private final Path gmCommand;
+	
+	private ImageScalerOption [] options;
 	
 	public ImageScalerGM( Path gmCommand ) {
 		
 		this.gmCommand = gmCommand;
 	}
-
+	public ImageScalerGM( Path gmCommand, ImageScalerOption ... options ) {
+		
+		this.gmCommand = gmCommand;
+		this.options = options;
+	}
+	
 	@Override
 	public synchronized void scale( Path outPath, Path imagePath, Optional<Path> watermarkPath,
 			int size, boolean hq ) throws IOException {
 		
-		String quality = hq ? _HIGH_QUALITY : _LOW_QUALITY;
+		ImageScalerGMOptions quality = hq ? HIGH_QUALITY : LOW_QUALITY;
 				
 		if( watermarkPath.isPresent() ) {
 			
@@ -54,9 +57,9 @@ public class ImageScalerGM implements ImageScaler {
 				
 				ShellExec.quickexec( gmCommand,
 						COMPOSITE,
-						_HIGH_QUALITY,
-						_COMPOSE_OVER,
-						_GRAVITY_SOUTHEAST,
+						HIGH_QUALITY.commandLine(),
+						COMPOSE_OVER.commandLine(),
+						GRAVITY_SOUTHEAST.commandLine(),
 						watermarkPathS,
 						imagePathS,
 						tmpS
@@ -64,9 +67,10 @@ public class ImageScalerGM implements ImageScaler {
 				
 				ShellExec.quickexec( gmCommand,
 						CONVERT,
-						quality,
-						_RESIZE, size + "x" + size,
-						_STRIP,
+						quality.commandLine(),
+						Resize( size, size ).commandLine(),
+						Brightness( -95 ).commandLine(),
+						STRIP.commandLine(),
 						tmpS,
 						outPathS
 				);
@@ -94,9 +98,9 @@ public class ImageScalerGM implements ImageScaler {
 				
 				ShellExec.quickexec( gmCommand,
 						CONVERT,
-						quality,
-						_RESIZE, size + "x" + size,
-						_STRIP,
+						quality.commandLine(),
+						Resize( size, size ).commandLine(),
+						STRIP.commandLine(),
 						imagePath.toFile().getAbsolutePath(),
 						outPath.toFile().getAbsolutePath()
 				);

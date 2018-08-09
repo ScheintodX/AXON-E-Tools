@@ -18,4 +18,8 @@ public interface ImageScaler {
 		//return ImageScalerAWT.instance();
 		return new ImageScalerGM( Paths.get( "/usr/bin/gm" ) );
 	}
+	public static ImageScaler instance( ImageScalerOption ... options ) {
+		//return ImageScalerAWT.instance();
+		return new ImageScalerGM( Paths.get( "/usr/bin/gm" ), options );
+	}
 }

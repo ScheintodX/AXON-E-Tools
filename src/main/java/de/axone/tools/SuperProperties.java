@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import de.axone.exception.Assert;
+import de.axone.exception.Ex;
 
 /**
  * A replacement and facade for <tt>Properties</tt>
@@ -65,7 +66,7 @@ import de.axone.exception.Assert;
  *
  * @author flo
  */
-public class SuperProperties implements StringValueAccessor<String> {
+public class SuperProperties implements StringValueAccessor<String, NoSuchElementException> {
 
 	private final Properties backend;
 	private final String prefix;
@@ -101,8 +102,19 @@ public class SuperProperties implements StringValueAccessor<String> {
 	}
 	
 	@Override
-	public String access( String key ) {
+	public NoSuchElementException exception( String key ) {
+		return Ex.up( new NoSuchElementException( key ) );
+	}
+	
+	@Override
+	public String accessChecked( String key ) {
 		return backend.getProperty( realKey( key ) );
+	}
+	@Override
+	public String access( String key ) {
+		String realKey = realKey( key );
+		if( ! backend.containsKey( realKey ) ) throw exception( key );
+		return backend.getProperty( realKey );
 	}
 
 	public String getPrefix(){

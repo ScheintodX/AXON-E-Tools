@@ -6,28 +6,13 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
-	
-	// == String =====
-	@Override
-	public String access( K key );
-	
-	public default @Nullable List<String> getAsList( @Nonnull K key ) {
-		
-		String v = get( key );
-		if( v == null ) return null;
-		return Str.splitFastAtSpacesToList( v );
-	}
+public interface StringValueAccessor<K,EX extends Exception> extends KeyValueAccessor<K,String,EX> {
 	
 	// == Integer =====
-	public default Integer getInteger( K key ){
+	public default Integer getInteger( K key ) {
 		String v = get( key );
 		if( v == null ) return null;
 		v = v.trim();
@@ -50,18 +35,18 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default int getIntegerRequired( K key ){
+	public default int getIntegerRequired( K key ) throws EX {
 		Integer v = getInteger( key );
 		if( v == null ) throw exception( key );
 		return (int)v;
 	}
-	public default int getIntegerRequired( K key, Integer defaultValue ){
+	public default int getIntegerRequired( K key, Integer defaultValue ) throws EX {
 		Integer v = getInteger( key );
 		if( v == null ) v=defaultValue;
 		if( v == null ) throw exception( key );
 		return (int)v;
 	}
-	public default int getIntegerRequired( K key, ValueProvider<Integer> defaultValueProvider ){
+	public default int getIntegerRequired( K key, ValueProvider<Integer> defaultValueProvider ) throws EX {
 		Integer v = getInteger( key );
 		if( v == null ) v=defaultValueProvider.get();
 		if( v == null ) throw exception( key );
@@ -92,18 +77,18 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default long getLongRequired( K key ){
+	public default long getLongRequired( K key ) throws EX {
 		Long v = getLong( key );
 		if( v == null ) throw exception( key );
 		return (long)v;
 	}
-	public default long getLongRequired( K key, Long defaultValue ){
+	public default long getLongRequired( K key, Long defaultValue ) throws EX {
 		Long v = getLong( key );
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw exception( key );
 		return (long)v;
 	}
-	public default long getLongRequired( K key, ValueProvider<Long> defaultValueProvider ){
+	public default long getLongRequired( K key, ValueProvider<Long> defaultValueProvider ) throws EX {
 		Long v = getLong( key );
 		if( v == null ) v = defaultValueProvider.get();
 		if( v == null ) throw exception( key );
@@ -134,18 +119,18 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default double getDoubleRequired( K key ){
+	public default double getDoubleRequired( K key ) throws EX {
 		Double v = getDouble( key );
 		if( v == null ) throw exception( key );
 		return (double)v;
 	}
-	public default double getDoubleRequired( K key, Double defaultValue ){
+	public default double getDoubleRequired( K key, Double defaultValue ) throws EX {
 		Double v = getDouble( key );
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw exception( key );
 		return (double)v;
 	}
-	public default double getDoubleRequired( K key, ValueProvider<Double> defaultValueProvider ){
+	public default double getDoubleRequired( K key, ValueProvider<Double> defaultValueProvider ) throws EX {
 		Double v = getDouble( key );
 		if( v == null ) v = defaultValueProvider.get();
 		if( v == null ) throw exception( key );
@@ -177,18 +162,18 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default boolean getBooleanRequired( K key ){
+	public default boolean getBooleanRequired( K key ) throws EX {
 		Boolean v = getBoolean( key );
 		if( v == null ) throw exception( key );
 		return (boolean)v;
 	}
-	public default boolean getBooleanRequired( K key, Boolean defaultValue ){
+	public default boolean getBooleanRequired( K key, Boolean defaultValue ) throws EX {
 		Boolean v = getBoolean( key );
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw exception( key );
 		return (boolean)v;
 	}
-	public default boolean getBooleanRequired( K key, ValueProvider<Boolean> defaultValueProvider ){
+	public default boolean getBooleanRequired( K key, ValueProvider<Boolean> defaultValueProvider ) throws EX {
 		Boolean v = getBoolean( key );
 		if( v == null ) v = defaultValueProvider.get();
 		if( v == null ) throw exception( key );
@@ -197,7 +182,7 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 	
 	
 	// == Files ==
-	public default File getFile( K key ){
+	public default File getFile( K key ) {
 		String v = get( key );
 		if( v == null ) return null;
 		v = v.trim();
@@ -214,18 +199,18 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default File getFileRequired( K key ) {
+	public default File getFileRequired( K key ) throws EX {
 		File v = getFile( key );
 		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default File getFileRequired( K key, File defaultValue ) {
+	public default File getFileRequired( K key, File defaultValue ) throws EX {
 		File v = getFile( key );
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default File getFileRequired( K key, ValueProvider<File> defaultValueProvider ) {
+	public default File getFileRequired( K key, ValueProvider<File> defaultValueProvider ) throws EX {
 		File v = getFile( key );
 		if( v == null ) v = defaultValueProvider.get();
 		if( v == null ) throw exception( key );
@@ -240,7 +225,7 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 			return new File( optionalBasedir, file.getPath() );
 		}
 	}
-	public default File absolute( File file, K optionalBasedirKey ) {
+	public default File absolute( File file, K optionalBasedirKey ) throws EX {
 		if( file == null ) return null;
 		if( file.isAbsolute() ) return file;
 		else {
@@ -259,14 +244,14 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		}
 	}
 	
-	public default File absoluteRequired( File file, K optionalBasedirKey ) {
+	public default File absoluteRequired( File file, K optionalBasedirKey ) throws EX {
 		File v = absolute( file, optionalBasedirKey );
 		if( v == null ) return null;
 		if( v.isAbsolute() ) return v;
 		else throw new IllegalArgumentException( "Resulting file '" + file.getPath() + "' is not absolute" );
 	}
 	
-	public default File absoluteRequired( File file, ValueProvider<File> optionalBasedirProvider ) {
+	public default File absoluteRequired( File file, ValueProvider<File> optionalBasedirProvider ) throws EX {
 		File v = absolute( file, optionalBasedirProvider );
 		if( v == null ) return null;
 		if( v.isAbsolute() ) return v;
@@ -293,18 +278,18 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default Path getPathRequired( K key ) {
+	public default Path getPathRequired( K key ) throws EX {
 		Path v = getPath( key );
 		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default Path getPathRequired( K key, Path defaultValue ) {
+	public default Path getPathRequired( K key, Path defaultValue ) throws EX {
 		Path v = getPath( key );
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default Path getPathRequired( K key, ValueProvider<Path> defaultValueProvider ) {
+	public default Path getPathRequired( K key, ValueProvider<Path> defaultValueProvider ) throws EX {
 		Path v = getPath( key );
 		if( v == null ) v = defaultValueProvider.get();
 		if( v == null ) throw exception( key );
@@ -323,7 +308,7 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( path == null ) return null;
 		if( path.isAbsolute() ) return path;
 		else {
-			Path basedir = getPathRequired( optionalBasedirKey );
+			Path basedir = getPath( optionalBasedirKey );
 			if( basedir == null ) return path;
 			return basedir.resolve( path );
 		}
@@ -389,35 +374,35 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default BigDecimal getBigDecimalRequired( K key ){
+	public default BigDecimal getBigDecimalRequired( K key ) throws EX {
 		BigDecimal v = getBigDecimal( key );
 		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default BigDecimal getBigDecimalRequired( K key, MathContext mox ){
+	public default BigDecimal getBigDecimalRequired( K key, MathContext mox ) throws EX {
 		BigDecimal v = getBigDecimal( key, mox );
 		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default BigDecimal getBigDecimalRequired( K key, BigDecimal defaultValue ){
+	public default BigDecimal getBigDecimalRequired( K key, BigDecimal defaultValue ) throws EX {
 		BigDecimal v = getBigDecimal( key );
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default BigDecimal getBigDecimalRequired( K key, BigDecimal defaultValue, MathContext mox ){
+	public default BigDecimal getBigDecimalRequired( K key, BigDecimal defaultValue, MathContext mox ) throws EX {
 		BigDecimal v = getBigDecimal( key, mox );
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default BigDecimal getBigDecimalRequired( K key, ValueProvider<BigDecimal> defaultValueProvider ){
+	public default BigDecimal getBigDecimalRequired( K key, ValueProvider<BigDecimal> defaultValueProvider ) throws EX {
 		BigDecimal v = getBigDecimal( key );
 		if( v == null ) v = defaultValueProvider.get();
 		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default BigDecimal getBigDecimalRequired( K key, ValueProvider<BigDecimal> defaultValueProvider, MathContext mox ){
+	public default BigDecimal getBigDecimalRequired( K key, ValueProvider<BigDecimal> defaultValueProvider, MathContext mox ) throws EX {
 		BigDecimal v = getBigDecimal( key, mox );
 		if( v == null ) v = defaultValueProvider.get();
 		if( v == null ) throw exception( key );
@@ -443,18 +428,18 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( v == null ) return defaultValueProvider.get();
 		return v;
 	}
-	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, K key ){
+	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, K key ) throws EX {
 		T v = getEnum( clazz, key );
 		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, K key, T defaultValue ){
+	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, K key, T defaultValue ) throws EX {
 		T v = getEnum( clazz, key );
 		if( v == null ) v = defaultValue;
 		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, K key, ValueProvider<T> defaultValueProvider ){
+	public default <T extends Enum<T>> T getEnumRequired( Class<T> clazz, K key, ValueProvider<T> defaultValueProvider ) throws EX {
 		T v = getEnum( clazz, key );
 		if( v == null ) v = defaultValueProvider.get();
 		if( v == null ) throw exception( key );
@@ -491,12 +476,12 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 		if( v == null ) return defaultValue != null ? defaultValue.newInstance() : null;
 		return v;
 	}
-	public default <T, T1 extends T> T getNewInstanceRequired( Class<T1> clazz, K key, Object ... constructorParameters ) throws ReflectiveOperationException {
+	public default <T, T1 extends T> T getNewInstanceRequired( Class<T1> clazz, K key, Object ... constructorParameters ) throws EX, ReflectiveOperationException {
 		T v = getNewInstance( clazz, key, constructorParameters );
 		if( v == null ) throw exception( key );
 		return v;
 	}
-	public default <T, T1 extends T, T2 extends T> T getNewInstanceRequired( Class<T1> clazz, K key, ValueProvider<Class<T2>> defaultValueProvider, Object ... constructorParameters ) throws ReflectiveOperationException {
+	public default <T, T1 extends T, T2 extends T> T getNewInstanceRequired( Class<T1> clazz, K key, ValueProvider<Class<T2>> defaultValueProvider, Object ... constructorParameters ) throws EX, ReflectiveOperationException {
 		T v = getNewInstance( clazz, key, constructorParameters );
 		Class<T2> defaultValue = defaultValueProvider.get();
 		if( v == null ) v = defaultValue != null ? defaultValue.newInstance() : null;
@@ -539,14 +524,14 @@ public interface StringValueAccessor<K> extends KeyValueAccessor<K,String> {
 			throw new InstantiationError( key, e );
 		}
 	}
-	public default <T, T1 extends T> T getNewInstanceRequiredUC( Class<T1> clazz, K key ) {
+	public default <T, T1 extends T> T getNewInstanceRequiredUC( Class<T1> clazz, K key ) throws EX {
 		try {
 			return getNewInstanceRequired( clazz, key );
 		} catch( ReflectiveOperationException e ) {
 			throw new InstantiationError( key, e );
 		}
 	}
-	public default <T, T1 extends T, T2 extends T> T getNewInstanceRequiredUC( Class<T1> clazz, K key, ValueProvider<Class<T2>> defaultValueProvider ) {
+	public default <T, T1 extends T, T2 extends T> T getNewInstanceRequiredUC( Class<T1> clazz, K key, ValueProvider<Class<T2>> defaultValueProvider ) throws EX {
 		try {
 			return getNewInstanceRequired( clazz, key, defaultValueProvider );
 		} catch( ReflectiveOperationException e ) {
