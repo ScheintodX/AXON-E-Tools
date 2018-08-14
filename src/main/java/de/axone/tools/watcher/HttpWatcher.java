@@ -9,8 +9,10 @@ import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.axone.tools.HttpUtilException;
 import de.axone.tools.HttpUtil;
 import de.axone.tools.HttpUtil.HttpUtilResponse;
+import de.axone.web.HttpStatusCode;
 import de.axone.web.SuperURL;
 
 /**
@@ -118,7 +120,13 @@ public class HttpWatcher implements Serializable {
 					timeout = maxAgeMs;
 					
 					result = response;
+					
+				} else {
+					
+					throw new HttpUtilException( HttpStatusCode.forCode( response.code ), response );
 				}
+				
+				
 			} catch( ClientProtocolException e ) {
 				log.error( url.toDebug(), e );
 			} catch( URISyntaxException e ) {

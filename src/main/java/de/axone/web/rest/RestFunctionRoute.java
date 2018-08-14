@@ -19,8 +19,9 @@ public interface RestFunctionRoute {
 		
 		private static final Pattern PATTERN_PATTERN = Pattern.compile( ":(\\w+)" );
 		
-		private EnumSet<Method> methods;
+		private final EnumSet<Method> methods;
 		
+		private final String name;
 		private final String patternString;
 		private final Pattern pattern;
 		private final List<String> parameterNames = new LinkedList<>();
@@ -28,44 +29,39 @@ public interface RestFunctionRoute {
 		
 		/* Constructor hell because of EnumSet */
 		public Simple( String pattern, Method method ){
-			this( pattern, EnumSet.of( method ) );
+			this( null, pattern, EnumSet.of( method ) );
 		}
 		public Simple( String pattern, Method m1, Method m2 ){
-			this( pattern, EnumSet.of( m1, m2 ) );
-		}
-		public Simple( String pattern, Method m1, Method m2, Method m3 ){
-			this( pattern, EnumSet.of( m1, m2, m3 ) );
-		}
-		public Simple( String pattern, Method m1, Method m2, Method m3, Method m4 ){
-			this( pattern, EnumSet.of( m1, m2, m3, m4 ) );
-		}
-		public Simple( String pattern, Method first, Method ... rest ){
-			this( pattern, EnumSet.of( first, rest ) );
+			this( null, pattern, EnumSet.of( m1, m2 ) );
 		}
 		
-		public Simple( String pattern, EnumSet<Method> methods ){
-			this( pattern );
-			this.methods = methods;
+		public Simple( String routeName, String pattern ){
+			this( routeName, pattern, null );
 		}
 		
 		public Simple( String pattern ){
+			this( null, pattern, null );
+		}
+		public Simple( String routeName, String pattern, EnumSet<Method> methods ){
 			
 			this.patternString = pattern;
+			this.methods = methods;
+			this.name = routeName;
 			
 			Matcher m = PATTERN_PATTERN.matcher( pattern );
 			int i=0;
 			StringBuffer compiled = new StringBuffer();
 			while( m.find() ){
 				
-				String name = pattern.substring( m.start(), m.end() );
+				String parameterName = pattern.substring( m.start(), m.end() );
 				
-				name = name.substring( 1 ); // remove :
+				parameterName = parameterName.substring( 1 ); // remove :
 				
-				if( name.length() == 0 )
+				if( parameterName.length() == 0 )
 					throw new IllegalArgumentException( ": must be followed by word charackters" );
 				
-				parameterNames.add( name );
-				parameterIndizes.put( name, Integer.valueOf( i++ ) );
+				parameterNames.add( parameterName );
+				parameterIndizes.put( parameterName, Integer.valueOf( i++ ) );
 				
 				m.appendReplacement( compiled, "([^\\/]+)" );
 			}
@@ -90,6 +86,9 @@ public interface RestFunctionRoute {
 			if( m.matches() ){
 				
 				Map<String,String> result = new TreeMap<>();
+				
+				result.put( "__pattern__", patternString );
+				if( name != null ) result.put( "__name__", name );
 				
 				for( int i=0; i<m.groupCount(); i++ ){
 					

@@ -22,7 +22,7 @@ public class ImageScalerGM implements ImageScaler {
 	
 	private final Path gmCommand;
 	
-	private ImageScalerOption [] options;
+	// private ImageScalerOption [] options;
 	
 	public ImageScalerGM( Path gmCommand ) {
 		
@@ -31,7 +31,7 @@ public class ImageScalerGM implements ImageScaler {
 	public ImageScalerGM( Path gmCommand, ImageScalerOption ... options ) {
 		
 		this.gmCommand = gmCommand;
-		this.options = options;
+		//this.options = options;
 	}
 	
 	@Override

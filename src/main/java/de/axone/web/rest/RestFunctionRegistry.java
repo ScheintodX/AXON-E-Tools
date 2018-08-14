@@ -178,12 +178,16 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> implements 
 		register( new RestFunctionRoute.Simple( route ), function );
 	}
 	
-	public void register( String route, Method methods, RestFunction<DATA, REQUEST> function ){
-		register( new RestFunctionRoute.Simple( route, methods ), function );
+	public void register( String route, Method method, RestFunction<DATA, REQUEST> function ){
+		register( new RestFunctionRoute.Simple( route, method ), function );
 	}
 	
 	public void register( String route, EnumSet<Method> methods, RestFunction<DATA, REQUEST> function ){
-		register( new RestFunctionRoute.Simple( route, methods ), function );
+		register( new RestFunctionRoute.Simple( null, route, methods ), function );
+	}
+	
+	public void register( String name, String route, EnumSet<Method> methods, RestFunction<DATA, REQUEST> function ){
+		register( new RestFunctionRoute.Simple( name, route, methods ), function );
 	}
 	
 	public void register( RestFunctionRoute route, RestFunction<DATA, REQUEST> function ){

@@ -189,4 +189,8 @@ public enum HttpStatusCode {
     	}
     	return result;
     }
+
+	public boolean is( int code ) {
+		return this.code == code;
+	}
 }
