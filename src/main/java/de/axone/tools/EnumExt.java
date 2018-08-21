@@ -16,6 +16,7 @@ public interface EnumExt<T extends Enum<T>> {
 		}
 		return false;
 	}
+	
 	public default boolean isOneOf(  Collection<T> others ) {
 		
 		if( others == null ) return false;
@@ -36,6 +37,7 @@ public interface EnumExt<T extends Enum<T>> {
 		}
 		return true;
 	}
+	
 	public default boolean isNoneOf(  Collection<T> others ) {
 		
 		if( others == null ) return true;
@@ -56,7 +58,6 @@ public interface EnumExt<T extends Enum<T>> {
 		if( value == null ) return true;
 		return ! name().equals( value.toUpperCase() );
 	}
-	
 	
 	public static <T extends Enum<T>> T valueOf( Class<T> clazz, String value ) {
 		

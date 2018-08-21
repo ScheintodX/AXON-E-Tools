@@ -65,6 +65,8 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> implements 
 				parameters = route.match(
 						req.getRestMethod(), path );
 				
+				//E.rr( route, path, parameters );
+				
 				if( parameters != null ){
 					
 					f = functions.get( i );
