@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -254,10 +255,27 @@ public abstract class Mapper {
 	@SafeVarargs
 	public static <T,X> HashSet<T> hashSet( Converter<T,X> converter, X ... values ){
 		
+		// Arrays.asList is cheap. This creates an shallow wrapper wich is not (!) java.lang.ArrayList
+		return hashSetX( converter, values.length, Arrays.asList( values ) );
+	}
+	
+	public static <T,X> HashSet<T> hashSetX( Converter<T,X> converter, Collection<X> values ){
+		
+		return hashSetX( converter, values.size(), values );
+	}
+
+	public static <T,X> HashSet<T> hashSetX( Converter<T,X> converter, Iterable<X> values ){
+		
+		 // see HashMap DEFAULT_INITIAL_CAPACITY capacity
+		return hashSetX( converter, 1<<4, values );
+	}
+	
+	public static <T,X> HashSet<T> hashSetX( Converter<T,X> converter, int initialCapacity, Iterable<X> values ){
+		
 		Assert.notNull( converter, "converter" );
 		if( values == null ) return new HashSet<T>();
 		
-		HashSet<T> result = new HashSet<T>( values.length );
+		HashSet<T> result = new HashSet<T>( initialCapacity );
 		
 		for( X value : values ){
 			result.add( converter.convert( value ) );
@@ -267,6 +285,11 @@ public abstract class Mapper {
 
 	@SafeVarargs
 	public static <T,X> TreeSet<T> treeSet( Converter<T,X> converter, X ... values ){
+		
+		// Arrays.asList is cheap. This creates an shallow wrapper wich is not (!) java.lang.ArrayList
+		return treeSetX( converter, Arrays.asList( values ) );
+	}
+	public static <T,X> TreeSet<T> treeSetX( Converter<T,X> converter, Iterable<X> values ){
 		
 		Assert.notNull( converter, "converter" );
 		if( values == null ) return new TreeSet<T>();
@@ -493,6 +516,66 @@ public abstract class Mapper {
 		ArrayList<T> result = new ArrayList<>();
 		for( T item : items ) result.add( item );
 		return result;
+	}
+	
+	public static <T,I extends Comparable<I>> List<T> asSortedList( Map<T,I> items ) {
+		
+		List<T> result = new ArrayList<>( items.size() );
+		
+		for( T it : items.keySet() ) {
+			
+			result.add( it );
+		}
+		
+		result.sort( new IndexedComparator<>( items ) );
+		
+		return result;
+	}
+	
+	private static class IndexedComparator<T,I extends Comparable<I>> implements Comparator<T> {
+		
+		private final Map<T,I> index;
+		
+		IndexedComparator( Map<T, I> index ){
+			
+			this.index = index;
+		}
+
+		@Override
+		public int compare( T o1, T o2 ) {
+			
+			I i1 = index.get( o1 ), i2 = index.get( o2 );
+			
+			if( i1 == i2 ) return 0;
+			if( i1 == null ) return 1;
+			if( i2 == null ) return -1;
+			
+			return i1.compareTo( i2 );
+		}
+	}
+	
+	public static <T,K> List<T> joinedList( ListProvider<T,K> itemProvider, Iterable<K> keyProvider ) {
+		
+		ArrayList<T> result = new ArrayList<>();
+		
+		for( K key : keyProvider ) {
+			
+			Iterable<T> list = itemProvider.provide( key );
+			
+			for( T item : list ) {
+				
+				result.add( item );
+			}
+		}
+		
+		
+		return result;
+		
+	}
+	
+	public interface ListProvider<T,K> {
+		
+		public Iterable<T> provide( K key );
 	}
 
 	public static <T> T[] asArray( Class<T> clazz, Collection<T> aids ) {

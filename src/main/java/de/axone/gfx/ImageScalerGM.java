@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.axone.shell.ShellExec;
+import de.axone.shell.ShellExec.QuickResult;
+import de.axone.shell.ShellExec.ShellException;
 
 public class ImageScalerGM implements ImageScaler {
 	
@@ -55,7 +57,9 @@ public class ImageScalerGM implements ImageScaler {
 			
 				log.trace( "Composite/Convert '{}' + '{}' -> '{}' -> '{}'", imagePathS, watermarkPathS, tmpS, outPathS );
 				
-				ShellExec.quickexec( gmCommand,
+				QuickResult res;
+				
+				res = ShellExec.quickexec( gmCommand,
 						COMPOSITE,
 						HIGH_QUALITY.commandLine(),
 						COMPOSE_OVER.commandLine(),
@@ -64,16 +68,20 @@ public class ImageScalerGM implements ImageScaler {
 						imagePathS,
 						tmpS
 				);
+				if( res.getExitValue() != 0 )
+						throw new ShellException( res );
 				
-				ShellExec.quickexec( gmCommand,
+				res = ShellExec.quickexec( gmCommand,
 						CONVERT,
 						quality.commandLine(),
 						Resize( size, size ).commandLine(),
-						Brightness( -95 ).commandLine(),
+						//Brightness( -95 ).commandLine(),
 						STRIP.commandLine(),
 						tmpS,
 						outPathS
 				);
+				if( res.getExitValue() != 0 )
+						throw new ShellException( res );
 				
 			} catch( InterruptedException e ) {
 				
@@ -96,7 +104,9 @@ public class ImageScalerGM implements ImageScaler {
 				
 				log.trace( "Convert '{}' -> '{}'", imagePathS, outPathS );
 				
-				ShellExec.quickexec( gmCommand,
+				QuickResult res;
+				
+				res = ShellExec.quickexec( gmCommand,
 						CONVERT,
 						quality.commandLine(),
 						Resize( size, size ).commandLine(),
@@ -104,6 +114,9 @@ public class ImageScalerGM implements ImageScaler {
 						imagePath.toFile().getAbsolutePath(),
 						outPath.toFile().getAbsolutePath()
 				);
+				if( res.getExitValue() != 0 )
+						throw new ShellException( res );
+				
 			} catch( InterruptedException e ) {
 				
 				throw new Error( "Error scaling " + imagePath );

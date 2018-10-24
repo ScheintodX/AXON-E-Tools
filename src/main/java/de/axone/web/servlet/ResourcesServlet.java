@@ -120,7 +120,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 			Cache<String,Object> buffer = buffer();
 			
 			String pYui = request.getParameter( P_DO_YUI );
-			boolean doYui = !EasyParser.isNo( pYui );
+			boolean doYui = !EasyParser.isNo( pYui ) && ! uri.endsWith( ".min.js" );
 			
 			String pNc = request.getParameter( P_NO_CACHE );
 			boolean doNotCache = pNc != null && pNc.length() == 0;
@@ -151,7 +151,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 					for( String uriPart : uriSplitted ){
 						
 						@SuppressWarnings( "unused" )
-						boolean isHtml=false, isCss=false, isScss=false, isJs=false, isPng=false, isJpg=false, isGif=false, isIcon=false;
+						boolean isHtml=false, isCss=false, isScss=false, isJs=false, isPng=false, isJpg=false, isGif=false, isIcon=true;
 						if( uriPart.endsWith( ".html" ) || uriPart.endsWith( ".xhtml" ) ){
 							isHtml = true;
 						} else if( uriPart.endsWith( ".css" )||uriPart.endsWith( ".scss" ) ){

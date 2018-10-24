@@ -160,6 +160,7 @@ public class A {
 	}
 	public static int[] array( int ... values ){ return values; }
 	public static Integer[] objects( int ... values ){
+		if( values == null ) return null;
 		Integer [] result = new Integer[ values.length ];
 		for( int i=0; i<values.length; i++ ) result[ i ] = values[ i ];
 		return result;

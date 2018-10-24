@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.axone.tools.Str;
+import de.axone.tools.ToString;
 
 public class ShellExec {
 	
@@ -24,14 +25,19 @@ public class ShellExec {
 		if( ! Files.isExecutable( cmd ) )
 				throw new IllegalArgumentException( "Not executable: " + cmd );
 				
-		
 		String commandline = 
 				cmd.toFile().getAbsolutePath() + " " + Str.join( " ", args );
 		
-		//E.rr( commandline );
-		
 		log.debug( commandline );
 		
+		/*
+		 * Doesn't work because we need parameters completely separated
+		String [] commandArgs = new String[ args.length + 1 ];
+		commandArgs[ 0 ] = cmd.toFile().getAbsolutePath();
+		System.arraycopy( args, 0, commandArgs, 1, args.length );
+		*/
+		
+		//Process process = Runtime.getRuntime().exec( commandline );
 		Process process = Runtime.getRuntime().exec( commandline );
 		
 		QuickResultImpl result = new QuickResultImpl();
@@ -113,14 +119,34 @@ public class ShellExec {
 		}
 		
 		
+		@Override
+		public String toString() {
+			
+			return ToString.build( QuickResultImpl.class )
+					.append( "stdout", stdout.toString() )
+					.append( "stderr", stderr.toString() )
+					.append( "exitValue", exitValue )
+					.toString()
+					;
+		}
+		
 	}
 	
-	interface QuickResult {
+	public interface QuickResult {
 		
 		CharSequence getStdOut();
 		
 		CharSequence getStdErr();
 		
 		int getExitValue();
+	}
+	
+	public static class ShellException extends RuntimeException {
+
+		public ShellException( QuickResult result ) {
+			
+			super( "(" + result.getExitValue() + ") :" + result.getStdErr() );
+		}
+		
 	}
 }

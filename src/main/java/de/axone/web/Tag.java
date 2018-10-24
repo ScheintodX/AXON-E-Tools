@@ -217,6 +217,12 @@ public abstract class Tag {
 	public static String a( String content, String href ){
 		return simple( "a", content, "href", href );
 	}
+	public static String a( String content, SuperURL href ){
+		return simple( "a", content, "href", href.toAttribute() );
+	}
+	public static String a( String content, SuperURL href, String cssClass ){
+		return simple( "a", content, "href", href.toAttribute(), "class", cssClass );
+	}
 	public static String javascript( String id, String content ){
 		return simple( "script",
 				"\n<!--\n\"use strict\";\n\n " + content + "\n-->\n",

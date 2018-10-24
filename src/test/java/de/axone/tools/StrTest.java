@@ -334,4 +334,17 @@ public class StrTest {
 		assertEquals( Str.splitEvery( "aabbcc", 2 ), new String[]{ "aa", "bb", "cc" } );
 	}
 	
+	public void testSplitHtml() {
+		
+		assertEquals( splijo( "aaa bbb" ), "aaa:bbb" );
+		assertEquals( splijo( "  aa bb  " ), "aa:bb" );
+		assertEquals( splijo( "aa <a href=\"foo\"> bb" ), "aa:<a href=\"foo\">:bb" );
+		assertEquals( splijo( " <a href=\"foo\"> bb" ), "<a href=\"foo\">:bb" );
+		assertEquals( splijo( "aa <a href=\"foo\"> " ), "aa:<a href=\"foo\">" );
+	}
+	
+	private static String splijo( String text ) {
+		return Str.join( ":", Str.splitAtSpacesLeaveHtmlIntact( text ) );
+	}
+	
 }

@@ -26,6 +26,8 @@ import de.axone.refactor.NotTested;
 
 public class Str {
 	
+	//private static final int AVERAGE_WORDLEN = 6;
+	
 	public static final Joiner<Object> TO_STRING_KOMMA =
 			new Joiner<Object>() {
 				@Override
@@ -257,6 +259,29 @@ public class Str {
 		return result;
 	}
 	
+	/**
+	 * quicker version does only join with chars and returns a CharSequence
+	 * @param values 
+	 * @return joined "string"
+	 */
+	public static CharSequence join( Iterable<String> values ) {
+		
+		int c = 0;
+		for( String value : values ) {
+			c += value.length() +1;
+		}
+		
+		StringBuilder result = new StringBuilder( c );
+		boolean first = true;
+		for( String value : values ) {
+			if( first ) first = false;
+			else result.append( ' ' );
+			result.append( value );
+		}
+		
+		return result;
+	}
+	
 	// --- J o i n e r --------------------------------------------------
 	@FunctionalInterface
 	public interface Joiner<T> {
@@ -326,21 +351,51 @@ public class Str {
 	
 	public static final class ConfiguredJoiner<T> implements Joiner<T> {
 		
-		private final String seperator;
+		private final String separator;
 		private final Function<T,String> mapper;
 			
 		public ConfiguredJoiner( String seperator, Function<T,String> mapper ) {
-			this.seperator = seperator;
+			this.separator = seperator;
 			this.mapper = mapper;
 		}
 		@Override
 		public String getSeparator() {
-			return seperator;
+			return separator;
 		}
 		@Override
 		public String toString( T object, int index ) {
 			return mapper.apply( object );
 		}
+	}
+	
+	public static final class QuotingJoiner<T> implements Joiner<T> {
+		
+		private final String quotes,
+		                     escape,
+		                     separator;
+		
+		public QuotingJoiner( String quotes, String escape, String separator ) {
+			this.quotes = quotes;
+			this.escape = escape;
+			this.separator = separator;
+		}
+
+		@Override
+		public String toString( T object, int index ) {
+			
+			if( object == null ) return null;
+			
+			String asString = object.toString();
+			
+			return quotes + asString.replace( quotes, escape) + quotes;
+		}
+		
+		@Override
+		public String getSeparator() {
+			
+			return separator;
+		}
+		
 	}
 	
 	public interface MapJoiner<K,V> {
@@ -1327,5 +1382,54 @@ public class Str {
 		if( s1 == s2 ) return false;
 		if( s1 == null || s2 == null ) return true;
 		return ! s1.equals( s2 );
+	}
+	
+	public static ArrayList<String> splitAtSpacesLeaveHtmlIntact( String text ) {
+		
+		if( text == null ) return null;
+		
+		boolean inHtml = false;
+		
+		int i = 0, len = text.length();
+		
+		char [] chars = text.toCharArray();
+		
+		ArrayList<String> result = new ArrayList<>( len/6 ); // Assuming we have an average word length of 6 chars
+		StringBuilder word = new StringBuilder();
+		
+		// skip staring whitespace
+		for( i=0; i <text.length(); i++ ) {
+			if( !isWS( chars[ i ] ) ) break;
+		}
+		
+		for( ; i < text.length(); i++ ) {
+			
+			char ch = chars[ i ];
+			
+			if( isWS( ch ) && ! inHtml ) {
+				if( word.length() > 0 ) {
+					result.add( word.toString() );
+					word = new StringBuilder();
+				}
+			} else {
+				if( ch == '<' ) {
+					inHtml = true;
+				} else if( ch == '>' ) {
+					inHtml = false;
+				}
+				word.append( ch );
+			}
+		}
+		
+		if( word.length() > 0 ) result.add( word.toString() );
+		
+		return result;
+	}
+	
+	// Premature optimization to catch common case fast
+	private static boolean isWS( char ch ) {
+		if( ch == ' ' ) return true;
+		if( ch > 0x20 && ch < 0x7F ) return false;
+		return Character.isWhitespace( ch );
 	}
 }

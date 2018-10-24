@@ -8,6 +8,8 @@ public class Pair<L, R> implements Comparable<Pair<L,R>>, Serializable {
 	 
     private final L left;
     private final R right;
+    
+    public static final Pair<?,?> EMPTY = Pair.empty();
  
     public R getRight() {
         return right;
@@ -24,6 +26,11 @@ public class Pair<L, R> implements Comparable<Pair<L,R>>, Serializable {
     
     public static <A, B> Pair<A, B> of(A left, B right) {
         return new Pair<A, B>(left, right);
+    }
+    
+    @SuppressWarnings( "unchecked" )
+	public static <A,B> Pair<A, B> empty() {
+        return (Pair<A,B>)EMPTY;
     }
     
     private int hashCode = 0;

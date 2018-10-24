@@ -688,8 +688,15 @@ public class SuperURLTest {
     	String encoded = p.toString( url );
     	
     	assertEquals( encoded, "http://www.axon-e.de?q&amp;a=b" );
+    }
+    
+    /*
+    public void testSpecialCharHandling() {
+    	
+    	SuperUrl url = new Super
     	
     }
+    */
     
     public void testIPV6() throws URISyntaxException {
     	

@@ -250,9 +250,10 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 	    				return Optional.empty();
 	
 	    				ImageScaler.instance().scale( cachedFile, imageFile.get().getLeft(), watermark, size, hq );
+	    				
 	    				hasChanged = true;
-
 	    			}
+	    			
 	    		} finally {
 	    			if( ! hq ) threadQueue.releaseLock( lock );
 	    			long dur = System.currentTimeMillis() - start;
