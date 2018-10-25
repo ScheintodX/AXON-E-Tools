@@ -18,6 +18,7 @@ import de.axone.cache.ng.CacheNG.Cache;
 import de.axone.cache.ng.CacheNG.CacheNGInterrupted;
 import de.axone.cache.ng.CacheNG.CacheNGTimeout;
 import de.axone.cache.ng.CacheNG.MultiValueAccessor;
+import de.axone.cache.ng.CacheNG.Realm;
 import de.axone.cache.ng.CacheNG.SingleValueAccessor;
 import de.axone.test.TestClass;
 
@@ -58,18 +59,25 @@ public class AutomaticClientImpl<K,O>
 	private final Stats stats = new DefaultStats( this );
 	
 	public AutomaticClientImpl( CacheNG.Cache<K,O> backend ){
+		this( backend, Realm.Hint.STRICT );
+	}
+	
+	public AutomaticClientImpl( CacheNG.Cache<K,O> backend, Realm.Hint hint ){
+		
 		/*
 		assert backend != null;
 		this.backend = backend;
 		LOCK = new SimpleLocker();
 		*/
-		this( backend, DEFAULT_TIMEOUT );
+		
+		this( backend, DEFAULT_TIMEOUT, hint );
+		
 	}
 	
-	public AutomaticClientImpl( CacheNG.Cache<K,O> backend, long timeout ){
+	private AutomaticClientImpl( CacheNG.Cache<K,O> backend, long timeout, Realm.Hint hint ){
 		assert backend != null;
 		this.backend = backend;
-		LOCK = new TimedLocker( timeout );
+		LOCK = hint == Realm.Hint.STRICT ? new TimedLocker( timeout ) : new TimedLockerLoose( timeout );
 	}
 	
 	@Override
@@ -107,7 +115,7 @@ public class AutomaticClientImpl<K,O>
 			try {
 				
 				// Try again in case another process has gotten it meanwhile
-				entry = backend.fetchEntry( key );
+				if( LOCK.needsRefetch() ) entry = backend.fetchEntry( key );
 				
 				if( entry != null ){
 					
@@ -170,18 +178,29 @@ public class AutomaticClientImpl<K,O>
 			LOCK.__FETCHLOCK__();
 			
 			try {
-				List<K> reallyMissed = new LinkedList<>();
-				
-				// re-check in case someone else loaded something meanwhile
-				for( K key : missed ){
-	    			Cache.Entry<O> found = backend.fetchEntry( key );
-	    			
-	    			if( found == null ) {
-	    				reallyMissed.add( key );
-	    			} else {
-	    				if( found.data() != null ) 
-			    				result.put( key, found.data() );
-	    			}
+					
+				List<K> reallyMissed;
+					
+				if( LOCK.needsRefetch() ) {
+					
+					// re-check in case someone else loaded something meanwhile
+					
+					reallyMissed = new LinkedList<>();
+					
+					for( K key : missed ){
+		    			Cache.Entry<O> found = backend.fetchEntry( key );
+		    			
+		    			if( found == null ) {
+		    				reallyMissed.add( key );
+		    			} else {
+		    				if( found.data() != null ) 
+				    				result.put( key, found.data() );
+		    			}
+					}
+					
+				} else {
+					
+					reallyMissed = missed;
 				}
 
 				Map<K,O> fetched = accessor.fetch( reallyMissed );
@@ -360,6 +379,8 @@ public class AutomaticClientImpl<K,O>
 		void __READUNLOCK__();
 		void __WRITEUNLOCK__();
 		void __FETCHUNLOCK__();
+		
+		boolean needsRefetch();
 	}
 	
 	@SuppressWarnings( "unused" )
@@ -390,6 +411,10 @@ public class AutomaticClientImpl<K,O>
 		@Override public void __FETCHUNLOCK__() {
 			__fetch__.unlock();
 		}
+		@Override
+		public boolean needsRefetch() {
+			return true;
+		}
 		
 	}
 	
@@ -399,11 +424,57 @@ public class AutomaticClientImpl<K,O>
 	
 		private final ReadLock __read__ = lock.readLock();
 		private final WriteLock __write__ = lock.writeLock();
-		private final ReentrantLock __fetch__ = new ReentrantLock( FAIR );
 		
 		private final long timeout;
 		
 		TimedLocker( long timeout ) {
+			this.timeout = timeout;
+		}
+	
+		@Override public void __READLOCK__() {
+			try {
+				if( ! ( __read__.tryLock() || __read__.tryLock( timeout, TimeUnit.MILLISECONDS ) ) )
+						throw new CacheNGTimeout( timeout );
+			} catch( InterruptedException e ) {
+				throw new CacheNGInterrupted( e );
+			}
+		}
+		@Override public void __WRITELOCK__() {
+		}
+		@Override public void __FETCHLOCK__() {
+			try {
+				if( ! ( __write__.tryLock() || __write__.tryLock( timeout, TimeUnit.MILLISECONDS ) ) )
+						throw new CacheNGTimeout( timeout );
+			} catch( InterruptedException e ) {
+				throw new CacheNGInterrupted( e );
+			}
+		}
+		
+		@Override public void __READUNLOCK__() {
+			__read__.unlock();
+		}
+		@Override public void __WRITEUNLOCK__() {
+		}
+		@Override public void __FETCHUNLOCK__() {
+			__write__.unlock();
+		}
+		
+		@Override
+		public boolean needsRefetch() {
+			return true;
+		}
+	}
+	
+	private class TimedLockerLoose implements Locker {
+		
+		private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock( FAIR );
+	
+		private final ReadLock __read__ = lock.readLock();
+		private final WriteLock __write__ = lock.writeLock();
+		
+		private final long timeout;
+		
+		TimedLockerLoose( long timeout ) {
 			this.timeout = timeout;
 		}
 	
@@ -424,12 +495,6 @@ public class AutomaticClientImpl<K,O>
 			}
 		}
 		@Override public void __FETCHLOCK__() {
-			try {
-				if( ! ( __fetch__.tryLock() || __fetch__.tryLock( timeout, TimeUnit.MILLISECONDS ) ) )
-						throw new CacheNGTimeout( timeout );
-			} catch( InterruptedException e ) {
-				throw new CacheNGInterrupted( e );
-			}
 		}
 		
 		@Override public void __READUNLOCK__() {
@@ -439,8 +504,12 @@ public class AutomaticClientImpl<K,O>
 			__write__.unlock();
 		}
 		@Override public void __FETCHUNLOCK__() {
-			__fetch__.unlock();
 		}
 		
+		@Override
+		public boolean needsRefetch() {
+			return false;
+		}
 	}
+	
 }

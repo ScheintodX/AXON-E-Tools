@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.annotations.Test;
 
 import de.axone.cache.ng.CacheNG.Cache;
+import de.axone.cache.ng.CacheNG.Realm;
 import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
@@ -38,7 +39,7 @@ public class CacheNGTest_TimeoutWithinMultithreaded {
 			new CacheAccessCounter<>( wrapper );
 	
 	CacheNG.AutomaticClient<Aid,TArticle> autoClient =
-			new AutomaticClientImpl<>( counter );
+			new AutomaticClientImpl<>( counter, Realm.Hint.STRICT );
 			
 			
 	public void fillCache(){

@@ -143,6 +143,8 @@ public abstract class CacheNG {
 	 */
 	public interface Realm<K,O> extends Comparable<Realm<?,?>>{
 		
+		public enum Hint { STRICT, LOOSE }
+		
 		/**
 		 * @return String representation of this realm.
 		 * Can be used by cache backends to identify the cache
@@ -171,6 +173,8 @@ public abstract class CacheNG {
 			return this;
 		}
 		*/
+		
+		public default Hint hint() { return Hint.STRICT; }
 		
 		public static <X,Y> Realm<X,Y> dontCare() {
 			return new RealmImpl<>( "dontCare" );

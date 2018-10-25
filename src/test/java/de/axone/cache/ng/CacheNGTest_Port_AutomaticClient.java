@@ -16,6 +16,7 @@ import java.util.TreeMap;
 
 import org.testng.annotations.Test;
 
+import de.axone.cache.ng.CacheNG.Realm;
 import de.axone.cache.ng.CacheNG.UniversalAccessor;
 import de.axone.cache.ng.CacheNGTestHelpers.TestRealm;
 import de.axone.cache.ng.CacheNGTest_Port_Client.TestEntry;
@@ -43,11 +44,11 @@ public class CacheNGTest_Port_AutomaticClient {
 	//private static Cache<String,TestEntry> backend = new CacheHashMap<String,TestEntry>();
 	private static TestDataAccessor acc = new TestDataAccessor();
 	private static CacheNG.AutomaticClient<String,TestEntry> auto =
-			new AutomaticClientImpl<String,TestEntry>( backend );
+			new AutomaticClientImpl<String,TestEntry>( backend, Realm.Hint.STRICT );
 	
 	// Second test for multiple frontend on one backend
 	private static CacheNG.AutomaticClient<String,TestEntry> auto2 =
-			new AutomaticClientImpl<String,TestEntry>( backend );
+			new AutomaticClientImpl<String,TestEntry>( backend, Realm.Hint.STRICT );
 	
 	//@Test( enabled=false )
 	public void testAutomaticCache(){

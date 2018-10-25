@@ -7,6 +7,7 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
+import de.axone.cache.ng.CacheNG.Realm;
 import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
@@ -27,13 +28,13 @@ public class CacheNGTest_Events {
 				spy( new CacheHashMap<>( RN.AID_ARTICLE.unique(), false ) );
 		
 		CacheNG.AutomaticClient<Aid, TArticle> autoMaster =
-				spy( new AutomaticClientImpl<Aid,TArticle>( cacheMaster ) );
+				spy( new AutomaticClientImpl<Aid,TArticle>( cacheMaster, Realm.Hint.STRICT ) );
 		
 		CacheHashMap<Aid,TArticle> cacheSlave =
 				spy( new CacheHashMap<>( RN.AID_ARTICLE.unique(), false ) );
 		
 		CacheNG.AutomaticClient<Aid, TArticle> autoSlave =
-				spy( new AutomaticClientImpl<Aid,TArticle>( cacheSlave ) );
+				spy( new AutomaticClientImpl<Aid,TArticle>( cacheSlave, Realm.Hint.STRICT ) );
 		
 		TArticle art;
 		

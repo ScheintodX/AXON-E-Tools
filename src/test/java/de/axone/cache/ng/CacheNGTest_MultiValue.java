@@ -9,6 +9,7 @@ import java.util.Set;
 import org.testng.annotations.Test;
 
 import de.axone.cache.ng.CacheNG.Cache;
+import de.axone.cache.ng.CacheNG.Realm;
 import de.axone.cache.ng.CacheNGTestHelpers.TestRealm;
 
 @Test( groups="cacheng.multivalue" )
@@ -26,12 +27,12 @@ public class CacheNGTest_MultiValue {
 		TestStringAccessor strToStrAcc = new TestStringAccessor();
 		
 		CacheNG.AutomaticClient<String,String> frontendString = new AutomaticClientImpl<>(
-				new MultiStringAccessor( backendMulti ) );
+				new MultiStringAccessor( backendMulti ), Realm.Hint.STRICT );
 		
 		TestIntegerAccessor strToIntAcc = new TestIntegerAccessor();
 		
 		CacheNG.AutomaticClient<String,Integer> frontendInteger = new AutomaticClientImpl<>(
-					new MultiIntegerAccessor( backendMulti ) );
+					new MultiIntegerAccessor( backendMulti ), Realm.Hint.STRICT );
 		
 		assertThat( backendMulti ).hasNotCached( TEST123 );
 		assertThat( frontendString ).hasNotCached( TEST123 );
@@ -95,7 +96,7 @@ public class CacheNGTest_MultiValue {
 		
 		CacheNG.AutomaticClient<String,String> frontendString =
 				new AutomaticClientImpl<String,String>(
-						new MultiStringAccessor( backendMulti ) );
+						new MultiStringAccessor( backendMulti ), Realm.Hint.STRICT );
 		
 		assertThat( frontendString ).hasNotCached( NOT_HERE );
 		assertThat( backendMulti ).hasNotCached( NOT_HERE );

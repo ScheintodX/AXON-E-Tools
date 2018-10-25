@@ -10,10 +10,15 @@ public class RealmImpl<K,O> implements CacheNG.Realm<K,O>, Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	protected final String realm;
+	protected final Hint hint;
 	
 	public RealmImpl( String realm ){
+		this( realm, Hint.STRICT );
+	}
+	public RealmImpl( String realm, Hint hint ){
 		assert realm != null;
 		this.realm = realm;
+		this.hint = hint;
 	}
 
 	@Override
@@ -23,6 +28,10 @@ public class RealmImpl<K,O> implements CacheNG.Realm<K,O>, Serializable {
 	@Override
 	public String realm() {
 		return realm;
+	}
+	@Override
+	public Hint hint() {
+		return hint;
 	}
 	@Override
 	public String [] config() {
@@ -55,7 +64,7 @@ public class RealmImpl<K,O> implements CacheNG.Realm<K,O>, Serializable {
 	}
 
 	@Override
-	public String toString(){ return name(); }
+	public String toString(){ return name() + "(" + hint() + ")"; }
 
 	@Override
 	public int compareTo( Realm<?, ?> o ) {

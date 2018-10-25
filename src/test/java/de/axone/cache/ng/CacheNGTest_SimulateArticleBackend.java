@@ -15,6 +15,7 @@ import org.testng.annotations.Test;
 
 import com.google.common.io.Files;
 
+import de.axone.cache.ng.CacheNG.Realm;
 import de.axone.cache.ng.CacheNG.SingleValueAccessor;
 import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.tools.E;
@@ -47,7 +48,7 @@ public class CacheNGTest_SimulateArticleBackend {
 				CacheEHCache.instance( tmp, RN.S_SS2, (long)(NUM_ACCESSES * RATIO ) );
 		
 		CacheNG.AutomaticClient<String,Collection<String>> client
-			= new AutomaticClientImpl<>( cache );
+			= new AutomaticClientImpl<>( cache, Realm.Hint.STRICT );
 		
 		ExecutorService service = Executors.newFixedThreadPool( NUM_THREADS );
 		List<Future<?>> tasks = new ArrayList<>( NUM_THREADS );

@@ -8,6 +8,7 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
+import de.axone.cache.ng.CacheNG.Realm;
 import de.axone.cache.ng.CacheNGTestHelpers.Aid;
 import de.axone.cache.ng.CacheNGTestHelpers.RN;
 import de.axone.cache.ng.CacheNGTestHelpers.TArticle;
@@ -84,7 +85,7 @@ public class CacheNGTest_TimeoutAll {
 				new CacheWrapperDelayedInvalidation<>( cache, 1000 );
 		
 		CacheNG.AutomaticClient<Aid,TArticle> auto =
-				new AutomaticClientImpl<>( wrapper );
+				new AutomaticClientImpl<>( wrapper, Realm.Hint.STRICT );
 				
 		return auto;
 	}
