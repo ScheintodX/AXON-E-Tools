@@ -285,29 +285,35 @@ public abstract class ResourcesServlet extends HttpServlet {
 									throw new RuntimeException( "Cannot compile " + file.getAbsolutePath() );
 						}
 						
-    					if( ( isCss || isJs ) && doYui ){
+    					if( ( isCss || isJs ) ){
     						
-    						if( dataAsString == null )
-    								dataAsString = new String( plainData, Charsets.utf8 );
-    						
-    						if( isCss && rotCss != null ){
+    						if( doYui || ( isCss && rotCss != null ) ) {
     							
-								dataAsString = rotCss.rotate( dataAsString );
+	    						if( dataAsString == null )
+	    								dataAsString = new String( plainData, Charsets.utf8 );
+	    						
+	    						if( isCss && rotCss != null ){
+	    							
+									dataAsString = rotCss.rotate( dataAsString );
+	    						}
+	    						
+	    						if( doYui ) {
+	    							
+		    						StringReader sIn = new StringReader( dataAsString );
+		    						StringWriter sOut = new StringWriter();
+		    						
+		    						if( isCss ){
+			    						CssCompressor compressor = new CssCompressor( sIn );
+			    						compressor.compress( sOut, 0 );
+		    						} else {
+		    							JavaScriptCompressor compressor = new JavaScriptCompressor( sIn, null );
+		    							compressor.compress( sOut, 0, true, false, false, false );
+		    						}
+		    						
+		    						String compressedString = sOut.toString();
+		    						plainData = compressedString.getBytes();
+	    						}
     						}
-    						
-    						StringReader sIn = new StringReader( dataAsString );
-    						StringWriter sOut = new StringWriter();
-    						
-    						if( isCss ){
-	    						CssCompressor compressor = new CssCompressor( sIn );
-	    						compressor.compress( sOut, 0 );
-    						} else {
-    							JavaScriptCompressor compressor = new JavaScriptCompressor( sIn, null );
-    							compressor.compress( sOut, 0, true, false, false, false );
-    						}
-    						
-    						String compressedString = sOut.toString();
-    						plainData = compressedString.getBytes();
     					}
     					
     					if( (isPng|isJpg|isGif) && rotImg != null ){

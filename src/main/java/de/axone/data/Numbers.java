@@ -63,5 +63,46 @@ public abstract class Numbers {
 		
 		return BigInteger.ZERO.compareTo( value ) == 0;
 	}
+	
+	public static int cmpZ( BigDecimal value ) {
+		return value.compareTo( BigDecimal.ZERO );
+	}
+	public static boolean eqz( BigDecimal value ){
+		return cmpZ( value ) == 0;
+	}
+	public static boolean nez( BigDecimal value ){
+		return cmpZ( value ) != 0;
+	}
+	public static boolean gtz( BigDecimal value ){
+		return cmpZ( value ) > 0;
+	}
+	public static boolean gtez( BigDecimal value ){
+		return cmpZ( value ) >= 0;
+	}
+	public static boolean ltz( BigDecimal value ){
+		return cmpZ( value ) < 0;
+	}
+	public static boolean ltez( BigDecimal value ){
+		return cmpZ( value ) <= 0;
+	}
+	
+	public static boolean eqz( int value ){
+		return value == 0;
+	}
+	public static boolean nez( int value ){
+		return value != 0;
+	}
+	public static boolean gtz( int value ){
+		return value > 0;
+	}
+	public static boolean gtez( int value ){
+		return value >= 0;
+	}
+	public static boolean ltz( int value ){
+		return value < 0;
+	}
+	public static boolean ltez( int value ){
+		return value <= 0;
+	}
 
 }

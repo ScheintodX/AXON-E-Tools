@@ -191,9 +191,6 @@ public class JsonResponseImpl implements JsonResponse {
 	
 	public static class JsonResponseException extends RuntimeException {
 
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 8862829876634590375L;
 
 		public JsonResponseException() { super(); }

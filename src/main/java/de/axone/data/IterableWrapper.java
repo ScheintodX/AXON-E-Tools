@@ -3,11 +3,14 @@ package de.axone.data;
 import java.util.Iterator;
 import java.util.List;
 
+import de.axone.exception.Assert;
+
 public abstract class IterableWrapper<SRC,DST> implements Iterable<DST> {
 
 		private final Iterable<SRC> items;
 		
 		protected IterableWrapper( List<SRC> items, int start, int count ){
+			Assert.notNull( items, "items" );
 			int end = start+count;
 			if( end > items.size() ) end = items.size();
 			this.items = items.subList( start, end );
@@ -21,7 +24,7 @@ public abstract class IterableWrapper<SRC,DST> implements Iterable<DST> {
 
 		@Override
 		public Iterator<DST> iterator() {
-			return new MyIterator( items.iterator() );
+			return items != null ? new MyIterator( items.iterator() ) : null;
 		}
 		
 		private class MyIterator implements Iterator<DST> {

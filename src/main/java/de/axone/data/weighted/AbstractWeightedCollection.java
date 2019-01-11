@@ -30,9 +30,9 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 	private static final long serialVersionUID = 1L;
 	
 	@SuppressWarnings( "unchecked" )
-	private final W self = (W) this;
+	protected final W self = (W) this;
 	
-	private Map<T,T> map = new HashMap<>();
+	protected Map<T,T> map = new HashMap<>();
 	
 	private Map<String,T> forName;
 	
@@ -108,6 +108,7 @@ public abstract class AbstractWeightedCollection<W extends WeightedCollection<W,
 			
 			String name = namer.name( item );
 			
+			//if( "price".equals( name ) ) { E.x(20); E.rr( "put", name, item ); }
 			forName.put( name, item );
 		}
 		

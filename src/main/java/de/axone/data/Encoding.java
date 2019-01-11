@@ -12,7 +12,8 @@ public enum Encoding {
 	utf8( Charsets.utf8, "UTF8" ),
 	latin1( Charsets.latin1, "LATIN1", "LATIN-1", "ISO8859-1" ),
 	latin15( Charsets.latin15, "LATIN15", "LATIN-15", "ISO8859-15" ),
-	ascii( Charsets.ascii, "ASCII" )
+	ascii( Charsets.ascii, "ASCII" ),
+	win1252( Charsets.win1252, "win-1252", "windows1252" )
 	;
 
 	private String isoName;

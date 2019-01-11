@@ -6,11 +6,11 @@ import javax.annotation.Nullable;
 import de.axone.data.KeyValueStore;
 
 public interface KeyValueAccessor<K,V,EX extends Exception> extends KeyValueStore<K,V,EX> {
-	
+
 	public default boolean has( @Nonnull K key ) {
 		return checkAccess( key );
 	}
-	
+
 	public default @Nullable V get( @Nonnull K key ) {
 		return accessChecked( key );
 	}
@@ -40,10 +40,19 @@ public interface KeyValueAccessor<K,V,EX extends Exception> extends KeyValueStor
 	public default @Nullable V getChecked( @Nonnull K key ){
 		return accessChecked( key );
 	}
-	
+	public default @Nullable V getConverted( @Nonnull K key, @Nonnull ValueConverter<V> converter ) {
+		V v = get( key );
+		if( v == null ) return null;
+		return converter.convert( v );
+	}
+
 	@FunctionalInterface
 	public interface ValueProvider<V> {
 		public V get();
 	}
-	
+	@FunctionalInterface
+	public interface ValueConverter<V> {
+		public V convert( V value );
+	}
+
 }

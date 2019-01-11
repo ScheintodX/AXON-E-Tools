@@ -11,7 +11,7 @@ import de.axone.web.encoding.Encoder_Xml;
 
 
 public abstract class Tag {
-
+	
 	public static StringBuilder simpleBB( StringBuilder builder,
 			String name, String content, String ...args){
 		
@@ -39,7 +39,7 @@ public abstract class Tag {
 	}
 	
 	public static <A extends Appendable> A simpleA( A builder,
-			String name, String content, boolean encodeContent , String ...args) throws IOException {
+			String name, String content, boolean encodeContent, CharSequence ... args) throws IOException {
 		
 		Assert.notNull( builder, "builder" );
 		Assert.notNull( name, "name" );
@@ -263,6 +263,23 @@ public abstract class Tag {
 	}
 	public static String divClass( String clazz, String content ){
 		return simple( "div", content, false, "class", clazz );
+	}
+	
+	public static String img( SuperURL url, String alt ) {
+		
+		return simple( "img",
+				"src", SuperURLPrinter.ForAttribute.toString( url ),
+				"alt", alt
+		);
+	}
+	public static String img( SuperURL url, String alt, String title ) {
+		
+		return simple( "img",
+				"src", SuperURLPrinter.ForAttribute.toString( url ),
+				"alt", alt,
+				"title", title
+		);
+		
 	}
 	
 }

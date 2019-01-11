@@ -13,55 +13,55 @@ import de.axone.tools.Str;
 import de.axone.tools.ToString;
 
 public class ShellExec {
-	
+
 	private static final Logger log = LoggerFactory.getLogger( ShellExec.class );
 
 	public static QuickResult quickexec( Path cmd, String ... args )
 	throws IOException, InterruptedException {
-		
+
 		if( ! Files.isRegularFile( cmd ) )
 				throw new IllegalArgumentException( "Cannot find: " + cmd );
-		
+
 		if( ! Files.isExecutable( cmd ) )
 				throw new IllegalArgumentException( "Not executable: " + cmd );
-				
-		String commandline = 
+
+		String commandline =
 				cmd.toFile().getAbsolutePath() + " " + Str.join( " ", args );
-		
+
 		log.debug( commandline );
-		
+
 		/*
 		 * Doesn't work because we need parameters completely separated
 		String [] commandArgs = new String[ args.length + 1 ];
 		commandArgs[ 0 ] = cmd.toFile().getAbsolutePath();
 		System.arraycopy( args, 0, commandArgs, 1, args.length );
 		*/
-		
+
 		//Process process = Runtime.getRuntime().exec( commandline );
 		Process process = Runtime.getRuntime().exec( commandline );
-		
+
 		QuickResultImpl result = new QuickResultImpl();
-		
+
 		boolean working = false;
-		
+
 		try(
 				BufferedReader stdoutReader = new BufferedReader(
 						new InputStreamReader( process.getInputStream()) );
 				BufferedReader stderrReader = new BufferedReader(
 						new InputStreamReader( process.getErrorStream()) );
 		) {
-		
+
 			String line = null;
 			do {
-				
+
 				line = null;
-				
+
 				if( stdoutReader.ready() ) {
-					
+
 					working = true;
-						
+
 					line = stdoutReader.readLine();
-					
+
 					if( line != null ){
 						result.stdout
 								.append( line )
@@ -69,13 +69,13 @@ public class ShellExec {
 								;
 					}
 				}
-				
+
 				if( stderrReader.ready() ) {
-					
+
 					working = true;
-					
+
 					line = stderrReader.readLine();
-					
+
 					if( line != null ){
 						result.stderr
 								.append( line )
@@ -83,21 +83,24 @@ public class ShellExec {
 								;
 					}
 				}
-				
+
 				 // If nothing to do sleep some time and wait for output
-				if( !working ) Thread.sleep( 10 );
-				//E._cho_( "." );
-					
+				if( !working )
+				 {
+					Thread.sleep( 10 );
+					//E._cho_( "." );
+				}
+
 			} while( line != null || stdoutReader.ready() || stderrReader.ready() || process.isAlive() );
 		}
-		
+
 		result.exitValue = process.exitValue();
-		
+
 		return result;
 	}
-	
+
 	private static class QuickResultImpl implements QuickResult {
-		
+
 		private final StringBuffer stdout = new StringBuffer(),
 		                           stderr = new StringBuffer()
 		                           ;
@@ -117,11 +120,11 @@ public class ShellExec {
 		public int getExitValue() {
 			return exitValue;
 		}
-		
-		
+
+
 		@Override
 		public String toString() {
-			
+
 			return ToString.build( QuickResultImpl.class )
 					.append( "stdout", stdout.toString() )
 					.append( "stderr", stderr.toString() )
@@ -129,24 +132,24 @@ public class ShellExec {
 					.toString()
 					;
 		}
-		
+
 	}
-	
+
 	public interface QuickResult {
-		
+
 		CharSequence getStdOut();
-		
+
 		CharSequence getStdErr();
-		
+
 		int getExitValue();
 	}
-	
+
 	public static class ShellException extends RuntimeException {
 
 		public ShellException( QuickResult result ) {
-			
+
 			super( "(" + result.getExitValue() + ") :" + result.getStdErr() );
 		}
-		
+
 	}
 }

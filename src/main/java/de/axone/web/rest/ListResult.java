@@ -33,5 +33,17 @@ public class ListResult<T> extends JsonResponseImpl.OK {
 	@JsonView( JV.List.class )
 	public Iterable<T> getItems() { return items; } 
 	public void setItems( Iterable<T> items ) { this.items = items; }
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append( "ListResult [start=" ).append( start )
+				.append( ", time=" ).append( time ).append( ", size=" )
+				.append( size ).append( ", " );
+		if( items != null )
+			builder.append( "items=" ).append( items );
+		builder.append( "]" );
+		return builder.toString();
+	}
 	
 }

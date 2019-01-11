@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 import org.assertj.core.api.AbstractObjectAssert;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import de.axone.exception.NotImplementedException;
 
 
 public class Assertions {

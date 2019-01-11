@@ -1432,4 +1432,39 @@ public class Str {
 		if( ch > 0x20 && ch < 0x7F ) return false;
 		return Character.isWhitespace( ch );
 	}
+	
+	public static String compare( String one, String two ){
+		
+		StringBuilder result = new StringBuilder();
+		
+		for( int i = 0; i < one.length(); i++ ){
+			
+			if( i >= two.length() ){
+				result.append( ":|" );
+				break;
+			}
+			
+			char o = one.charAt( i );
+			char t = two.charAt( i );
+			
+			if( o != t ){
+				result.append( "||" );
+				break;
+			}
+				
+			result.append( o );
+		}
+		
+		return result.toString();
+	}
+	
+	public static boolean isEqual( String s1, String s2 ) {
+		
+		if( s1 == s2 ) return true;
+		
+		if( s1 == null || s2 == null ) return false;
+		
+		return s1.equals( s2 );
+	}
+	
 }
