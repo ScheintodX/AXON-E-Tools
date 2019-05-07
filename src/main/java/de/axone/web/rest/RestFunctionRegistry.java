@@ -2,7 +2,9 @@ package de.axone.web.rest;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +22,7 @@ import de.axone.web.Method;
 import de.axone.web.SuperURL;
 import de.axone.web.SuperURLBuilders;
 
-public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> implements Serializable {
+public abstract class RestFunctionRegistry<DATA, REQUEST extends RestRequest> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -132,6 +134,7 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> implements 
 		}
 	}
 
+
 	private void renderHelp( RestRequest req, HttpServletResponse resp, String message, boolean detailed )
 			throws Exception {
 
@@ -142,20 +145,25 @@ public class RestFunctionRegistry<DATA, REQUEST extends RestRequest> implements 
 
 			out.println( "<!DOCTYPE html>" );
 			out.println( "<html><head><title>Functions</title>" );
-			out.println( "<script src=\"//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js\"></script>" );
-			out.println( "<script src=\"/static/admin/js/ajax_help.js?yui=false\"></script>" );
+			out.println( "<script src=\"/static/ajax/js/ajax_help.js?yui=false\"></script>" );
+			out.println( "<link rel=\"stylesheet\" href=\"/static/ajax/scss/ajax.css?yui=false\"></script>" );
 			out.println( "</head><body>\n" );
 
 			if( message != null ){
 				out.write( "<h1>" + message + "</h1>" );
 			}
 
-			for( RestFunction<DATA, REQUEST> function : functions ){
+			List<RestFunction<DATA,REQUEST>> sorted = new ArrayList<>( new HashSet<>( functions ) );
+			sorted.sort( (f1,f2) -> f1.name().compareTo( f2.name() ) );
+
+			for( RestFunction<DATA, REQUEST> function : sorted ){
 
 				RestFunctionDescription description = function.description();
 
 				if( detailed ){
+
 					String template = description.getTemplate();
+
 					if( template != null ){
 
 						out.write( template );

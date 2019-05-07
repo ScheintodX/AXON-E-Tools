@@ -40,11 +40,11 @@ import de.axone.web.SuperURLBuilders.SuperURLBuilder_URL;
  * Extended and more usefull version of Javas URI class whereas
  * it uses URI wherever possible to do de/encoding stuff but
  * privides a wider range of manipulation functions. (Setters!!!)
- * 
- * A URI looks like this: 
- * 
+ *
+ * A URI looks like this:
+ *
  * scheme://user:pass@host:port/path?query#fragment
- * 
+ *
  * scheme: e.g. http
  * user: the user
  * pass: the pass or nothing
@@ -53,41 +53,41 @@ import de.axone.web.SuperURLBuilders.SuperURLBuilder_URL;
  * path: blah/blo/blu/bläh
  * query: key1=value1&amp;key2=value2;key3=value3
  * fragment: something
- * 
+ *
  * More for URLs: RFC 2396
- * 
+ *
  * Note that all encoding is done using UTF-8!
- * 
+ *
  * @see <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>
  * @author flo
  */
 public final class SuperURL {
-	
+
 	public enum Part {
 		Scheme, UserInfo, Host, Port, Path, Query, Fragment;
-		
+
 		public static final Set<Part>
 				ALL_PARTS = Collections.unmodifiableSet( EnumSet.allOf( Part.class ) ),
 				NO_PARTS = Collections.unmodifiableSet( EnumSet.noneOf( Part.class ) ),
 				UPTO_PATH = Collections.unmodifiableSet( EnumSet.of( Part.Scheme, Part.UserInfo, Part.Host, Part.Port ) ),
 				FROM_PATH = Collections.unmodifiableSet( EnumSet.of( Part.Path, Part.Query, Part.Fragment ) )
 				;
-		
+
 	}
-	
+
 	public enum Encode {
 		Plain, Minimal, Full;
 	}
-	
+
 	public enum FinalEncoding {
 		Plain, Html, Attribute;
 	}
-	
+
 	public interface MimeTypes {
 		public String code();
 	}
 	public enum KnownMimeType implements MimeTypes {
-		
+
 		DIR( "text/directory" ),
 		JPEG( "image/jpeg", "jpg", "jpeg" ),
 		PNG( "image/png", "png" ),
@@ -98,39 +98,39 @@ public final class SuperURL {
 		JS( "text/javascript", "js" ),
 		HTML( "text/html", "htm", "html", "xhtml" ),
 		TXT( "text/plain", "txt" );
-		
+
 		private final String code;
 		private final String [] extensions;
-		
+
 		private static final Map<String,KnownMimeType> forExtension =
-				new HashMap<String,KnownMimeType>();
-		
+				new HashMap<>();
+
 		static {
 			for( KnownMimeType type : KnownMimeType.values() ) {
-				
+
 				for( String extension : type.extensions ) {
-					
+
 					forExtension.put( extension, type );
 				}
 			}
 		}
-		
+
 		KnownMimeType( String code, String ... extensions ) {
 			this.code = code;
 			this.extensions = extensions;
 		}
-		
+
 		public static KnownMimeType forExtension( String extension ) {
-			
+
 			return forExtension.get( extension.toLowerCase() );
 		}
-		
+
 		@Override
 		public String code() {
 			return code;
 		}
 	}
-	
+
 	private static final class UnknownMimeType implements MimeTypes {
 		private final String code;
 		UnknownMimeType( String code ){
@@ -141,7 +141,7 @@ public final class SuperURL {
 			return code;
 		}
 	}
-	
+
 	private static final EnumMap<Encode, SuperURLPrinter> printers;
 	static {
 		printers = new EnumMap<>( Encode.class );
@@ -149,11 +149,11 @@ public final class SuperURL {
 		printers.put( Encode.Minimal, SuperURLPrinter.MinimalEncoded );
 		printers.put( Encode.Full, SuperURLPrinter.FullEncoded );
 	}
-	
-	private EnumSet<Part> include = EnumSet.allOf( Part.class );
-	
+
+	private final EnumSet<Part> include = EnumSet.allOf( Part.class );
+
 	public static final String NOSCHEME = "NOSCHEME";
-	
+
 	String scheme;
 	UserInfo userInfo;
 	Host host;
@@ -161,11 +161,11 @@ public final class SuperURL {
 	Path path;
 	Query query;
 	String fragment;
-	
+
 	public SuperURL(){}
-	
+
 	public SuperURL( String scheme, UserInfo userInfo, Host host, Integer port, Path path, Query query, String fragment ){
-		
+
 		if( scheme != null ){
 			this.scheme = scheme;
 			include.add( Part.Scheme );
@@ -195,9 +195,9 @@ public final class SuperURL {
 			include.add( Part.Fragment );
 		}
 	}
-	
+
 	/* --- Direct Access --- */
-	
+
 	public SuperURL setInclude( Part part, boolean include ){
 		if( include ){
 			this.include.add( part );
@@ -209,7 +209,7 @@ public final class SuperURL {
 	public boolean isInclude( Part part ){
 		return include.contains( part );
 	}
-	
+
 	public String getScheme() {
 		return scheme;
 	}
@@ -279,7 +279,7 @@ public final class SuperURL {
 	public boolean isIncludeFragment(){
 		return isInclude( Part.Fragment );
 	}
-	
+
 	// TODO: Da ist das automatische erzeugen des Pfades dazu gekommen.
 	// Das können jetzt also beim Aufrufer Checks entfernt werden.
 	@Nonnull
@@ -312,17 +312,17 @@ public final class SuperURL {
 	public boolean isIncludeQuery(){
 		return isInclude( Part.Query );
 	}
-	
+
 	/* --- Helpers --- */
 	public SuperURL setQueryParameter( String key, String value ){
 		getQuery().setValue( key, value );
 		return this;
 	}
-	
+
 	public String getQueryParameter( String key ){
 		return getQuery().getValue( key );
 	}
-	
+
 	public boolean hasHost(){
 		return getHost() != null;
 	}
@@ -330,103 +330,103 @@ public final class SuperURL {
 		return getPath() != null
 			&& getPath().toString().length() > 0;
 	}
-	
+
 	public SuperURL appendPath( String path ){
 		return appendPath( path, true );
 	}
-	
+
 	public SuperURL appendPath( String path, boolean decode ){
-		
+
 		Path newPath = SuperURLBuilders.Path().parse( path, decode ).build();
 		getPath().append( newPath );
 		getPath().endsWithSlash = newPath.endsWithSlash;
 		return this;
 	}
-	
+
 	/* --- ToString --- */
-	
+
 	public String toStringEncode( Encode encode ){
 		return printers.get( encode ).toString( this );
 	}
-	
+
 	@Deprecated
 	@Override
 	public String toString(){
 		return toDebug();
 	}
-	
+
 	public String toRedirect(){
-		
+
 		return SuperURLPrinter.FullEncoded
 				.toString( this );
 	}
-	
+
 	public String toHtml(){
-		
+
 		return SuperURLPrinter.MinimalEncoded
 				.finishFor( FinalEncoding.Html ).toString( this );
 	}
-	
+
 	public String toDebug() {
-		
-		return SuperURLPrinter.MinimalEncoded
-				.toString( this );
-	}
-	
-	// Called from AjaxFunction_cart
-	public String toAjax() {
-		
+
 		return SuperURLPrinter.MinimalEncoded
 				.toString( this );
 	}
 
-	
-	
+	// Called from AjaxFunction_cart
+	public String toAjax() {
+
+		return SuperURLPrinter.MinimalEncoded
+				.toString( this );
+	}
+
+
+
 	public String toAttribute(){
-		
+
 		return SuperURLPrinter.MinimalEncoded
 				.finishFor( FinalEncoding.Attribute ).toString( this );
 	}
-	
+
 	public String toText() {
-		
+
 		return SuperURLPrinter.Plain.toString( this );
 	}
-	
+
 	public String toValue() {
-		
+
 		return SuperURLPrinter.MinimalEncoded.toString( this );
 	}
-	
+
 	public String toUnique() {
-		
+
 		return SuperURLPrinter.FullEncoded.toString( this );
 	}
 
-	
+
 	static final String decode( String value ){
-		
+
 		if( value == null ) return null;
-		
+
 		try {
 			return URLDecoder.decode( value, Charsets.utf8 );
 		} catch( UnsupportedEncodingException e ) {
 			throw new IllegalArgumentException( "Undecodeable: '" + value + "'" );
 		}
 	}
-	
+
 	public URL toURL() {
 		String asString = SuperURLPrinter.FullEncoded.toString( this );
 		try {
 			return new URL( asString );
 		} catch( MalformedURLException e ){
-			throw new IllegalStateException( 
+			throw new IllegalStateException(
 					"Cannot create URL for: " + asString, e );
 		}
 	}
-	
-	
-	
+
+
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -443,77 +443,77 @@ public final class SuperURL {
 
 	@Override
 	public boolean equals( Object obj ){
-		
+
 		if( this == obj ) return true;
 		if( obj == null ) return false;
 		if( !( obj instanceof SuperURL ) ) return false;
-		
+
 		SuperURL other = (SuperURL) obj;
-		
+
 		return equals( other, Part.ALL_PARTS );
 	}
-	
+
 	public boolean equals( SuperURL other, Set<Part> parts ) {
-		
+
 		if( parts.contains( Part.Scheme ) ){
 			if( scheme == null ) {
 				if( other.scheme != null ) return false;
 			} else if( !scheme.equals( other.scheme ) ) return false;
 		}
-				
+
 		if( parts.contains( Part.UserInfo ) ){
 			if( userInfo == null ) {
 				if( other.userInfo != null ) return false;
 			} else if( !userInfo.equals( other.userInfo ) ) return false;
 		}
-		
+
 		if( parts.contains( Part.Host ) ){
 			if( host == null ) {
 				if( other.host != null ) return false;
 			} else if( !host.equals( other.host ) ) return false;
 		}
-			
+
 		if( parts.contains( Part.Port ) ){
 			if( port == null ) {
 				if( other.port != null ) return false;
 			} else if( !port.equals( other.port ) ) return false;
 		}
-			
+
 		if( parts.contains( Part.Path ) ){
 			if( path == null ) {
 				if( other.path != null ) return false;
 			} else if( !path.equals( other.path ) ) return false;
 		}
-			
+
 		if( parts.contains( Part.Query ) ){
 			if( query == null ) {
 				if( other.query != null ) return false;
 			} else if( !query.equals( other.query ) ) return false;
 		}
-			
+
 		if( parts.contains( Part.Fragment ) ){
 			if( fragment == null ) {
 				if( other.fragment != null ) return false;
 			} else if( !fragment.equals( other.fragment ) ) return false;
 		}
-		
+
 		return true;
 	}
 
 	public static final class Host implements Iterable<String>{
-		
+
 		public List<String> parts;
-		
+
 		public Host(){
-			parts = new LinkedList<String>();
+			parts = new LinkedList<>();
 		}
-		
+
 		public Host copy() {
 			Host result = new Host();
 			result.parts.addAll( parts );
 			return result;
 		}
-    	
+
     	public List<String> getParts(){
     		return parts;
     	}
@@ -538,7 +538,7 @@ public final class SuperURL {
     	}
     	public List<String> getNet(){
     		if( parts != null && parts.size() > 2 ){
-        		LinkedList<String> result = new LinkedList<String>();
+        		LinkedList<String> result = new LinkedList<>();
         		for( int i = 1; i < parts.size()-1; i++ ){
         			result.addLast( parts.get( i ) );
         		}
@@ -547,11 +547,11 @@ public final class SuperURL {
     			return null;
     		}
     	}
-    	
+
     	public String getNetAsString(){
     		return Str.join( ".", getNet() );
     	}
-    	
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -565,21 +565,21 @@ public final class SuperURL {
 			if( this == obj ) return true;
 			if( obj == null ) return false;
 			if( !( obj instanceof Host ) ) return false;
-			
+
 			Host other = (Host) obj;
-			
+
 			if( parts == null ) {
 				if( other.parts != null ) return false;
 			} else if( !parts.equals( other.parts ) ) return false;
-			
+
 			return true;
 		}
-		
+
 		@Override
 		public String toString() {
 			return SuperURLPrinter.Plain.toString( this );
 		}
-		
+
 		public String toStringEncode( Encode encode ){
 			return printers.get( encode ).toString( this );
 		}
@@ -592,15 +592,15 @@ public final class SuperURL {
 		public Iterator<String> iterator() {
 			return parts.iterator();
 		}
-    	
+
 	}
-	
+
 	public static final class Path implements Iterable<String> {
-		
+
 		LinkedList<String> path;
 		boolean endsWithSlash;
 		boolean startsWithSlash;
-		
+
 		public Path(){
 			this( new LinkedList<String>(), false );
 		}
@@ -612,7 +612,7 @@ public final class SuperURL {
 			this.path = new LinkedList<>( path );
 			this.endsWithSlash = endsWithSlash;
 		}
-		
+
 		public Path copy() {
 			Path result = new Path();
 			result.path.addAll( path );
@@ -620,11 +620,11 @@ public final class SuperURL {
 			result.startsWithSlash = startsWithSlash;
 			return result;
 		}
-		
+
 		public Path map( Function<String,String> mapper ){
-			
+
 			Path result = new Path();
-			
+
 			for( String part : path ){
 				result.addLast( mapper.apply( part ) );
 			}
@@ -632,34 +632,34 @@ public final class SuperURL {
 			result.startsWithSlash = startsWithSlash;
 			return result;
 		}
-		
+
 		public int length(){
 			return path.size();
 		}
-		
+
 		public String get( int index ){
 			return path.get( index );
 		}
 		public String find( Predicate<String> test ) {
-			
+
 			for( String part : path ) {
-				
+
 				E.rr( part );
-				
+
 				if( test.test( part ) ) return part;
 			}
 			return null;
 		}
 		public String findBackwards( Predicate<String> test ) {
-			
+
 			for( int i = path.size()-1; i >= 0; i-- ) {
-				
+
 				String part = path.get( i );
 				if( test.test( part ) ) return part;
 			}
 			return null;
 		}
-		
+
 		public boolean isEndsWithSlash(){
 			return endsWithSlash;
 		}
@@ -667,7 +667,7 @@ public final class SuperURL {
 			endsWithSlash = isEndsWithSlashes;
 			return this;
 		}
-		
+
 		public boolean isStartsWithSlash(){
 			return startsWithSlash;
 		}
@@ -675,25 +675,25 @@ public final class SuperURL {
 			startsWithSlash = isStartsWithSlashes;
 			return this;
 		}
-		
+
 		public boolean isAbsolute(){
 			return isStartsWithSlash();
 		}
 		public boolean isRelative(){
 			return !isAbsolute();
 		}
-		
+
 		public String getParent(){
 			if( path != null && path.size() > 1 ) return path.get( path.size()-2 );
 			return null;
 		}
-		
+
 		public String getLast(){
 			if( path != null && path.size() > 0 ) return path.getLast();
 			return null;
 		}
 		public Path replaceLast( String part ){
-			
+
 			if( path != null && path.size() > 0 ){
 				if( part == null || part.length() == 0 ){
 					path.removeLast();
@@ -705,11 +705,12 @@ public final class SuperURL {
 		}
 		public Path addLast( String part ){
 			if( part == null || part.length() == 0 ) return this;
-			if( path == null ) path = new LinkedList<String>();
+			if( path == null ) path = new LinkedList<>();
 			path.addLast( part );
 			return this;
 		}
 		public Path addAll( Path path ){
+			if( path == null ) return this;
 			for( String item : path ){
 				addLast( item );
 			}
@@ -726,13 +727,13 @@ public final class SuperURL {
 			if( path != null && path.size() > 0 ) path.removeLast();
 			return this;
 		}
-		
+
 		public String getFirst(){
 			if( path != null && path.size() > 0 ) return path.getFirst();
 			return null;
 		}
 		public Path replaceFirst( String part ){
-			
+
 			if( path != null && path.size() > 0 ){
 				if( part != null && part.length() > 0 ){
 					path.set( 0, part );
@@ -744,7 +745,7 @@ public final class SuperURL {
 		}
 		public Path addFirst( String part ){
 			if( part == null || part.length() == 0 ) return this;
-			if( path == null ) path = new LinkedList<String>();
+			if( path == null ) path = new LinkedList<>();
 			path.addFirst( part );
 			return this;
 		}
@@ -765,7 +766,7 @@ public final class SuperURL {
 			endsWithSlash = path.isEndsWithSlash();
 			return this;
 		}
-		
+
 		public String getExtension(){
 			String lastPart = getLast();
 			if( lastPart != null ){
@@ -776,9 +777,9 @@ public final class SuperURL {
 			}
 			return null;
 		}
-		
+
 		public String getLastWithoutExtension(){
-			
+
 			String lastPart = getLast();
 			if( lastPart != null ){
 				int pos = lastPart.lastIndexOf( '.' );
@@ -788,52 +789,52 @@ public final class SuperURL {
 			}
 			return null;
 		}
-		
+
 		public MimeTypes getMimeType(){
-			
+
 			if( endsWithSlash ){
 				return KnownMimeType.DIR;
 			}
-			
+
 			String extension = getExtension();
 			if( extension != null ) {
-				
+
 				KnownMimeType type = KnownMimeType.forExtension( extension );
-				
+
 				if( type != null ) {
-					
+
 					return type;
-				
+
 				} else {
-					
+
 					// Use Java. (Doesn't know xhtml for example)
 					return new UnknownMimeType( URLConnection.getFileNameMap().getContentTypeFor( getLast() ) );
 				}
 			}
-			
+
 			return null;
 		}
-		
+
 		public List<String> toList(){
-			
+
 			return new ArrayList<>( path );
 		}
-		
+
 		public String [] toArray(){
-			
+
 			return path.toArray( new String[ path.size() ] );
 		}
-		
+
 		/**
 		 * @return slice of path as new Path
-		 * 
+		 *
 		 * @param index to start the slice from. 0 means complete copy. positive integer remove
 		 *        from the left. negative from the right;
 		 */
 		public Path slice( int index ){
-			
-			LinkedList<String> newPath = new LinkedList<String>( path );
-			
+
+			LinkedList<String> newPath = new LinkedList<>( path );
+
 			while( index > 0 && newPath.size() > 0 ){
 				newPath.removeFirst();
 				index--;
@@ -842,15 +843,15 @@ public final class SuperURL {
 				newPath.removeLast();
 				index--;
 			}
-			
+
 			return new Path( newPath, endsWithSlash );
 		}
-		
+
 		@Override
 		public String toString(){
 			return SuperURLPrinter.Plain.toString( this );
 		}
-		
+
 		public String toStringEncode( Encode encode ){
 			return printers.get( encode ).toString( this );
 		}
@@ -860,7 +861,7 @@ public final class SuperURL {
 		public Iterator<String> iterator() {
 			return path.iterator();
 		}
-		
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -870,22 +871,22 @@ public final class SuperURL {
 			result = prime * result + ( startsWithSlash ? 1231 : 1237 );
 			return result;
 		}
-		
+
 		@Override
 		public boolean equals( Object obj ) {
 			if( this == obj ) return true;
 			if( obj == null ) return false;
 			if( !( obj instanceof Path ) ) return false;
-			
+
 			Path other = (Path) obj;
-			
+
 			if( startsWithSlash != other.startsWithSlash ) return false;
 			if( endsWithSlash != other.endsWithSlash ) return false;
-			
+
 			if( path == null ) {
 				if( other.path != null ) return false;
 			} else if( !path.equals( other.path ) ) return false;
-			
+
 			return true;
 		}
 		public Path clear() {
@@ -895,40 +896,40 @@ public final class SuperURL {
 			return this;
 		}
 	}
-	
+
 	public static final class Query implements Iterable<Query.QueryPart> {
-		
-		HashMap<String,LinkedList<QueryPart>> forName = new HashMap<String,LinkedList<QueryPart>>();
-		LinkedList<QueryPart> path = new LinkedList<QueryPart>();
-		
+
+		HashMap<String,LinkedList<QueryPart>> forName = new HashMap<>();
+		LinkedList<QueryPart> path = new LinkedList<>();
+
 		public Query(){}
-		
+
 		public static Query fromLabel( String key, Label value ){
 			return new Query( new QueryPart( key, value.label() ) );
 		}
 		public static Query fromPart( String key, String value ){
 			return new Query( new QueryPart( key, value ) );
 		}
-		
+
 		public Query( QueryPart ... parts ){
-			
+
 			addAll( parts );
 		}
-		
+
 		public Query( Collection<QueryPart> parts ){
-			
+
 			addAll( parts );
 		}
-		
+
 		public Query copy(){
-			
+
 			Query result = new Query();
 			for( QueryPart part : path ){
 				result.add( part.copy() );
 			}
 			return result;
 		}
-		
+
 		public LinkedList<QueryPart> getPath(){
 			return path;
 		}
@@ -941,12 +942,12 @@ public final class SuperURL {
 		public boolean has( String key ){
 			return forName.containsKey( key );
 		}
-		
+
 		public LinkedList<QueryPart> getParts( String key ){
 			return forName.get( key );
 		}
 		public QueryPart getPart( String key ){
-			
+
 			if( forName.containsKey( key ) ){
 				LinkedList<QueryPart> parts = forName.get( key );
 				if( parts.size() > 0 ){
@@ -956,16 +957,16 @@ public final class SuperURL {
 			return null;
 		}
 		public String getValue( String key ){
-			
+
 			QueryPart part = getPart( key );
 			if( part != null ) return part.getValue();
 			else return null;
 		}
 		public List<String> getValues( String key ){
-			
+
 			LinkedList<QueryPart> parts = getParts( key );
 			if( parts != null ){
-    			LinkedList<String> result = new LinkedList<String>();
+    			LinkedList<String> result = new LinkedList<>();
     			for( QueryPart part : parts ){
     				result.addLast( part.getValue() );
     			}
@@ -974,9 +975,9 @@ public final class SuperURL {
 				return null;
 			}
 		}
-		
+
 		public Query addValue( String key, Object value ){
-			
+
 			if( ! forName.containsKey( key ) ){
 				forName.put( key, new LinkedList<QueryPart>() );
 			}
@@ -993,35 +994,35 @@ public final class SuperURL {
 			path.add( part );
 			return this;
 		}
-		
+
 		public Query addAll( Map<String,Object> values ){
-			
+
 			if( values != null ) for( Map.Entry<String,Object> entry : values.entrySet() ){
 				addValue( entry.getKey(), entry.getValue().toString() );
 			}
 			return this;
 		}
-		
+
 		public Query addAll( QueryPart ... parts ){
-			
+
 			for( QueryPart part : parts ){
-				
+
 				add( part );
 			}
 			return this;
 		}
-		
+
 		public Query addAll( Collection<QueryPart> parts ){
-			
+
 			for( QueryPart part : parts ){
-				
+
 				add( part );
 			}
 			return this;
 		}
-		
+
 		public Query setAll( Map<String,Object> values ){
-			
+
 			if( values != null ) for( Map.Entry<String,Object> entry : values.entrySet() ){
 				setValue( entry.getKey(), entry.getValue().toString() );
 			}
@@ -1037,19 +1038,19 @@ public final class SuperURL {
 			addValue( part.getKey(), part.getValue() );
 			return this;
 		}
-		
+
 		public Query setValue( String key, Object value ){
 			remValue( key );
 			addValue( key, value );
 			return this;
 		}
-		
+
 		public Query remValue( String key ){
-			
+
 			if( forName.containsKey( key ) ){
-				
+
 				LinkedList<QueryPart> parts = forName.get( key );
-				
+
 				for( QueryPart part : parts ){
 					path.remove( part );
 				}
@@ -1057,38 +1058,38 @@ public final class SuperURL {
 			}
 			return this;
 		}
-			
+
 		@Override
 		public String toString(){
 			return SuperURLPrinter.Plain.toString( this );
 		}
-		
+
 		public String toStringEncode( Encode encode ){
 			return printers.get( encode ).toString( this );
 		}
 
-		
+
 		// Compatibility
-		
+
 		public Map<String,String[]> toParameterMap() {
-			
+
 			Map<String,String[]> result = new HashMap<>( forName.size() );
-			
+
 			for( Map.Entry<String,LinkedList<QueryPart>> entry : forName.entrySet() ){
-				
+
 				List<QueryPart> valueList = entry.getValue();
 				String [] values = new String[ valueList.size() ];
 				int i=0;
 				for( QueryPart value : valueList ){
 					values[ i ] = value.getValue();
 				}
-				
+
 				result.put( entry.getKey(), values );
 			}
-			
+
 			return result;
 		}
-		
+
 		/*
 		 * Built to match request.getParameterNames
 		 */
@@ -1098,7 +1099,7 @@ public final class SuperURL {
 			return result.elements();
 		}
 		public String [] getParameterValues( String key ){
-			
+
 			List<QueryPart> parts = forName.get( key );
 			ArrayList<String> result = new ArrayList<>( parts.size() );
 			for( QueryPart part : parts ){
@@ -1106,7 +1107,7 @@ public final class SuperURL {
 			}
 			return result.toArray( new String[ result.size() ] );
 		}
-		
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -1120,37 +1121,37 @@ public final class SuperURL {
 			if( this == obj ) return true;
 			if( obj == null ) return false;
 			if( !( obj instanceof Query ) ) return false;
-			
+
 			Query other = (Query) obj;
-			
+
 			if( path == null ) {
 				if( other.path != null ) return false;
 			} else if( !path.equals( other.path ) ) return false;
-			
+
 			return true;
 		}
 
 		@Override
 		public Iterator<QueryPart> iterator() {
-			
+
 			// This one is unmodifyable because modifying only the path breaks things
 			return Collections.unmodifiableCollection( path ).iterator();
 		}
-		
+
 		public static final class QueryPart {
-			
+
 			String key;
 			String value;
-			
+
 			public QueryPart( String key, String value ){
 				this.key = key;
 				this.value = value;
 			}
-			
+
 			public static QueryPart parse( String parseMe, boolean decode ){
-				
+
 				String[] parts = Str.splitFastLimited( parseMe, '=', 2 );
-				
+
 				String key = parts[ 0 ];
 				String value = null;
 				if( parts.length > 1 ){
@@ -1162,11 +1163,11 @@ public final class SuperURL {
 				}
 				return new QueryPart( key, value );
 			}
-			
+
 			public QueryPart copy(){
 				return new QueryPart( key, value );
 			}
-			
+
 			public String getKey() {
 				return key;
 			}
@@ -1180,7 +1181,7 @@ public final class SuperURL {
 			public void setValue( String val ) {
 				this.value = val;
 			}
-			
+
 			@Override
 			public String toString(){
 				return key + "=" + value;
@@ -1200,59 +1201,59 @@ public final class SuperURL {
 				if( this == obj ) return true;
 				if( obj == null ) return false;
 				if( !( obj instanceof QueryPart ) ) return false;
-				
+
 				QueryPart other = (QueryPart) obj;
-				
+
 				if( key == null ) {
 					if( other.key != null ) return false;
 				} else if( !key.equals( other.key ) ) return false;
-				
+
 				if( value == null ) {
 					if( other.value != null ) return false;
 				} else if( !value.equals( other.value ) ) return false;
-				
+
 				return true;
 			}
 
 		}
 	}
-	
+
 	public static final class UserInfo {
-		
+
 		String user;
 		String pass;
-		
+
 		public UserInfo(){}
-		
+
 		public UserInfo( String user, String pass ){
 			this.user = user;
 			this.pass = pass;
 		}
-		
+
 		public static UserInfo parse( String parseMe ){
 			return parse( parseMe, true );
 		}
 		public static UserInfo parse( String parseMe, boolean decode ){
-			
+
 			String[] parts = Str.splitFastLimited( parseMe, ':', 2 );
-    			
+
 			String user = parts[ 0 ];
 			String pass = null;
 			if( parts.length > 1 )
 				pass = parts[ 1 ];
-			
+
 			if( decode ){
 				user = decode( user );
 				pass = decode( pass );
 			}
-			
+
 			return new UserInfo( user, pass );
 		}
 
 		public UserInfo copy() {
 			return new UserInfo( user, pass );
 		}
-		
+
 		public String getUser() {
 			return user;
 		}
@@ -1268,12 +1269,12 @@ public final class SuperURL {
 			this.pass = pass;
 			return this;
 		}
-		
+
 		@Override
 		public String toString(){
 			return SuperURLPrinter.Plain.toString( this );
 		}
-		
+
 		public String toStringEncode( Encode encode ){
 			return printers.get( encode ).toString( this );
 		}
@@ -1293,54 +1294,54 @@ public final class SuperURL {
 			if( this == obj ) return true;
 			if( obj == null ) return false;
 			if( !( obj instanceof UserInfo ) ) return false;
-			
+
 			UserInfo other = (UserInfo) obj;
-			
+
 			if( pass == null ) {
 				if( other.pass != null ) return false;
 			} else if( !pass.equals( other.pass ) ) return false;
-			
+
 			if( user == null ) {
 				if( other.user != null ) return false;
 			} else if( !user.equals( other.user ) ) return false;
-			
+
 			return true;
 		}
-		
+
 	}
-	
-	
+
+
 	/* ***************************************************
 	 * BUILDER
 	 ************************************************** */
-	
+
 	private static final SuperURLBuilder_String BUILDER_STRING = SuperURLBuilders.fromString();
 	private static final SuperURLBuilder_Request BUILDER_REQUEST = SuperURLBuilders.fromRequest();
 	private static final SuperURLBuilder_URI BUILDER_URI = SuperURLBuilders.fromURI();
 	private static final SuperURLBuilder_URL BUILDER_URL = SuperURLBuilders.fromURL();
 	private static final SuperURLBuilder_Copy BUILDER_SHALLOW_COPY = SuperURLBuilders.fromSuperURL().usingDeepCopy( false );
 	private static final SuperURLBuilder_Copy BUILDER_DEEP_COPY = SuperURLBuilders.fromSuperURL().usingDeepCopy( true );
-	
+
 	public static SuperURL fromString( String parseMe ){
 		return BUILDER_STRING.build( parseMe );
 	}
-	
+
 	public static SuperURL fromRequest( HttpServletRequest request ){
 		return BUILDER_REQUEST.build( request );
 	}
-	
+
 	public static SuperURL fromURI( URI uri ){
 		return BUILDER_URI.build( uri );
 	}
-	
+
 	public static SuperURL fromURL( URL uri ){
 		return BUILDER_URL.build( uri );
 	}
-	
+
 	public static SuperURL copyShallow( SuperURL other ){
 		return BUILDER_SHALLOW_COPY.build( other );
 	}
-	
+
 	public static SuperURL copyDeep( SuperURL other ){
 		return BUILDER_DEEP_COPY.build( other );
 	}

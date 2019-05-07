@@ -13,10 +13,12 @@ public interface PictureBuilderBuilder {
 	public PictureBuilderBuilder prescaleSize( int prescaleSize );
 
 
+	/*
 	public static PictureBuilderBuilder instance( Path homedir, Path maindir, Path cachedir, int hashLength, int prescaleSize ) {
 
 		return new PictureBuilderBuilderImpl( homedir, maindir, cachedir, hashLength, prescaleSize );
 	}
+	*/
 
 	public static PictureBuilderBuilder instance( Path homedir, Path maindir, Path cachedir, int hashLength ) {
 

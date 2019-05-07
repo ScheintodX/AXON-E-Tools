@@ -27,7 +27,7 @@ import de.axone.data.tupple.Pair;
 import de.axone.exception.Assert;
 
 public abstract class Mapper {
-	
+
 	public static class MapperEntry<X,Y> {
 		private final X x;
 		private final Y y;
@@ -36,7 +36,7 @@ public abstract class Mapper {
 		}
 	}
 	public static <X,Y> MapperEntry<X,Y> E( X x, Y y ){
-		return new MapperEntry<X,Y>( x, y );
+		return new MapperEntry<>( x, y );
 	}
 
 	@SafeVarargs
@@ -60,12 +60,12 @@ public abstract class Mapper {
 	public static <T> HashMap<T,T> hashMap( T ... values ){
 		return map( new HashMap<T,T>(), false, values );
 	}
-	
+
 	@SafeVarargs
 	public static <T> HashMap<T,T> hashMap( T [] ... values ){
 		return map( new HashMap<T,T>(), false, values );
 	}
-		
+
 	@SafeVarargs
 	public static <T> TreeMap<T,T> treeMap( T ... values ){
 		return map( new TreeMap<T,T>(), false, values );
@@ -74,31 +74,43 @@ public abstract class Mapper {
 	public static <T> TreeMap<T,T> treeMap( T [] ... values ){
 		return map( new TreeMap<T,T>(), false, values );
 	}
-	
+
 	@SafeVarargs
 	public static <T> LinkedHashMap<T,T> linkedHashMap( T ... values ){
 		return map( new LinkedHashMap<T,T>(), false, values );
 	}
-		
+
 	@SafeVarargs
 	public static <T> HashMap<T,T> hashMapIgnoreEmptyValues( T ... values ){
 		return map( new HashMap<T,T>(), true, values );
 	}
-		
+
 	@SafeVarargs
 	public static <T> TreeMap<T,T> treeMapIgnoreEmptyValues( T ... values ){
 		return map( new TreeMap<T,T>(), true, values );
 	}
-	
+
 	@SafeVarargs
 	public static <T> LinkedHashMap<T,T> linkedHashMapIgnoreEmptyValues( T ... values ){
 		return map( new LinkedHashMap<T,T>(), true, values );
 	}
-	
+
+	@SafeVarargs
+	public static <T> HashMap<T,Integer> hashMapToInt( T ... values ){
+
+		HashMap<T,Integer> result = new HashMap<>();
+
+		int i=0;
+		for( T val : values ) {
+			result.put( val, i++ );
+		}
+		return result;
+	}
+
 	// =========== Generated Maps =============
-	
+
 	public static <K extends Enum<K>,V> EnumMap<K,V> enumMapOf( Class<K> enumType, Function<K,V> generator ) {
-		EnumMap<K,V> result = new EnumMap<K,V>( enumType );
+		EnumMap<K,V> result = new EnumMap<>( enumType );
 		for( K key : enumType.getEnumConstants() ) {
 			result.put( key, generator.apply( key ) );
 		}
@@ -107,7 +119,7 @@ public abstract class Mapper {
 	public static <K extends Enum<K>,V> EnumMap<K,V> enumMapOf( Class<K> enumType, Generator<V> generator ) {
 		return enumMapOf( enumType, v -> generator.generate() );
 	}
-	
+
 	public static <K,V> HashMap<K,V> hashMapOf( Iterable<K> keys, Function<K,V> generator ) {
 		HashMap<K,V> result = new HashMap<>();
 		for( K key : keys ) {
@@ -118,11 +130,11 @@ public abstract class Mapper {
 	public static <K,V> HashMap<K,V> hashMapOf( Iterable<K> keys, Generator<V> generator ) {
 		return hashMapOf( keys, v -> generator.generate() );
 	}
-	
+
 	public interface Generator<T> {
 		public T generate();
 	}
-		
+
 	@SafeVarargs
 	public static <T,M extends Map<T,T>> M map( M result, boolean ignoreEmptyValues,  T ... values ){
 
@@ -135,7 +147,7 @@ public abstract class Mapper {
 		}
 		return result;
 	}
-	
+
 	@SafeVarargs
 	public static <T,M extends Map<T,T>> M map( M result, boolean ignoreEmptyValues,  T [] ... values ){
 
@@ -145,33 +157,33 @@ public abstract class Mapper {
 		}
 		return result;
 	}
-	
+
 	@SafeVarargs
 	public static <X,Y,M extends Map<X,Y>> M map( M result, boolean ignoreEmptyValues,  MapperEntry<X,Y> ... values ){
 
 		for( MapperEntry<X,Y> e : values ){
-			if( ignoreEmptyValues || e.y != null ) 
+			if( ignoreEmptyValues || e.y != null )
 					result.put( e.x, e.y );
 		}
 		return result;
 	}
-	
+
 	// Map List to Map via key extraction
 	public <K,O, M extends Map<K,O>> M map( M result, KeyExtractor<K,O> extractor, Iterable<O> objects ){
-		
+
 		for( O value : objects ){
 			result.put( extractor.extract( value ), value );
 		}
 		return result;
 	}
-	
+
 	public <K,O> HashMap<K,O> hashMap( KeyExtractor<K,O> extractor, Iterable<O> objects ){
 		return map( new HashMap<K,O>(), extractor, objects );
 	}
 	public <K,O> TreeMap<K,O> treeMap( KeyExtractor<K,O> extractor, Iterable<O> objects ){
 		return map( new TreeMap<K,O>(), extractor, objects );
 	}
-	
+
 	@SuppressWarnings( "unchecked" )
 	public <K,O> HashMap<K,O> hashMap( KeyExtractor<K,O> extractor, O ... object ){
 		return map( new HashMap<K,O>(), extractor, Arrays.asList( object ) );
@@ -185,15 +197,15 @@ public abstract class Mapper {
 	public static <K,V> HashMap<K,V> hashMap( K[] k, V[] v ){
 		return map( new HashMap<K,V>(), k, v );
 	}
-	
+
 	public static <K,V> TreeMap<K,V> treeMap( K[] k, V[] v ){
 		return map( new TreeMap<K,V>(), k, v );
 	}
-	
+
 	public static <K,V> LinkedHashMap<K,V> linkedHashMap( K[] k, V[] v ){
 		return map( new LinkedHashMap<K,V>(), k, v );
 	}
-	
+
 	public static <K,V,M extends Map<K,V>> M map( M result, K[] k, V[] v ){
 
 		if( k.length != v.length )
@@ -220,28 +232,28 @@ public abstract class Mapper {
 		}
 		return result;
 	}
-		
+
 	// Set
 	@SafeVarargs
 	public static <T> HashSet<T> hashSet( T ... values ){
 
-		HashSet<T> result = new HashSet<T>( Arrays.asList( values ));
+		HashSet<T> result = new HashSet<>( Arrays.asList( values ));
 		return result;
 	}
 	@SafeVarargs
 	public static <T> HashSet<T> linkedHashSet( T ... values ){
 
-		HashSet<T> result = new LinkedHashSet<T>( Arrays.asList( values ));
+		HashSet<T> result = new LinkedHashSet<>( Arrays.asList( values ));
 		return result;
 	}
-	
+
 	@SafeVarargs
 	public static <T> TreeSet<T> treeSet( T ... values ){
-		
-		TreeSet<T> result = new TreeSet<T>( Arrays.asList( values ));
+
+		TreeSet<T> result = new TreeSet<>( Arrays.asList( values ));
 		return result;
 	}
-	
+
 	@SafeVarargs
 	public static <T> Set<T> setAtLeast( Set<T> source, T ... addThese ){
 		if( source == null ) return hashSet( addThese );
@@ -254,29 +266,29 @@ public abstract class Mapper {
 	// Converted Set
 	@SafeVarargs
 	public static <T,X> HashSet<T> hashSet( Converter<T,X> converter, X ... values ){
-		
+
 		// Arrays.asList is cheap. This creates an shallow wrapper wich is not (!) java.lang.ArrayList
 		return hashSetX( converter, values.length, Arrays.asList( values ) );
 	}
-	
+
 	public static <T,X> HashSet<T> hashSetX( Converter<T,X> converter, Collection<X> values ){
-		
+
 		return hashSetX( converter, values.size(), values );
 	}
 
 	public static <T,X> HashSet<T> hashSetX( Converter<T,X> converter, Iterable<X> values ){
-		
+
 		 // see HashMap DEFAULT_INITIAL_CAPACITY capacity
 		return hashSetX( converter, 1<<4, values );
 	}
-	
+
 	public static <T,X> HashSet<T> hashSetX( Converter<T,X> converter, int initialCapacity, Iterable<X> values ){
-		
+
 		Assert.notNull( converter, "converter" );
-		if( values == null ) return new HashSet<T>();
-		
-		HashSet<T> result = new HashSet<T>( initialCapacity );
-		
+		if( values == null ) return new HashSet<>();
+
+		HashSet<T> result = new HashSet<>( initialCapacity );
+
 		for( X value : values ){
 			result.add( converter.convert( value ) );
 		}
@@ -285,25 +297,25 @@ public abstract class Mapper {
 
 	@SafeVarargs
 	public static <T,X> TreeSet<T> treeSet( Converter<T,X> converter, X ... values ){
-		
+
 		// Arrays.asList is cheap. This creates an shallow wrapper wich is not (!) java.lang.ArrayList
 		return treeSetX( converter, Arrays.asList( values ) );
 	}
 	public static <T,X> TreeSet<T> treeSetX( Converter<T,X> converter, Iterable<X> values ){
-		
+
 		Assert.notNull( converter, "converter" );
-		if( values == null ) return new TreeSet<T>();
-		
-		TreeSet<T> result = new TreeSet<T>();
-		
+		if( values == null ) return new TreeSet<>();
+
+		TreeSet<T> result = new TreeSet<>();
+
 		for( X value : values ){
 			result.add( converter.convert( value ) );
 		}
 		return result;
 	}
-	
+
 	public static <T> List<T> list( Collection<T> values ) {
-		
+
 		if( values instanceof List ) {
 			return (List<T>) values;
 		} else {
@@ -314,57 +326,57 @@ public abstract class Mapper {
 	@SafeVarargs
 	public static <T> LinkedList<T> linkedList( T ... values ){
 
-		return new LinkedList<T>( Arrays.asList( values ) );
+		return new LinkedList<>( Arrays.asList( values ) );
 	}
-	
+
 	@SafeVarargs
 	public static <T> ArrayList<T> arrayList( T ... values ){
 
-		return new ArrayList<T>( Arrays.asList( values ) );
+		return new ArrayList<>( Arrays.asList( values ) );
 	}
-	
+
 	public static <T> LinkedList<T> toLinkedListIfNeeded( Collection<T> values ){
-		
+
 		if( values instanceof ArrayList ) {
 			return (LinkedList<T>) values;
 		} else {
 			return new LinkedList<>( values );
 		}
 	}
-	
+
 	public static <T> ArrayList<T> toArrayListIfNeeded( Collection<T> values ){
-		
+
 		if( values instanceof ArrayList ) {
 			return (ArrayList<T>) values;
 		} else {
 			return new ArrayList<>( values );
 		}
 	}
-	
+
 	@SafeVarargs
 	public static <T,X> LinkedList<T> linkedList( Converter<T,X> converter, X ... values ){
-		
+
 		return collection( new LinkedList<T>(), converter, values );
 	}
-	
+
 	@SafeVarargs
 	public static <T,X> ArrayList<T> arrayList( Converter<T,X> converter, X ... values ){
-		
+
 		return collection( new ArrayList<T>( values.length ), converter, values );
 	}
-	
+
 	@SafeVarargs
 	public static <T,X,C extends Collection<T>> C collection( C result, Converter<T,X> converter, X ... values ){
-		
+
 		fill( result, converter, values );
 		return result;
 	}
-		
+
 	@SafeVarargs
 	private static <T,X> void fill( Collection<T> result, Converter<T,X> converter, X ... values ){
-		
+
 		Assert.notNull(  converter, "converter" );
-		
+
 		for( X value : values ){
 			result.add( converter.convert( value ) );
 		}
@@ -372,17 +384,17 @@ public abstract class Mapper {
 
 	public static <T,U> List<String> mapToList( String joinWith, Map<T,U> map ){
 
-		LinkedList<String> result = new LinkedList<String>();
+		LinkedList<String> result = new LinkedList<>();
 
 		for( Map.Entry<T,U> entry : map.entrySet() ) {
-			
+
 			result.add( entry.getKey().toString() +
 					joinWith + entry.getValue().toString() );
 		}
-		
+
 		return result;
 	}
-	
+
 	/*
 	private static final class NoConverter<T> implements Converter<T,T>{
 
@@ -390,37 +402,37 @@ public abstract class Mapper {
 		public T convert( T value ) { return value; }
 	}
 	*/
-	
+
 	public static Map<String,String> split( String rs, String fs, String joined ){
-		
-		Map<String,String> result = new TreeMap<String,String>();
+
+		Map<String,String> result = new TreeMap<>();
 		String[] records = joined.split( rs );
 		for( String record : records ){
-			
+
 			String[] fields = record.split( fs );
 			for( int i=0; i<2; i++ ) fields[i] = fields[i].trim();
-			
+
 			result.put( fields[0], fields[1] );
 		}
 		return result;
 	}
-	
+
 	public static <X,Y,M extends Map<X,Y>> M clean( M map ){
-		
-		LinkedList<X> empty = new LinkedList<X>();
+
+		LinkedList<X> empty = new LinkedList<>();
 		for( Map.Entry<X,Y> entry : map.entrySet() ){
-			
+
 			if( entry.getValue() == null ) empty.add( entry.getKey() );
 		}
 		for( X key : empty ){
 			map.remove( key );
 		}
-		
+
 		return map;
 	}
-	
+
 	// Fast Sets
-	
+
 	public static <T> Set<T> immutableSet( T value ){
 		return new SingleImmutableSet<>( value );
 	}
@@ -433,20 +445,20 @@ public abstract class Mapper {
 	public static <K,V> Map<K,V> immutableMap( K key, V value ){
 		return new SingleImmutableMap<>( key, value );
 	}
-	
+
 	public interface Converter<T,X> {
 		public T convert( X value );
 	}
 	public interface KeyExtractor<K,O> {
 		public K extract( O object );
 	}
-	
-	
+
+
 	public static <T> Set<T> asSetOrNull( T item ) {
 		if( item == null ) return null;
 		return immutableSet( item );
 	}
-	
+
 	@SuppressWarnings( "unchecked" )
 	public static <T> Set<T> asSet( T ... items ) {
 		if( items == null ) return null;
@@ -456,7 +468,7 @@ public abstract class Mapper {
 	}
 	/**
 	 * @return collection as set. either a new one or the old one if it's already a set.
-	 * 
+	 *
 	 * @param items
 	 */
 	public static <T> Set<T> asSet( Iterable<T> items ) {
@@ -467,10 +479,10 @@ public abstract class Mapper {
 		for( T t : items ) result.add( t );
 		return result;
 	}
-	
+
 	/**
 	 * @return collection as list. either a new one or the old one if it's already a list.
-	 * 
+	 *
 	 * @param items
 	 */
 	public static <T> List<T> asList( Iterable<T> items ) {
@@ -482,7 +494,7 @@ public abstract class Mapper {
 		result.trimToSize();
 		return result;
 	}
-	
+
 	public static <T> ArrayList<T> asArrayList( Iterable<T> items ) {
 		if( items == null ) return null;
 		if( items instanceof ArrayList ) return (ArrayList<T>)items;
@@ -492,7 +504,7 @@ public abstract class Mapper {
 		result.trimToSize();
 		return result;
 	}
-	
+
 	public static <T> LinkedList<T> asLinkedList( Iterable<T> items ) {
 		if( items == null ) return null;
 		if( items instanceof ArrayList ) return (LinkedList<T>)items;
@@ -501,7 +513,7 @@ public abstract class Mapper {
 		for( T t : items ) result.add( t );
 		return result;
 	}
-	
+
 	@SuppressWarnings( "unchecked" )
 	public static <T> LinkedList<T> asLinkedList( T ... items ){
 		if( items == null ) return null;
@@ -509,7 +521,7 @@ public abstract class Mapper {
 		for( T item : items ) result.add( item );
 		return result;
 	}
-	
+
 	@SuppressWarnings( "unchecked" )
 	public static <T> ArrayList<T> asArrayList( T ... items ){
 		if( items == null ) return null;
@@ -517,75 +529,76 @@ public abstract class Mapper {
 		for( T item : items ) result.add( item );
 		return result;
 	}
-	
+
 	public static <T,I extends Comparable<I>> List<T> asSortedList( Map<T,I> items ) {
-		
+
 		List<T> result = new ArrayList<>( items.size() );
-		
+
 		for( T it : items.keySet() ) {
-			
+
 			result.add( it );
 		}
-		
+
 		result.sort( new IndexedComparator<>( items ) );
-		
+
 		return result;
 	}
-	
+
 	private static class IndexedComparator<T,I extends Comparable<I>> implements Comparator<T> {
-		
+
 		private final Map<T,I> index;
-		
+
 		IndexedComparator( Map<T, I> index ){
-			
+
 			this.index = index;
 		}
 
 		@Override
 		public int compare( T o1, T o2 ) {
-			
+
 			I i1 = index.get( o1 ), i2 = index.get( o2 );
-			
+
 			if( i1 == i2 ) return 0;
 			if( i1 == null ) return 1;
 			if( i2 == null ) return -1;
-			
+
 			return i1.compareTo( i2 );
 		}
 	}
-	
+
 	public static <T,K> List<T> joinedList( ListProvider<T,K> itemProvider, Iterable<K> keyProvider ) {
-		
+
 		ArrayList<T> result = new ArrayList<>();
-		
+
 		for( K key : keyProvider ) {
-			
+
 			Iterable<T> list = itemProvider.provide( key );
-			
+
 			for( T item : list ) {
-				
+
 				result.add( item );
 			}
 		}
-		
-		
+
+
 		return result;
-		
+
 	}
-	
+
 	public interface ListProvider<T,K> {
-		
+
 		public Iterable<T> provide( K key );
 	}
 
 	public static <T> T[] asArray( Class<T> clazz, Collection<T> aids ) {
-		
+
 		@SuppressWarnings( "unchecked" )
 		T [] result = (T[]) Array.newInstance( clazz, aids.size() );
-		
+
 		result = aids.toArray( result );
-		
+
 		return result;
 	}
-	
+
+
 }

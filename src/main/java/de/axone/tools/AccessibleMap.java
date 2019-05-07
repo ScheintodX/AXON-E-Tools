@@ -4,17 +4,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import de.axone.exception.Assert;
 import de.axone.exception.Ex;
 
 public class AccessibleMap implements StringValueAccessor<String,NoSuchElementException>{
 
 	private final Map<String,String> backend;
-	
+
 	public AccessibleMap(){
 		this( new HashMap<>() );
 	}
 	public AccessibleMap( Map<String,String> backend ) {
+		Assert.notNull( backend, "backend" );
 		this.backend = backend;
+	}
+
+	public Map<String,String> backend(){
+		return backend;
 	}
 
 	@Override
@@ -32,9 +38,14 @@ public class AccessibleMap implements StringValueAccessor<String,NoSuchElementEx
 	public NoSuchElementException exception( String key ) {
 		return Ex.up( new NoSuchElementException( key.toString() ) );
 	}
-	
+
 	public void put( String key, String value ) {
 		backend.put( key, value );
+	}
+
+	@Override
+	public String toString() {
+		return backend().toString();
 	}
 
 }
