@@ -1,13 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry path="build.eclipse" kind="output"/>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="src" path="src/test/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/"/>
-	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.11/bce4ba84fd527950e35040b20a991c63e90e2850/commons-codec-1.11-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.11/3acb4705652e16236558f0f4f2192cc33c3bd189/commons-codec-1.11.jar" exported="true">
+	<classpathentry output="bin/main" kind="src" path="src/main/java">
 		<attributes>
+			<attribute name="gradle_scope" value="main"/>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry output="bin/main" kind="src" path="src/main/resources">
+		<attributes>
+			<attribute name="gradle_scope" value="main"/>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry output="bin/test" kind="src" path="src/test/java">
+		<attributes>
+			<attribute name="gradle_scope" value="test"/>
+			<attribute name="gradle_used_by_scope" value="test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry output="bin/test" kind="src" path="src/test/resources">
+		<attributes>
+			<attribute name="gradle_scope" value="test"/>
+			<attribute name="gradle_used_by_scope" value="test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/"/>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.9/88c1ea157c2a2aa51e24f6a916226e72a0c98e05/httpclient-4.5.9-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.9/a25c1be5ce99d0ce99aa43eb982868c796dd0775/httpclient-4.5.9.jar" exported="true">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.12/bf72d17429b490b08c63d8f06a3cb7b2b52a7250/commons-codec-1.12-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.12/47a28ef1ed31eb182b44e15d49300dee5fadcf6a/commons-codec-1.12.jar" exported="true">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -16,6 +46,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/commons-lang/commons-lang/2.6/67313d715fbf0ea4fd0bdb69217fb77f807a8ce5/commons-lang-2.6-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/commons-lang/commons-lang/2.6/ce1edb914c94ebc388f086c6827e8bdeec71ac2/commons-lang-2.6.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -24,6 +55,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.hibernate.common/hibernate-commons-annotations/4.0.5.Final/98339e44338b43de01cb5ae0b169447d17ae00/hibernate-commons-annotations-4.0.5.Final-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.hibernate.common/hibernate-commons-annotations/4.0.5.Final/2a581b9edb8168e45060d8bad8b7f46712d2c52c/hibernate-commons-annotations-4.0.5.Final.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -32,6 +64,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.hibernate.javax.persistence/hibernate-jpa-2.1-api/1.0.2/b44caf3f4e0eddc4cf124a6aef768b9a93521c21/hibernate-jpa-2.1-api-1.0.2-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.hibernate.javax.persistence/hibernate-jpa-2.1-api/1.0.2/cc986fd1a62ae50308a56041c7a7d52ee5f49fb6/hibernate-jpa-2.1-api-1.0.2.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -40,22 +73,16 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/net.sf.ehcache/ehcache-core/2.5.2/c75228238197040d23095cfadfd0be3b62b91a1d/ehcache-core-2.5.2-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/net.sf.ehcache/ehcache-core/2.5.2/31cbafefbecb34a1081939230a5bc6f13a1c55db/ehcache-core-2.5.2.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.6/bda84e42670536453ecd61ee70349c2493445994/httpclient-4.5.6-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.6/1afe5621985efe90a92d0fbc9be86271efbe796f/httpclient-4.5.6.jar" exported="true">
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.9.9.1/ac9b1a3dbdfac9cf6a8618ad5c9bf8dabc965bef/jackson-databind-2.9.9.1-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.9.9.1/211dfab27bdd15a569247fee4690a07a177044f8/jackson-databind-2.9.9.1.jar" exported="true">
 		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
-	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.9.8/f66792d499a6fea6c7a743558f940e0ebf775ce3/jackson-databind-2.9.8-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.9.8/11283f21cc480aa86c4df7a0a3243ec508372ed2/jackson-databind-2.9.8.jar" exported="true">
-		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -64,14 +91,16 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.ostermiller/utils/1.07.00/586774ee4b8409b6835621bae2186d9b54d1c36a/utils-1.07.00-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.ostermiller/utils/1.07.00/a8828217b2dd0507fbe9e9d0b2981acfb908b590/utils-1.07.00.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.25/962153db4a9ea71b79d047dfd1b2a0d80d8f4739/slf4j-api-1.7.25-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.25/da76ca59f6a57ee3102f8f9bd9cee742973efa8a/slf4j-api-1.7.25.jar" exported="true">
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.26/21c84cdf9da108216b5e402611d4af479b60cb8/slf4j-api-1.7.26-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.26/77100a62c2e6f04b53977b9f541044d7d722693d/slf4j-api-1.7.26.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -80,6 +109,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/javax.servlet/javax.servlet-api/3.0.1/1952f91d84016a39e31346c9d18bd8c9c4a128a/javax.servlet-api-3.0.1-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/javax.servlet/javax.servlet-api/3.0.1/6bf0ebb7efd993e222fc1112377b5e92a13b38dd/javax.servlet-api-3.0.1.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -88,6 +118,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.yahoo.platform.yui/yuicompressor/2.4.8/dc3ec5c8cc3463219902497dec8fed0a434d00fb/yuicompressor-2.4.8-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.yahoo.platform.yui/yuicompressor/2.4.8/900a7296bb52d740418d53274c1ecac5c83c760e/yuicompressor-2.4.8.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -96,6 +127,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/annotations/3.0.1/e6a834472bdb9f5c9b8ec64d05c3ae2cb6a03cec/annotations-3.0.1-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/annotations/3.0.1/fc019a2216218990d64dfe756e7aa20f0069dea2/annotations-3.0.1.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -104,6 +136,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/24.1.1-jre/9cd4fb296a2c098839bf029de31432d737ab20ad/guava-24.1.1-jre-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/24.1.1-jre/2e3014320a8005e3f3c1800cb246ed42db8cab81/guava-24.1.1-jre.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -112,6 +145,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.jboss.logging/jboss-logging/3.1.3.GA/4d2c4df2c1a1b2d2f9201f6d580d7d19ccf8cbdf/jboss-logging-3.1.3.GA-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.jboss.logging/jboss-logging/3.1.3.GA/64499e907f19e5e1b3fdc02f81440c1832fe3545/jboss-logging-3.1.3.GA.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -120,14 +154,16 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.jboss.logging/jboss-logging-annotations/1.2.0.Beta1/360b782ab568672ea968726ddf209e753c860e1a/jboss-logging-annotations-1.2.0.Beta1-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.jboss.logging/jboss-logging-annotations/1.2.0.Beta1/2f437f37bb265d9f8f1392823dbca12d2bec06d6/jboss-logging-annotations-1.2.0.Beta1.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.10/35dcae32cc1c3bfb62546e64b90fc6359183b3b5/httpcore-4.4.10-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.10/acc54d9b28bdffe4bbde89ed2e4a1e86b5285e2b/httpcore-4.4.10.jar" exported="true">
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.11/95167d269607b358ba3ed7030ccd336dad8591a0/httpcore-4.4.11-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.11/de748cf874e4e193b42eceea9fe5574fabb9d4df/httpcore-4.4.11.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -136,6 +172,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/ecf26c7507d67782a3bbd148d170b31dfad001aa/commons-logging-1.2-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/4bfc12adfe4842bf07b657f0369c4cb522955686/commons-logging-1.2.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -144,14 +181,16 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.9.0/a0ad4e203304ccab7e01266fa814115850edb8a9/jackson-annotations-2.9.0-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.9.0/7c10d545325e3a6e72e06381afe469fd40eb701/jackson-annotations-2.9.0.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.9.8/ecaea301e166a0b48f11615864246de739b6619b/jackson-core-2.9.8-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.9.8/f5a654e4675769c716e5b387830d19b501ca191/jackson-core-2.9.8.jar" exported="true">
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.9.9/c8a91180aef81d62f44b27cef42bacb168871a4c/jackson-core-2.9.9-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.9.9/bfff5af9fb8347d26bbb7959cb9b4fe9a2b0ca5e/jackson-core-2.9.9.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -160,6 +199,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/net.jcip/jcip-annotations/1.0/d853625d8001c00d40abed553e670279504699f9/jcip-annotations-1.0-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/net.jcip/jcip-annotations/1.0/afba4942caaeaf46aab0b976afd57cc7c181467e/jcip-annotations-1.0.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -168,6 +208,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.1/a2926c057ca3b662b9db194c869bdbe7d3bb8aef/jsr305-3.0.1-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.1/f7be08ec23c21485b9b5a1cf1654c2ec8c58168d/jsr305-3.0.1.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -176,6 +217,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-compat-qual/2.0.0/eb7f7d588d0aef07a2c89178053c2a9e4613947f/checker-compat-qual-2.0.0-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-compat-qual/2.0.0/fc89b03860d11d6213d0154a62bcd1c2f69b9efa/checker-compat-qual-2.0.0.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -184,6 +226,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.1.3/990fe1fd48078a2befecdfcebcad8e6e1bd195a0/error_prone_annotations-2.1.3-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.1.3/39b109f2cd352b2d71b52a3b5a1a9850e1dc304b/error_prone_annotations-2.1.3.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -192,6 +235,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.1/1efdf5b737b02f9b72ebdec4f72c37ec411302ff/j2objc-annotations-1.1-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.1/ed28ded51a8b1c6b112568def5f4b455e6809019/j2objc-annotations-1.1.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -200,6 +244,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.codehaus.mojo/animal-sniffer-annotations/1.14/886474da3f761d39fcbb723d97ecc5089e731f42/animal-sniffer-annotations-1.14-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.codehaus.mojo/animal-sniffer-annotations/1.14/775b7e22fb10026eed3f86e8dc556dfafe35f2d5/animal-sniffer-annotations-1.14.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -208,6 +253,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-all/1.9.5/b8086d4e4daa361fc746abea62f77a2ae55d3ed9/mockito-all-1.9.5-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-all/1.9.5/79a8984096fc6591c1e3690e07d41be506356fa5/mockito-all-1.9.5.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -216,6 +262,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.assertj/assertj-core/3.8.0/85dab3e124fb391b10196df9bfdb43640deabb09/assertj-core-3.8.0-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.assertj/assertj-core/3.8.0/b209d90ff2e279bee3e02547ee7b11349c52d0e3/assertj-core-3.8.0.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -224,6 +271,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.googlecode.catch-exception/catch-exception/1.2.0/c51ccdb4523d1b62f9d18e24e88e7b7e888295f4/catch-exception-1.2.0-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.googlecode.catch-exception/catch-exception/1.2.0/f2d1a395d91b4c024b9cc6a0946cfb10199df0a0/catch-exception-1.2.0.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -232,6 +280,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/1.9.5/46f703fb4266140c544d48a189cb25947eb6333e/mockito-core-1.9.5-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/1.9.5/c3264abeea62c4d2f367e21484fbb40c7e256393/mockito-core-1.9.5.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -240,6 +289,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.1/2ccf1154d1a8936042a8a742dc3e611d02ac7213/hamcrest-core-1.1-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.1/860340562250678d1a344907ac75754e259cdb14/hamcrest-core-1.1.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -248,14 +298,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.objenesis/objenesis/1.0/b10c90e57b7bb985a7b6a704769428fe5c2a732c/objenesis-1.0-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.objenesis/objenesis/1.0/9b473564e792c2bdf1449da1f0b1b5bff9805704/objenesis-1.0.jar" exported="true">
 		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
-	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.testng/testng/6.8.21/b9afc760cabb3f2008f8c2d3fcfa5cf2327ea3d1/testng-6.8.21-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.testng/testng/6.8.21/15e02d8d7be3c3640b585b97eda56026fdb5bf4d/testng-6.8.21.jar" exported="true">
-		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -264,6 +307,34 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-classic/1.1.11/2a2f78be7ef674b6486f7b5463f05f40da5e163/logback-classic-1.1.11-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-classic/1.1.11/ccedfbacef4a6515d2983e3f89ed753d5d4fb665/logback-classic-1.1.11.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.slf4j/jcl-over-slf4j/1.7.26/e2ba1512efe475a810b196d7c645d7093473817c/jcl-over-slf4j-1.7.26-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.slf4j/jcl-over-slf4j/1.7.26/33fbc2d93de829fa5e263c5ce97f5eab8f57d53e/jcl-over-slf4j-1.7.26.jar" exported="true">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.slf4j/log4j-over-slf4j/1.7.26/d8bbef04efa3a47d73450f23410d6a90a2b93564/log4j-over-slf4j-1.7.26-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.slf4j/log4j-over-slf4j/1.7.26/daeb21c5e35d77d550e721c4cf5aaa716496d31a/log4j-over-slf4j-1.7.26.jar" exported="true">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.testng/testng/6.8.21/b9afc760cabb3f2008f8c2d3fcfa5cf2327ea3d1/testng-6.8.21-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.testng/testng/6.8.21/15e02d8d7be3c3640b585b97eda56026fdb5bf4d/testng-6.8.21.jar" exported="true">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -272,22 +343,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-core/1.1.11/1b6214469321068fe4d58157768e1e039479fa1/logback-core-1.1.11-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-core/1.1.11/88b8df40340eed549fb07e2613879bf6b006704d/logback-core-1.1.11.jar" exported="true">
 		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
-	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.slf4j/jcl-over-slf4j/1.7.25/ffd0827a7c67d5915b7dc611afbda56a1f247191/jcl-over-slf4j-1.7.25-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.slf4j/jcl-over-slf4j/1.7.25/f8c32b13ff142a513eeb5b6330b1588dcb2c0461/jcl-over-slf4j-1.7.25.jar" exported="true">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
-	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/org.slf4j/log4j-over-slf4j/1.7.25/42a10e06ab88cbe5f31253ffb8c0bca96b34f81d/log4j-over-slf4j-1.7.25-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.slf4j/log4j-over-slf4j/1.7.25/a87bb47468f47ee7aabbd54f93e133d4215769c3/log4j-over-slf4j-1.7.25.jar" exported="true">
-		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -296,6 +352,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/org.beanshell/bsh/2.0b4/a05f0a0feefa8d8467ac80e16e7de071489f0d9c/bsh-2.0b4.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>
@@ -304,6 +361,7 @@
 	</classpathentry>
 	<classpathentry sourcepath="/home/flo/.gradle/caches/modules-2/files-2.1/com.beust/jcommander/1.27/fae697ac46477a5227a5ee14f8f3a1270a4627b0/jcommander-1.27-sources.jar" kind="lib" path="/home/flo/.gradle/caches/modules-2/files-2.1/com.beust/jcommander/1.27/58c9cbf0f1fa296f93c712f2cf46de50471920f9/jcommander-1.27.jar" exported="true">
 		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 		<attributes>

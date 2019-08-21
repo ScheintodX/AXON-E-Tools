@@ -42,13 +42,13 @@ import de.axone.web.Header;
 import de.axone.web.ImgColorRotator;
 
 public abstract class ResourcesServlet extends HttpServlet {
-	
+
 	private static final String FAVICON_ICO = "favicon.ico";
 
 	private static final Logger log = LoggerFactory.getLogger( ResourcesServlet.class );
-	
+
 	private static final Realm<String,Object> DEFAULT_RESOURCE_REALM = new RealmImpl<>( "resource cache" );
-	
+
 	private static final long serialVersionUID = 1L;
 
 	private static final char FS = ';';
@@ -56,45 +56,45 @@ public abstract class ResourcesServlet extends HttpServlet {
 	private static final String P_DO_YUI = "yui";
 	private static final String P_NO_CACHE = "nc";
 	private static final float MIN_COMPRESSION = 0.90f;
-	
+
 	private static final Pattern COLORIZE = Pattern.compile( "(/([cpgji]{1,5})\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)).*" );
 	private static final Pattern DEPLENK = Pattern.compile( "\\s*:\\s*" );
 
 	protected abstract File basedir();
 	protected abstract long cachetime();
-	
+
 	protected Logger log(){ return log; }
-	
+
 	protected String uriPrefix(){
 		return PREFIX;
 	}
-	
+
 	protected String filter( HttpServletRequest req, HttpServletResponse resp, String uri ) {
-		
+
 		if( uri.endsWith( FAVICON_ICO ) ){
 			uri = favicon( req, resp, uri );
 		}
-		
+
 		if( uri.endsWith( "/" ) )
 				uri += "index.html";
-		
+
 		uri = DEPLENK.matcher( uri ).replaceAll( ":" );
-			
+
 		return uri;
 	}
-	
+
 	protected String favicon( HttpServletRequest req, HttpServletResponse resp,  String uri ) {
 		return uri; // Do nothing per default
 	}
-	
-	private CacheNG.Cache<String,Object> cache = new CacheLRUMap<>( DEFAULT_RESOURCE_REALM, 1000, true );
+
+	private final CacheNG.Cache<String,Object> cache = new CacheLRUMap<>( DEFAULT_RESOURCE_REALM, 1000, true );
 	protected CacheNG.Cache<String,Object> buffer(){
 		return cache;
 	}
-	
+
 	/**
 	 * Overwrite in subclasses
-	 * 
+	 *
 	 * @param request
 	 * @param uri
 	 * @throws Exception
@@ -103,53 +103,53 @@ public abstract class ResourcesServlet extends HttpServlet {
 
 	@Override
 	public void doGet( HttpServletRequest request, HttpServletResponse response ) {
-		
+
 		try {
 			// Get settings
 			File basedir = basedir();
 			File subdir = null;
 			long cachetime = cachetime();
-			
+
 			String requestUri = request.getRequestURI();
 
     		// Get requested resources
 			String uri = filter( request, response, requestUri );
-			
+
 			protect( request, uri );
 
 			Cache<String,Object> buffer = buffer();
-			
+
 			String pYui = request.getParameter( P_DO_YUI );
 			boolean doYui = !EasyParser.isNo( pYui ) && ! uri.endsWith( ".min.js" );
-			
+
 			String pNc = request.getParameter( P_NO_CACHE );
 			boolean doNotCache = pNc != null && pNc.length() == 0;
 
 			HttpDataHolder httpData = null;
-			
+
 			synchronized( buffer ) {
-				
+
 				String urlKey = uri + (doYui?"!":"");
-				
+
 				// Is there sth. in the buffer?
 				if( !doNotCache && buffer.isCached( urlKey ) ) {
 
 					httpData = (HttpDataHolder) buffer.fetch( urlKey );
 				}
-				
+
 				if( httpData == null || httpData.hasChanged() ){
-					
+
 					String [] uriSplitted = Str.splitFast( uri, FS );
-					
-					LinkedList<FileWatcher> watcherList = new LinkedList<FileWatcher>();
-					LinkedList<byte[]> datas = new LinkedList<byte[]>();
-					
+
+					LinkedList<FileWatcher> watcherList = new LinkedList<>();
+					LinkedList<byte[]> datas = new LinkedList<>();
+
 					String basePath=null;
 					CssColorRotator rotCss = null;
 					ImgColorRotator rotImg = null;
 
 					for( String uriPart : uriSplitted ){
-						
+
 						@SuppressWarnings( "unused" )
 						boolean isHtml=false, isCss=false, isScss=false, isJs=false, isPng=false, isJpg=false, isGif=false, isIcon=true;
 						if( uriPart.endsWith( ".html" ) || uriPart.endsWith( ".xhtml" ) ){
@@ -168,25 +168,25 @@ public abstract class ResourcesServlet extends HttpServlet {
 						} else if( uriPart.endsWith( ".ico" ) ){
 							isIcon = true;
 						}
-						
+
 						// Make colorizer
 						Matcher cm = COLORIZE.matcher( uriPart );
 						if( cm.matches() ){
-							
+
 							String found = cm.group( 1 );
 							String mode = cm.group( 2 );
-							
+
 							boolean doCss = isCss && mode.contains( "c" );
 							boolean doPng = isPng && mode.contains( "p" );
 							boolean doJpg = isJpg && mode.contains( "j" );
 							boolean doGif = isGif && mode.contains( "g" );
 							boolean inverse = mode.contains( "i" );
-							
+
 							if( doCss || doPng || doJpg || doGif ){
 								Integer h = Integer.parseInt( cm.group( 3 ) );
 								Integer s = Integer.parseInt( cm.group( 4 ) );
 								Integer b = Integer.parseInt( cm.group( 5 ) );
-								
+
 								if( doCss ){
 									rotCss = new CssColorRotator( h, s, b, inverse );
 								} else if( doPng || doJpg || doGif ){
@@ -195,35 +195,35 @@ public abstract class ResourcesServlet extends HttpServlet {
 							}
 							uriPart = uriPart.substring( found.length() );
 						}
-						
+
 						// For first save Path. All others will be relative
 						File file;
 						if( uriPart.charAt( 0 ) == '/' ){
-							
+
 							if( uriPart.startsWith( uriPrefix() ) ){
 								uriPart = uriPart.substring( uriPrefix().length() );
 							}
-							
+
 							File uriFile = new File( uriPart );
 							basePath = uriFile.getParent();
-						
+
 							file = new File( basedir, uriPart );
-							
+
 							if( basePath == null ) {
 								subdir = basedir;
 							} else {
 								subdir = new File( basedir, basePath );
 							}
-							
+
 						} else {
 							if( subdir == null )
 									throw new IllegalArgumentException( "Missing basedir" );
 							file = new File( subdir, uriPart );
 						}
-						
+
 						// check for sass
 						if( isCss && !isScss ) {
-							
+
 							String cssPath = file.getAbsolutePath();
 							File scss = new File( cssPath.substring( 0, cssPath.length()-4 ) + ".scss" );
 							if( scss.isFile() ){
@@ -231,77 +231,77 @@ public abstract class ResourcesServlet extends HttpServlet {
 								isScss = true;
 							}
 						}
-						
+
 						FileWatcher watcher = new FileWatcher( file );
 						watcher.haveChanged();
-						
+
 						if( !file.isFile() ) {
-							
+
 							log().error( "Not found: " + file );
-	
+
 							response.sendError( HttpServletResponse.SC_NOT_FOUND, uriPart );
-	
+
 							return;
 						}
-	
+
 						// File size
 						long filesizeL = file.length();
 						if( filesizeL > Integer.MAX_VALUE ) {
-	
+
 							log().error( "Too large: " + uriPart );
-	
+
 							response.sendError(
 									HttpServletResponse.SC_NOT_IMPLEMENTED,
 									"File is too large: " + filesizeL + "B" );
-							
+
 							return;
 						}
 						int filesize = (int) filesizeL;
-	
+
 						byte [] plainData = null;
 						String dataAsString = null;
-						
+
 						// Read via nio
 						if( !isScss ) {
-							
+
 							try (
 								FileInputStream fin = new FileInputStream( file );
 								FileChannel in = fin.getChannel();
 							) {
-		
+
 		    					response.setContentLength( filesize );
-		
+
 		    					ByteBuffer bb = in.map( FileChannel.MapMode.READ_ONLY, 0, filesize );
-		
+
 		    					plainData = new byte[ filesize ];
-		
+
 		    					bb.get( plainData );
 							}
-							
+
 						} else {
-							
+
 							dataAsString = compileSass( file );
 							if( dataAsString == null )
 									throw new RuntimeException( "Cannot compile " + file.getAbsolutePath() );
 						}
-						
+
     					if( ( isCss || isJs ) ){
-    						
+
     						if( doYui || ( isCss && rotCss != null ) ) {
-    							
+
 	    						if( dataAsString == null )
 	    								dataAsString = new String( plainData, Charsets.utf8 );
-	    						
+
 	    						if( isCss && rotCss != null ){
-	    							
+
 									dataAsString = rotCss.rotate( dataAsString );
 	    						}
-	    						
+
 	    						if( doYui ) {
-	    							
+
 		    						StringReader sIn = new StringReader( dataAsString );
 		    						StringWriter sOut = new StringWriter();
-		    						
+
 		    						if( isCss ){
 			    						CssCompressor compressor = new CssCompressor( sIn );
 			    						compressor.compress( sOut, 0 );
@@ -309,34 +309,34 @@ public abstract class ResourcesServlet extends HttpServlet {
 		    							JavaScriptCompressor compressor = new JavaScriptCompressor( sIn, null );
 		    							compressor.compress( sOut, 0, true, false, false, false );
 		    						}
-		    						
+
 		    						String compressedString = sOut.toString();
 		    						plainData = compressedString.getBytes();
 	    						}
     						}
     					}
-    					
+
     					if( (isPng|isJpg|isGif) && rotImg != null ){
-    						
+
     						if( isPng ){
 	    						plainData = rotImg.rotate( plainData, "png" );
-	    						
+
     						} else if( isJpg ){
 	    						plainData = rotImg.rotate( plainData, "jpeg" );
-	    						
+
     						} else if( isGif ){
 	    						plainData = rotImg.rotate( plainData, "gif" );
     						}
     					}
-    					
+
     					if( plainData == null && dataAsString != null )
     							plainData = dataAsString.getBytes( Charsets.UTF8 );
 
     					datas.add( plainData );
     					watcherList.add( watcher );
-						
+
 					}
-					
+
 					int datasize=0;
 					for( byte[] d : datas ){
 						datasize += d.length;
@@ -346,9 +346,9 @@ public abstract class ResourcesServlet extends HttpServlet {
 						allData.put( d );
 					}
 					allData.flip();
-					
+
 					byte [] dataAsArray = allData.array();
-					
+
 					httpData = new HttpDataHolder( dataAsArray, watcherList );
 					// Store doNotCache only if there is already an entry for that
 					// (in order to avoid wrong buffer entries)
@@ -360,7 +360,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 
 			// Regested E-Tag
 			String requestETag = request.getHeader( "If-None-Match" );
-			
+
 			// E-Tag generated from hashing the data
 			String myETag = httpData.getETag();
 
@@ -394,7 +394,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 			if( doNotCache ){
 				response.setHeader( "Cache-Control", "no-cache, no-store, must-revalidate" );
 				response.setHeader( "Expires", "0" );
-				
+
 			} else if( cachetime >= 0 ){
     			response.setHeader( "Cache-Control", "max-age="+cachetime );
 			}
@@ -432,11 +432,11 @@ public abstract class ResourcesServlet extends HttpServlet {
     			}
 
 			}
-			
+
 		} catch( Throwable e ) {
-			
+
 			log().error( "Error processing {}", request.getRequestURI(), e );
-			
+
 			try {
 				onError( request, response, e );
 			} catch( Throwable t ){
@@ -445,17 +445,17 @@ public abstract class ResourcesServlet extends HttpServlet {
 			}
 		}
 	}
-	
+
 	protected String compileSass( File file ) {
-		
+
 		throw new UnsupportedOperationException( "Cannot compile sass until someone tells me how too" );
 	}
-	
+
 	protected void onError( HttpServletRequest req, HttpServletResponse resp, Throwable e ) throws Exception {
-		
+
 		try {
 			resp.sendError( HttpServletResponse.SC_NOT_FOUND, e.getMessage() );
-			
+
 			try ( PrintWriter o2 = resp.getWriter(); ){
 				e.printStackTrace( o2 );
 			} catch( IllegalStateException ise ){
@@ -464,20 +464,20 @@ public abstract class ResourcesServlet extends HttpServlet {
 					e.printStackTrace( otherOut );
 				}
 			}
-			
+
 		} catch( IOException e1 ) {
 			e1.printStackTrace();
 		}
 	}
-	
+
 
 	class HttpDataHolder {
 
-		private byte[] data;
+		private final byte[] data;
 		private byte[] gziped;
 		private Boolean isGzipAvailable;
 		private String eTag;
-		private List<FileWatcher> watcher;
+		private final List<FileWatcher> watcher;
 
 		HttpDataHolder( byte[] data, List<FileWatcher> watcher ){
 
@@ -534,7 +534,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 		public List<FileWatcher> getWatchers() {
 			return watcher;
 		}
-		
+
 		public boolean hasChanged() {
 			boolean hasChanged = false;
 			for( FileWatcher watcher : getWatchers() ){
@@ -545,7 +545,7 @@ public abstract class ResourcesServlet extends HttpServlet {
 			}
 			return hasChanged;
 		}
-		
+
 	}
 
 }
