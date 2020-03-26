@@ -737,6 +737,11 @@ public class Str {
 		return result;
 	}
 
+	public static Stream<String> splitFastAtSpacesToStream( String s ){
+
+		return splitFastAtSpacesToList( s ).stream();
+	}
+
 
 	/**
 	 * Split s one time
@@ -786,6 +791,29 @@ public class Str {
 
 		if( pos >= 0 )
 			return new String[]{ s.substring( 0, pos ), s.substring( pos+split.length() ) };
+		else
+			return new String[]{ s };
+	}
+
+	/**
+	 * Split s one time at whitespace
+	 *
+	 * @param s
+	 * @param split
+	 * @return the split values in a string array
+	 */
+	public static String [] splitFastOnceAtWhitespace( String s ){
+
+		int pos = -1;
+		for( int i=0; i< s.length(); i++ ) {
+			if( Character.isWhitespace( s.charAt( i ) )) {
+				pos = i;
+				break;
+			}
+		}
+
+		if( pos >= 0 )
+			return new String[]{ s.substring( 0, pos ), s.substring( pos+1 ) };
 		else
 			return new String[]{ s };
 	}
@@ -1325,6 +1353,20 @@ public class Str {
 		}
 
 		return result.toString();
+	}
+
+	public static boolean startsWithIgnoreCase( String haystack, String needle ) {
+
+		if( haystack.length() < needle.length() ) return false;
+
+		for( int i=0; i<needle.length(); i++ ) {
+
+			if( Character.toLowerCase( haystack.charAt( i ) ) !=
+					Character.toLowerCase( needle.charAt( i ) ) ) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

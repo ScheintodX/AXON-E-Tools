@@ -1,4 +1,4 @@
-package de.axone.data;
+package de.axone.stream;
 
 import java.util.Iterator;
 import java.util.stream.Stream;

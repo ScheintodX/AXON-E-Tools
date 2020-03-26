@@ -3,8 +3,10 @@ package de.axone.tools;
 import java.io.PrintStream;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import de.axone.exception.Ex;
+import de.axone.stream.Strapper;
 
 public abstract class E {
 
@@ -417,16 +419,29 @@ public abstract class E {
 		return value;
 	}
 
-	// Used for forEach in streams
-	public static void STEAM( Object value ) {
-		rrup( 10, value );
-	}
-
 	@FunctionalInterface
 	public interface IS_DEBUG {
 		String isDebug();
 	}
 
+
+	//
+	// === Stream Stuff ===
+	//
+
+	/**
+	 * USAGE: stream.forEach( E::STEAM )
+	 * @param value
+	 */
+	public static void STEAM( Object value ) {
+		rrup( 10, value );
+	}
+
+	/**
+	 * USAGE: stream.map( E::peek )
+	 * @param value
+	 * @return
+	 */
 	public static <V> V peek( V value ){
 
 		E.rrup( 1, value );
@@ -434,10 +449,67 @@ public abstract class E {
 		return value;
 	}
 
+	/**
+	 * USAGE : stream.map( x -> E.peak( "foo", x ) )
+	 * @param msg
+	 * @param value
+	 * @return
+	 */
 	public static <V> V peek( String msg, V value ){
 
 		E.rrup( 1, msg, value );
 
 		return value;
+	}
+
+	/**
+	 * USAGE: peek( stream )
+	 *
+	 * Note: prints when stream is used
+	 *
+	 * @param stream
+	 */
+	public static <X,Y extends Stream<X>> Y peek( Y stream ) {
+
+		stream.peek( x -> rrup( 2, x ) );
+
+		return stream;
+	}
+
+	public static <X,Y extends Stream<X>> void rr( Y stream ) {
+
+		for( X x : Strapper.wrap( stream ) ) {
+
+			echo( RR, true, true, false, x );
+		}
+	}
+
+	/**
+	 * Compare two strings and output a string showing differences
+	 *
+	 * @see Di#ff(String, String)
+	 *
+	 * @param str1
+	 * @param str2
+	 */
+	public static void ff( String str1, String str2 ) {
+
+		E.rrup( 1, Di.ff( str1, str2 ) );
+	}
+
+	/**
+	 * Compare two objects and output a string showing differences
+	 *
+	 * The objects will be formated to a string before generating diffs.
+	 *
+	 * @see Di#ff(Object, Object)
+	 * @see F#ormat(Object)
+	 *
+	 * @param str1
+	 * @param str2
+	 */
+	public static void ff( Object str1, Object str2 ) {
+
+		E.rrup( 1, Di.ff( str1, str2 ) );
 	}
 }

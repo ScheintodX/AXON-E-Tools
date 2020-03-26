@@ -11,36 +11,36 @@ import de.axone.web.encoding.Encoder_Xml;
 
 
 public abstract class Tag {
-	
+
 	public static StringBuilder simpleBB( StringBuilder builder,
 			String name, String content, String ...args){
-		
+
 		return simpleBB( builder, name, content, true, args );
 	}
-	
+
 	public static <A extends Appendable> A simpleA( A builder,
 			String name, String content, String ...args) throws IOException {
-		
+
 		try {
 			return simpleA( builder, name, content, true, args );
 		} catch( IOException e ) {
 			throw new Error( "Cannot write to Stringbuilder?!?", e );
 		}
 	}
-	
+
 	public static StringBuilder simpleBB( StringBuilder builder,
 			String name, String content, boolean encodeContent, String ...args){
-		
+
 		try {
 			return simpleA( builder, name, content, encodeContent, args );
 		} catch( IOException e ) {
 			throw new Error( "Cannot write to Stringbuilder?!?", e );
 		}
 	}
-	
+
 	public static <A extends Appendable> A simpleA( A builder,
 			String name, String content, boolean encodeContent, CharSequence ... args) throws IOException {
-		
+
 		Assert.notNull( builder, "builder" );
 		Assert.notNull( name, "name" );
 		// Null allowed: Content, args
@@ -66,36 +66,36 @@ public abstract class Tag {
 
 		if( content == null ){
 
-    		builder.append( "/>" );
+	    		builder.append( "/>" );
 		} else {
 			builder
 				.append( ">" )
-    			.append( encodeContent ? Encoder_Xml.ENCODE( content ) : content )
-    			.append( "</" )
-    			.append( name )
-    			.append( ">" )
-			;
+	    			.append( encodeContent ? Encoder_Xml.ENCODE( content ) : content )
+	    			.append( "</" )
+	    			.append( name )
+	    			.append( ">" )
+				;
 		}
 
 		return builder;
 	}
-	
+
 	public static StringBuilder simpleBB( StringBuilder builder,
 			String name, String content, Map<String,String> args){
-		
+
 		return simpleBB( builder, name, content, true, args );
 	}
-	
+
 	public static StringBuilder simpleBB( StringBuilder builder,
 			String name, String content, boolean encodeContent, Map<String,String> args ){
-		
+
 		try {
 			return simpleA( builder, name, content, encodeContent, args );
 		} catch( IOException e ) {
 			throw new Error( "Cannot write to Stringbuilder?!?", e );
 		}
 	}
-	
+
 	public static <A extends Appendable> A simpleA( A builder,
 			String name, String content, boolean encodeContent, Map<String,String> args ) throws IOException {
 
@@ -109,7 +109,7 @@ public abstract class Tag {
 		;
 
 		if( args != null ) for( Map.Entry<String,String> entry : args.entrySet() ){
-			
+
 			String argName = entry.getKey();
 			String argValue = entry.getValue();
 
@@ -136,28 +136,28 @@ public abstract class Tag {
 		}
 
 		return builder;
-		
+
 	}
 
 	public static String simple( String name, String content, String ... args ){
 		return simpleBB( new StringBuilder(), name, content, args ).toString();
 	}
-	
+
 	public static String simple( String name, String content, boolean encodeContent, String ... args ){
 		return simpleBB( new StringBuilder(), name, content, encodeContent, args ).toString();
 	}
-	
+
 	public static String simple( String name, String content, Map<String,String> args ){
 		return simpleBB( new StringBuilder(), name, content, args ).toString();
 	}
-	
-	public static String simple( 
+
+	public static String simple(
 			String name, String content, boolean encodeContent , Map<String,String> args ){
 		return simpleBB( new StringBuilder(), name, content, encodeContent, args ).toString();
 	}
-	
+
 	public static StringBuilder linkBB( StringBuilder result, String target, String text, String clazz, String ... args ){
-		
+
 		try {
 			return linkA( result, target, text, clazz, args );
 		} catch( IOException e ) {
@@ -166,24 +166,24 @@ public abstract class Tag {
 	}
 	public static <A extends Appendable> A linkA( A result, String target, String text, String clazz, String ... args )
 	throws IOException {
-		
+
 		if( args != null && args.length % 2 != 0 )
 			throw new IllegalArgumentException( "Arg count must be a multiple of 2" );
 		Assert.notNull( result, "result" );
 		Assert.notNull( target, "target" );
-		
+
 		StringBuilder href = new StringBuilder();
-		
+
 		href.append( target );
-		
+
 		if( args != null && args.length > 0 ){
-			
+
 			href.append( "?" );
-			
+
 			for( int i=0; i<args.length; i+=2 ){
-				
+
 				if( i > 0 ) href.append( "&" );
-				
+
 				href
 					.append( args[i] )
 					.append( "=" )
@@ -191,24 +191,24 @@ public abstract class Tag {
 				;
 			}
 		}
-		
-		LinkedList<String> tagArgs = new LinkedList<String>();
+
+		LinkedList<String> tagArgs = new LinkedList<>();
 		tagArgs.add( "href" ); tagArgs.add( href.toString() );
 		if( clazz != null ){
 			tagArgs.add( "class" ); tagArgs.add( clazz );
 		}
-		
+
 		return simpleA( result, "a", text, false, tagArgs.toArray( new String[ tagArgs.size() ] ) );
 	}
-	
+
 	/*
 	 * Just a test for now. But we could insert simplified versions here.
 	 */
 	/**
 	 * No stable interface from here on
-	 * 
-	 * @param content 
-	 * @param args 
+	 *
+	 * @param content
+	 * @param args
 	 * @return tag as string
 	 */
 	public static String a( String content, String ... args ){
@@ -229,29 +229,29 @@ public abstract class Tag {
 				false,
 				Mapper.hashMap( "id", id, "type", "text/javascript" ) );
 	}
-	
+
 	public static String button( String name, String value, String content ){
-		
+
 		return simple( "button", content, "name", name, "value", value );
 	}
 	public static String form( String method, String action, String content ){
-		
+
 		return simple( "form", content, false, "method", method, "action", action );
 	}
-	
+
 	public static String hiddenInput( String name, String value ){
 
 		return simple( "input", null, "type", "hidden", "name", name, "value", value );
 	}
-	
+
 	public static String link( String target, String text, String clazz, String ... args ){
 		return linkBB( new StringBuilder(), target, text, clazz, args ).toString();
 	}
-	
+
 	public static String iframe( String src, String width, String height ){
 		return simple( "iframe", null, "src", src, "width", width, "height", height );
 	}
-	
+
 	public static String div( String content ){
 		return simple( "div", content, false );
 	}
@@ -264,22 +264,22 @@ public abstract class Tag {
 	public static String divClass( String clazz, String content ){
 		return simple( "div", content, false, "class", clazz );
 	}
-	
+
 	public static String img( SuperURL url, String alt ) {
-		
+
 		return simple( "img",
 				"src", SuperURLPrinter.ForAttribute.toString( url ),
 				"alt", alt
 		);
 	}
 	public static String img( SuperURL url, String alt, String title ) {
-		
+
 		return simple( "img",
 				"src", SuperURLPrinter.ForAttribute.toString( url ),
 				"alt", alt,
 				"title", title
 		);
-		
+
 	}
-	
+
 }

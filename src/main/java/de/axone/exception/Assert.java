@@ -8,8 +8,9 @@ import java.util.Map;
 public abstract class Assert {
 
 	// != NULL --------------------
-	public static void notNull( Object o, String name ){
+	public static<T> T notNull( T o, String name ){
 		if( o == null ) throw Ex.up( new ArgumentNullException( name ) );
+		return o;
 	}
 	public static void isNull( Object o, String name ){
 		if( o != null ) throw Ex.up( new ArgumentNullException( name ) );

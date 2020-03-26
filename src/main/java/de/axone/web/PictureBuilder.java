@@ -21,9 +21,9 @@ import de.axone.gfx.ImageScaler;
  * @author flo
  */
 public abstract class PictureBuilder {
-	
+
 	public static final Logger log = LoggerFactory.getLogger( PictureBuilder.class );
-	
+
 	//private static final String imageioLock = "ImageIO read lock";
 
 	private final String mainDir;
@@ -32,7 +32,7 @@ public abstract class PictureBuilder {
 	private final String identifier;
 	private final int index;
 	private final int hashLength;
-	
+
 	public PictureBuilder( File cacheDir, String identifier ) {
 
 		this( cacheDir, identifier, 0 );
@@ -41,7 +41,7 @@ public abstract class PictureBuilder {
 	public PictureBuilder( File cacheDir, String identifier, int index ) {
 		this( cacheDir, "main", identifier, index, 1 );
 	}
-		
+
 	public PictureBuilder( File cacheDir, String mainDir, String identifier, int index, int hashLength ) {
 
 		this.cacheDir = cacheDir;
@@ -63,7 +63,7 @@ public abstract class PictureBuilder {
 	 * (the 'main' file is that file which we are working with)
 	 */
 	private String findMain( File path, String name, int index ) {
-		
+
 		//E.rr( path.getAbsolutePath() );
 		//E.rr( name );
 		//E.rr( index );
@@ -78,49 +78,49 @@ public abstract class PictureBuilder {
 		if( hashDir != null ) builder.append( hashDir ).append( '/' );
 		//E.rr( name );
 		builder.append( name );;
-		
+
 		//E.rr( builder.toString() );
-		
+
 		// Try to find main file without dir operation
 		boolean found = false;
 		if( index == 0 ) {
-			
+
 			StringBuilder probe = new StringBuilder( builder );
-			
+
 			probe.append( '/' ).append( name ).append( ".jpg" );
-			
+
 			//E.rr( probe );
-			
+
 			File f = new File( path, probe.toString() );
-			
+
 			//E.rr( f.getAbsolutePath() );
-			
+
 			if( f.isFile() && f.canRead() ){
 				found = true;
 				builder = probe;
 			}
 		}
-		
+
 		//E.rr( found );
-		
+
 		if( !found ){
-			
+
 			File mainDir = new File( path, builder.toString() );
-			
+
 			//E.rr( mainDir.getAbsolutePath() );
-			
+
 			File[] mainFilesA = mainDir.listFiles( JPEG );
 
 			if( mainFilesA != null ) {
 
 				List<File> mainFiles = Arrays.asList( mainFilesA );
-	
+
 				Collections.sort( mainFiles, new JpegSorter( name ) );
-	
+
 				if( index >= mainFiles.size() ) {
 					index = mainFiles.size() - 1;
 				}
-				
+
 				if( index >= 0 ){
 					builder.append( '/' ).append( mainFiles.get( index ).getName() );
 					found = true;
@@ -157,18 +157,15 @@ public abstract class PictureBuilder {
 	}
 
 	public boolean exists() {
-		
+
 		return main != null && main.isFile() && main.canRead();
 	}
 
 	public File get( int size, File watermark ) throws IOException {
-		
+
 		return get( size, watermark, true, false );
 	}
 
-	// Der Lock muss wohl static sein, damit auch von verschiedenen Klassen
-	// kein synchroner zugriff möglich ist.
-	//private static String lock = "I am a unique Lock";
 	private static ThreadQueue threadQueue = new ThreadQueue( 4 );
 
 	private File get( int size, File watermark, boolean doPrescale, boolean hq )
@@ -177,11 +174,11 @@ public abstract class PictureBuilder {
 		if( ! exists() ) return null;
 
 		File cache = getCacheFile( size, watermark );
-		
+
 		//E.rr( cache.getAbsolutePath() );
 
 		if( !cache.exists() ) {
-			
+
 			long start = System.currentTimeMillis();
 
 			ThreadQueue.Lock lock = null;
@@ -318,9 +315,9 @@ public abstract class PictureBuilder {
 	 * Create hashString for directory hashing
 	 */
 	private static String hashName( String name, int length ) {
-		
+
 		//E.rr( name, length );
-		
+
 		if( length == 0 ) return null;
 
 		int i = 0;
@@ -332,7 +329,7 @@ public abstract class PictureBuilder {
 		;
 
 		if( name.length() > i ) {
-			
+
 			int endPos = i+length;
 			if( endPos >= name.length() ) endPos = name.length()-1;
 
@@ -347,12 +344,12 @@ public abstract class PictureBuilder {
 		int w, h;
 	}
 	*/
-	
+
 	private class OldFilenameFilter implements FilenameFilter {
 
 		@Override
 		public boolean accept( File dir, String name ) {
-			
+
 			return name.startsWith( PictureBuilder.this.main.getName() );
 		}
 	}
@@ -368,10 +365,10 @@ public abstract class PictureBuilder {
 	};
 
 	private static class JpegSorter implements Comparator<File>, Serializable {
-		
+
 		private static final long serialVersionUID = 1L;
 
-		private String mainFileName;
+		private final String mainFileName;
 
 		public JpegSorter( String mainFileName ){
 

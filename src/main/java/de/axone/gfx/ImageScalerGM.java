@@ -18,10 +18,6 @@ public class ImageScalerGM implements ImageScaler {
 
 	private static final Logger log = LoggerFactory.getLogger( ImageScaler.class );
 
-	private static final String CONVERT = "convert",
-	                            COMPOSITE = "composite"
-	                            ;
-
 	private final Path gmCommand;
 
 	// private ImageScalerOption [] options;
@@ -62,26 +58,26 @@ public class ImageScalerGM implements ImageScaler {
 
 				QuickResult res;
 
-				res = ShellExec.quickexec( gmCommand,
+				res = ShellExec.quickexec( 15000, gmCommand,
 						COMPOSITE,
-						HIGH_QUALITY.commandLine(),
-						COMPOSE_OVER.commandLine(),
-						GRAVITY_SOUTHEAST.commandLine(),
-						watermarkPathS,
-						imagePathS,
-						tmpS
+						HIGH_QUALITY,
+						COMPOSE_OVER,
+						GRAVITY_SOUTHEAST,
+						ShellExec.Arg( watermarkPathS ),
+						ShellExec.Arg( imagePathS ),
+						ShellExec.Arg( tmpS )
 				);
 				if( res.getExitValue() != 0 )
 						throw new ShellException( res );
 
-				res = ShellExec.quickexec( gmCommand,
+				res = ShellExec.quickexec( 15000, gmCommand,
 						CONVERT,
-						quality.commandLine(),
-						Resize( size, size ).commandLine(),
+						quality,
+						Resize( size, size ),
 						//Brightness( -95 ).commandLine(),
-						STRIP.commandLine(),
-						tmpS,
-						outPathS
+						STRIP,
+						ShellExec.Arg( tmpS ),
+						ShellExec.Arg( outPathS )
 				);
 				if( res.getExitValue() != 0 )
 						throw new ShellException( res );
@@ -109,13 +105,13 @@ public class ImageScalerGM implements ImageScaler {
 
 				QuickResult res;
 
-				res = ShellExec.quickexec( gmCommand,
+				res = ShellExec.quickexec( 15000, gmCommand,
 						CONVERT,
-						quality.commandLine(),
-						Resize( size, size ).commandLine(),
-						STRIP.commandLine(),
-						imagePath.toFile().getAbsolutePath(),
-						outPath.toFile().getAbsolutePath()
+						quality,
+						Resize( size, size ),
+						STRIP,
+						ShellExec.Arg( imagePath.toFile().getAbsolutePath() ),
+						ShellExec.Arg( outPath.toFile().getAbsolutePath() )
 				);
 				if( res.getExitValue() != 0 )
 						throw new ShellException( res );

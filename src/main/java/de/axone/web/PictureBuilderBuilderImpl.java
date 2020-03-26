@@ -223,7 +223,15 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 			if( ! cachedFileResult.isPresent() ) return Optional.empty();
 			Path cachedFile = cachedFileResult.get();
 
+			/*
 			if( ! Files.isRegularFile( cachedFile ) ) {
+				E.rr( "MISS: ", cachedFile );
+			}
+			*/
+
+			if( ! Files.isRegularFile( cachedFile ) ) {
+
+				log.trace( "MISS: {}", cachedFile );
 
 				long start = System.currentTimeMillis();
 
@@ -370,7 +378,7 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 
 		Path dir = pathTo( maindir, hashName, identifier );
 
-		if( ! dir.toFile().isDirectory() ) return Optional.empty();
+		if( ! Files.isDirectory( dir ) ) return Optional.empty();
 
 		if( index <= 0 ) {
 
@@ -384,7 +392,7 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 		try( Stream<Path> stream = Files.list( dir ) ) {
 			files = stream
 					.filter( PIXEL )
-					.sorted()
+					.sorted( new SameNameFirst( identifier ) )
 					.collect( Collectors.toList() )
 					;
 		}
@@ -448,5 +456,6 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 
 		return Optional.empty();
 	}
+
 
 }
