@@ -205,17 +205,25 @@ public class ETest {
 		b2.append( "1" );
 		String one = b2.toString();
 
+		assertEquals( Di.ff( "aBa", "a" ), "a[Ba|]" );
 		assertEquals( Di.ff( test123, "test123" ), "test123" );
-		assertEquals( Di.ff( test123, "test223" ), "test=[1|=|2]=23" );
-		assertEquals( Di.ff( test123, "test" ), "test=[123|=|]=" );
+		assertEquals( Di.ff( test123, "test223" ), "test[1|2]23" );
+		assertEquals( Di.ff( test123, "test" ), "test[123|]" );
+		assertEquals( Di.ff( test123, test123+"-"+test123 ), "test123[|-test123]" );
+		assertEquals( Di.ff( test123+"-"+test123, test123 ), "test123[-test123|]" );
+		assertEquals( Di.ff( test123, test123+test123 ), "test123[|test123]" );
+		assertEquals( Di.ff( test123+test123, test123 ), "test123[test123|]" );
+		assertEquals( Di.ff( "test", test123 ), "test[|123]" );
 		assertEquals( Di.ff( "", "" ), "" );
-		assertEquals( Di.ff( test123, "" ), "=[test123|=|]=" );
-		assertEquals( Di.ff( "", test123 ), "=[|=|test123]=" );
+		assertEquals( Di.ff( test123, "" ), "[test123|]" );
+		assertEquals( Di.ff( "", test123 ), "[|test123]" );
 		assertEquals( Di.ff( null, null ), null );
-		assertEquals( Di.ff( test123, null ), "=[test123|=|null]=" );
-		assertEquals( Di.ff( null, test123 ), "=[null|=|test123]=" );
+		assertEquals( Di.ff( test123, null ), "[test123|null]" );
+		assertEquals( Di.ff( null, test123 ), "[null|test123]" );
 
-		assertEquals( Di.ff( "o", "O" ), "=[o|=|O]=" );
+		assertEquals( Di.ff( "o", "O" ), "[o|O]" );
+		assertEquals( Di.ff( "a", "aa" ), "a[|a]" );
+		assertEquals( Di.ff( "aa", "a" ), "a[a|]" );
 
 		assertEquals( Di.ff( one, "1" ), "1" );
 
