@@ -41,7 +41,7 @@ public class ImageScalerGM implements ImageScaler {
 		if( watermarkPath.isPresent() ) {
 
 			if( ! Files.exists( watermarkPath.get() ) )
-					throw new IllegalArgumentException( "404 Cannot find watermark" );
+					throw new IllegalArgumentException( "404 Cannot find watermark: '" + watermarkPath.get() + "'" );
 
 			Path tmp = null;
 			try {

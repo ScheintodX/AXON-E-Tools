@@ -3,15 +3,12 @@ package de.axone.web.rest;
 
 
 public class RestFunctionException extends Exception {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 5803188308493603831L;
 
 	private static final int DEFAULT_CODE = 500;
-	
-	private int code;
+
+	private final int code;
 
 	public RestFunctionException( String message ) {
 		this( DEFAULT_CODE, message );
@@ -36,7 +33,7 @@ public class RestFunctionException extends Exception {
 		super( message, cause );
 		this.code = code;
 	}
-	
+
 	public int code(){
 		return code;
 	}

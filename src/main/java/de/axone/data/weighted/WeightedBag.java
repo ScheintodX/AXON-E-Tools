@@ -8,6 +8,13 @@ import java.util.stream.Stream;
 
 import de.axone.data.weighted.WeightedBag.WeightedEntry;
 
+/**
+ * A more simple class for weighted Lists
+ *
+ * @author flo
+ *
+ * @param <I>
+ */
 public class WeightedBag<I> implements Iterable<WeightedEntry<I>>{
 
 	private long accu = 0;
@@ -132,4 +139,5 @@ public class WeightedBag<I> implements Iterable<WeightedEntry<I>>{
 
 	}
 
+	public static final class BagOfStrings extends WeightedBag<String>{}
 }
