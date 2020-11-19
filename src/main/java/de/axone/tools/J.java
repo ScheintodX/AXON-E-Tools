@@ -1,6 +1,5 @@
 package de.axone.tools;
 
-import java.io.IOException;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,8 +49,8 @@ public abstract class J {
 
 		} catch( JsonProcessingException e ) {
 			throw new RuntimeException( "Cannot deserialize", e );
-		} catch( IOException e ) {
-			throw new RuntimeException( "Cannot read", e );
+		/*} catch( IOException e ) {
+			throw new RuntimeException( "Cannot read", e );*/
 		}
 	}
 }

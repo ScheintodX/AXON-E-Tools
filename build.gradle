@@ -9,7 +9,7 @@ repositories {
 
 eclipse {
 	classpath {
-		defaultOutputDir = file('build.eclipse')
+//		defaultOutputDir = file('build.eclipse')
 		downloadSources = true
 
 		file {

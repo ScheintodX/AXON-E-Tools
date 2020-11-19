@@ -2,7 +2,7 @@ package de.axone.tools;
 
 /**
  * Class which contains common checks
- * 
+ *
  * @author flo
  */
 public abstract class Is {
