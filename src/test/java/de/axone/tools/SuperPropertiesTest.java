@@ -1,5 +1,6 @@
 package de.axone.tools;
 
+import static de.axone.tools.StringValueAccessorAssert.*;
 import static org.testng.Assert.*;
 
 import java.io.File;
@@ -28,6 +29,11 @@ public class SuperPropertiesTest {
 		// Property access
 		assertEquals( p.get( "A" ), "a--" );
 
+		assertThis( p )
+				.valueIs( "A", "a--" )
+				;
+
+
 		// List access
 		List<String> listB = p.getList( "B" );
 		assertNotNull( listB );
@@ -39,6 +45,8 @@ public class SuperPropertiesTest {
 		// Sub-Properties
 		SuperProperties pC = p.subset( "C" );
 		assertEquals( pC.get( "D" ), "cd-" );
+		assertThis( pC )
+				.valueIs( "D", "cd-" );
 
 		List<String> listCE = pC.getList( "E" );
 		assertNotNull( listCE );
@@ -62,6 +70,12 @@ public class SuperPropertiesTest {
 		assertEquals( p.get( "no", "default" ), "default" );
 		assertEquals( p.getInteger( "no", 321 ), 321 );
 		assertEquals( p.getBoolean( "no", true ), true );
+
+		assertThis( p )
+				.valueIs( "string", "string" )
+				.valueAsIntegerIs( "int", 123 )
+				.valueAsBooleanIs( "bool", true )
+				;
 
 	}
 

@@ -24,12 +24,36 @@ import de.axone.file.Crusher;
 public class PictureBuilderTest {
 
 	// ../Tools because cwd is different depending on how the test is run
-	Path home = Paths.get( "src/test/resources/cache" );
+	Path home = Paths.get( "../Tools/src/test/resources/cache" );
+	String watermark = "watermark/test.png";
+	String test001_jpg = "main/t/test001/test001.jpg";
+
+	@BeforeClass
+	public void testEnvironment() throws Exception {
+
+		// just so we have a pretty path
+		home = home.toRealPath();
+
+		assertThat( home )
+			.exists()
+			.isDirectory()
+			;
+
+		assertThat( home.resolve( watermark ))
+			.exists()
+			.isReadable()
+			;
+
+		assertThat( home.resolve( test001_jpg ))
+			.exists()
+			.isReadable()
+			;
+	}
 
 	public void buildPictures() throws Exception {
 
 		PictureBuilderBuilder b = PictureBuilderBuilder.instance( home )
-				.watermark( "watermark/test.png" )
+				.watermark( watermark )
 				;
 
 		PictureBuilderNG builder = b.builder( "test001", 0 );
@@ -41,8 +65,13 @@ public class PictureBuilderTest {
 				.isPresent()
 
 				;
-		assertPath( o.get().getLeft() )
-				.startsWith( home.resolve( "testpng/t/test001/100/test001.jpg" ) )
+
+		Path p = o.get().getLeft();
+		Path other = home.resolve( "testpng/t/test001/100/test001.jpg" );
+
+		// Use String startWith because Path's wants test001.jpg to exist
+		assertThat( p.toFile().getAbsolutePath() )
+				.startsWith( other.toFile().getAbsolutePath() )
 				;
 
 	}
@@ -98,21 +127,6 @@ public class PictureBuilderTest {
 	}
 
 	@BeforeClass
-	public void checkDependencies() {
-
-		// check everything is there as needed now
-		assertPath( home.resolve( "main/t/test001" ) ).isDirectory()
-				.resolve( "test001.jpg" ).isFile()
-				;
-		assertPath( home.resolve( "watermark" ) )
-				.isDirectory()
-				.resolve( "test.png" )
-				.isFile()
-				;
-
-	}
-
-	@BeforeClass
 	@AfterClass
 	public void cleanup() throws Exception {
 
@@ -122,9 +136,31 @@ public class PictureBuilderTest {
 
 	}
 
+	@BeforeClass
+	public void checkDependencies() {
+
+		Path watermark = home.resolve( "watermark" );
+		assertThat( watermark ).isDirectory();
+		assertThat( watermark.resolve( "test.png" ) )
+				.exists()
+				.isReadable()
+				;
+
+		Path test001dir = home.resolve( "main/t/test001" );
+		// check everything is there as needed now
+		assertThat( test001dir ).isDirectory();
+		assertThat( test001dir.resolve( "test001.jpg" ) )
+				.exists()
+				.isReadable()
+				;
+
+	}
+
 	public void realRun() throws Exception {
 
-		PictureBuilderBuilder pbb = PictureBuilderBuilder.instance( home );
+		PictureBuilderBuilder pbb = PictureBuilderBuilder.instance( home )
+				.watermark( watermark )
+				;
 
 		PictureBuilderNG builder = pbb.builder( "test001", 0 );
 		assertTrue( builder.exists() );
@@ -132,16 +168,17 @@ public class PictureBuilderTest {
 		Optional<Pair<Path,Boolean>> scaledImage = builder.get( 100 );
 
 		assertThat( scaledImage ).isPresent();
-		assertPath( scaledImage.get().getLeft() )
-				.startsWith( home.resolve( "plain/t/test001/100/test001.jpg" ) )
+		assertThat( scaledImage.get().getLeft() );
+		assertThat( scaledImage.get().getLeft().toFile().getAbsolutePath() )
+				.startsWith( home.resolve( "testpng/t/test001/100/test001.jpg" ).toFile().getAbsolutePath() )
 				;
 
 		assertPath( home )
 				.resolve( "plain" ).isDirectory()
 				.resolve( "t" ).isDirectory()
 				.resolve( "test001" ).isDirectory()
-				.resolve( "100" ).isDirectory()
-				.find( "test001\\.jpg.*" ).isFile()
+				.resolve( "2000" ).isDirectory()
+				.find( "test001\\.jpg.*" ).exists().isReadable()
 				;
 
 		assertThat( PictureBuilderBuilder.DEFAULT_PRESCALE_SIZE )
@@ -149,7 +186,7 @@ public class PictureBuilderTest {
 
 		assertPath( home )
 				.resolve( "plain/t/test001/" + PictureBuilderBuilder.DEFAULT_PRESCALE_SIZE ).isDirectory()
-				.find( "test001\\.jpg.*" ).isFile()
+				.find( "test001\\.jpg.*" ).exists().isReadable()
 				;
 
 		// Now with watermark:
@@ -171,7 +208,9 @@ public class PictureBuilderTest {
 
 	private Path builderGet( String file, int index, int size ) throws IOException {
 
-		PictureBuilderBuilder pbb = PictureBuilderBuilder.instance( home );
+		PictureBuilderBuilder pbb = PictureBuilderBuilder.instance( home )
+				.watermark( watermark )
+				;
 
 		PictureBuilderNG builder = pbb.builder( file, index );
 
@@ -195,7 +234,9 @@ public class PictureBuilderTest {
 
 	public void testSortedIndex() throws Exception {
 
-		PictureBuilderBuilder pbb = PictureBuilderBuilder.instance( home );
+		PictureBuilderBuilder pbb = PictureBuilderBuilder.instance( home )
+				.watermark( watermark )
+				;
 
 		PictureBuilderNG builder = pbb.builder( "test002", 0 );
 

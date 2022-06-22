@@ -182,11 +182,15 @@ class PictureBuilderBuilderImpl implements PictureBuilderBuilder {
 
 		private Optional<Path> watermarkFile() {
 
-			if( ! watermark.isPresent() ) return Optional.empty();
+			if( !watermark.isPresent() ) return Optional.empty();
 
-			return Optional.of( homedir
+			Path wfile = homedir
 					.resolve( watermark.get() )
-					);
+					;
+
+			if( ! Files.exists( wfile ) ) return Optional.empty();
+
+			return Optional.of( wfile );
 		}
 
 		private Optional<Path> cachedFile( int size, Optional<Path> watermark ) throws IOException {

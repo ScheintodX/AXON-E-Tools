@@ -100,12 +100,12 @@ public class SuperProperties implements StringValueAccessor<String, NoSuchElemen
 		this.prefix = prefix;
 		this.rootDir = rootDir;
 	}
-	
+
 	@Override
 	public NoSuchElementException exception( String key ) {
 		return Ex.up( new NoSuchElementException( key ) );
 	}
-	
+
 	@Override
 	public String accessChecked( String key ) {
 		return backend.getProperty( realKey( key ) );
@@ -168,7 +168,7 @@ public class SuperProperties implements StringValueAccessor<String, NoSuchElemen
 	public void set( String key, int value ) {
 		backend.setProperty( realKey( key ), ""+value );
 	}
-	
+
 	private File prependBaseDir( File baseDir, File file ){
 
 		if( file == null ) return null;
@@ -178,7 +178,7 @@ public class SuperProperties implements StringValueAccessor<String, NoSuchElemen
 		}
 		return file;
 	}
-	
+
 	@Override
 	public File getFile( String key ) {
 
@@ -242,10 +242,10 @@ public class SuperProperties implements StringValueAccessor<String, NoSuchElemen
 			return new SuperProperties( this.prefix + '.' + prefix, this.backend, this.rootDir );
 		}
 	}
-	
+
 	public List<String> getList( String key ) {
 
-		LinkedList<String> result = new LinkedList<String>();
+		LinkedList<String> result = new LinkedList<>();
 		String value = null;
 		int i = 1;
 		do {
@@ -258,17 +258,16 @@ public class SuperProperties implements StringValueAccessor<String, NoSuchElemen
 		else return null;
 	}
 
-
 	@Override
 	public String toString(){
-		
+
 		StringBuilder result = new StringBuilder();
-		
+
 		result	.append( "SuperProperties.\n    Prefix: " ).append( prefix )
 				.append( "\n    baseDir: " ).append( rootDir != null ? rootDir.getPath() : "null" )
 				.append( "\n    Data: " );
 		;
-		
+
 		for( Map.Entry<Object,Object>entry : backend.entrySet() ){
 			String keyS = (String) entry.getKey();
 			if( prefix == null || keyS.startsWith( prefix ) ){
@@ -276,7 +275,7 @@ public class SuperProperties implements StringValueAccessor<String, NoSuchElemen
 						.append( ": " ).append( entry.getValue() );
 			}
 		}
-		
+
 		return result.toString();
 	}
 

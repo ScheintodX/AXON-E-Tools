@@ -958,6 +958,14 @@ public class Str {
 		return string;
 	}
 
+	public static String trimToMaxLenghth( String string, int len ) {
+
+		if( string == null || string.length() <= len )
+				return string;
+
+		return string.substring( 0, len );
+	}
+
 	/* Untested
 	public static String removeNewlines( String value ) {
 

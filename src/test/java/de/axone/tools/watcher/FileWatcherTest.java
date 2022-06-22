@@ -7,8 +7,6 @@ import java.io.FileOutputStream;
 
 import org.testng.annotations.Test;
 
-import de.axone.tools.watcher.FileWatcher;
-
 @Test( groups="tools.filewatcher" )
 public class FileWatcherTest {
 
@@ -20,18 +18,18 @@ public class FileWatcherTest {
 
 		assertTrue( watcher.haveChanged() );
 		assertFalse( watcher.haveChanged() );
-		
+
 		synchronized( this ){
 			this.wait( 1100 ); //Note: Unix ctime min unit is 1s
 		}
 
 		assertFalse( watcher.haveChanged() );
-		
+
 		// Touch
 		FileOutputStream out = new FileOutputStream( tmp );
 		out.write( 'x' );
 		out.close();
-		
+
 		assertFalse( watcher.haveChanged() );
 
 		synchronized( this ){
@@ -49,7 +47,7 @@ public class FileWatcherTest {
 		boolean ok = tmp.delete();
 		assertTrue( ok );
 		assertFalse( watcher.haveChanged() );
-		
+
 		synchronized( this ){
 			this.wait( 110 );
 		}

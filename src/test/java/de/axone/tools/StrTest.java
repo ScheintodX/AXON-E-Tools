@@ -355,4 +355,19 @@ public class StrTest {
 		return Str.join( ":", Str.splitAtSpacesLeaveHtmlIntact( text ) );
 	}
 
+	public void testTrimAt() {
+
+		assertEquals( Str.trimToMaxLenghth( null, 0 ), null );
+		assertEquals( Str.trimToMaxLenghth( null, 1 ), null );
+		assertEquals( Str.trimToMaxLenghth( "a", 1 ), "a" );
+
+		assertEquals( Str.trimToMaxLenghth( "abc", 0 ), "" );
+		assertEquals( Str.trimToMaxLenghth( "abc", 1 ), "a" );
+		assertEquals( Str.trimToMaxLenghth( "abc", 2 ), "ab" );
+		assertEquals( Str.trimToMaxLenghth( "abc", 3 ), "abc" );
+		assertEquals( Str.trimToMaxLenghth( "abc", 4 ), "abc" );
+
+
+	}
+
 }

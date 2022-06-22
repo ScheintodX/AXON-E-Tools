@@ -128,7 +128,7 @@ public abstract class RestFunctionRegistry<DATA, REQUEST extends RestRequest> im
 				response = JsonResponseImpl.ERROR( status, e );
 			}
 
-			req.mapper().writeValue( out, response );
+			req.jmb().build().writeValue( out, response );
 
 			log.error( "Exception while running '" + f.name() + "'", e );
 		}

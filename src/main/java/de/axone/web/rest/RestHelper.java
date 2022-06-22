@@ -13,9 +13,9 @@ public abstract class RestHelper {
 
 		try {
 			if( data != null ){
-				jsonData = req.mapper().readValue( data, type );
+				jsonData = req.jmb().build().readValue( data, type );
 			} else {
-				jsonData = req.mapper().readValue( req.getInputStream(), type );
+				jsonData = req.jmb().build().readValue( req.getInputStream(), type );
 			}
 
 		} catch( IOException e ) {

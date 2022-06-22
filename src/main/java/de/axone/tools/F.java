@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 public class F {
 
 	public static String ormat( Object o ){
@@ -215,6 +217,18 @@ public class F {
 		if( !dontUseQuotes ) r.append( '\'' );
 		ormatB( r, o );
 		if( !dontUseQuotes ) r.append( '\'' );
+	}
+
+	public static String ormatAsJson( Object that ) {
+
+		com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
+
+		try {
+			return om.writerWithDefaultPrettyPrinter().writeValueAsString( that );
+		} catch( JsonProcessingException e ) { //fasterxml om
+			throw new IllegalArgumentException( e );
+		}
+
 	}
 
 }

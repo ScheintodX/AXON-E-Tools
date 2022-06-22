@@ -612,6 +612,9 @@ public final class SuperURL {
 			this.path = new LinkedList<>( path );
 			this.endsWithSlash = endsWithSlash;
 		}
+		public Path( String ... path ) {
+			this( Arrays.asList( path ), false );
+		}
 
 		public Path copy() {
 			Path result = new Path();
@@ -921,6 +924,18 @@ public final class SuperURL {
 			addAll( parts );
 		}
 
+		public Query( String ... parts ){
+
+			if( parts.length % 2 != 0 ) {
+				throw new IllegalArgumentException( "Onyl key/value pairs. Amount must be multiple of 2" );
+			}
+
+			for( int i=0; i<parts.length; i+=2 ) {
+				add( new QueryPart( parts[ i ], parts[ i+1 ] ) );
+			}
+
+		}
+
 		public Query copy(){
 
 			Query result = new Query();
@@ -1146,6 +1161,9 @@ public final class SuperURL {
 			public QueryPart( String key, String value ){
 				this.key = key;
 				this.value = value;
+			}
+			public QueryPart( String key ){
+				this( key, null );
 			}
 
 			public static QueryPart parse( String parseMe, boolean decode ){

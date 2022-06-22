@@ -1,5 +1,6 @@
 apply plugin: 'java'
-apply plugin: 'eclipse-wtp'
+apply plugin: 'eclipse'
+//apply plugin: 'eclipse-wtp'
 
 //version = '1.0.0'
 
@@ -9,11 +10,11 @@ repositories {
 
 eclipse {
 	classpath {
-//		defaultOutputDir = file('build.eclipse')
+
 		downloadSources = true
 
 		file {
-			whenMerged { classpath -> 
+			whenMerged { classpath ->
 				classpath.entries.findAll { entry -> entry.kind == 'lib' }*.exported = true
 			}
 			withXml { cp ->
@@ -43,17 +44,18 @@ eclipse {
 
 task setup {
 	dependsOn ':cleanEclipse'
-	dependsOn ':cleanEclipseWtp'
+	//dependsOn ':cleanEclipseWtp'
 	dependsOn ':eclipse'
-	dependsOn ':eclipseWtp'
+	//dependsOn ':eclipseWtp'
 }
 
 dependencies {
 
 	compile 'commons-codec:commons-codec:1+'
-	compile 'commons-lang:commons-lang:2.6'
+	compile 'commons-lang:commons-lang:2.6' // legacy but still in use
+	compile 'org.apache.commons:commons-lang3:3+'
 
-	compile 'org.hibernate.common:hibernate-commons-annotations:4.0+'
+	compile 'org.hibernate.common:hibernate-commons-annotations:4.0.5.Final'
 	compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0+'
 
 	compile 'net.sf.ehcache:ehcache-core:2.5.2'
